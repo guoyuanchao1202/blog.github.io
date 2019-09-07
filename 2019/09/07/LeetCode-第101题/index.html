@@ -57,23 +57,22 @@
   };
 </script>
 
-  <meta name="description" content="难度： 简单1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1)可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去">
-<meta name="keywords" content="LeetCode,动态规划,斐波那契数列">
+  <meta name="description" content="难度–简单题目分析：    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,T">
+<meta name="keywords" content="LeetCode,递归,迭代法,二叉树">
 <meta property="og:type" content="article">
-<meta property="og:title" content="青蛙跳台阶">
-<meta property="og:url" content="http://HoA-W.github.io/2019/09/07/LeetCode-第70题/index.html">
+<meta property="og:title" content="二叉树镜像对称">
+<meta property="og:url" content="http://HoA-W.github.io/2019/09/07/LeetCode-第101题/index.html">
 <meta property="og:site_name" content="HoA-W">
-<meta property="og:description" content="难度： 简单1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1)可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去">
+<meta property="og:description" content="难度–简单题目分析：    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,T">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:updated_time" content="2019-09-07T12:51:25.637Z">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2019081919202426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190819195622590.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:updated_time" content="2019-09-07T13:04:37.420Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="青蛙跳台阶">
-<meta name="twitter:description" content="难度： 简单1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1)可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-  <link rel="canonical" href="http://HoA-W.github.io/2019/09/07/LeetCode-第70题/">
+<meta name="twitter:title" content="二叉树镜像对称">
+<meta name="twitter:description" content="难度–简单题目分析：    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,T">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/2019081919202426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+  <link rel="canonical" href="http://HoA-W.github.io/2019/09/07/LeetCode-第101题/">
 
 
 <script id="page-configurations">
@@ -87,7 +86,7 @@
   };
 </script>
 
-  <title>青蛙跳台阶 | HoA-W</title>
+  <title>二叉树镜像对称 | HoA-W</title>
   
 
 
@@ -263,7 +262,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="http://HoA-W.github.io/2019/09/07/LeetCode-第70题/">
+    <link itemprop="mainEntityOfPage" href="http://HoA-W.github.io/2019/09/07/LeetCode-第101题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="买太平湖底陈年水墨">
@@ -275,7 +274,7 @@
       <meta itemprop="name" content="HoA-W">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">青蛙跳台阶
+        <h1 class="post-title" itemprop="name headline">二叉树镜像对称
 
           
         </h1>
@@ -291,7 +290,7 @@
                 
               
 
-              <time title="Created: 2019-09-07 17:15:18 / Modified: 20:51:25" itemprop="dateCreated datePublished" datetime="2019-09-07T17:15:18+08:00">2019-09-07</time>
+              <time title="Created: 2019-09-07 17:15:18 / Modified: 21:04:37" itemprop="dateCreated datePublished" datetime="2019-09-07T17:15:18+08:00">2019-09-07</time>
             </span>
           
             
@@ -323,12 +322,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><strong>难度： 简单</strong></p><p><img src="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="题目如图"><br><strong>1、动态规划</strong><br>可以知道，如果要到达第n阶台阶，有两种方式：<br>第一：从n-1阶台阶跨1步<br>第二：从n-2阶台阶跨2步<br>设到达第n阶台阶的方法总数为sum(n)<br>那么由上面可以知道：<strong>sum(n)=sum(n-2)+sum(n-1)</strong></p><p>可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法<br>1、从第1阶台阶跨2步上去<br>2、从第2阶跨1步上去</p><a id="more"></a>
-
-
-<p>相应的，到达第1阶台阶只有一种方法，sum(1)=1；<br>到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；<br>所以sum(3)=3;<br><img src="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p><strong>2、斐波那契数列</strong><br>通过观察规律可以知道：<br>假设第0阶为1；<br>那么可以得到从第1阶往后分别是：<br><strong>1，2，3，5，8，13…..</strong><br>这是一个很明显的斐波那契数列</p>
-<p>3、递归<br>同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和<br>递归出口：n=0的时候返回1，n&lt;0的时候返回0；<br><img src="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>运行到44个样例的时候栈爆了…..</p>
+        <p><strong>难度–简单</strong><br>题目<br><img src="https://img-blog.csdnimg.cn/2019081919202426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><strong>分析：</strong><br>    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称<br>    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的</p><h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><pre><code>//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接
+//快1ms，亲测
+1、pre(TreeNode tree.left,TreeNode tree.right)        
+2、如果A.val==B.val    --&gt;return true                
+3、如果A==null&amp;&amp;B==null    --&gt;return true
+4、如果A和B不同时为空，说明树是不对称的        --&gt;return false
+5、遍历A的左子树和B的右子树        //pre(A.left,B.right)
+6、遍历A的右子树和A的左子树        //pre(A.right,B.left)</code></pre><a id="more"></a>
+<h2 id="迭代法"><a href="#迭代法" class="headerlink" title="迭代法"></a>迭代法</h2><p>使用队列，比较容易理解，直接上代码(LeetCode官方题解)<br><img src="https://img-blog.csdnimg.cn/20190819195622590.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 
     </div>
 
@@ -361,9 +363,11 @@
             
               <a href="/tags/LeetCode/" rel="tag"><i class="fa fa-tag"></i>LeetCode</a>
             
-              <a href="/tags/动态规划/" rel="tag"><i class="fa fa-tag"></i>动态规划</a>
+              <a href="/tags/递归/" rel="tag"><i class="fa fa-tag"></i>递归</a>
             
-              <a href="/tags/斐波那契数列/" rel="tag"><i class="fa fa-tag"></i>斐波那契数列</a>
+              <a href="/tags/迭代法/" rel="tag"><i class="fa fa-tag"></i>迭代法</a>
+            
+              <a href="/tags/二叉树/" rel="tag"><i class="fa fa-tag"></i>二叉树</a>
             
           </div>
         
@@ -373,8 +377,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/09/07/hello-world/" rel="next" title="Hello World">
-                  <i class="fa fa-chevron-left"></i> Hello World
+                <a href="/2019/09/07/LeetCode-第70题/" rel="next" title="青蛙跳台阶">
+                  <i class="fa fa-chevron-left"></i> 青蛙跳台阶
                 </a>
               
             </div>
@@ -383,8 +387,8 @@
 
             <div class="post-nav-prev post-nav-item">
               
-                <a href="/2019/09/07/LeetCode-第101题/" rel="prev" title="二叉树镜像对称">
-                  二叉树镜像对称 <i class="fa fa-chevron-right"></i>
+                <a href="/2019/09/07/JAVA输入输出流-字符流和字节流详解/" rel="prev" title="字符流和字节流">
+                  字符流和字节流 <i class="fa fa-chevron-right"></i>
                 </a>
               
             </div>
@@ -434,6 +438,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#递归"><span class="nav-number">1.</span> <span class="nav-text">递归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迭代法"><span class="nav-number">2.</span> <span class="nav-text">迭代法</span></a></li></ol></div>
+        
       </div>
       <!--/noindex-->
 

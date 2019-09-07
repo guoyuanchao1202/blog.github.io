@@ -355,6 +355,113 @@
   
   
   <div class="post-block home">
+    <link itemprop="mainEntityOfPage" href="http://HoA-W.github.io/2019/09/07/LeetCode-第101题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HoA-W">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+            
+            <a href="/2019/09/07/LeetCode-第101题/" class="post-title-link" itemprop="url">二叉树镜像对称</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-09-07 17:15:18 / Modified: 21:04:37" itemprop="dateCreated datePublished" datetime="2019-09-07T17:15:18+08:00">2019-09-07</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法之美/" itemprop="url" rel="index"><span itemprop="name">算法之美</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>难度–简单</strong><br>题目<br><img src="https://img-blog.csdnimg.cn/2019081919202426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><strong>分析：</strong><br>    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称<br>    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的</p><h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><pre><code>//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接
+//快1ms，亲测
+1、pre(TreeNode tree.left,TreeNode tree.right)        
+2、如果A.val==B.val    --&gt;return true                
+3、如果A==null&amp;&amp;B==null    --&gt;return true
+4、如果A和B不同时为空，说明树是不对称的        --&gt;return false
+5、遍历A的左子树和B的右子树        //pre(A.left,B.right)
+6、遍历A的右子树和A的左子树        //pre(A.right,B.left)</code></pre>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/09/07/LeetCode-第101题/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+	<div>
+	
+	</div>
+	<div>
+      
+</	</div>
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </div>
+  
+  
+  
+  </article>
+
+    
+        <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block home">
     <link itemprop="mainEntityOfPage" href="http://HoA-W.github.io/2019/09/07/LeetCode-第70题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -582,7 +689,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -604,7 +711,7 @@
       
       <div class="site-state-item site-state-tags">
         
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">tags</span>
         
       </div>
