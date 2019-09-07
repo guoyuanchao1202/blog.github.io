@@ -13,6 +13,19 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[字符流和字节流]]></title>
+    <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
+    <content type="text"><![CDATA[深入理解字符流编码首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符–&gt;数字3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中 读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序 图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符，在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的拷贝的“图片”丢失了很多 解码后被标记为“未知字符”的字节 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1…. 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1….但是当使用字符流读取的时候，一次读两个字节-12134，12453….然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)；在写入的时候，就会将￥字符给丢掉，所以最后实际写入的数据为124，53，-65，-43，1….这样拷贝自然就失败了 关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接最后：字符流因为解码编码等原因，比字节流慢很多字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输图片等视频音频文件要用字节流]]></content>
+      <categories>
+        <category>JAVA</category>
+      </categories>
+      <tags>
+        <tag>I/O</tag>
+        <tag>乱码</tag>
+        <tag>字符流/字节流</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Hello World]]></title>
     <url>%2F2019%2F09%2F07%2Fhello-world%2F</url>
     <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy More info: Deployment]]></content>

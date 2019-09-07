@@ -57,18 +57,19 @@
   };
 </script>
 
-  <meta name="description" content="你好啊,陌生人！ 闭上眼睛，好好回想之前的努力，自信就会喷薄而出">
-<meta property="og:type" content="website">
-<meta property="og:title" content="about">
-<meta property="og:url" content="http://HoA-W.github.io/about/index.html">
+  <meta name="description" content="深入理解字符流编码首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入字符–&amp;gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&amp;gt;字符：解码写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符–&amp;gt;数字3、调用了flush方法或者是close方法后，内存缓">
+<meta name="keywords" content="I&#x2F;O,乱码,字符流&#x2F;字节流">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字符流和字节流">
+<meta property="og:url" content="http://HoA-W.github.io/2019/09/07/JAVA输入输出流-字符流和字节流详解/index.html">
 <meta property="og:site_name" content="HoA-W">
-<meta property="og:description" content="你好啊,陌生人！ 闭上眼睛，好好回想之前的努力，自信就会喷薄而出">
+<meta property="og:description" content="深入理解字符流编码首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入字符–&amp;gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&amp;gt;字符：解码写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符–&amp;gt;数字3、调用了flush方法或者是close方法后，内存缓">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-09-07T09:32:11.607Z">
+<meta property="og:updated_time" content="2019-09-07T11:48:30.420Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="about">
-<meta name="twitter:description" content="你好啊,陌生人！ 闭上眼睛，好好回想之前的努力，自信就会喷薄而出">
-  <link rel="canonical" href="http://HoA-W.github.io/about/">
+<meta name="twitter:title" content="字符流和字节流">
+<meta name="twitter:description" content="深入理解字符流编码首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入字符–&amp;gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&amp;gt;字符：解码写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符–&amp;gt;数字3、调用了flush方法或者是close方法后，内存缓">
+  <link rel="canonical" href="http://HoA-W.github.io/2019/09/07/JAVA输入输出流-字符流和字节流详解/">
 
 
 <script id="page-configurations">
@@ -76,13 +77,13 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: false,
-    isPage: true,
+    isPost: true,
+    isPage: false,
     isArchive: false
   };
 </script>
 
-  <title>about | HoA-W</title>
+  <title>字符流和字节流 | HoA-W</title>
   
 
 
@@ -214,27 +215,6 @@
 
     
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
 </nav>
   <div class="site-search">
     <div class="popup search-popup">
@@ -274,43 +254,181 @@
             
 
   <div id="posts" class="posts-expand">
-    
-    
-    
-    <div class="post-block page">
-      <header class="post-header">
-
-<h1 class="post-title" itemprop="name headline">about
-
-</h1>
-
-<div class="post-meta">
+      <article itemscope itemtype="http://schema.org/Article">
   
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://HoA-W.github.io/2019/09/07/JAVA输入输出流-字符流和字节流详解/">
 
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HoA-W">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">字符流和字节流
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-09-07 17:15:18 / Modified: 19:48:30" itemprop="dateCreated datePublished" datetime="2019-09-07T17:15:18+08:00">2019-09-07</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a href="http://www.itcast.cn/news/20181219/14592257466.shtml" target="_blank" rel="noopener">深入理解字符流编码</a></p><p><strong>首先要理解字符流输入的原理：</strong><br>字符流输入其实底层也是字节流输入</p><p>字符–&gt;计算机二进制数字（字节）：编码<br>字节(计算机二进制数字)–&gt;字符：解码</p><h2 id="写入时："><a href="#写入时：" class="headerlink" title="写入时："></a>写入时：</h2><p>1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，<br>2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符–&gt;数字<br>3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中</p><a id="more"></a>
+
+
+
+<h2 id="读取时："><a href="#读取时：" class="headerlink" title="读取时："></a>读取时：</h2><p>使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序</p>
+<h2 id="图片不能用字符流的原因"><a href="#图片不能用字符流的原因" class="headerlink" title="图片不能用字符流的原因"></a>图片不能用字符流的原因</h2><p>因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了</p>
+<p>但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符，<br>在写入的时候，会将未知字符丢掉，所以图片拷贝不成功</p>
+<p>因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的<br>拷贝的“图片”丢失了很多 <strong>解码后</strong>被标记为“未知字符”的<strong>字节</strong></p>
+<p>举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1….</p>
+<p>使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1….<br>但是当使用字符流读取的时候，一次读两个字节-12134，12453….然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符；</p>
+<p>例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)；<br>在写入的时候，就会将￥字符给丢掉，所以<strong>最后实际写入的数据为</strong>124，53，-65，-43，1….<br>这样拷贝自然就失败了</p>
+<h2 id="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"><a href="#关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接" class="headerlink" title="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"></a>关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接</h2><p><strong>最后</strong>：字符流因为解码编码等原因，比字节流慢很多<br>字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输<br>图片等视频音频文件要用字节流</p>
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
 </div>
 
-</header>
-
+	
+	</div>
+	<div>
       
-      
-      
-      <div class="post-body">
         
-          <center><font size="5">你好啊,陌生人！</font></center><br>
-<center>闭上眼睛，好好回想之前的努力，自信就会喷薄而出</center><br>
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2019/09/07/JAVA输入输出流-字符流和字节流详解/">字符流和字节流</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 买太平湖底陈年水墨 的个人博客">买太平湖底陈年水墨</a></p>
+  <p><span>发布时间:</span>2019年09月07日 - 17:09</p>
+  <p><span>最后更新:</span>2019年09月07日 - 19:09</p>
+  <p><span>原始链接:</span><a href="/2019/09/07/JAVA输入输出流-字符流和字节流详解/" title="字符流和字节流">http://HoA-W.github.io/2019/09/07/JAVA输入输出流-字符流和字节流详解/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://HoA-W.github.io/2019/09/07/JAVA输入输出流-字符流和字节流详解/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
 
+      
+</	</div>
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/I-O/" rel="tag"><i class="fa fa-tag"></i>I/O</a>
+            
+              <a href="/tags/乱码/" rel="tag"><i class="fa fa-tag"></i>乱码</a>
+            
+              <a href="/tags/字符流-字节流/" rel="tag"><i class="fa fa-tag"></i>字符流/字节流</a>
+            
+          </div>
+        
 
         
-      </div>
-      
-      
-      
-    </div>
-    
 
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/09/07/hello-world/" rel="next" title="Hello World">
+                  <i class="fa fa-chevron-left"></i> Hello World
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/09/07/测试文章/" rel="prev" title="测试文章">
+                  测试文章 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
     
-    
-    
+  </div>
+  
+  
+  
+  </article>
+
   </div>
 
 
@@ -347,6 +465,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#写入时："><span class="nav-number">1.</span> <span class="nav-text">写入时：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读取时："><span class="nav-number">2.</span> <span class="nav-text">读取时：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图片不能用字符流的原因"><span class="nav-number">3.</span> <span class="nav-text">图片不能用字符流的原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"><span class="nav-number">4.</span> <span class="nav-text">关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接</span></a></li></ol></div>
+        
       </div>
       <!--/noindex-->
 
