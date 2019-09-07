@@ -58,15 +58,16 @@
 </script>
 
   <meta name="description" content="深入理解字符流编码首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入字符–&amp;gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&amp;gt;字符：解码写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&amp;gt;数字 3、调用了flush方法或者是close方法后，">
+<meta name="keywords" content="I&#x2F;O,乱码,字符流&#x2F;字节流">
 <meta property="og:type" content="article">
-<meta property="og:title" content="HoA-W">
+<meta property="og:title" content="字符流和字节流">
 <meta property="og:url" content="http://HoA-W.github.io/2019/09/07/JAVA输入输出流-字符流和字节流详解/index.html">
 <meta property="og:site_name" content="HoA-W">
 <meta property="og:description" content="深入理解字符流编码首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入字符–&amp;gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&amp;gt;字符：解码写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&amp;gt;数字 3、调用了flush方法或者是close方法后，">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-09-07T12:42:14.367Z">
+<meta property="og:updated_time" content="2019-09-07T12:46:45.739Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="HoA-W">
+<meta name="twitter:title" content="字符流和字节流">
 <meta name="twitter:description" content="深入理解字符流编码首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入字符–&amp;gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&amp;gt;字符：解码写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&amp;gt;数字 3、调用了flush方法或者是close方法后，">
   <link rel="canonical" href="http://HoA-W.github.io/2019/09/07/JAVA输入输出流-字符流和字节流详解/">
 
@@ -82,7 +83,7 @@
   };
 </script>
 
-  <title> | HoA-W</title>
+  <title>字符流和字节流 | HoA-W</title>
   
 
 
@@ -270,7 +271,7 @@
       <meta itemprop="name" content="HoA-W">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
+        <h1 class="post-title" itemprop="name headline">字符流和字节流
 
           
         </h1>
@@ -286,12 +287,25 @@
                 
               
 
-              <time title="Created: 2019-09-07 19:43:51 / Modified: 20:42:14" itemprop="dateCreated datePublished" datetime="2019-09-07T19:43:51+08:00">2019-09-07</time>
+              <time title="Created: 2019-09-07 17:15:18 / Modified: 20:46:45" itemprop="dateCreated datePublished" datetime="2019-09-07T17:15:18+08:00">2019-09-07</time>
             </span>
           
             
 
             
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -353,14 +367,27 @@
       
 
       <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/I-O/" rel="tag"><i class="fa fa-tag"></i>I/O</a>
+            
+              <a href="/tags/乱码/" rel="tag"><i class="fa fa-tag"></i>乱码</a>
+            
+              <a href="/tags/字符流-字节流/" rel="tag"><i class="fa fa-tag"></i>字符流/字节流</a>
+            
+          </div>
+        
 
         
 
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/09/07/LeetCode-第70题/" rel="next" title="青蛙跳台阶">
-                  <i class="fa fa-chevron-left"></i> 青蛙跳台阶
+                <a href="/2019/09/07/测试文章/" rel="next" title="测试文章">
+                  <i class="fa fa-chevron-left"></i> 测试文章
                 </a>
               
             </div>
@@ -447,7 +474,7 @@
             <a href="/categories/">
           
         
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">categories</span>
         </a>
       </div>
@@ -456,7 +483,7 @@
       
       <div class="site-state-item site-state-tags">
         
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span>
         
       </div>
