@@ -6,15 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2019/9 | Hexo</title>
+  <title>Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
+  <meta name="description" content="会话：一次会话中包含多次请求和响应。在一次会话中，浏览器第一次给服务器资源发送请求，会话建立，直到有一方断开为止 会话技术能够在一次会话的多次请求响应间共享数据 会话技术的实现方式：  客户端会话技术：Cookie 服务器端会话技术：Session    客户端会话技术--Cookie Cookie使用步骤   创建Cookie对象，绑定数据:new Cookie(String name, Str">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/archives/2019/09/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/09/07/会话技术--Cookie和Session/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="会话：一次会话中包含多次请求和响应。在一次会话中，浏览器第一次给服务器资源发送请求，会话建立，直到有一方断开为止 会话技术能够在一次会话的多次请求响应间共享数据 会话技术的实现方式：  客户端会话技术：Cookie 服务器端会话技术：Session    客户端会话技术--Cookie Cookie使用步骤   创建Cookie对象，绑定数据:new Cookie(String name, Str">
 <meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-09-07T06:28:14.356Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hexo">
+<meta name="twitter:description" content="会话：一次会话中包含多次请求和响应。在一次会话中，浏览器第一次给服务器资源发送请求，会话建立，直到有一方断开为止 会话技术能够在一次会话的多次请求响应间共享数据 会话技术的实现方式：  客户端会话技术：Cookie 服务器端会话技术：Session    客户端会话技术--Cookie Cookie使用步骤   创建Cookie对象，绑定数据:new Cookie(String name, Str">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -154,124 +158,271 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-会话技术--Cookie和Session" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h5>会话：一次会话中包含多次请求和响应。<br>在一次会话中，浏览器第一次给服务器资源发送请求，会话建立，直到有一方断开为止
+会话技术能够在一次会话的多次请求响应间共享数据<h5>
+会话技术的实现方式：
+<ul>
+<li>客户端会话技术：Cookie</li>
+<li>服务器端会话技术：Session</li>
+</ul>
+
+<hr>
+<h4>客户端会话技术--Cookie</h4>
+<h5>Cookie使用步骤
+<ol>
+<li> 创建Cookie对象，绑定数据:<font color="blue">new Cookie(String name, String value)</font></li>
+<li>发送Cookie对象::<font color="blue">response.addCookie(Cookie cookie)</font></li>
+<li> 获取Cookie，拿到数据:<font color="blue">Cookie[]  request.getCookies()</font></li>
+</ol>
+</h5>
+<h5>Cookie实现原理<br>
+<font color="red">基于响应头set-cookie和请求头cookie实现</font><br>
+<ol>
+<li>客户端和服务器第一次请求响应：服务器创建Cookie对象，并在set-cookie响应头将Cookie响应给浏览器
+</li>
+<li>浏览器接收到服务器带有set-cookie头的响应后，将Cookie存储在浏览器中，当下一次浏览器向服务器发送请求时，会在请求头cookie头中附带这cookie</li>
+<li>这样就实现了多次请求响应之间的数据共享</li>
+</ol>
+</h5>
+<hr>
+<h5>Cookie的一些细节
+<ul>
+<li><font color="red">一次可以发送多个cookie：</font>在服务器端创建多个Cookie对象，多次调用response的addCookie方法将多个Cookie对象发送，但是如果两个Cookie的值相同，那么后加入的Cookie值会覆盖前面的值</li>
+<li><font color="red">cookie在浏览器中保存时间</font>
+<ul>
+<li>默认情况下，当浏览器关闭后，Cookie数据被销毁(服务器关闭，Cookie仍然存在，因为Cookie存储在浏览器中)</li>
+<li>持久化存储：调用Cookie对象的<font color="blue">setMaxAge(int seconds)</font>方法实现
+<ul>参数取值情况：
+<li><font color="red">正数</font>：将Cookie数据写到硬盘的文件中。<font color="red">持久化存储</font>。并指定cookie存活时间，时间到后，cookie文件自动失效</li>
+<li>负数：默认值，即浏览器关闭后Cookie被销毁</li>
+<li><font color="red">零：删除cookie信息</font></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><font color="red">cookie存储中文问题</font>:在tomcat 8 之前 cookie中不能直接存储中文数据。但是在tomcat8之后，支持直接存储中文，但是对于一些特殊字符(如空格等)，仍不能直接存储，需要借助URL编码才行(具体步骤下一篇文章说到)</li>
+<li>cookie的共享
+<ul>
+<li><font color="red">在一个tomcat服务器中部署了多个项目，在默认情况下，这些项目之间的Cookie是不能共享</font>的<br>但是可以通过Cookie对象的setPath(String path)方法来设置Cookie的共享范围
+<ul>
+<li>默认情况下，设置的是当前项目的虚拟目录</li>
+<li> 如果要在多个项目之间共享，则可以将path设置为"/"(“/”为服务器路径)</li>
+</ul></li>
+<li>不同服务器之间Cookie的共享
+<ul>
+<li>setDomain(String path):如果设置一级域名相同，那么多个服务器之间cookie可以共享</li>
+<li>例如：设置path为".baidu.com"，那么tieba.baidu.com和news.baidu.com两个不同的服务器之间可以共享数据，因为它们的一级域名是.baidu.com</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></h5>
+<hr>
+ <h5>Cookie的特点和作用
+ <ul>
+ <li>特点
+ <ul>
+ <li>cookie存储数据在客户端浏览器</li>
+<li>浏览器对于单个cookie 的大小有限制(4kb) 以及 对同一个域名下的总cookie数量也有限制(20个)</li>
+<li><font color="red">Cookie存储的键值对都是String类型</font></li>
+ </ul>
+</li>
+<li>作用
+<ul>
+<li>cookie一般用于存出少量的不太敏感的数据，这是因为Cookie的存储位置决定的，存储在客户端容易丢失和被篡改。</li>
+<li>在不登录的情况下，完成服务器对客户端的身份识别</li>
+</ul>
+</li>
+</ul></h5>
+<hr>
+<h4>服务器端会话技术--Session</h4>
+<h5>Session使用步骤
+<ol>
+<li> 通过resquest获取Session对象：<font color="blue">request.getSession()</font></li>
+<li>调用Session对象的方法存储数据(和request请求转发方法一样)
+<ul>
+<li><font color="blue">Object getAttribute(String name)</font>：通过键获取值</li>
+<li><font color="blue">void setAttribute(String name, Object value)</font>：将数据存储进Session对象</li>
+<li><font color="blue">void removeAttribute(String name)</font>：通过键移除相应的键值对</li>
+</ul>
+</li>
+</ol>
+</h5>
+
+<h5>Session实现原理
+<ol><font color="red">Session的实现是依赖于Cookie的。</font>
+<li>客户端第一次向服务器发送请求，服务器在服务器内部开辟一块内存空间，存放Session对象，并给该内存空间指定一个id</li>
+<li>服务器在响应头set-cookie中设置JSESSIONID=id这个键值对发送给客户端</li>
+<li>客户端接收到服务器的相应后，会将保存着Sessionid的Cookie对象保存在浏览器内存</li>
+<li>当客户端下一次向服务器发送请求的时候，会带着Cookie一起(在请求头cookie中有JSESSIONID=id键值对)</li>
+<li>服务器接收到请求后，得到JSESSIONID=id键值对的id后，会在内存中找到对应id的Session对象</li>
+<li>这就是为什么说Session依赖于Cookie的原因以及多次请求响应之间共享数据的原理</li>
+</ol></h5>
+<hr>
+<h5>Session细节
+<ul>
+<li><font color="red">当客户端关闭后，服务器不关闭，两次获取session不是同一个</font>：前面说到过，Session是依赖于Cookie的，Cookie在默认情况下当客户端浏览器关闭后是自动销毁的，因此Cookie中的键值对自然也就销毁了，所以两次获取的Session不是同一个，如果需要两次的Cookie是同一个
+<ul>
+<li>创建一个Cookie对象，设置cookie的键为JSESSIONID，值为session对象的id</li>
+<li>设置cookie的存活时间</li>
+<li>那么在cookie存活时间内，服务器通过cookie请求头拿到session的id都是一样的，这样通过id找到的Session对象自然也是同一个</li>
+</ul>
+</li>
+<li><font color="red">客户端不关闭，服务器关闭后，两次获取的session不是同一个</font>，因为服务器关闭后相应内存会被释放，Session自然也会被释放<br>
+但是一般我们需要获取到的Session对象是同一个，确保数据不丢失，<font color="red">tomcat会自动完成Session的钝化和活化</font>
+<ul>
+<li>Session的钝化：在服务器正常关闭之前，将session对象序列化到硬盘上</li>
+<li>Session的活化：在服务器启动后，将session文件转化为内存中的session对象。</li>
+</ul>
+</li>
+<li>Session被销毁
+<ul>
+<li> 服务器关闭</li>
+<li>session对象调用invalidate() 自杀</li>
+<li>session默认失效时间 30分钟,可以tomcat服务器的web.xml配置文件中session-config设置所有项目的失效时间,也可以在项目的wen.xml配置文件单独配置项目的失效时间</li>
+</ul>
+</li>
+</ul></h5>
+<hr>
+<h5>Session的特点
+<ul>
+<li>用于一次会话的多次请求间共享数据，存储在服务器端</li>
+<li><font color="red">session可以存储任意类型，任意大小的数据</font></li>
+</ul></h5>
+</h5></h5>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/07/会话技术--Cookie和Session/" class="archive-article-date">
-  	<time datetime="2019-09-07T06:28:35.175Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-07</time>
-</a>
-        </div>
-    	 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/07/会话技术--Cookie和Session/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/07/试验一下/" class="archive-article-date">
-  	<time datetime="2019-09-07T06:21:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-07</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2019/09/07/试验一下/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">试验一下</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/07/试验一下/">试验一下</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/07/我的第一篇博客/" class="archive-article-date">
-  	<time datetime="2019-09-07T02:12:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/07/我的第一篇博客/">我的第一篇博客</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/07/hello-world/" class="archive-article-date">
-  	<time datetime="2019-09-07T02:07:46.998Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/07/hello-world/">Hello World</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -294,8 +445,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
