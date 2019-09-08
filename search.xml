@@ -1,48 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title><![CDATA[二叉树镜像对称]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度–简单题目分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left) 迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
+<search> 
+  
+  
+    
+    <entry>
+      <title>HTML5基础回顾</title>
+      <link href="/2019/09/08/HTML5%E5%9F%BA%E7%A1%80%E5%9B%9E%E9%A1%BE/"/>
+      <url>/2019/09/08/HTML5%E5%9F%BA%E7%A1%80%E5%9B%9E%E9%A1%BE/</url>
+      
+        <content type="html"><![CDATA[<p>HTML用于搭建基础页面，展示页面内容，一般和CSS以及JS搭配使用</p><h2 id="HTML标签分类"><a href="#HTML标签分类" class="headerlink" title="HTML标签分类"></a>HTML标签分类</h2><pre><code># 1、围堵标签    顾名思义，就是开始和结束标签，例如&lt; html&gt; &lt; /html&gt;，内容放在标签中# 2、自闭合标签    开始标签和结束标签在一起。例如换行标签&lt; br/&gt;、超链接标签&lt; a&gt;等</code></pre><a id="more"></a><p>标签不区分大小写，建议小写<br>无论是哪种标签，都可以在<strong>开始标签中定义属性</strong>，属性是由<strong>键值对</strong>组成，其中<strong>值需要由引(单/双)号引</strong>起来</p><pre><code>&lt; html&gt;&lt;head&gt; &lt;title&gt;title&lt;/title&gt;&lt;/head&gt;&lt;body&gt; &lt;FONT color=&apos;red&apos;&gt;Hello World&lt;/font&gt;&lt;br/&gt; &lt;font color=&apos;green&apos;&gt;Hello World&lt;/font&gt;&lt;/body&gt;&lt; /html&gt;</code></pre><h2 id="文件标签"><a href="#文件标签" class="headerlink" title="文件标签"></a><strong>文件标签</strong></h2><h1 id="lt-html-gt"><a href="#lt-html-gt" class="headerlink" title="&lt; html&gt;"></a>&lt; html&gt;</h1><p>文档的根标签</p><h1 id="lt-head-gt"><a href="#lt-head-gt" class="headerlink" title="&lt; head&gt;"></a>&lt; head&gt;</h1><p>头标签，用于指定html文档的一些属性，引入外部资源，如CSS、JS文件等</p><h1 id="lt-title-gt"><a href="#lt-title-gt" class="headerlink" title="&lt; title&gt;"></a>&lt; title&gt;</h1><p> 标题标签</p><h1 id="lt-body-gt"><a href="#lt-body-gt" class="headerlink" title="&lt; body&gt;"></a>&lt; body&gt;</h1><p> 体标签，html代码写在body标签中<br> 以上均为<strong>围堵标签</strong></p><h2 id="文本标签"><a href="#文本标签" class="headerlink" title="文本标签"></a><strong>文本标签</strong></h2><h1 id="lt-h1-gt-lt-h6-gt"><a href="#lt-h1-gt-lt-h6-gt" class="headerlink" title="&lt; h1&gt;~&lt; h6&gt;"></a>&lt; h1&gt;~&lt; h6&gt;</h1><p>标题标签，从h1到h6字体大小递减    –&gt;围堵标签</p><h1 id="lt-p-gt"><a href="#lt-p-gt" class="headerlink" title="&lt; p&gt;"></a>&lt; p&gt;</h1><p>段落标签：被该标签包裹的文本会换行两次    –&gt;围堵标签</p><h1 id="lt-br-gt"><a href="#lt-br-gt" class="headerlink" title="&lt; br&gt;"></a>&lt; br&gt;</h1><p>换行标签</p><h1 id="lt-hr-gt"><a href="#lt-hr-gt" class="headerlink" title="&lt; hr&gt;"></a>&lt; hr&gt;</h1><p>展示一条水平线<br>    该标签有一些属性：color、width、height、align(对齐方式)来设置水平线的样式</p><h1 id="lt-b-gt"><a href="#lt-b-gt" class="headerlink" title="&lt; b&gt;"></a>&lt; b&gt;</h1><p>字体加粗标签</p><h1 id="lt-i-gt"><a href="#lt-i-gt" class="headerlink" title="&lt; i&gt;"></a>&lt; i&gt;</h1><p>字体斜体标签<br>以上四个均为<strong>自闭合标签</strong></p><h1 id="lt-font-gt"><a href="#lt-font-gt" class="headerlink" title="&lt; font&gt;"></a>&lt; font&gt;</h1><p>字体标签<br>    该标签属性：color、size、face(字体)来改变字体<br>    center：文本居中标签    </p><h2 id="图片标签"><a href="#图片标签" class="headerlink" title="图片标签"></a><strong>图片标签</strong></h2><h1 id="lt-img-gt"><a href="#lt-img-gt" class="headerlink" title="&lt; img&gt;"></a>&lt; img&gt;</h1><p>图片标签，是一个自闭合标签，其中有<strong>src属性</strong>，可以指定展示<strong>图片的路径</strong><br>     <strong>相对路径</strong>：<br>         其中如果html文件和<strong>图片所在文件夹目录</strong>是同一级目录，那么<strong>./+图片所在文件夹目录/图片</strong><br>         如果图片所在文件夹目录是html文件上一级目录，那么就用<strong>../</strong></p><h2 id="列表标签"><a href="#列表标签" class="headerlink" title="列表标签"></a><strong>列表标签</strong></h2><h1 id="lt-ol-gt-lt-li-gt"><a href="#lt-ol-gt-lt-li-gt" class="headerlink" title="&lt; ol&gt;/&lt; li&gt;"></a>&lt; ol&gt;/&lt; li&gt;</h1><p>有序列表</p><p><img src="https://img-blog.csdnimg.cn/20190828091446194.png" alt="在这里插入图片描述"><br>type属性：指定序号的样式<br><img src="https://img-blog.csdnimg.cn/20190828091536997.png" alt="在这里插入图片描述"></p><h1 id="lt-ul-gt-lt-li-gt"><a href="#lt-ul-gt-lt-li-gt" class="headerlink" title="&lt; ul&gt;/&lt; li&gt;"></a>&lt; ul&gt;/&lt; li&gt;</h1><p>无序列表<br><img src="https://img-blog.csdnimg.cn/20190828091641556.png" alt="在这里插入图片描述"><br>无序列表的type属性有三种：</p><ul><li><p>disc：原点</p></li><li><p>square：正方形点</p></li><li><p>circle：圆圈</p><h2 id="链接标签"><a href="#链接标签" class="headerlink" title="链接标签"></a><strong>链接标签</strong></h2><h1 id="lt-a-gt"><a href="#lt-a-gt" class="headerlink" title="&lt; a&gt;"></a>&lt; a&gt;</h1><p>定义一个超链接<br>  属性：<br> <strong>href</strong><br> 指定访问资源的URL()统一资源定位符)，可以是网址<br> <strong>target</strong><br> 指定打开资源的方式，有两种方式</p><ul><li><p>_ selt:在当前页面打开</p></li><li><p>_ blank：在新空白页面打开</p></li></ul></li></ul><h2 id="和CSS以及JS搭配的标签"><a href="#和CSS以及JS搭配的标签" class="headerlink" title="和CSS以及JS搭配的标签"></a><strong>和CSS以及JS搭配的标签</strong></h2><p> div标签和span标签，两者的区别是div自带换行，而span没有换行功能</p><h2 id="表格标签"><a href="#表格标签" class="headerlink" title="表格标签"></a><strong>表格标签</strong></h2><h1 id="lt-table-gt"><a href="#lt-table-gt" class="headerlink" title="&lt; table&gt;"></a>&lt; table&gt;</h1><p> 定义表格，table的开始标签可以指定一些属性</p><ul><li><p>width：表格宽度</p></li><li><p>border：边框</p></li><li><p>cellpadding：定义内容和单元格的距离</p></li><li><p>cellspacing：定义单元格之间的距离。如果指定为0，则单元格的线会合为一条    </p></li><li><p>bgcolor：背景色</p></li><li><p>align：对齐方式</p><h1 id="lt-tr-gt-标签"><a href="#lt-tr-gt-标签" class="headerlink" title="&lt; tr&gt;标签"></a>&lt; tr&gt;标签</h1><p>定义行标签</p><h1 id="lt-td-gt-标签"><a href="#lt-td-gt-标签" class="headerlink" title="&lt; td&gt;标签"></a>&lt; td&gt;标签</h1><p>定义单元格标签</p><h1 id="lt-th-gt-标签"><a href="#lt-th-gt-标签" class="headerlink" title="&lt; th&gt;标签"></a>&lt; th&gt;标签</h1><p>定义表头单元格标签<br><img src="https://img-blog.csdnimg.cn/20190828093432266.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190828093456827.png" alt="在这里插入图片描述"></p><h2 id="表单标签"><a href="#表单标签" class="headerlink" title="表单标签"></a><strong>表单标签</strong></h2><p><strong>注意：表单中的数据要想被提交，必须指定其name属性</strong></p><p>表单：用于采集用户输入的数据，用于和服务器进行交互</p><h1 id="lt-form-gt"><a href="#lt-form-gt" class="headerlink" title="&lt; form&gt;"></a>&lt; form&gt;</h1><p>用于定义表单的，可以定义一个范围，范围代表采集用户数据的范围<br>form标签有以下属性</p><ul><li>action：指定提交数据的URL路径</li><li>method：指定提交方式，有两种比较常用，分别是post和get</li></ul><p>form只是制定了收集用户数据的范围，并没有指定提交形式(输入框、按钮、下拉列表…)<br>因此就会用到<strong>表单项标签</strong><br>表单项标签主要有三种：input标签、select标签、textarea标签</p><h1 id="lt-input-gt-标签"><a href="#lt-input-gt-标签" class="headerlink" title="&lt; input&gt;标签"></a><strong>&lt; input&gt;标签</strong></h1><p><img src="https://img-blog.csdnimg.cn/20190828095605481.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190828095805666.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>展示效果<br><img src="https://img-blog.csdnimg.cn/20190828095919345.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><h1 id="lt-select-gt-标签"><a href="#lt-select-gt-标签" class="headerlink" title="&lt; select&gt;标签"></a><strong>&lt; select&gt;标签</strong></h1><p>子元素：option，指定列表项<br><img src="https://img-blog.csdnimg.cn/20190828100135207.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>展示效果<br><img src="https://img-blog.csdnimg.cn/20190828100222610.png" alt="在这里插入图片描述"></p><h2 id="文本域标签"><a href="#文本域标签" class="headerlink" title="文本域标签"></a><strong>文本域标签</strong></h2><p><strong>主要有两个属性：</strong><br>cols：指定列数，每一行有多少个字符<br>rows：默认多少行。</p></li></ul>]]></content>
+      
+      
       <categories>
-        <category>算法之美</category>
+          
+          <category> 前端基础 </category>
+          
       </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>递归</tag>
-        <tag>迭代法</tag>
-        <tag>二叉树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[字符流和字节流]]></title>
-    <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
-    <content type="text"><![CDATA[深入理解字符流编码首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中 读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
+      
+      
+        <tags>
+            
+            <tag> HTML5 </tag>
+            
+            <tag> 前端 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>JDK源码--Byte类</title>
+      <link href="/2019/09/08/%E5%B0%8F%E7%99%BD%E5%AD%A6JDK%E6%BA%90%E7%A0%81--Byte%E7%B1%BB/"/>
+      <url>/2019/09/08/%E5%B0%8F%E7%99%BD%E5%AD%A6JDK%E6%BA%90%E7%A0%81--Byte%E7%B1%BB/</url>
+      
+        <content type="html"><![CDATA[<p><a href="https://www.jianshu.com/p/26bedb3ae3c4" target="_blank" rel="noopener">学习过程中参考此篇文章，写的很好</a></p><pre><code>1、观察它继承的父类，实现了那些接口2、找到它的成员变量3、学习构造方法4、学习方法</code></pre><h2 id="一、父类和接口"><a href="#一、父类和接口" class="headerlink" title="一、父类和接口"></a>一、父类和接口</h2><p><img src="https://img-blog.csdnimg.cn/20190820165734747.png" alt="在这里插入图片描述"><br>从图中可以知道，Byte类继承了Number类，实现了Comparable接口</p><p>对于Comparable接口，只有一个抽象方法<br><img src="https://img-blog.csdnimg.cn/20190820165913264.png" alt="在这里插入图片描述"><br>这个接口赋予它和它的子类比较的能力，用于排序，比较大小<br>对于一个存储自定义类的数组或集合，只有这个类实现了该接口，重写了接口中的compareTo()方法，重写了排序规则<br>才能使用Arrays类的sort方法进行排序；</p><a id="more"></a><h2 id="二、成员变量"><a href="#二、成员变量" class="headerlink" title="二、成员变量"></a>二、成员变量</h2><p><img src="https://img-blog.csdnimg.cn/20190820170344112.png" alt="在这里插入图片描述"><br>定义了Byte类型数据的边界值，就是说，Byte类型的值只能在-128~127之间<br><img src="https://img-blog.csdnimg.cn/20190820170442432.png" alt="在这里插入图片描述"><br>TYPE是一个Byte的Class类对象，相当于TYPE=Byte.class；<br><img src="https://img-blog.csdnimg.cn/20190820170619953.png" alt="在这里插入图片描述"><br>这就是Byte类型的基础类型，数据存储的地方(从下面的构造方法可以看出)<br><img src="https://img-blog.csdnimg.cn/20190820170834358.png" alt="在这里插入图片描述"><br>这三个成员变量分别表示Byte数据的位数，字节数和UID(用于序列化和反序列化)</p><h2 id="三、构造方法"><a href="#三、构造方法" class="headerlink" title="三、构造方法"></a>三、构造方法</h2><p><img src="https://img-blog.csdnimg.cn/20190820171029523.png" alt="在这里插入图片描述"><br>Byte的构造方法有两个，可以看出，两个构造方法都会将传入的数据存放到成员变量byte中</p><h2 id="四、私有静态内部类"><a href="#四、私有静态内部类" class="headerlink" title="四、私有静态内部类"></a>四、私有静态内部类</h2><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820171705760.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70)这是Byte类的一个静态内部类，类里面还有一个静态代码块静态代码块会在类第一次被加载的时候执行，并且只执行一次这里的作用就是，创建一个Byte类型的数组，数组的长度是256里面存储着-128~127的数字(Byte类数据所有可能的取值)并且数组是静态的并且final修饰，因为后面的有些成员方法会需要用到Byte对象，所以这样做就避免了重复创建对象和回收对象</code></pre><h2 id="五、成员方法"><a href="#五、成员方法" class="headerlink" title="五、成员方法"></a>五、成员方法</h2><h1 id="1、toString-byte-b-方法"><a href="#1、toString-byte-b-方法" class="headerlink" title="1、toString(byte b)方法"></a>1、toString(byte b)方法</h1><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820171318100.png)注意：这个toString()方法不是重写Object的toString方法，因为它有参数作用：将一个byte类型数据转化为String字符串类型实质上是直接调用Integer类的toString方法，radix：10：用10进制表示</code></pre><h1 id="2、valueOf-byte-b"><a href="#2、valueOf-byte-b" class="headerlink" title="2、valueOf(byte b)"></a>2、valueOf(byte b)</h1><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820172235507.png)作用：将基本类型--&gt;包装类型，直接从上面的数组中得到</code></pre><h1 id="3、parseByte-String-s-int-radix"><a href="#3、parseByte-String-s-int-radix" class="headerlink" title="3、parseByte(String s,int radix)"></a>3、parseByte(String s,int radix)</h1><p><img src="https://img-blog.csdnimg.cn/20190820172354614.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 参数：<br>     String s:要解析的字符串<br>     int radix:指定字符串表示的进制<br>     例如：s=“10000”，radix=2，解析出来的值就是16<br> 作用：<br>     将字符串按照指定进制解析为byte类型<br>     实质上调用的是Integer的parseInt方法，解析成int类型<br>     判断是否超出范围，超出范围就抛异常，否则就返回</p><h1 id="4、parseByte-String-s"><a href="#4、parseByte-String-s" class="headerlink" title="4、parseByte(String s)"></a>4、parseByte(String s)</h1><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820172742458.png)不指定进制默认十进制解析</code></pre><h1 id="5、valueOf-String-s-int-radix"><a href="#5、valueOf-String-s-int-radix" class="headerlink" title="5、valueOf(String s,int radix)"></a>5、valueOf(String s,int radix)</h1><p>  <img src="https://img-blog.csdnimg.cn/20190820172830452.png" alt="在这里插入图片描述"><br>参数：<br>    String s:要转换的字符串<br>    int radix：字符串表示的进制，和解析方法一样<br>作用：<br>    将字符串转换为按照指定进制形式表示的Byte类型，<br>先将字符串解析为byte类型，在调用valueOf()方法，从静态代码块初始的数组中找到对应的Byte并返回</p><h1 id="6、valueOf-String-s"><a href="#6、valueOf-String-s" class="headerlink" title="6、valueOf(String s)"></a>6、valueOf(String s)</h1><pre><code>默认10进制</code></pre><h1 id="7、xxxValue-方法"><a href="#7、xxxValue-方法" class="headerlink" title="7、xxxValue()方法"></a>7、xxxValue()方法</h1><pre><code>重写父类的方法，由于byte数值最小，不用担心出现溢出直接用强制类型转换，然后return</code></pre><h1 id="8、hashCode"><a href="#8、hashCode" class="headerlink" title="8、hashCode()"></a>8、hashCode()</h1><p><img src="https://img-blog.csdnimg.cn/20190820174011475.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>重写了父类的hashCode方法，对于Byte类型，它的hashCode方法实质上就是返回它的值</p><h1 id="9、equals-方法"><a href="#9、equals-方法" class="headerlink" title="9、equals()方法"></a>9、equals()方法</h1><p> <img src="https://img-blog.csdnimg.cn/20190820174148966.png?x-ossprocess=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 重写了父类的equals方法</p><h1 id="10、compareTo-方法"><a href="#10、compareTo-方法" class="headerlink" title="10、compareTo()方法"></a>10、compareTo()方法</h1><p> <img src="https://img-blog.csdnimg.cn/20190820174320144.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 重写了接口中的compareTo方法，直接返回两个对象的差值<br> 调用方法的对象-方法的参数</p>]]></content>
+      
+      
       <categories>
-        <category>JAVA</category>
+          
+          <category> JDK源码 </category>
+          
       </categories>
-      <tags>
-        <tag>I/O</tag>
-        <tag>乱码</tag>
-        <tag>字符流/字节流</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[青蛙跳台阶]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度： 简单1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1)可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
+      
+      
+        <tags>
+            
+            <tag> Byte </tag>
+            
+            <tag> 源码 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>字符流和字节流</title>
+      <link href="/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/"/>
+      <url>/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/</url>
+      
+        <content type="html"><![CDATA[<p><a href="http://www.itcast.cn/news/20181219/14592257466.shtml" target="_blank" rel="noopener">深入理解字符流编码</a></p><p><strong>首先要理解字符流输入的原理：</strong><br>字符流输入其实底层也是字节流输入</p><p>字符–&gt;计算机二进制数字（字节）：编码<br>字节(计算机二进制数字)–&gt;字符：解码</p><h2 id="写入时："><a href="#写入时：" class="headerlink" title="写入时："></a>写入时：</h2><pre><code>1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中</code></pre><a id="more"></a><h2 id="读取时："><a href="#读取时：" class="headerlink" title="读取时："></a>读取时：</h2><pre><code>使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序</code></pre><h2 id="图片不能用字符流的原因"><a href="#图片不能用字符流的原因" class="headerlink" title="图片不能用字符流的原因"></a>图片不能用字符流的原因</h2><pre><code>因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符，在写入的时候，会将未知字符丢掉，所以图片拷贝不成功因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节**举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1....使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1....但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符；例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)；在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1....这样拷贝自然就失败了</code></pre><h2 id="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"><a href="#关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接" class="headerlink" title="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"></a>关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接</h2><pre><code>**最后**：字符流因为解码编码等原因，比字节流慢很多字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输图片等视频音频文件要用字节流</code></pre>]]></content>
+      
+      
       <categories>
-        <category>算法之美</category>
+          
+          <category> JAVA </category>
+          
       </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>动态规划</tag>
-        <tag>斐波那契数列</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[Hello World]]></title>
-    <url>%2F2019%2F09%2F07%2Fhello-world%2F</url>
-    <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy More info: Deployment]]></content>
-  </entry>
+      
+      
+        <tags>
+            
+            <tag> I/O </tag>
+            
+            <tag> 乱码 </tag>
+            
+            <tag> 字符流/字节流 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>二叉树镜像对称</title>
+      <link href="/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/"/>
+      <url>/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<p><strong>难度–简单</strong><br>题目<br><img src="https://img-blog.csdnimg.cn/2019081919202426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><strong>分析：</strong><br>    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称<br>    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的</p><h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><pre><code>//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接//快1ms，亲测1、pre(TreeNode tree.left,TreeNode tree.right)        2、如果A.val==B.val    --&gt;return true                3、如果A==null&amp;&amp;B==null    --&gt;return true4、如果A和B不同时为空，说明树是不对称的        --&gt;return false5、遍历A的左子树和B的右子树        //pre(A.left,B.right)6、遍历A的右子树和A的左子树        //pre(A.right,B.left)</code></pre><a id="more"></a><h2 id="迭代法"><a href="#迭代法" class="headerlink" title="迭代法"></a>迭代法</h2><p>使用队列，比较容易理解，直接上代码(LeetCode官方题解)<br><img src="https://img-blog.csdnimg.cn/20190819195622590.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法之美 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
+            
+            <tag> 迭代法 </tag>
+            
+            <tag> 二叉树 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>青蛙跳台阶</title>
+      <link href="/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/"/>
+      <url>/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<p><strong>难度： 简单</strong></p><p><img src="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="题目如图"><br><strong>1、动态规划</strong><br>可以知道，如果要到达第n阶台阶，有两种方式：<br>第一：从n-1阶台阶跨1步<br>第二：从n-2阶台阶跨2步<br>设到达第n阶台阶的方法总数为sum(n)<br>那么由上面可以知道：<strong>sum(n)=sum(n-2)+sum(n-1)</strong></p><p>可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法<br>1、从第1阶台阶跨2步上去<br>2、从第2阶跨1步上去</p><a id="more"></a><p>相应的，到达第1阶台阶只有一种方法，sum(1)=1；<br>到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；<br>所以sum(3)=3;<br><img src="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><p><strong>2、斐波那契数列</strong><br>通过观察规律可以知道：<br>假设第0阶为1；<br>那么可以得到从第1阶往后分别是：<br><strong>1，2，3，5，8，13…..</strong><br>这是一个很明显的斐波那契数列</p><p>3、递归<br>同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和<br>递归出口：n=0的时候返回1，n&lt;0的时候返回0；<br><img src="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>运行到44个样例的时候栈爆了…..</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法之美 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> LeetCode </tag>
+            
+            <tag> 动态规划 </tag>
+            
+            <tag> 斐波那契数列 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hello World</title>
+      <link href="/2019/09/07/hello-world/"/>
+      <url>/2019/09/07/hello-world/</url>
+      
+        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p><a id="more"></a><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+  
+  
 </search>

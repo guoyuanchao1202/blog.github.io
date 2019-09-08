@@ -57,23 +57,32 @@
   };
 </script>
 
-  <meta name="description" content="难度： 简单1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1)可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去">
-<meta name="keywords" content="LeetCode,动态规划,斐波那契数列">
+  <meta name="description" content="学习过程中参考此篇文章，写的很好1、观察它继承的父类，实现了那些接口 2、找到它的成员变量 3、学习构造方法 4、学习方法一、父类和接口从图中可以知道，Byte类继承了Number类，实现了Comparable接口对于Comparable接口，只有一个抽象方法这个接口赋予它和它的子类比较的能力，用于排序，比较大小对于一个存储自定义类的数组或集合，只有这个类实现了该接口，重写了接口中的compare">
+<meta name="keywords" content="Byte,源码">
 <meta property="og:type" content="article">
-<meta property="og:title" content="青蛙跳台阶">
-<meta property="og:url" content="http://HoA-W.github.io/2019/09/07/LeetCode-第70题/index.html">
+<meta property="og:title" content="JDK源码--Byte类">
+<meta property="og:url" content="http://HoA-W.github.io/2019/09/08/小白学JDK源码--Byte类/index.html">
 <meta property="og:site_name" content="CommonGuy">
-<meta property="og:description" content="难度： 简单1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1)可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去">
+<meta property="og:description" content="学习过程中参考此篇文章，写的很好1、观察它继承的父类，实现了那些接口 2、找到它的成员变量 3、学习构造方法 4、学习方法一、父类和接口从图中可以知道，Byte类继承了Number类，实现了Comparable接口对于Comparable接口，只有一个抽象方法这个接口赋予它和它的子类比较的能力，用于排序，比较大小对于一个存储自定义类的数组或集合，只有这个类实现了该接口，重写了接口中的compare">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:updated_time" content="2019-09-07T12:51:25.637Z">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820165734747.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820165913264.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820170344112.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820170442432.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820170619953.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820170834358.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820171029523.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820172354614.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820172830452.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820174011475.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820174148966.png?x-ossprocess=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820174320144.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:updated_time" content="2019-09-08T01:49:01.094Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="青蛙跳台阶">
-<meta name="twitter:description" content="难度： 简单1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1)可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-  <link rel="canonical" href="http://HoA-W.github.io/2019/09/07/LeetCode-第70题/">
+<meta name="twitter:title" content="JDK源码--Byte类">
+<meta name="twitter:description" content="学习过程中参考此篇文章，写的很好1、观察它继承的父类，实现了那些接口 2、找到它的成员变量 3、学习构造方法 4、学习方法一、父类和接口从图中可以知道，Byte类继承了Number类，实现了Comparable接口对于Comparable接口，只有一个抽象方法这个接口赋予它和它的子类比较的能力，用于排序，比较大小对于一个存储自定义类的数组或集合，只有这个类实现了该接口，重写了接口中的compare">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190820165734747.png">
+  <link rel="canonical" href="http://HoA-W.github.io/2019/09/08/小白学JDK源码--Byte类/">
 
 
 <script id="page-configurations">
@@ -87,7 +96,7 @@
   };
 </script>
 
-  <title>青蛙跳台阶 | CommonGuy</title>
+  <title>JDK源码--Byte类 | CommonGuy</title>
   
 
 
@@ -263,7 +272,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="http://HoA-W.github.io/2019/09/07/LeetCode-第70题/">
+    <link itemprop="mainEntityOfPage" href="http://HoA-W.github.io/2019/09/08/小白学JDK源码--Byte类/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="买太平湖底陈年水墨">
@@ -275,7 +284,7 @@
       <meta itemprop="name" content="CommonGuy">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">青蛙跳台阶
+        <h1 class="post-title" itemprop="name headline">JDK源码--Byte类
 
           
         </h1>
@@ -291,7 +300,7 @@
                 
               
 
-              <time title="创建时间：2019-09-07 17:15:18 / 修改时间：20:51:25" itemprop="dateCreated datePublished" datetime="2019-09-07T17:15:18+08:00">2019-09-07</time>
+              <time title="创建时间：2019-09-08 09:48:18 / 修改时间：09:49:01" itemprop="dateCreated datePublished" datetime="2019-09-08T09:48:18+08:00">2019-09-08</time>
             </span>
           
             
@@ -304,7 +313,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法之美/" itemprop="url" rel="index"><span itemprop="name">算法之美</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JDK源码/" itemprop="url" rel="index"><span itemprop="name">JDK源码</span></a></span>
 
                 
                 
@@ -323,12 +332,32 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><strong>难度： 简单</strong></p><p><img src="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="题目如图"><br><strong>1、动态规划</strong><br>可以知道，如果要到达第n阶台阶，有两种方式：<br>第一：从n-1阶台阶跨1步<br>第二：从n-2阶台阶跨2步<br>设到达第n阶台阶的方法总数为sum(n)<br>那么由上面可以知道：<strong>sum(n)=sum(n-2)+sum(n-1)</strong></p><p>可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法<br>1、从第1阶台阶跨2步上去<br>2、从第2阶跨1步上去</p><a id="more"></a>
+        <p><a href="https://www.jianshu.com/p/26bedb3ae3c4" target="_blank" rel="noopener">学习过程中参考此篇文章，写的很好</a></p><pre><code>1、观察它继承的父类，实现了那些接口
+2、找到它的成员变量
+3、学习构造方法
+4、学习方法</code></pre><h2 id="一、父类和接口"><a href="#一、父类和接口" class="headerlink" title="一、父类和接口"></a>一、父类和接口</h2><p><img src="https://img-blog.csdnimg.cn/20190820165734747.png" alt="在这里插入图片描述"><br>从图中可以知道，Byte类继承了Number类，实现了Comparable接口</p><p>对于Comparable接口，只有一个抽象方法<br><img src="https://img-blog.csdnimg.cn/20190820165913264.png" alt="在这里插入图片描述"><br>这个接口赋予它和它的子类比较的能力，用于排序，比较大小<br>对于一个存储自定义类的数组或集合，只有这个类实现了该接口，重写了接口中的compareTo()方法，重写了排序规则<br>才能使用Arrays类的sort方法进行排序；</p><a id="more"></a>
 
 
-<p>相应的，到达第1阶台阶只有一种方法，sum(1)=1；<br>到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；<br>所以sum(3)=3;<br><img src="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p><strong>2、斐波那契数列</strong><br>通过观察规律可以知道：<br>假设第0阶为1；<br>那么可以得到从第1阶往后分别是：<br><strong>1，2，3，5，8，13…..</strong><br>这是一个很明显的斐波那契数列</p>
-<p>3、递归<br>同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和<br>递归出口：n=0的时候返回1，n&lt;0的时候返回0；<br><img src="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>运行到44个样例的时候栈爆了…..</p>
+<h2 id="二、成员变量"><a href="#二、成员变量" class="headerlink" title="二、成员变量"></a>二、成员变量</h2><p><img src="https://img-blog.csdnimg.cn/20190820170344112.png" alt="在这里插入图片描述"><br>定义了Byte类型数据的边界值，就是说，Byte类型的值只能在-128~127之间<br><img src="https://img-blog.csdnimg.cn/20190820170442432.png" alt="在这里插入图片描述"><br>TYPE是一个Byte的Class类对象，相当于TYPE=Byte.class；<br><img src="https://img-blog.csdnimg.cn/20190820170619953.png" alt="在这里插入图片描述"><br>这就是Byte类型的基础类型，数据存储的地方(从下面的构造方法可以看出)<br><img src="https://img-blog.csdnimg.cn/20190820170834358.png" alt="在这里插入图片描述"><br>这三个成员变量分别表示Byte数据的位数，字节数和UID(用于序列化和反序列化)</p>
+<h2 id="三、构造方法"><a href="#三、构造方法" class="headerlink" title="三、构造方法"></a>三、构造方法</h2><p><img src="https://img-blog.csdnimg.cn/20190820171029523.png" alt="在这里插入图片描述"><br>Byte的构造方法有两个，可以看出，两个构造方法都会将传入的数据存放到成员变量byte中</p>
+<h2 id="四、私有静态内部类"><a href="#四、私有静态内部类" class="headerlink" title="四、私有静态内部类"></a>四、私有静态内部类</h2><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820171705760.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70)
+这是Byte类的一个静态内部类，类里面还有一个静态代码块
+静态代码块会在类第一次被加载的时候执行，并且只执行一次
+这里的作用就是，创建一个Byte类型的数组，数组的长度是256
+里面存储着-128~127的数字(Byte类数据所有可能的取值)
+并且数组是静态的并且final修饰，
+因为后面的有些成员方法会需要用到Byte对象，所以这样做就避免了重复创建对象和回收对象</code></pre><h2 id="五、成员方法"><a href="#五、成员方法" class="headerlink" title="五、成员方法"></a>五、成员方法</h2><h1 id="1、toString-byte-b-方法"><a href="#1、toString-byte-b-方法" class="headerlink" title="1、toString(byte b)方法"></a>1、toString(byte b)方法</h1><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820171318100.png)
+注意：这个toString()方法不是重写Object的toString方法，因为它有参数
+作用：将一个byte类型数据转化为String字符串类型
+实质上是直接调用Integer类的toString方法，
+radix：10：用10进制表示</code></pre><h1 id="2、valueOf-byte-b"><a href="#2、valueOf-byte-b" class="headerlink" title="2、valueOf(byte b)"></a>2、valueOf(byte b)</h1><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820172235507.png)
+作用：将基本类型--&gt;包装类型，直接从上面的数组中得到</code></pre><h1 id="3、parseByte-String-s-int-radix"><a href="#3、parseByte-String-s-int-radix" class="headerlink" title="3、parseByte(String s,int radix)"></a>3、parseByte(String s,int radix)</h1><p><img src="https://img-blog.csdnimg.cn/20190820172354614.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 参数：<br>     String s:要解析的字符串<br>     int radix:指定字符串表示的进制<br>     例如：s=“10000”，radix=2，解析出来的值就是16<br> 作用：<br>     将字符串按照指定进制解析为byte类型<br>     实质上调用的是Integer的parseInt方法，解析成int类型<br>     判断是否超出范围，超出范围就抛异常，否则就返回</p>
+<h1 id="4、parseByte-String-s"><a href="#4、parseByte-String-s" class="headerlink" title="4、parseByte(String s)"></a>4、parseByte(String s)</h1><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820172742458.png)
+不指定进制默认十进制解析</code></pre><h1 id="5、valueOf-String-s-int-radix"><a href="#5、valueOf-String-s-int-radix" class="headerlink" title="5、valueOf(String s,int radix)"></a>5、valueOf(String s,int radix)</h1><p>  <img src="https://img-blog.csdnimg.cn/20190820172830452.png" alt="在这里插入图片描述"><br>参数：<br>    String s:要转换的字符串<br>    int radix：字符串表示的进制，和解析方法一样<br>作用：<br>    将字符串转换为按照指定进制形式表示的Byte类型，<br>先将字符串解析为byte类型，在调用valueOf()方法，从静态代码块初始的数组中找到对应的Byte并返回</p>
+<h1 id="6、valueOf-String-s"><a href="#6、valueOf-String-s" class="headerlink" title="6、valueOf(String s)"></a>6、valueOf(String s)</h1><pre><code>默认10进制</code></pre><h1 id="7、xxxValue-方法"><a href="#7、xxxValue-方法" class="headerlink" title="7、xxxValue()方法"></a>7、xxxValue()方法</h1><pre><code>重写父类的方法，由于byte数值最小，不用担心出现溢出
+直接用强制类型转换，然后return</code></pre><h1 id="8、hashCode"><a href="#8、hashCode" class="headerlink" title="8、hashCode()"></a>8、hashCode()</h1><p><img src="https://img-blog.csdnimg.cn/20190820174011475.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>重写了父类的hashCode方法，对于Byte类型，它的hashCode方法实质上就是返回它的值</p>
+<h1 id="9、equals-方法"><a href="#9、equals-方法" class="headerlink" title="9、equals()方法"></a>9、equals()方法</h1><p> <img src="https://img-blog.csdnimg.cn/20190820174148966.png?x-ossprocess=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 重写了父类的equals方法</p>
+<h1 id="10、compareTo-方法"><a href="#10、compareTo-方法" class="headerlink" title="10、compareTo()方法"></a>10、compareTo()方法</h1><p> <img src="https://img-blog.csdnimg.cn/20190820174320144.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 重写了接口中的compareTo方法，直接返回两个对象的差值<br> 调用方法的对象-方法的参数</p>
 
     </div>
 
@@ -376,11 +405,9 @@
           
           <div class="post-tags">
             
-              <a href="/tags/LeetCode/" rel="tag"><i class="fa fa-tag"></i>LeetCode</a>
+              <a href="/tags/Byte/" rel="tag"><i class="fa fa-tag"></i>Byte</a>
             
-              <a href="/tags/动态规划/" rel="tag"><i class="fa fa-tag"></i>动态规划</a>
-            
-              <a href="/tags/斐波那契数列/" rel="tag"><i class="fa fa-tag"></i>斐波那契数列</a>
+              <a href="/tags/源码/" rel="tag"><i class="fa fa-tag"></i>源码</a>
             
           </div>
         
@@ -390,8 +417,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/09/07/hello-world/" rel="next" title="Hello World">
-                  <i class="fa fa-chevron-left"></i> Hello World
+                <a href="/2019/09/07/JAVA输入输出流-字符流和字节流详解/" rel="next" title="字符流和字节流">
+                  <i class="fa fa-chevron-left"></i> 字符流和字节流
                 </a>
               
             </div>
@@ -400,8 +427,8 @@
 
             <div class="post-nav-prev post-nav-item">
               
-                <a href="/2019/09/07/LeetCode-第101题/" rel="prev" title="二叉树镜像对称">
-                  二叉树镜像对称 <i class="fa fa-chevron-right"></i>
+                <a href="/2019/09/08/HTML5基础回顾/" rel="prev" title="HTML5基础回顾">
+                  HTML5基础回顾 <i class="fa fa-chevron-right"></i>
                 </a>
               
             </div>
@@ -451,6 +478,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、父类和接口"><span class="nav-number">1.</span> <span class="nav-text">一、父类和接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、成员变量"><span class="nav-number">2.</span> <span class="nav-text">二、成员变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、构造方法"><span class="nav-number">3.</span> <span class="nav-text">三、构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、私有静态内部类"><span class="nav-number">4.</span> <span class="nav-text">四、私有静态内部类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、成员方法"><span class="nav-number">5.</span> <span class="nav-text">五、成员方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1、toString-byte-b-方法"><span class="nav-number"></span> <span class="nav-text">1、toString(byte b)方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、valueOf-byte-b"><span class="nav-number"></span> <span class="nav-text">2、valueOf(byte b)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3、parseByte-String-s-int-radix"><span class="nav-number"></span> <span class="nav-text">3、parseByte(String s,int radix)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4、parseByte-String-s"><span class="nav-number"></span> <span class="nav-text">4、parseByte(String s)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5、valueOf-String-s-int-radix"><span class="nav-number"></span> <span class="nav-text">5、valueOf(String s,int radix)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6、valueOf-String-s"><span class="nav-number"></span> <span class="nav-text">6、valueOf(String s)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7、xxxValue-方法"><span class="nav-number"></span> <span class="nav-text">7、xxxValue()方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8、hashCode"><span class="nav-number"></span> <span class="nav-text">8、hashCode()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9、equals-方法"><span class="nav-number"></span> <span class="nav-text">9、equals()方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10、compareTo-方法"><span class="nav-number"></span> <span class="nav-text">10、compareTo()方法</span></a></div>
+        
       </div>
       <!--/noindex-->
 
