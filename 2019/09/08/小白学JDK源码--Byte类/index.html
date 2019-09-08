@@ -57,13 +57,13 @@
   };
 </script>
 
-  <meta name="description" content="学习过程中参考此篇文章，写的很好1、观察它继承的父类，实现了那些接口 2、找到它的成员变量 3、学习构造方法 4、学习方法一、父类和接口从图中可以知道，Byte类继承了Number类，实现了Comparable接口对于Comparable接口，只有一个抽象方法这个接口赋予它和它的子类比较的能力，用于排序，比较大小对于一个存储自定义类的数组或集合，只有这个类实现了该接口，重写了接口中的compare">
+  <meta name="description" content="学习过程中参考此篇文章，写的很好 1、观察它继承的父类，实现了那些接口 2、找到它的成员变量 3、学习构造方法 4、学习方法">
 <meta name="keywords" content="Byte,源码">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JDK源码--Byte类">
 <meta property="og:url" content="http://HoA-W.github.io/2019/09/08/小白学JDK源码--Byte类/index.html">
 <meta property="og:site_name" content="CommonGuy">
-<meta property="og:description" content="学习过程中参考此篇文章，写的很好1、观察它继承的父类，实现了那些接口 2、找到它的成员变量 3、学习构造方法 4、学习方法一、父类和接口从图中可以知道，Byte类继承了Number类，实现了Comparable接口对于Comparable接口，只有一个抽象方法这个接口赋予它和它的子类比较的能力，用于排序，比较大小对于一个存储自定义类的数组或集合，只有这个类实现了该接口，重写了接口中的compare">
+<meta property="og:description" content="学习过程中参考此篇文章，写的很好 1、观察它继承的父类，实现了那些接口 2、找到它的成员变量 3、学习构造方法 4、学习方法">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190820165734747.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190820165913264.png">
@@ -77,10 +77,10 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190820174011475.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190820174148966.png?x-ossprocess=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190820174320144.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:updated_time" content="2019-09-08T01:49:01.094Z">
+<meta property="og:updated_time" content="2019-09-08T06:01:49.403Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JDK源码--Byte类">
-<meta name="twitter:description" content="学习过程中参考此篇文章，写的很好1、观察它继承的父类，实现了那些接口 2、找到它的成员变量 3、学习构造方法 4、学习方法一、父类和接口从图中可以知道，Byte类继承了Number类，实现了Comparable接口对于Comparable接口，只有一个抽象方法这个接口赋予它和它的子类比较的能力，用于排序，比较大小对于一个存储自定义类的数组或集合，只有这个类实现了该接口，重写了接口中的compare">
+<meta name="twitter:description" content="学习过程中参考此篇文章，写的很好 1、观察它继承的父类，实现了那些接口 2、找到它的成员变量 3、学习构造方法 4、学习方法">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190820165734747.png">
   <link rel="canonical" href="http://HoA-W.github.io/2019/09/08/小白学JDK源码--Byte类/">
 
@@ -300,7 +300,7 @@
                 
               
 
-              <time title="创建时间：2019-09-08 09:48:18 / 修改时间：09:49:01" itemprop="dateCreated datePublished" datetime="2019-09-08T09:48:18+08:00">2019-09-08</time>
+              <time title="创建时间：2019-09-08 09:48:18 / 修改时间：14:01:49" itemprop="dateCreated datePublished" datetime="2019-09-08T09:48:18+08:00">2019-09-08</time>
             </span>
           
             
@@ -332,12 +332,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><a href="https://www.jianshu.com/p/26bedb3ae3c4" target="_blank" rel="noopener">学习过程中参考此篇文章，写的很好</a></p><pre><code>1、观察它继承的父类，实现了那些接口
+        <p><a href="https://www.jianshu.com/p/26bedb3ae3c4" target="_blank" rel="noopener">学习过程中参考此篇文章，写的很好</a></p>
+<pre><code>1、观察它继承的父类，实现了那些接口
 2、找到它的成员变量
 3、学习构造方法
-4、学习方法</code></pre><h2 id="一、父类和接口"><a href="#一、父类和接口" class="headerlink" title="一、父类和接口"></a>一、父类和接口</h2><p><img src="https://img-blog.csdnimg.cn/20190820165734747.png" alt="在这里插入图片描述"><br>从图中可以知道，Byte类继承了Number类，实现了Comparable接口</p><p>对于Comparable接口，只有一个抽象方法<br><img src="https://img-blog.csdnimg.cn/20190820165913264.png" alt="在这里插入图片描述"><br>这个接口赋予它和它的子类比较的能力，用于排序，比较大小<br>对于一个存储自定义类的数组或集合，只有这个类实现了该接口，重写了接口中的compareTo()方法，重写了排序规则<br>才能使用Arrays类的sort方法进行排序；</p><a id="more"></a>
+4、学习方法</code></pre><a id="more"></a>
 
-
+<h2 id="一、父类和接口"><a href="#一、父类和接口" class="headerlink" title="一、父类和接口"></a>一、父类和接口</h2><p><img src="https://img-blog.csdnimg.cn/20190820165734747.png" alt="在这里插入图片描述"><br>从图中可以知道，Byte类继承了Number类，实现了Comparable接口</p>
+<p>对于Comparable接口，只有一个抽象方法<br><img src="https://img-blog.csdnimg.cn/20190820165913264.png" alt="在这里插入图片描述"><br>这个接口赋予它和它的子类比较的能力，用于排序，比较大小<br>对于一个存储自定义类的数组或集合，只有这个类实现了该接口，重写了接口中的compareTo()方法，重写了排序规则<br>才能使用Arrays类的sort方法进行排序；</p>
 <h2 id="二、成员变量"><a href="#二、成员变量" class="headerlink" title="二、成员变量"></a>二、成员变量</h2><p><img src="https://img-blog.csdnimg.cn/20190820170344112.png" alt="在这里插入图片描述"><br>定义了Byte类型数据的边界值，就是说，Byte类型的值只能在-128~127之间<br><img src="https://img-blog.csdnimg.cn/20190820170442432.png" alt="在这里插入图片描述"><br>TYPE是一个Byte的Class类对象，相当于TYPE=Byte.class；<br><img src="https://img-blog.csdnimg.cn/20190820170619953.png" alt="在这里插入图片描述"><br>这就是Byte类型的基础类型，数据存储的地方(从下面的构造方法可以看出)<br><img src="https://img-blog.csdnimg.cn/20190820170834358.png" alt="在这里插入图片描述"><br>这三个成员变量分别表示Byte数据的位数，字节数和UID(用于序列化和反序列化)</p>
 <h2 id="三、构造方法"><a href="#三、构造方法" class="headerlink" title="三、构造方法"></a>三、构造方法</h2><p><img src="https://img-blog.csdnimg.cn/20190820171029523.png" alt="在这里插入图片描述"><br>Byte的构造方法有两个，可以看出，两个构造方法都会将传入的数据存放到成员变量byte中</p>
 <h2 id="四、私有静态内部类"><a href="#四、私有静态内部类" class="headerlink" title="四、私有静态内部类"></a>四、私有静态内部类</h2><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820171705760.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70)
@@ -496,7 +498,7 @@ radix：10：用10进制表示</code></pre><h1 id="2、valueOf-byte-b"><a href="
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -509,7 +511,7 @@ radix：10：用10进制表示</code></pre><h1 id="2、valueOf-byte-b"><a href="
             <a href="/categories/">
           
         
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -522,7 +524,7 @@ radix：10：用10进制表示</code></pre><h1 id="2、valueOf-byte-b"><a href="
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">24</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>

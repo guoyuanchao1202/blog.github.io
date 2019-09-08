@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="问题前提在Tomcat目录下的bin目录中双击startup.bat直接打开tomcat时，可能会出现以下两个问题  Tomcat的窗口一闪而过 启动报错">
+<meta name="keywords" content="Tomcat,问题分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tomcat启动问题分析">
+<meta property="og:url" content="http://HoA-W.github.io/2019/09/08/tomcat启动问题分析/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="问题前提在Tomcat目录下的bin目录中双击startup.bat直接打开tomcat时，可能会出现以下两个问题  Tomcat的窗口一闪而过 启动报错">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190831151212475.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190831151442686.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190831151627898.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190831151900812.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190831152302712.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190831161113175.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2019083116142190.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:updated_time" content="2019-09-08T06:07:49.243Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tomcat启动问题分析">
+<meta name="twitter:description" content="问题前提在Tomcat目录下的bin目录中双击startup.bat直接打开tomcat时，可能会出现以下两个问题  Tomcat的窗口一闪而过 启动报错">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190831151212475.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
+  <link rel="canonical" href="http://HoA-W.github.io/2019/09/08/tomcat启动问题分析/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Tomcat启动问题分析 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://HoA-W.github.io/2019/09/08/tomcat启动问题分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="敲代码的大学生">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Tomcat启动问题分析
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-08 13:50:19 / 修改时间：14:07:49" itemprop="dateCreated datePublished" datetime="2019-09-08T13:50:19+08:00">2019-09-08</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JAVAWEB/" itemprop="url" rel="index"><span itemprop="name">JAVAWEB</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="问题前提"><a href="#问题前提" class="headerlink" title="问题前提"></a>问题前提</h1><p>在Tomcat目录下的bin目录中双击startup.bat直接打开tomcat时，可能会出现以下两个问题</p>
+<ul>
+<li>Tomcat的窗口一闪而过</li>
+<li>启动报错<a id="more"></a>
+
+</li>
+</ul>
+<h2 id="Tomcat的窗口一闪而过"><a href="#Tomcat的窗口一闪而过" class="headerlink" title="Tomcat的窗口一闪而过"></a><strong>Tomcat的窗口一闪而过</strong></h2><h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p><strong>没有正确配置JAVA_HOME环境变量</strong><br>在安装JDK时，需要将JDK的目录配置到Path变量下，问题就在这里，因为配置的时候，有可能是直接将JDK的目录配置到了Path环境变量<br>双击Path变量，如下图所示<img src="https://img-blog.csdnimg.cn/20190831151212475.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>这样的<strong>做法是错误的</strong>    </p>
+<h3 id="正确的做法"><a href="#正确的做法" class="headerlink" title="正确的做法"></a>正确的做法</h3><p>应该先创建一个JAVA_HOME环境变量<br><img src="https://img-blog.csdnimg.cn/20190831151442686.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>将JAVA_HOME的值设置问JDK的路径，如下图<br><img src="https://img-blog.csdnimg.cn/20190831151627898.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>然后再将JAVA_HOME代替JDK安装路径给Path变量<br><img src="https://img-blog.csdnimg.cn/20190831151900812.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>将startup.bat关掉，重新启动即可</p>
+<h3 id="分析一下原因"><a href="#分析一下原因" class="headerlink" title="分析一下原因"></a>分析一下原因</h3><p>先以文档的形式打开startup.bat，发现和catolina.bat有关，<br>我们就以<strong>文档形式</strong>打开bin目录下的catolina.bat<br><img src="https://img-blog.csdnimg.cn/20190831152302712.png" alt="在这里插入图片描述"><br>在文档里可以看到，这里用到了环境变量的JAVA_HOME，所以在配置环境变量的时候，必须用JAVA_HOME来设置JDK路径，否则这里<strong>就无法找到JDK</strong>，由于Tomcat是纯java编写的，它的启动和运行要依赖与JDK，所以Tomcat就无法正常运行</p>
+<h2 id="启动报错，然后窗口自动关闭"><a href="#启动报错，然后窗口自动关闭" class="headerlink" title="启动报错，然后窗口自动关闭"></a><strong>启动报错，然后窗口自动关闭</strong></h2><h3 id="原因-1"><a href="#原因-1" class="headerlink" title="原因"></a>原因</h3><p>有可能是<strong>已经打开了一个Tomcat</strong>(或者有其他程序占用了Tomcat的端口号)，再次启动的时候由于<strong>端口被占用</strong>，所以无法正常启动<br>如果是这种情况，通过查看日志会发现有一个异常：<strong>java.net.BindException:Address already in use</strong></p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>找到占用Tomcat端口号(一般是8080)的程序，关闭该程序<br>1、打开cmd窗口，输入 <strong>netstat -ano</strong>命令<br><img src="https://img-blog.csdnimg.cn/20190831161113175.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>找到Tomcat端口(我的是默认8080)，记录该<strong>端口程序的PID</strong><br>2、打开任务管理器<br><img src="https://img-blog.csdnimg.cn/2019083116142190.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>找到刚记录的PID对应的程序，把它关掉。<br>这样，Tomcat就能正确启动了</p>
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+</	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Tomcat/" rel="tag"><i class="fa fa-tag"></i>Tomcat</a>
+            
+              <a href="/tags/问题分析/" rel="tag"><i class="fa fa-tag"></i>问题分析</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/09/08/BOM模型基础学习/" rel="next" title="BOM模型基础学习">
+                  <i class="fa fa-chevron-left"></i> BOM模型基础学习
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/09/08/Tomcat部署项目的方式/" rel="prev" title="Tomcat部署项目的方式">
+                  Tomcat部署项目的方式 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题前提"><span class="nav-number">1.</span> <span class="nav-text">问题前提</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tomcat的窗口一闪而过"><span class="nav-number">1.1.</span> <span class="nav-text">Tomcat的窗口一闪而过</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原因"><span class="nav-number">1.1.1.</span> <span class="nav-text">原因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正确的做法"><span class="nav-number">1.1.2.</span> <span class="nav-text">正确的做法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析一下原因"><span class="nav-number">1.1.3.</span> <span class="nav-text">分析一下原因</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动报错，然后窗口自动关闭"><span class="nav-number">1.2.</span> <span class="nav-text">启动报错，然后窗口自动关闭</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原因-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">原因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方法"><span class="nav-number">1.2.2.</span> <span class="nav-text">解决方法</span></a></li></ol></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">敲代码的大学生</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='100' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>

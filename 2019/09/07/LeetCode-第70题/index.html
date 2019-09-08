@@ -57,21 +57,21 @@
   };
 </script>
 
-  <meta name="description" content="难度： 简单1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1)可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去">
+  <meta name="description" content="难度： 简单">
 <meta name="keywords" content="LeetCode,动态规划,斐波那契数列">
 <meta property="og:type" content="article">
 <meta property="og:title" content="青蛙跳台阶">
 <meta property="og:url" content="http://HoA-W.github.io/2019/09/07/LeetCode-第70题/index.html">
 <meta property="og:site_name" content="CommonGuy">
-<meta property="og:description" content="难度： 简单1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1)可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去">
+<meta property="og:description" content="难度： 简单">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:updated_time" content="2019-09-07T12:51:25.637Z">
+<meta property="og:updated_time" content="2019-09-08T06:03:30.650Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="青蛙跳台阶">
-<meta name="twitter:description" content="难度： 简单1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1)可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去">
+<meta name="twitter:description" content="难度： 简单">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
   <link rel="canonical" href="http://HoA-W.github.io/2019/09/07/LeetCode-第70题/">
 
@@ -291,11 +291,19 @@
                 
               
 
-              <time title="创建时间：2019-09-07 17:15:18 / 修改时间：20:51:25" itemprop="dateCreated datePublished" datetime="2019-09-07T17:15:18+08:00">2019-09-07</time>
+              <time title="创建时间：2019-09-07 17:15:18" itemprop="dateCreated datePublished" datetime="2019-09-07T17:15:18+08:00">2019-09-07</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-09-08 14:03:30" itemprop="dateModified" datetime="2019-09-08T14:03:30+08:00">2019-09-08</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -323,9 +331,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><strong>难度： 简单</strong></p><p><img src="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="题目如图"><br><strong>1、动态规划</strong><br>可以知道，如果要到达第n阶台阶，有两种方式：<br>第一：从n-1阶台阶跨1步<br>第二：从n-2阶台阶跨2步<br>设到达第n阶台阶的方法总数为sum(n)<br>那么由上面可以知道：<strong>sum(n)=sum(n-2)+sum(n-1)</strong></p><p>可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法<br>1、从第1阶台阶跨2步上去<br>2、从第2阶跨1步上去</p><a id="more"></a>
-
-
+        <p><strong>难度： 简单</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="题目如图"></p>
+<a id="more"></a>
+<p><strong>1、动态规划</strong><br>可以知道，如果要到达第n阶台阶，有两种方式：<br>第一：从n-1阶台阶跨1步<br>第二：从n-2阶台阶跨2步<br>设到达第n阶台阶的方法总数为sum(n)<br>那么由上面可以知道：<strong>sum(n)=sum(n-2)+sum(n-1)</strong></p>
+<p>可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法<br>1、从第1阶台阶跨2步上去<br>2、从第2阶跨1步上去</p>
 <p>相应的，到达第1阶台阶只有一种方法，sum(1)=1；<br>到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；<br>所以sum(3)=3;<br><img src="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p><strong>2、斐波那契数列</strong><br>通过观察规律可以知道：<br>假设第0阶为1；<br>那么可以得到从第1阶往后分别是：<br><strong>1，2，3，5，8，13…..</strong><br>这是一个很明显的斐波那契数列</p>
 <p>3、递归<br>同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和<br>递归出口：n=0的时候返回1，n&lt;0的时候返回0；<br><img src="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>运行到44个样例的时候栈爆了…..</p>
@@ -467,7 +477,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -480,7 +490,7 @@
             <a href="/categories/">
           
         
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -493,7 +503,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">24</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>

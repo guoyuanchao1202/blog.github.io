@@ -57,20 +57,20 @@
   };
 </script>
 
-  <meta name="description" content="难度–简单题目分析：    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,T">
+  <meta name="description" content="难度–简单题目">
 <meta name="keywords" content="LeetCode,递归,迭代法,二叉树">
 <meta property="og:type" content="article">
 <meta property="og:title" content="二叉树镜像对称">
 <meta property="og:url" content="http://HoA-W.github.io/2019/09/07/LeetCode-第101题/index.html">
 <meta property="og:site_name" content="CommonGuy">
-<meta property="og:description" content="难度–简单题目分析：    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,T">
+<meta property="og:description" content="难度–简单题目">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/2019081919202426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190819195622590.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:updated_time" content="2019-09-07T13:04:37.420Z">
+<meta property="og:updated_time" content="2019-09-08T06:03:00.638Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="二叉树镜像对称">
-<meta name="twitter:description" content="难度–简单题目分析：    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,T">
+<meta name="twitter:description" content="难度–简单题目">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/2019081919202426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
   <link rel="canonical" href="http://HoA-W.github.io/2019/09/07/LeetCode-第101题/">
 
@@ -290,11 +290,19 @@
                 
               
 
-              <time title="创建时间：2019-09-07 17:15:18 / 修改时间：21:04:37" itemprop="dateCreated datePublished" datetime="2019-09-07T17:15:18+08:00">2019-09-07</time>
+              <time title="创建时间：2019-09-07 17:15:18" itemprop="dateCreated datePublished" datetime="2019-09-07T17:15:18+08:00">2019-09-07</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-09-08 14:03:00" itemprop="dateModified" datetime="2019-09-08T14:03:00+08:00">2019-09-08</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -322,15 +330,18 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><strong>难度–简单</strong><br>题目<br><img src="https://img-blog.csdnimg.cn/2019081919202426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><strong>分析：</strong><br>    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称<br>    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的</p><h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><pre><code>//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接
+        <p><strong>难度–简单</strong><br>题目<br><img src="https://img-blog.csdnimg.cn/2019081919202426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<a id="more"></a>
+
+<p><strong>分析：</strong><br>    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称<br>    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的</p>
+<h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><pre><code>//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接
 //快1ms，亲测
 1、pre(TreeNode tree.left,TreeNode tree.right)        
 2、如果A.val==B.val    --&gt;return true                
 3、如果A==null&amp;&amp;B==null    --&gt;return true
 4、如果A和B不同时为空，说明树是不对称的        --&gt;return false
 5、遍历A的左子树和B的右子树        //pre(A.left,B.right)
-6、遍历A的右子树和A的左子树        //pre(A.right,B.left)</code></pre><a id="more"></a>
-<h2 id="迭代法"><a href="#迭代法" class="headerlink" title="迭代法"></a>迭代法</h2><p>使用队列，比较容易理解，直接上代码(LeetCode官方题解)<br><img src="https://img-blog.csdnimg.cn/20190819195622590.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+6、遍历A的右子树和A的左子树        //pre(A.right,B.left)</code></pre><h2 id="迭代法"><a href="#迭代法" class="headerlink" title="迭代法"></a>迭代法</h2><p>使用队列，比较容易理解，直接上代码(LeetCode官方题解)<br><img src="https://img-blog.csdnimg.cn/20190819195622590.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 
     </div>
 
@@ -473,7 +484,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -486,7 +497,7 @@
             <a href="/categories/">
           
         
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -499,7 +510,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">24</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
