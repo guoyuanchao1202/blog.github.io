@@ -66,7 +66,22 @@
 <meta property="og:description" content="今天初步的做了一个web的小Demo，才发现数据库操作对于Web开发的重要性，频繁的对数据库进行操作，发现才学完数据库没多久，连基础的CRUD语句都写不出来，真是让人头大。突然想起来之前的SQL语句还有一半没有总结，现在趁着手机没电不能继续做Demo，就花30分钟左右的时间来总结一下剩下的DQL语句和DCL语句吧">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/1.png">
-<meta property="og:updated_time" content="2019-09-09T11:55:55.618Z">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/2.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/3.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/4.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/5.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/6.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/7.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/8.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/9.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/10.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/11.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/12.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/13.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/14.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/15.png">
+<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/16.png">
+<meta property="og:updated_time" content="2019-09-09T13:39:03.540Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据库基础--SQL语句总结(二)">
 <meta name="twitter:description" content="今天初步的做了一个web的小Demo，才发现数据库操作对于Web开发的重要性，频繁的对数据库进行操作，发现才学完数据库没多久，连基础的CRUD语句都写不出来，真是让人头大。突然想起来之前的SQL语句还有一半没有总结，现在趁着手机没电不能继续做Demo，就花30分钟左右的时间来总结一下剩下的DQL语句和DCL语句吧">
@@ -289,7 +304,7 @@
                 
               
 
-              <time title="创建时间：2019-09-09 19:55:31 / 修改时间：19:55:55" itemprop="dateCreated datePublished" datetime="2019-09-09T19:55:31+08:00">2019-09-09</time>
+              <time title="创建时间：2019-09-09 19:55:31 / 修改时间：21:39:03" itemprop="dateCreated datePublished" datetime="2019-09-09T19:55:31+08:00">2019-09-09</time>
             </span>
           
             
@@ -326,34 +341,138 @@
 <a id="more"></a>
 
 <h1 id="DQL"><a href="#DQL" class="headerlink" title="DQL"></a>DQL</h1><h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a><font size="5">语法</font></h2><ol>
-<li>select *from +表名<br> select<pre><code>字段列表</code></pre> from<pre><code>表名列表</code></pre> where<pre><code>条件列表</code></pre> group by<pre><code>分组字段</code></pre> having<pre><code>分组之后的条件</code></pre> order by<pre><code>排序</code></pre> limit<pre><code>分页限定</code></pre><img src="/2019/09/09/数据库基础-SQL语句总结-二/1.png">
-
-</li>
+<li>select *from +表名<br> select<pre><code>字段列表</code></pre> from<pre><code>表名列表</code></pre> where<pre><code>条件列表</code></pre> group by<pre><code>分组字段</code></pre> having<pre><code>分组之后的条件</code></pre> order by<pre><code>排序</code></pre> limit<pre><code>分页限定</code></pre><img src="/2019/09/09/数据库基础-SQL语句总结-二/1.png" alt></li>
 </ol>
-<h2 id="基础查询"><a href="#基础查询" class="headerlink" title="基础查询"></a><font size="5">基础查询</font></h2><ol>
-<li>多个字段的查询<br> <b>select 字段名1，字段名2… from 表名</b><ul>
+<h2 id="基础查询"><a href="#基础查询" class="headerlink" title="基础查询"></a><font size="5">基础查询</font></h2><p><font color="red">基于上面这个表进行演示</font></p>
+<ol>
+<li><p>多个字段的查询<br> <b>select 字段名1，字段名2… from 表名</b></p>
+<ul>
 <li>注意：<ul>
 <li>如果查询所有字段，则可以使用*来替代字段列表。</li>
 </ul>
 </li>
 </ul>
 </li>
-<li>去除重复：<br> <b>在select后面加<font color="red">distinct</font>关键字</b></li>
-<li>计算列<ul>
+<li><p>去除重复：<br>如果要单独查地址栏：SELECT address FROM student; 就会发现有多个香港地址<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/2.png" alt><br>但是在这种情况下我们并一般不希望出现这种情况<br> <b>在select后面加<font color="red">distinct</font>关键字</b>就可以取出要查询的字段中重复的值<br>格式：<font color="red"><b>SELECT DISTINCT address(字段名) FROM 表名;</b></font></p>
+</li>
+<li><p>计算列</p>
+<ul>
 <li>可以使用四则运算计算一些列的值。（一般只会进行数值型的计算）</li>
 <li>ifnull(表达式1,表达式2)：null参与的运算，计算结果都为null<ul>
 <li>表达式1：哪个字段需要判断是否为null</li>
-<li>如果该字段为null后的替换值。</li>
+<li>表达式2：如果该字段为null后的替换值。</li>
 </ul>
 </li>
-</ul>
-</li>
-<li>起别名：<ul>
-<li>as：as也可以省略    </li>
 </ul>
 </li>
 </ol>
-<h1 id="DCL"><a href="#DCL" class="headerlink" title="DCL"></a>DCL</h1>
+<p>如图，计算英语成绩和数学成绩之和<br><font color="red">SELECT NAME,math,english,math+english FROM student;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/3.png" alt><br>因为英语这一列存在null值，所以就会导致数学和英语的和也为null，<font color="red">这显然是不合理的</font><br>使用<font color="red">ifnull</font>，如果字段为null，就会在相加的时候替换为0；<br>SELECT NAME,math,english,<font color="red">math+IFNULL(english,0)</font> FROM student;</p>
+<ol start="4">
+<li>起别名：<ul>
+<li>as：as也可以省略<br>上面再计算列的时候，最后的列的值发生了变化，变成了(math+english)，顾名思义，其别名就是将列名换一个自己的名字<br><font color="red">SELECT NAME,math,english,math+IFNULL(english,0)AS 总分 FROM student;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/4.png" alt></li>
+</ul>
+</li>
+</ol>
+<h2 id="条件查询"><a href="#条件查询" class="headerlink" title="条件查询"></a><font size="5">条件查询</font></h2><ol>
+<li>在<font color="red"><b>where子句后</b></font>面跟查询的条件</li>
+<li>运算符<ul>
+<li>&lt; 、&gt;、&lt;= 、&gt;= 、= 、&lt;&gt;(不等于，相当于！=)</li>
+<li>BETWEEN…AND  </li>
+<li>IN( 集合) </li>
+<li>LIKE：模糊查询<ul>
+<li>占位符：<ul>
+<li>_:单个任意字符</li>
+<li>%：多个任意字符</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>IS NULL  </li>
+<li>and  或 &amp;&amp;</li>
+<li>or  或 || </li>
+<li>not  或 !</li>
+</ul>
+</li>
+</ol>
+<p><font color="blue"><b>实例演示</b></font></p>
+<ol>
+<li>查询年龄大于20岁的：<font color="red">SELECT *FROM student WHERE age&gt;20;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/5.png" alt></li>
+<li>查询年龄在20~30岁之间的(三种方法)<br>SELECT *FROM student <font color="red">WHERE age BETWEEN 20 AND 30;<br>/age&gt;=20&amp;&amp;age&lt;=30;/age&gt;=20 AND age&lt;=30;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/6.png" alt></li>
+<li>查询年龄22岁，18岁，25岁的信息(查询满足指定条件的数据)<br>SELECT *FROM student <font color="red">WHERE age IN(19,22,25);<br>age=22 OR age=19 OR age=25;/age=22 || age=19 || age=25;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/7.png" alt></li>
+<li>查询英语成绩为null–&gt;不能用=和！=来判断是否为null，要<font color="red">用is和is not来判断</font><br>SELECT * FROM student WHERE english <font color="red">IS NULL;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/8.png" alt></li>
+<li>查询姓马的有哪些 <font color="red">模糊查询–like</font><br>SELECT *FROM student WHERE NAME LIKE “马%”;<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/9.png" alt>因为用的%占位符，所以马后面不管有几个字符，都符合条件<h2 id="排序查询"><a href="#排序查询" class="headerlink" title="排序查询"></a><font size="5">排序查询</font></h2></li>
+</ol>
+<ul>
+<li>语法：<b>order by 子句</b><ul>
+<li>order by 排序字段1 排序方式1 ，  排序字段2 排序方式2…</li>
+</ul>
+</li>
+<li>排序方式：<ul>
+<li>ASC：升序，默认的。</li>
+<li>DESC：降序。</li>
+</ul>
+</li>
+<li>注意：<ul>
+<li>如果有多个排序条件，则当<font color="red">前边的条件值一样时，才会判断第二条件。</font></li>
+</ul>
+</li>
+</ul>
+<p><font color="blue"><b>实例演示</b></font></p>
+<ol>
+<li>按照数学成绩排名(默认升序排列)<br>SELECT *FROM student <font color="red">ORDER BY math;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/10.png" alt></li>
+<li>按照数学习成绩升序排名，如果数学成绩一样，就按照英语成绩升序排名。<br>SELECT *FROM student <font color="red">ORDER BY math ASC,english ASC;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/11.png" alt><h2 id="聚合函数"><a href="#聚合函数" class="headerlink" title="聚合函数"></a><font size="5">聚合函数</font></h2>将一列数据作为一个整体，进行纵向的计算。<ol>
+<li>count：计算个数<ol>
+<li>一般选择非空的列：主键</li>
+<li>count(*)</li>
+</ol>
+</li>
+<li>max：计算最大值</li>
+<li>min：计算最小值</li>
+<li>sum：计算和</li>
+<li>avg：计算平均值</li>
+</ol>
+</li>
+</ol>
+<p><font color="blue"><b>实例演示</b></font></p>
+<ol>
+<li>某一列数据总行数(<font color="red">如果这一列有null值，那么为null的行不算</font>)<br>SELECT <font color="red">COUNT(english)</font> FROM student;<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/12.png" alt><br>这时候还要用到ifnull计算行数的时候将null临时替换为0，<br>SELECT <font color="red">COUNT(IFNULL(english,0))</font> FROM student;<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/13.png" alt>使用SELECT COUNT(*)  FROM student;来计算行数，只要这一组数据中有一列数据全不为null，就能够正确的计算行数</li>
+<li>计算数学成绩最大值(max)<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/14.png" alt><font color="blue">其余的min、sum以及avg用法和max一样</font><h2 id="分组查询"><a href="#分组查询" class="headerlink" title="分组查询"></a><font size="5">分组查询</font></h2><ol>
+<li>语法：group by 分组字段；</li>
+<li>注意：<ol>
+<li>分组之后查询的字段：分组字段、聚合函数</li>
+<li>where 和 having 的区别？<ol>
+<li>where 在分组之前进行限定，如果不满足条件，则不参与分组。having在分组之后进行限定，如果不满足结果，则不会被查询出来</li>
+<li>where 后不可以跟聚合函数，having可以进行聚合函数的判断。</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<p><font color="blue"><b>实例演示</b></font></p>
+<ol>
+<li>按照性别分组。分别查询男、女同学的数学平均分,人数<br>SELECT sex , AVG(math)(平均分),COUNT(id)(人数) FROM student GROUP BY sex(性别分组);<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/15.png" alt></li>
+<li>按照性别分组。分别查询男、女同学的平均分,人数 要求：分数低于70分的人，不参与分组<br>SELECT sex , AVG(math),COUNT(id) FROM student WHERE math &gt; 70 GROUP BY sex;<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/16.png" alt></li>
+<li>按照性别分组。分别查询男、女同学的平均分,人数 要求：分数低于70分的人，不参与分组,分组之后。人数要大于2个人<br>SELECT sex,AVG(math) ,COUNT(id) FROM student WHERE math&gt;70 GROUP BY sex HAVING COUNT(id)&gt;2 ;</li>
+</ol>
+<h2 id="分页查询"><a href="#分页查询" class="headerlink" title="分页查询"></a><font size="5">分页查询</font></h2><pre><code>1. 语法：limit 开始的索引,每页查询的条数;
+2. 公式：开始的索引 = （当前的页码 - 1） * 每页显示的条数
+    -- 每页显示3条记录 
+    SELECT * FROM student LIMIT 0,3; -- 第1页
+    SELECT * FROM student LIMIT 3,3; -- 第2页
+    SELECT * FROM student LIMIT 6,3; -- 第3页
+3. limit 是一个MySQL&quot;方言&quot;</code></pre><hr>
+<font size="5"><b>通过上面的实例演示，结合DQL查询语句的语法不难发现，如果一次有多个查询条件，那么写的顺序一次是Where、Group By、Having、Order By、Limit的顺序</b></font><br>
+可以这么来理解：<br>
+<b>where先对数据进行筛选，不满足条件的不进行后面的分组，<font color="blue">这是第一次条件</font><br>
+Having再对分完组后的数据进行筛选，不满足条件的数据不会被查询到，<font color="blue">这是第二次条件</font><br>
+前面的都完成后，Order By再对查询到的数据进行排序，<font color="blue">这是第三次条件</font><br>
+Limit再对排序后的数据进行分页展示，<font color="blue">这是第四次条件</font></b>
+<hr>
+
+<p>发现数据库这方面的知识要掌握的东西太多，多练习才能掌握，死记硬背是很难的，本来以为30分钟，最后俩小时还没搞定，后面大约还有整个基础部分的一半吧，下次再说吧</p>
+
     </div>
 
     
@@ -467,7 +586,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#DQL"><span class="nav-number">1.</span> <span class="nav-text">DQL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#语法"><span class="nav-number">1.1.</span> <span class="nav-text">语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础查询"><span class="nav-number">1.2.</span> <span class="nav-text">基础查询</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DCL"><span class="nav-number">2.</span> <span class="nav-text">DCL</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#DQL"><span class="nav-number">1.</span> <span class="nav-text">DQL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#语法"><span class="nav-number">1.1.</span> <span class="nav-text">语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础查询"><span class="nav-number">1.2.</span> <span class="nav-text">基础查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#条件查询"><span class="nav-number">1.3.</span> <span class="nav-text">条件查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#排序查询"><span class="nav-number">1.4.</span> <span class="nav-text">排序查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#聚合函数"><span class="nav-number">1.5.</span> <span class="nav-text">聚合函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分组查询"><span class="nav-number">1.6.</span> <span class="nav-text">分组查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分页查询"><span class="nav-number">1.7.</span> <span class="nav-text">分页查询</span></a></li></ol></li></ol></div>
         
       </div>
       <!--/noindex-->
