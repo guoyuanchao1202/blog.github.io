@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title><![CDATA[数据库基础--SQL语句总结(二)]]></title>
-    <url>%2F2019%2F09%2F09%2F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80--SQL%E8%AF%AD%E5%8F%A5%E6%80%BB%E7%BB%93(%E4%BA%8C)%2F</url>
+    <url>%2F2019%2F09%2F09%2F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80-SQL%E8%AF%AD%E5%8F%A5%E6%80%BB%E7%BB%93-%E4%BA%8C%2F</url>
     <content type="text"><![CDATA[今天初步的做了一个web的小Demo，才发现数据库操作对于Web开发的重要性，频繁的对数据库进行操作，发现才学完数据库没多久，连基础的CRUD语句都写不出来，真是让人头大。突然想起来之前的SQL语句还有一半没有总结，现在趁着手机没电不能继续做Demo，就花30分钟左右的时间来总结一下剩下的DQL语句和DCL语句吧 DQL语法 select *from +表名 select字段列表 from表名列表 where条件列表 group by分组字段 having分组之后的条件 order by排序 limit分页限定 基础查询 多个字段的查询 select 字段名1，字段名2… from 表名 注意： 如果查询所有字段，则可以使用*来替代字段列表。 去除重复： 在select后面加distinct关键字 计算列 可以使用四则运算计算一些列的值。（一般只会进行数值型的计算） ifnull(表达式1,表达式2)：null参与的运算，计算结果都为null 表达式1：哪个字段需要判断是否为null 如果该字段为null后的替换值。 起别名： as：as也可以省略 DCL]]></content>
       <categories>
         <category>数据库</category>
@@ -219,6 +219,19 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[青蛙跳台阶]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>动态规划</tag>
+        <tag>斐波那契数列</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[二叉树镜像对称]]></title>
     <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
     <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
@@ -243,19 +256,6 @@
         <tag>I/O</tag>
         <tag>乱码</tag>
         <tag>字符流/字节流</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[青蛙跳台阶]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
-      <categories>
-        <category>算法之美</category>
-      </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>动态规划</tag>
-        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>
