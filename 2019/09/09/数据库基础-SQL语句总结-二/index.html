@@ -57,17 +57,19 @@
   };
 </script>
 
-  <meta name="description" content="敲代码的大学生">
-<meta property="og:type" content="website">
-<meta property="og:title" content="CommonGuy">
-<meta property="og:url" content="http://HoA-W.github.io/tags/Byte/index.html">
+  <meta name="description" content="今天初步的做了一个web的小Demo，才发现数据库操作对于Web开发的重要性，频繁的对数据库进行操作，发现才学完数据库没多久，连基础的CRUD语句都写不出来，真是让人头大。突然想起来之前的SQL语句还有一半没有总结，现在趁着手机没电不能继续做Demo，就花30分钟左右的时间来总结一下剩下的DQL语句和DCL语句吧">
+<meta name="keywords" content="数据库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库基础--SQL语句总结(二)">
+<meta property="og:url" content="http://HoA-W.github.io/2019/09/09/数据库基础-SQL语句总结-二/index.html">
 <meta property="og:site_name" content="CommonGuy">
-<meta property="og:description" content="敲代码的大学生">
+<meta property="og:description" content="今天初步的做了一个web的小Demo，才发现数据库操作对于Web开发的重要性，频繁的对数据库进行操作，发现才学完数据库没多久，连基础的CRUD语句都写不出来，真是让人头大。突然想起来之前的SQL语句还有一半没有总结，现在趁着手机没电不能继续做Demo，就花30分钟左右的时间来总结一下剩下的DQL语句和DCL语句吧">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-09T11:30:08.405Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CommonGuy">
-<meta name="twitter:description" content="敲代码的大学生">
-  <link rel="canonical" href="http://HoA-W.github.io/tags/Byte/">
+<meta name="twitter:title" content="数据库基础--SQL语句总结(二)">
+<meta name="twitter:description" content="今天初步的做了一个web的小Demo，才发现数据库操作对于Web开发的重要性，频繁的对数据库进行操作，发现才学完数据库没多久，连基础的CRUD语句都写不出来，真是让人头大。突然想起来之前的SQL语句还有一半没有总结，现在趁着手机没电不能继续做Demo，就花30分钟左右的时间来总结一下剩下的DQL语句和DCL语句吧">
+  <link rel="canonical" href="http://HoA-W.github.io/2019/09/09/数据库基础-SQL语句总结-二/">
 
 
 <script id="page-configurations">
@@ -75,13 +77,13 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: false,
+    isPost: true,
     isPage: false,
     isArchive: false
   };
 </script>
 
-  <title>标签: Byte | CommonGuy</title>
+  <title>数据库基础--SQL语句总结(二) | CommonGuy</title>
   
 
 
@@ -213,27 +215,6 @@
 
     
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
 </nav>
   <div class="site-search">
     <div class="popup search-popup">
@@ -272,60 +253,181 @@
           <div id="content" class="content">
             
 
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
   
   
   
-  <div class="post-block tag">
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1 class="collection-header">Byte<small>标签</small>
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://HoA-W.github.io/2019/09/09/数据库基础-SQL语句总结-二/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="敲代码的大学生">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">数据库基础--SQL语句总结(二)
+
+          
         </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-09 19:01:52 / 修改时间：19:30:08" itemprop="dateCreated datePublished" datetime="2019-09-09T19:01:52+08:00">2019-09-09</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>今天初步的做了一个web的小Demo，才发现数据库操作对于Web开发的重要性，频繁的对数据库进行操作，发现才学完数据库没多久，连基础的CRUD语句都写不出来，真是让人头大。<br>突然想起来之前的SQL语句还有一半没有总结，现在趁着手机没电不能继续做Demo，就花30分钟左右的时间来总结一下剩下的DQL语句和DCL语句吧</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="DQL"><a href="#DQL" class="headerlink" title="DQL"></a>DQL</h1><h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a><font size="5">语法</font></h2><ol>
+<li>select *from +表名<br> select<pre><code>字段列表</code></pre> from<pre><code>表名列表</code></pre> where<pre><code>条件列表</code></pre> group by<pre><code>分组字段</code></pre> having<pre><code>分组之后的条件</code></pre> order by<pre><code>排序</code></pre> limit<pre><code>分页限定</code></pre><a href="数据库基础-SQL语句总结-二/数据库基础.png">!Alt</a></li>
+</ol>
+<h2 id="基础查询"><a href="#基础查询" class="headerlink" title="基础查询"></a><font size="5">基础查询</font></h2><ol>
+<li>多个字段的查询<br> <b>select 字段名1，字段名2… from 表名</b><ul>
+<li>注意：<ul>
+<li>如果查询所有字段，则可以使用*来替代字段列表。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>去除重复：<br> <b>在select后面加<font color="red">distinct</font>关键字</b></li>
+<li>计算列<ul>
+<li>可以使用四则运算计算一些列的值。（一般只会进行数值型的计算）</li>
+<li>ifnull(表达式1,表达式2)：null参与的运算，计算结果都为null<ul>
+<li>表达式1：哪个字段需要判断是否为null</li>
+<li>如果该字段为null后的替换值。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>起别名：<ul>
+<li>as：as也可以省略    </li>
+</ul>
+</li>
+</ol>
+<h1 id="DCL"><a href="#DCL" class="headerlink" title="DCL"></a>DCL</h1>
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+</	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
       </div>
+
+  </div>
+</div>
 
       
 
-  
-  
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/数据库/" rel="tag"><i class="fa fa-tag"></i>数据库</a>
+            
+          </div>
+        
 
-  
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/09/08/会话技术-Cookie-Session/" rel="next" title="会话技术--Cookie&Session">
+                  <i class="fa fa-chevron-left"></i> 会话技术--Cookie&Session
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
     
-    <div class="collection-year">
-      <h1 class="collection-header">2019</h1>
-    </div>
-  
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/2019/09/08/小白学JDK源码--Byte类/" itemprop="url">
-            <span itemprop="name">JDK源码--Byte类</span>
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-09-08T09:48:18+08:00"
-              content="2019-09-08">
-          09-08
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    </div>
   </div>
   
   
   
+  </article>
 
-  
-
+  </div>
 
 
           </div>
@@ -344,6 +446,11 @@
 
   <aside class="sidebar">
     <div class="sidebar-inner">
+        
+        
+        
+        
+      
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
@@ -356,6 +463,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#DQL"><span class="nav-number">1.</span> <span class="nav-text">DQL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#语法"><span class="nav-number">1.1.</span> <span class="nav-text">语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础查询"><span class="nav-number">1.2.</span> <span class="nav-text">基础查询</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DCL"><span class="nav-number">2.</span> <span class="nav-text">DCL</span></a></li></ol></div>
+        
       </div>
       <!--/noindex-->
 

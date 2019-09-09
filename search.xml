@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[数据库基础--SQL语句总结(二)]]></title>
+    <url>%2F2019%2F09%2F09%2F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80-SQL%E8%AF%AD%E5%8F%A5%E6%80%BB%E7%BB%93-%E4%BA%8C%2F</url>
+    <content type="text"><![CDATA[今天初步的做了一个web的小Demo，才发现数据库操作对于Web开发的重要性，频繁的对数据库进行操作，发现才学完数据库没多久，连基础的CRUD语句都写不出来，真是让人头大。突然想起来之前的SQL语句还有一半没有总结，现在趁着手机没电不能继续做Demo，就花30分钟左右的时间来总结一下剩下的DQL语句和DCL语句吧 DQL语法 select *from +表名 select字段列表 from表名列表 where条件列表 group by分组字段 having分组之后的条件 order by排序 limit分页限定!Alt 基础查询 多个字段的查询 select 字段名1，字段名2… from 表名 注意： 如果查询所有字段，则可以使用*来替代字段列表。 去除重复： 在select后面加distinct关键字 计算列 可以使用四则运算计算一些列的值。（一般只会进行数值型的计算） ifnull(表达式1,表达式2)：null参与的运算，计算结果都为null 表达式1：哪个字段需要判断是否为null 如果该字段为null后的替换值。 起别名： as：as也可以省略 DCL]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>数据库</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[会话技术--Cookie&Session]]></title>
     <url>%2F2019%2F09%2F08%2F%E4%BC%9A%E8%AF%9D%E6%8A%80%E6%9C%AF-Cookie-Session%2F</url>
     <content type="text"><![CDATA[会话：一次会话中包含多次请求和响应。在一次会话中，浏览器第一次给服务器资源发送请求，会话建立，直到有一方断开为止会话技术能够在一次会话的多次请求响应间共享数据 会话技术的实现方式 客户端会话技术：Cookie 服务器端会话技术：Session 客户端会话技术–CookieCookie使用步骤 创建Cookie对象，绑定数据:new Cookie(String name, String value) 发送Cookie对象::response.addCookie(Cookie cookie) 获取Cookie，拿到数据:Cookie[] request.getCookies() Cookie实现原理基于响应头set-cookie和请求头cookie实现 客户端和服务器第一次请求响应：服务器创建Cookie对象，并在set-cookie响应头将Cookie响应给浏览器 浏览器接收到服务器带有set-cookie头的响应后，将Cookie存储在浏览器中，当下一次浏览器向服务器发送请求时，会在请求头cookie头中附带这cookie 这样就实现了多次请求响应之间的数据共享 Cookie的细节 一次可以发送多个cookie：在服务器端创建多个Cookie对象，多次调用response的addCookie方法将多个Cookie对象发送，但是如果两个Cookie的值相同，那么后加入的Cookie值会覆盖前面的值 cookie在浏览器中保存时间 默认情况下，当浏览器关闭后，Cookie数据被销毁(服务器关闭，Cookie仍然存在，因为Cookie存储在浏览器中) 持久化存储：调用Cookie对象的setMaxAge(int seconds)方法实现 参数取值情况： 正数：将Cookie数据写到硬盘的文件中。持久化存储。并指定cookie存活时间，时间到后，cookie文件自动失效 负数：默认值，即浏览器关闭后Cookie被销毁 零：删除cookie信息 cookie存储中文问题:在tomcat 8 之前 cookie中不能直接存储中文数据。但是在tomcat8之后，支持直接存储中文，但是对于一些特殊字符(如空格等)，仍不能直接存储，需要借助URL编码才行(具体步骤下一篇文章说到) cookie的共享 在一个tomcat服务器中部署了多个项目，在默认情况下，这些项目之间的Cookie是不能共享的但是可以通过Cookie对象的setPath(String path)方法来设置Cookie的共享范围 默认情况下，设置的是当前项目的虚拟目录 如果要在多个项目之间共享，则可以将path设置为"/"(“/”为服务器路径) 不同服务器之间Cookie的共享 setDomain(String path):如果设置一级域名相同，那么多个服务器之间cookie可以共享 例如：设置path为".baidu.com"，那么tieba.baidu.com和news.baidu.com两个不同的服务器之间可以共享数据，因为它们的一级域名是.baidu.com Cookie的特点和作用 特点 cookie存储数据在客户端浏览器 浏览器对于单个cookie 的大小有限制(4kb) 以及 对同一个域名下的总cookie数量也有限制(20个) Cookie存储的键值对都是String类型 作用 cookie一般用于存出少量的不太敏感的数据，这是因为Cookie的存储位置决定的，存储在客户端容易丢失和被篡改。 在不登录的情况下，完成服务器对客户端的身份识别 服务器端会话技术–SessionSession使用步骤 通过resquest获取Session对象：request.getSession() 调用Session对象的方法存储数据(和request请求转发方法一样) Object getAttribute(String name)：通过键获取值 void setAttribute(String name, Object value)：将数据存储进Session对象 void removeAttribute(String name)：通过键移除相应的键值对 Session实现原理Session的实现是依赖于Cookie的。 客户端第一次向服务器发送请求，服务器在服务器内部开辟一块内存空间，存放Session对象，并给该内存空间指定一个id 服务器在响应头set-cookie中设置JSESSIONID=id这个键值对发送给客户端 客户端接收到服务器的相应后，会将保存着Sessionid的Cookie对象保存在浏览器内存 当客户端下一次向服务器发送请求的时候，会带着Cookie一起(在请求头cookie中有JSESSIONID=id键值对) 服务器接收到请求后，得到JSESSIONID=id键值对的id后，会在内存中找到对应id的Session对象 这就是为什么说Session依赖于Cookie的原因以及多次请求响应之间共享数据的原理 Session细节 当客户端关闭后，服务器不关闭，两次获取session不是同一个：前面说到过，Session是依赖于Cookie的，Cookie在默认情况下当客户端浏览器关闭后是自动销毁的，因此Cookie中的键值对自然也就销毁了，所以两次获取的Session不是同一个，如果需要两次的Cookie是同一个 创建一个Cookie对象，设置cookie的键为JSESSIONID，值为session对象的id 设置cookie的存活时间 那么在cookie存活时间内，服务器通过cookie请求头拿到session的id都是一样的，这样通过id找到的Session对象自然也是同一个 客户端不关闭，服务器关闭后，两次获取的session不是同一个，因为服务器关闭后相应内存会被释放，Session自然也会被释放 但是一般我们需要获取到的Session对象是同一个，确保数据不丢失，tomcat会自动完成Session的钝化和活化 Session的钝化：在服务器正常关闭之前，将session对象序列化到硬盘上 Session的活化：在服务器启动后，将session文件转化为内存中的session对象。 Session被销毁 服务器关闭 session对象调用invalidate() 自杀 session默认失效时间 30分钟,可以tomcat服务器的web.xml配置文件中session-config设置所有项目的失效时间,也可以在项目的wen.xml配置文件单独配置项目的失效时间 Session的特点 用于一次会话的多次请求间共享数据，存储在服务器端 session可以存储任意类型，任意大小的数据]]></content>
@@ -154,8 +165,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>BOM</tag>
         <tag>前端</tag>
+        <tag>BOM</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
@@ -208,19 +219,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[字符流和字节流]]></title>
-    <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
-    <content type="text"><![CDATA[深入理解字符流编码 首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入 字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码 写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
-      <categories>
-        <category>JAVA</category>
-      </categories>
-      <tags>
-        <tag>I/O</tag>
-        <tag>乱码</tag>
-        <tag>字符流/字节流</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[二叉树镜像对称]]></title>
     <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
     <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
@@ -245,6 +243,19 @@
         <tag>LeetCode</tag>
         <tag>动态规划</tag>
         <tag>斐波那契数列</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[字符流和字节流]]></title>
+    <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
+    <content type="text"><![CDATA[深入理解字符流编码 首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入 字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码 写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
+      <categories>
+        <category>JAVA</category>
+      </categories>
+      <tags>
+        <tag>I/O</tag>
+        <tag>乱码</tag>
+        <tag>字符流/字节流</tag>
       </tags>
   </entry>
   <entry>
