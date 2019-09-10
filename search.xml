@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[JDK源码--String类]]></title>
+    <url>%2F2019%2F09%2F10%2FJDK%E6%BA%90%E7%A0%81-String%E7%B1%BB%2F</url>
+    <content type="text"><![CDATA[你好]]></content>
+      <categories>
+        <category>JDK源码</category>
+      </categories>
+      <tags>
+        <tag>String类</tag>
+        <tag>源码</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[数据库基础--SQL语句总结(二)]]></title>
     <url>%2F2019%2F09%2F09%2F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80-SQL%E8%AF%AD%E5%8F%A5%E6%80%BB%E7%BB%93-%E4%BA%8C%2F</url>
     <content type="text"><![CDATA[今天初步的做了一个web的小Demo，才发现数据库操作对于Web开发的重要性，频繁的对数据库进行操作，发现才学完数据库没多久，连基础的CRUD语句都写不出来，真是让人头大。突然想起来之前的SQL语句还有一半没有总结，现在趁着手机没电不能继续做Demo，就花30分钟左右的时间来总结一下剩下的DQL语句和DCL语句吧 DQL语法 select *from +表名 select字段列表 from表名列表 where条件列表 group by分组字段 having分组之后的条件 order by排序 limit分页限定 基础查询基于上面这个表进行演示 多个字段的查询 select 字段名1，字段名2… from 表名 注意： 如果查询所有字段，则可以使用*来替代字段列表。 去除重复：如果要单独查地址栏：SELECT address FROM student; 就会发现有多个香港地址但是在这种情况下我们并一般不希望出现这种情况 在select后面加distinct关键字就可以取出要查询的字段中重复的值格式：SELECT DISTINCT address(字段名) FROM 表名; 计算列 可以使用四则运算计算一些列的值。（一般只会进行数值型的计算） ifnull(表达式1,表达式2)：null参与的运算，计算结果都为null 表达式1：哪个字段需要判断是否为null 表达式2：如果该字段为null后的替换值。 如图，计算英语成绩和数学成绩之和SELECT NAME,math,english,math+english FROM student;因为英语这一列存在null值，所以就会导致数学和英语的和也为null，这显然是不合理的使用ifnull，如果字段为null，就会在相加的时候替换为0；SELECT NAME,math,english,math+IFNULL(english,0) FROM student; 起别名： as：as也可以省略上面再计算列的时候，最后的列的值发生了变化，变成了(math+english)，顾名思义，其别名就是将列名换一个自己的名字SELECT NAME,math,english,math+IFNULL(english,0)AS 总分 FROM student; 条件查询 在where子句后面跟查询的条件 运算符 &lt; 、&gt;、&lt;= 、&gt;= 、= 、&lt;&gt;(不等于，相当于！=) BETWEEN…AND IN( 集合) LIKE：模糊查询 占位符： _:单个任意字符 %：多个任意字符 IS NULL and 或 &amp;&amp; or 或 || not 或 ! 实例演示 查询年龄大于20岁的：SELECT *FROM student WHERE age&gt;20; 查询年龄在20~30岁之间的(三种方法)SELECT *FROM student WHERE age BETWEEN 20 AND 30;/age&gt;=20&amp;&amp;age&lt;=30;/age&gt;=20 AND age&lt;=30; 查询年龄22岁，18岁，25岁的信息(查询满足指定条件的数据)SELECT *FROM student WHERE age IN(19,22,25);age=22 OR age=19 OR age=25;/age=22 || age=19 || age=25; 查询英语成绩为null–&gt;不能用=和！=来判断是否为null，要用is和is not来判断SELECT * FROM student WHERE english IS NULL; 查询姓马的有哪些 模糊查询–likeSELECT *FROM student WHERE NAME LIKE “马%”;因为用的%占位符，所以马后面不管有几个字符，都符合条件排序查询 语法：order by 子句 order by 排序字段1 排序方式1 ， 排序字段2 排序方式2… 排序方式： ASC：升序，默认的。 DESC：降序。 注意： 如果有多个排序条件，则当前边的条件值一样时，才会判断第二条件。 实例演示 按照数学成绩排名(默认升序排列)SELECT *FROM student ORDER BY math; 按照数学习成绩升序排名，如果数学成绩一样，就按照英语成绩升序排名。SELECT *FROM student ORDER BY math ASC,english ASC;聚合函数将一列数据作为一个整体，进行纵向的计算。 count：计算个数 一般选择非空的列：主键 count(*) max：计算最大值 min：计算最小值 sum：计算和 avg：计算平均值 实例演示 某一列数据总行数(如果这一列有null值，那么为null的行不算)SELECT COUNT(english) FROM student;这时候还要用到ifnull计算行数的时候将null临时替换为0，SELECT COUNT(IFNULL(english,0)) FROM student;使用SELECT COUNT(*) FROM student;来计算行数，只要这一组数据中有一列数据全不为null，就能够正确的计算行数 计算数学成绩最大值(max)其余的min、sum以及avg用法和max一样分组查询 语法：group by 分组字段； 注意： 分组之后查询的字段：分组字段、聚合函数 where 和 having 的区别？ where 在分组之前进行限定，如果不满足条件，则不参与分组。having在分组之后进行限定，如果不满足结果，则不会被查询出来 where 后不可以跟聚合函数，having可以进行聚合函数的判断。 实例演示 按照性别分组。分别查询男、女同学的数学平均分,人数SELECT sex , AVG(math)(平均分),COUNT(id)(人数) FROM student GROUP BY sex(性别分组); 按照性别分组。分别查询男、女同学的平均分,人数 要求：分数低于70分的人，不参与分组SELECT sex , AVG(math),COUNT(id) FROM student WHERE math &gt; 70 GROUP BY sex; 按照性别分组。分别查询男、女同学的平均分,人数 要求：分数低于70分的人，不参与分组,分组之后。人数要大于2个人SELECT sex,AVG(math) ,COUNT(id) FROM student WHERE math&gt;70 GROUP BY sex HAVING COUNT(id)&gt;2 ; 分页查询1. 语法：limit 开始的索引,每页查询的条数; 2. 公式：开始的索引 = （当前的页码 - 1） * 每页显示的条数 -- 每页显示3条记录 SELECT * FROM student LIMIT 0,3; -- 第1页 SELECT * FROM student LIMIT 3,3; -- 第2页 SELECT * FROM student LIMIT 6,3; -- 第3页 3. limit 是一个MySQL&quot;方言&quot; 通过上面的实例演示，结合DQL查询语句的语法不难发现，如果一次有多个查询条件，那么写的顺序一次是Where、Group By、Having、Order By、Limit的顺序 可以这么来理解： where先对数据进行筛选，不满足条件的不进行后面的分组，这是第一次条件 Having再对分完组后的数据进行筛选，不满足条件的数据不会被查询到，这是第二次条件 前面的都完成后，Order By再对查询到的数据进行排序，这是第三次条件 Limit再对排序后的数据进行分页展示，这是第四次条件 发现数据库这方面的知识要掌握的东西太多，多练习才能掌握，死记硬背是很难的，本来以为30分钟，最后俩小时还没搞定，后面大约还有整个基础部分的一半吧，下次再说吧]]></content>
@@ -214,8 +226,21 @@
         <category>JDK源码</category>
       </categories>
       <tags>
-        <tag>Byte</tag>
         <tag>源码</tag>
+        <tag>Byte</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[青蛙跳台阶]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>动态规划</tag>
+        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>
@@ -243,19 +268,6 @@
         <tag>I/O</tag>
         <tag>乱码</tag>
         <tag>字符流/字节流</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[青蛙跳台阶]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
-      <categories>
-        <category>算法之美</category>
-      </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>动态规划</tag>
-        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>

@@ -61,32 +61,32 @@
 <meta name="keywords" content="数据库">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据库基础--SQL语句总结(二)">
-<meta property="og:url" content="http://HoA-W.github.io/2019/09/09/数据库基础-SQL语句总结-二/index.html">
+<meta property="og:url" content="https://HoA-W.github.io/2019/09/09/数据库基础-SQL语句总结-二/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="今天初步的做了一个web的小Demo，才发现数据库操作对于Web开发的重要性，频繁的对数据库进行操作，发现才学完数据库没多久，连基础的CRUD语句都写不出来，真是让人头大。突然想起来之前的SQL语句还有一半没有总结，现在趁着手机没电不能继续做Demo，就花30分钟左右的时间来总结一下剩下的DQL语句和DCL语句吧">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/1.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/2.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/3.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/4.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/5.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/6.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/7.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/8.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/9.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/10.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/11.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/12.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/13.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/14.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/15.png">
-<meta property="og:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/16.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/1.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/2.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/3.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/4.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/5.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/6.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/7.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/8.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/9.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/10.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/11.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/12.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/13.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/14.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/15.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/16.png">
 <meta property="og:updated_time" content="2019-09-09T13:39:03.540Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据库基础--SQL语句总结(二)">
 <meta name="twitter:description" content="今天初步的做了一个web的小Demo，才发现数据库操作对于Web开发的重要性，频繁的对数据库进行操作，发现才学完数据库没多久，连基础的CRUD语句都写不出来，真是让人头大。突然想起来之前的SQL语句还有一半没有总结，现在趁着手机没电不能继续做Demo，就花30分钟左右的时间来总结一下剩下的DQL语句和DCL语句吧">
-<meta name="twitter:image" content="http://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/1.png">
-  <link rel="canonical" href="http://HoA-W.github.io/2019/09/09/数据库基础-SQL语句总结-二/">
+<meta name="twitter:image" content="https://hoa-w.github.io/2019/09/09/数据库基础-SQL语句总结-二/1.png">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/09/09/数据库基础-SQL语句总结-二/">
 
 
 <script id="page-configurations">
@@ -276,7 +276,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="http://HoA-W.github.io/2019/09/09/数据库基础-SQL语句总结-二/">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/09/09/数据库基础-SQL语句总结-二/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="买太平湖底陈年水墨">
@@ -492,7 +492,7 @@ Limit再对排序后的数据进行分页展示，<font color="blue">这是第�
       
         
       
-</	</div>
+	</div>
         
       
         <div id="reward-container">
@@ -538,6 +538,10 @@ Limit再对排序后的数据进行分页展示，<font color="blue">这是第�
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/09/10/JDK源码-String类/" rel="prev" title="JDK源码--String类">
+                  JDK源码--String类 <i class="fa fa-chevron-right"></i>
+                </a>
               
             </div>
           </div>
@@ -604,7 +608,7 @@ Limit再对排序后的数据进行分页展示，<font color="blue">这是第�
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -630,7 +634,7 @@ Limit再对排序后的数据进行分页展示，<font color="blue">这是第�
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-count">25</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
