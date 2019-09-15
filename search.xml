@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>Josefu问题(约瑟夫环)两种解决方法</title>
+      <link href="/2019/09/15/Josefu%E9%97%AE%E9%A2%98-%E7%BA%A6%E7%91%9F%E5%A4%AB%E7%8E%AF-%E4%B8%A4%E7%A7%8D%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/"/>
+      <url>/2019/09/15/Josefu%E9%97%AE%E9%A2%98-%E7%BA%A6%E7%91%9F%E5%A4%AB%E7%8E%AF-%E4%B8%A4%E7%A7%8D%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</url>
+      
+        <content type="html"><![CDATA[<p><b>约瑟夫问题</b><br>设编号为1、2….n的n个人坐一圈，约定编号为k(1&lt;=k&lt;=n)的人从1开始报数，数到m的那个人出圈，他的下一位又从1开始报数，数到m的人又出圈，以此类推，直到所有人出圈为止，由此产生一个出圈编号的序列</p><hr><a id="more"></a><h1 id="解法一：循环链表"><a href="#解法一：循环链表" class="headerlink" title="解法一：循环链表"></a>解法一：循环链表</h1><ol><li>首先对参数k、m、n进行校验，确保k、m、n在正常范围内</li><li>创建一个辅助指针helper</li><li>让helper指向first前一个节点，即指向最初链表的最后一个节点</li><li>将first和helper向后移动k-1次，即让first指向开始报数的小孩</li><li>当helper==first时，说明圈中只有一个小孩</li><li>helper！=first时，将first和boyHelper同时向后移动m-1次</li><li>将移动m-1此之后first指向的节点出圈</li><li>继续执行5，直到boyHelper==first为止</li></ol><p><img src="/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/1.png" alt><br>其中方法的参数：</p><ul><li>k：第一次开始报数的小孩</li><li>count：每次数几下(m)</li><li>nums：最开始圈中小孩数</li></ul><p>这个约瑟夫问题是基于我自己创建的单向环形链表实现的(或者说我创建的单向环形链表是用来解决约瑟夫问题的)，helper节点最初就指向first前一个节点，所以2和3两步骤可以省略<br>(可以看一下我创建单项循环链表的博客)</p><h1 id="解法二：数组"><a href="#解法二：数组" class="headerlink" title="解法二：数组"></a>解法二：数组</h1><p>对于数组，进行出圈操作的时候就不能向链表一样删除节点了，因为数组的长度是固定的，那么怎么解决呢？我们可以将<font color="red">已经出圈的孩子所在的元素值赋值为0</font>，这样，当我们遍历到元素值为0的节点时，就可以跳过该节点。<br>步骤：</p><ol><li>首先对参数k、m、n进行校验，确保k、m、n在正常范围内</li><li>因为数组下标是从0开始，小孩编号从1开始，所以让开始数数的小孩编号-1==&gt;k=k-1</li><li>根据nums创建数组，模拟nums个小孩组成的圈</li><li>一共有nums个小孩，所以一共要循环报数nums次==&gt;for (int i = 0; i &lt; nums; i++) {}</li><li>每一次报数m次，所以k要移动m-1次(起初报数时，自己也算一次)，当k代表的数组元素a[k]==0时，说明当前孩子已经出圈，所以需要k再次移动，直到a[k]!=0==&gt;for (int j = 0; j &lt; m - 1||arr[k]==0;) {}</li><li>第5步得到的k是该赋值为0的元素，即该出圈的孩子编号-1==&gt;k+1即为当前该出圈的孩子编号</li><li>a[k]=0，并且将k取模移向下一位</li><li>重复567nums次，直到所有孩子都出圈<br><img src="/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/2.png" alt></li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法之美 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 环形链表 </tag>
+            
+            <tag> 数组 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>数据结构-环形链表</title>
       <link href="/2019/09/15/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8/"/>
       <url>/2019/09/15/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8/</url>
@@ -20,9 +47,9 @@
       
         <tags>
             
-            <tag> 链表 </tag>
-            
             <tag> 环形链表 </tag>
+            
+            <tag> 链表 </tag>
             
             <tag> 数据结构 </tag>
             
@@ -49,9 +76,9 @@
       
         <tags>
             
-            <tag> 数据结构 </tag>
-            
             <tag> 数组 </tag>
+            
+            <tag> 数据结构 </tag>
             
             <tag> 队列 </tag>
             
@@ -78,9 +105,9 @@
       
         <tags>
             
-            <tag> 数据结构 </tag>
-            
             <tag> 数组 </tag>
+            
+            <tag> 数据结构 </tag>
             
         </tags>
       
@@ -609,6 +636,35 @@
     
     
     <entry>
+      <title>青蛙跳台阶</title>
+      <link href="/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/"/>
+      <url>/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<p><strong>难度： 简单</strong></p><p><img src="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="题目如图"></p><a id="more"></a><p><strong>1、动态规划</strong><br>可以知道，如果要到达第n阶台阶，有两种方式：<br>第一：从n-1阶台阶跨1步<br>第二：从n-2阶台阶跨2步<br>设到达第n阶台阶的方法总数为sum(n)<br>那么由上面可以知道：<strong>sum(n)=sum(n-2)+sum(n-1)</strong></p><p>可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法<br>1、从第1阶台阶跨2步上去<br>2、从第2阶跨1步上去</p><p>相应的，到达第1阶台阶只有一种方法，sum(1)=1；<br>到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；<br>所以sum(3)=3;<br><img src="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><p><strong>2、斐波那契数列</strong><br>通过观察规律可以知道：<br>假设第0阶为1；<br>那么可以得到从第1阶往后分别是：<br><strong>1，2，3，5，8，13…..</strong><br>这是一个很明显的斐波那契数列</p><p>3、递归<br>同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和<br>递归出口：n=0的时候返回1，n&lt;0的时候返回0；<br><img src="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>运行到44个样例的时候栈爆了…..</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法之美 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> LeetCode </tag>
+            
+            <tag> 动态规划 </tag>
+            
+            <tag> 斐波那契数列 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>二叉树镜像对称</title>
       <link href="/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/"/>
       <url>/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/</url>
@@ -661,35 +717,6 @@
             <tag> 乱码 </tag>
             
             <tag> 字符流/字节流 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>青蛙跳台阶</title>
-      <link href="/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/"/>
-      <url>/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/</url>
-      
-        <content type="html"><![CDATA[<p><strong>难度： 简单</strong></p><p><img src="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="题目如图"></p><a id="more"></a><p><strong>1、动态规划</strong><br>可以知道，如果要到达第n阶台阶，有两种方式：<br>第一：从n-1阶台阶跨1步<br>第二：从n-2阶台阶跨2步<br>设到达第n阶台阶的方法总数为sum(n)<br>那么由上面可以知道：<strong>sum(n)=sum(n-2)+sum(n-1)</strong></p><p>可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法<br>1、从第1阶台阶跨2步上去<br>2、从第2阶跨1步上去</p><p>相应的，到达第1阶台阶只有一种方法，sum(1)=1；<br>到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；<br>所以sum(3)=3;<br><img src="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><p><strong>2、斐波那契数列</strong><br>通过观察规律可以知道：<br>假设第0阶为1；<br>那么可以得到从第1阶往后分别是：<br><strong>1，2，3，5，8，13…..</strong><br>这是一个很明显的斐波那契数列</p><p>3、递归<br>同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和<br>递归出口：n=0的时候返回1，n&lt;0的时候返回0；<br><img src="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>运行到44个样例的时候栈爆了…..</p>]]></content>
-      
-      
-      <categories>
-          
-          <category> 算法之美 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> LeetCode </tag>
-            
-            <tag> 动态规划 </tag>
-            
-            <tag> 斐波那契数列 </tag>
             
         </tags>
       
