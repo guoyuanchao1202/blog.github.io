@@ -57,32 +57,25 @@
   };
 </script>
 
-  <meta name="description" content="学习过程中参考此篇文章，写的很好 1、观察它继承的父类，实现了那些接口 2、找到它的成员变量 3、学习构造方法 4、学习方法">
-<meta name="keywords" content="Byte,源码">
+  <meta name="description" content="首先，关于单链表的环，一般涉及到以下几个问题  给一个单链表，判断是否有环 如果存在环，找出环的入口点 如果存在环，求出环上节点的个数 如果存在环，求出链表的长度">
+<meta name="keywords" content="链表,HashSet,集合">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JDK源码--Byte类">
-<meta property="og:url" content="https://HoA-W.github.io/2019/09/08/小白学JDK源码--Byte类/index.html">
+<meta property="og:title" content="单链表的环问题">
+<meta property="og:url" content="https://HoA-W.github.io/2019/09/15/判断单链表是否有环/index.html">
 <meta property="og:site_name" content="CommonGuy">
-<meta property="og:description" content="学习过程中参考此篇文章，写的很好 1、观察它继承的父类，实现了那些接口 2、找到它的成员变量 3、学习构造方法 4、学习方法">
+<meta property="og:description" content="首先，关于单链表的环，一般涉及到以下几个问题  给一个单链表，判断是否有环 如果存在环，找出环的入口点 如果存在环，求出环上节点的个数 如果存在环，求出链表的长度">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820165734747.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820165913264.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820170344112.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820170442432.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820170619953.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820170834358.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820171029523.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820172354614.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820172830452.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820174011475.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820174148966.png?x-ossprocess=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190820174320144.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:updated_time" content="2019-09-08T06:01:49.403Z">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/15/判断单链表是否有环/1.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/15/判断单链表是否有环/2.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/15/判断单链表是否有环/3.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/15/判断单链表是否有环/4.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/15/判断单链表是否有环/5.png">
+<meta property="og:updated_time" content="2019-09-15T07:38:26.460Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JDK源码--Byte类">
-<meta name="twitter:description" content="学习过程中参考此篇文章，写的很好 1、观察它继承的父类，实现了那些接口 2、找到它的成员变量 3、学习构造方法 4、学习方法">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190820165734747.png">
-  <link rel="canonical" href="https://HoA-W.github.io/2019/09/08/小白学JDK源码--Byte类/">
+<meta name="twitter:title" content="单链表的环问题">
+<meta name="twitter:description" content="首先，关于单链表的环，一般涉及到以下几个问题  给一个单链表，判断是否有环 如果存在环，找出环的入口点 如果存在环，求出环上节点的个数 如果存在环，求出链表的长度">
+<meta name="twitter:image" content="https://hoa-w.github.io/2019/09/15/判断单链表是否有环/1.png">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/09/15/判断单链表是否有环/">
 
 
 <script id="page-configurations">
@@ -96,7 +89,7 @@
   };
 </script>
 
-  <title>JDK源码--Byte类 | CommonGuy</title>
+  <title>单链表的环问题 | CommonGuy</title>
   
 
 
@@ -272,7 +265,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/09/08/小白学JDK源码--Byte类/">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/09/15/判断单链表是否有环/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="买太平湖底陈年水墨">
@@ -284,7 +277,7 @@
       <meta itemprop="name" content="CommonGuy">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">JDK源码--Byte类
+        <h1 class="post-title" itemprop="name headline">单链表的环问题
 
           
         </h1>
@@ -300,7 +293,7 @@
                 
               
 
-              <time title="创建时间：2019-09-08 09:48:18 / 修改时间：14:01:49" itemprop="dateCreated datePublished" datetime="2019-09-08T09:48:18+08:00">2019-09-08</time>
+              <time title="创建时间：2019-09-15 10:31:27 / 修改时间：15:38:26" itemprop="dateCreated datePublished" datetime="2019-09-15T10:31:27+08:00">2019-09-15</time>
             </span>
           
             
@@ -313,7 +306,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JDK源码/" itemprop="url" rel="index"><span itemprop="name">JDK源码</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法之美/" itemprop="url" rel="index"><span itemprop="name">算法之美</span></a></span>
 
                 
                 
@@ -332,34 +325,101 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><a href="https://www.jianshu.com/p/26bedb3ae3c4" target="_blank" rel="noopener">学习过程中参考此篇文章，写的很好</a></p>
-<pre><code>1、观察它继承的父类，实现了那些接口
-2、找到它的成员变量
-3、学习构造方法
-4、学习方法</code></pre><a id="more"></a>
+        <p><font size="5"><b>首先，关于单链表的环，一般涉及到以下几个问题</b></font></p>
+<ul>
+<li>给一个单链表，判断是否有环</li>
+<li>如果存在环，找出环的入口点</li>
+<li>如果存在环，求出环上节点的个数</li>
+<li>如果存在环，求出链表的长度</li>
+</ul>
+<hr>
+<a id="more"></a>
 
-<h2 id="一、父类和接口"><a href="#一、父类和接口" class="headerlink" title="一、父类和接口"></a>一、父类和接口</h2><p><img src="https://img-blog.csdnimg.cn/20190820165734747.png" alt="在这里插入图片描述"><br>从图中可以知道，Byte类继承了Number类，实现了Comparable接口</p>
-<p>对于Comparable接口，只有一个抽象方法<br><img src="https://img-blog.csdnimg.cn/20190820165913264.png" alt="在这里插入图片描述"><br>这个接口赋予它和它的子类比较的能力，用于排序，比较大小<br>对于一个存储自定义类的数组或集合，只有这个类实现了该接口，重写了接口中的compareTo()方法，重写了排序规则<br>才能使用Arrays类的sort方法进行排序；</p>
-<h2 id="二、成员变量"><a href="#二、成员变量" class="headerlink" title="二、成员变量"></a>二、成员变量</h2><p><img src="https://img-blog.csdnimg.cn/20190820170344112.png" alt="在这里插入图片描述"><br>定义了Byte类型数据的边界值，就是说，Byte类型的值只能在-128~127之间<br><img src="https://img-blog.csdnimg.cn/20190820170442432.png" alt="在这里插入图片描述"><br>TYPE是一个Byte的Class类对象，相当于TYPE=Byte.class；<br><img src="https://img-blog.csdnimg.cn/20190820170619953.png" alt="在这里插入图片描述"><br>这就是Byte类型的基础类型，数据存储的地方(从下面的构造方法可以看出)<br><img src="https://img-blog.csdnimg.cn/20190820170834358.png" alt="在这里插入图片描述"><br>这三个成员变量分别表示Byte数据的位数，字节数和UID(用于序列化和反序列化)</p>
-<h2 id="三、构造方法"><a href="#三、构造方法" class="headerlink" title="三、构造方法"></a>三、构造方法</h2><p><img src="https://img-blog.csdnimg.cn/20190820171029523.png" alt="在这里插入图片描述"><br>Byte的构造方法有两个，可以看出，两个构造方法都会将传入的数据存放到成员变量byte中</p>
-<h2 id="四、私有静态内部类"><a href="#四、私有静态内部类" class="headerlink" title="四、私有静态内部类"></a>四、私有静态内部类</h2><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820171705760.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70)
-这是Byte类的一个静态内部类，类里面还有一个静态代码块
-静态代码块会在类第一次被加载的时候执行，并且只执行一次
-这里的作用就是，创建一个Byte类型的数组，数组的长度是256
-里面存储着-128~127的数字(Byte类数据所有可能的取值)
-并且数组是静态的并且final修饰，
-因为后面的有些成员方法会需要用到Byte对象，所以这样做就避免了重复创建对象和回收对象</code></pre><h2 id="五、成员方法"><a href="#五、成员方法" class="headerlink" title="五、成员方法"></a>五、成员方法</h2><h1 id="1、toString-byte-b-方法"><a href="#1、toString-byte-b-方法" class="headerlink" title="1、toString(byte b)方法"></a>1、toString(byte b)方法</h1><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820171318100.png)
-注意：这个toString()方法不是重写Object的toString方法，因为它有参数
-作用：将一个byte类型数据转化为String字符串类型
-实质上是直接调用Integer类的toString方法，
-radix：10：用10进制表示</code></pre><h1 id="2、valueOf-byte-b"><a href="#2、valueOf-byte-b" class="headerlink" title="2、valueOf(byte b)"></a>2、valueOf(byte b)</h1><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820172235507.png)
-作用：将基本类型--&gt;包装类型，直接从上面的数组中得到</code></pre><h1 id="3、parseByte-String-s-int-radix"><a href="#3、parseByte-String-s-int-radix" class="headerlink" title="3、parseByte(String s,int radix)"></a>3、parseByte(String s,int radix)</h1><p><img src="https://img-blog.csdnimg.cn/20190820172354614.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 参数：<br>     String s:要解析的字符串<br>     int radix:指定字符串表示的进制<br>     例如：s=“10000”，radix=2，解析出来的值就是16<br> 作用：<br>     将字符串按照指定进制解析为byte类型<br>     实质上调用的是Integer的parseInt方法，解析成int类型<br>     判断是否超出范围，超出范围就抛异常，否则就返回</p>
-<h1 id="4、parseByte-String-s"><a href="#4、parseByte-String-s" class="headerlink" title="4、parseByte(String s)"></a>4、parseByte(String s)</h1><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820172742458.png)
-不指定进制默认十进制解析</code></pre><h1 id="5、valueOf-String-s-int-radix"><a href="#5、valueOf-String-s-int-radix" class="headerlink" title="5、valueOf(String s,int radix)"></a>5、valueOf(String s,int radix)</h1><p>  <img src="https://img-blog.csdnimg.cn/20190820172830452.png" alt="在这里插入图片描述"><br>参数：<br>    String s:要转换的字符串<br>    int radix：字符串表示的进制，和解析方法一样<br>作用：<br>    将字符串转换为按照指定进制形式表示的Byte类型，<br>先将字符串解析为byte类型，在调用valueOf()方法，从静态代码块初始的数组中找到对应的Byte并返回</p>
-<h1 id="6、valueOf-String-s"><a href="#6、valueOf-String-s" class="headerlink" title="6、valueOf(String s)"></a>6、valueOf(String s)</h1><pre><code>默认10进制</code></pre><h1 id="7、xxxValue-方法"><a href="#7、xxxValue-方法" class="headerlink" title="7、xxxValue()方法"></a>7、xxxValue()方法</h1><pre><code>重写父类的方法，由于byte数值最小，不用担心出现溢出
-直接用强制类型转换，然后return</code></pre><h1 id="8、hashCode"><a href="#8、hashCode" class="headerlink" title="8、hashCode()"></a>8、hashCode()</h1><p><img src="https://img-blog.csdnimg.cn/20190820174011475.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>重写了父类的hashCode方法，对于Byte类型，它的hashCode方法实质上就是返回它的值</p>
-<h1 id="9、equals-方法"><a href="#9、equals-方法" class="headerlink" title="9、equals()方法"></a>9、equals()方法</h1><p> <img src="https://img-blog.csdnimg.cn/20190820174148966.png?x-ossprocess=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 重写了父类的equals方法</p>
-<h1 id="10、compareTo-方法"><a href="#10、compareTo-方法" class="headerlink" title="10、compareTo()方法"></a>10、compareTo()方法</h1><p> <img src="https://img-blog.csdnimg.cn/20190820174320144.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 重写了接口中的compareTo方法，直接返回两个对象的差值<br> 调用方法的对象-方法的参数</p>
+<h1 id="判断是否有环"><a href="#判断是否有环" class="headerlink" title="判断是否有环"></a>判断是否有环</h1><h2 id="解法一：快慢指针法"><a href="#解法一：快慢指针法" class="headerlink" title="解法一：快慢指针法"></a><font size="5">解法一：快慢指针法</font></h2><ol>
+<li>有两个指针fast和slow，开始时两个指针都指向链表头head</li>
+<li>将两个指针同时向后移动<ul>
+<li>fast每次走两步==&gt;fast=fast.next.next</li>
+<li>slow每次走一步==&gt;slow=slow.next</li>
+</ul>
+</li>
+<li>如果没有环，那么fast和slow一定不会相遇；当fast.next==null||slow==null时说明该链表没有环，因为<font color="red">有环的链表没有nul指针</font></li>
+<li>如果有环，那么slow一定会和fast相遇,并且此时slow指针最多绕环一圈，即slow走的步数一定小于等于单链表的节点数<ul>
+<li>可以这么理解，当链表时环形链表时，环是最大的，此时slow刚好绕环一圈回到头指针指向的节点时</li>
+<li>fast的速度是slow的二倍(因为fast每次走2步)，所以fast此时一定走了两圈，也回到了头指针指向的节点，最终会在头节点相遇</li>
+<li>如果链表不是环形链表，那么环的长度就会更短，此时fast一定能在slow走完一圈之前和slow相遇</li>
+</ul>
+</li>
+</ol>
+<p>(可以画图帮助理解)<br><img src="/2019/09/15/判断单链表是否有环/1.png" alt>方法返回的是相遇的节点</p>
+<h2 id="解法二：HashSet法"><a href="#解法二：HashSet法" class="headerlink" title="解法二：HashSet法"></a><font size="5">解法二：HashSet法</font></h2><ol>
+<li>遍历链表，将当前节点的引用存储到HashSet中</li>
+<li>如果当遍历到某个节点时，HashSet集合中已经存在该节点的引用，那么说明该链表有环，并且<font color="red">第一个重复的节点就是入环口</font><br><img src="/2019/09/15/判断单链表是否有环/2.png" alt></li>
+</ol>
+<h1 id="找出环的入口点"><a href="#找出环的入口点" class="headerlink" title="找出环的入口点"></a>找出环的入口点</h1><p>如果用HashSet方法来解决第一个问题，那么这个问题就同时得到了解决<br>如果用快慢指针法解决第一题，那么<font color="red">得到fast和slow第一次相遇的节点</font>，</p>
+<p><font color="blue">假设slow和fast相遇时，slow还没有走完链表，即链表不是首尾相接的环形链表</font><br><font color="red"><b>分析</b></font></p>
+<ol>
+<li>假设<ul>
+<li>链表的长度为L</li>
+<li>环的长度为r(即环有r个节点)</li>
+<li>head节点到入环口的距离为a(即从head到入环节点要走a步)</li>
+<li>入环口和相遇点的距离是x(从入环节点到相遇点要走a步)</li>
+</ul>
+</li>
+<li>假设fast和slow相遇时，fast已经在环内循环了n圈，slow走了s步，在环内走一圈的步数=环的长度<ul>
+<li>那么fast走过的步数为：2s步</li>
+</ul>
+</li>
+<li>则有：2<em>s=s+n *r–&gt;s=n</em>r</li>
+<li>又有s=a+x–&gt;因为前面说过slow节点没有走完一圈，所以这就是最简单的步数相加</li>
+<li>所以得到a+x=n*r<ul>
+<li>a+x=(n-1)*r+r</li>
+<li>a+x=(n-1)*r+L-a</li>
+</ul>
+</li>
+<li>a=(n-1)*r+(L-a-x)<ul>
+<li>a：head到入环节点要走a步</li>
+<li>(L-a-x)：从向相遇节点到入环节点要走(L-a-x)步</li>
+</ul>
+</li>
+</ol>
+<p><font color="red"><b>经过上面分析可以总结得到解决方法</b></font></p>
+<ul>
+<li>设置两个临时指针str1和str2<ul>
+<li>str1=head</li>
+<li>str2=slow(slow是第一问得出的相遇节点)</li>
+</ul>
+</li>
+<li>让两个节点同时往后走，直到str1==str2为止<ul>
+<li>str1=str1.next</li>
+<li>str2=str2.next</li>
+</ul>
+</li>
+<li>str1==str2时退出循环，此时的str1/str2就是入环节点<br><img src="/2019/09/15/判断单链表是否有环/3.png" alt></li>
+</ul>
+<p><font color="blue"><b>特殊情况：即链表首尾相接(环长度最大)</b></font></p>
+<ul>
+<li>此时slow节点和fast节点在head相遇，即slow==head</li>
+</ul>
+<p>根据上面的代码会直接返回head/slow，因此也满足特殊情况</p>
+<h1 id="求出环上节点的个数"><a href="#求出环上节点的个数" class="headerlink" title="求出环上节点的个数"></a>求出环上节点的个数</h1><h2 id="解法一：相遇节点法"><a href="#解法一：相遇节点法" class="headerlink" title="解法一：相遇节点法"></a><font size="5">解法一：相遇节点法</font></h2><ol>
+<li>设置一个临时指针temp=slow(相遇节点)</li>
+<li>让临时指针temp后移–&gt;temp=temp.next，并记录移动次数count</li>
+<li>当temp==slow时，说明temp绕环走了一圈，count就是换的长度</li>
+</ol>
+<h2 id="解法二：快慢指针法"><a href="#解法二：快慢指针法" class="headerlink" title="解法二：快慢指针法"></a><font size="5">解法二：快慢指针法</font></h2><ol>
+<li>设置两个临时指针，str1=str2=slow(相遇节点)</li>
+<li>str1每次走一步、str2每次走两步，并记录str1走的步数count<ul>
+<li>str1=str1.next</li>
+<li>str2=str2.next.next</li>
+</ul>
+</li>
+<li>当str1==str2(再次相遇)时，说明str2刚好比str1多走1圈，此时count就是环上节点的个数<ul>
+<li>假设再次相遇时str1走了s步、str2走了2*s步、环的长度为r</li>
+<li>由分析得到2*s=s+r，所以s=r;<br><img src="/2019/09/15/判断单链表是否有环/4.png" alt></li>
+</ul>
+</li>
+</ol>
+<h1 id="求出链表的长度"><a href="#求出链表的长度" class="headerlink" title="求出链表的长度"></a>求出链表的长度</h1><p>链表长度L=head节点到入口节点的距离a+环的长度r<br>根据上面两个问题，这个就很好解决<br><img src="/2019/09/15/判断单链表是否有环/5.png" alt></p>
 
     </div>
 
@@ -407,9 +467,11 @@ radix：10：用10进制表示</code></pre><h1 id="2、valueOf-byte-b"><a href="
           
           <div class="post-tags">
             
-              <a href="/tags/Byte/" rel="tag"><i class="fa fa-tag"></i>Byte</a>
+              <a href="/tags/链表/" rel="tag"><i class="fa fa-tag"></i>链表</a>
             
-              <a href="/tags/源码/" rel="tag"><i class="fa fa-tag"></i>源码</a>
+              <a href="/tags/HashSet/" rel="tag"><i class="fa fa-tag"></i>HashSet</a>
+            
+              <a href="/tags/集合/" rel="tag"><i class="fa fa-tag"></i>集合</a>
             
           </div>
         
@@ -419,8 +481,8 @@ radix：10：用10进制表示</code></pre><h1 id="2、valueOf-byte-b"><a href="
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/09/07/LeetCode-第70题/" rel="next" title="青蛙跳台阶">
-                  <i class="fa fa-chevron-left"></i> 青蛙跳台阶
+                <a href="/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/" rel="next" title="Josefu问题(约瑟夫环)两种解决方法">
+                  <i class="fa fa-chevron-left"></i> Josefu问题(约瑟夫环)两种解决方法
                 </a>
               
             </div>
@@ -428,10 +490,6 @@ radix：10：用10进制表示</code></pre><h1 id="2、valueOf-byte-b"><a href="
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/09/08/HTML5基础回顾/" rel="prev" title="HTML5基础回顾">
-                  HTML5基础回顾 <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -480,7 +538,7 @@ radix：10：用10进制表示</code></pre><h1 id="2、valueOf-byte-b"><a href="
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、父类和接口"><span class="nav-number">1.</span> <span class="nav-text">一、父类和接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、成员变量"><span class="nav-number">2.</span> <span class="nav-text">二、成员变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、构造方法"><span class="nav-number">3.</span> <span class="nav-text">三、构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、私有静态内部类"><span class="nav-number">4.</span> <span class="nav-text">四、私有静态内部类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、成员方法"><span class="nav-number">5.</span> <span class="nav-text">五、成员方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1、toString-byte-b-方法"><span class="nav-number"></span> <span class="nav-text">1、toString(byte b)方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、valueOf-byte-b"><span class="nav-number"></span> <span class="nav-text">2、valueOf(byte b)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3、parseByte-String-s-int-radix"><span class="nav-number"></span> <span class="nav-text">3、parseByte(String s,int radix)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4、parseByte-String-s"><span class="nav-number"></span> <span class="nav-text">4、parseByte(String s)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5、valueOf-String-s-int-radix"><span class="nav-number"></span> <span class="nav-text">5、valueOf(String s,int radix)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6、valueOf-String-s"><span class="nav-number"></span> <span class="nav-text">6、valueOf(String s)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7、xxxValue-方法"><span class="nav-number"></span> <span class="nav-text">7、xxxValue()方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8、hashCode"><span class="nav-number"></span> <span class="nav-text">8、hashCode()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9、equals-方法"><span class="nav-number"></span> <span class="nav-text">9、equals()方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10、compareTo-方法"><span class="nav-number"></span> <span class="nav-text">10、compareTo()方法</span></a></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#判断是否有环"><span class="nav-number">1.</span> <span class="nav-text">判断是否有环</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#解法一：快慢指针法"><span class="nav-number">1.1.</span> <span class="nav-text">解法一：快慢指针法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解法二：HashSet法"><span class="nav-number">1.2.</span> <span class="nav-text">解法二：HashSet法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#找出环的入口点"><span class="nav-number">2.</span> <span class="nav-text">找出环的入口点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#求出环上节点的个数"><span class="nav-number">3.</span> <span class="nav-text">求出环上节点的个数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#解法一：相遇节点法"><span class="nav-number">3.1.</span> <span class="nav-text">解法一：相遇节点法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解法二：快慢指针法"><span class="nav-number">3.2.</span> <span class="nav-text">解法二：快慢指针法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#求出链表的长度"><span class="nav-number">4.</span> <span class="nav-text">求出链表的长度</span></a></li></ol></div>
         
       </div>
       <!--/noindex-->
