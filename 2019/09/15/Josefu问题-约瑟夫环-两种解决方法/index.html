@@ -67,7 +67,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://hoa-w.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/1.png">
 <meta property="og:image" content="https://hoa-w.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/2.png">
-<meta property="og:updated_time" content="2019-09-15T02:24:24.452Z">
+<meta property="og:updated_time" content="2019-09-15T02:27:17.540Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Josefu问题(约瑟夫环)两种解决方法">
 <meta name="twitter:description" content="约瑟夫问题设编号为1、2….n的n个人坐一圈，约定编号为k(1&amp;lt;=k&amp;lt;=n)的人从1开始报数，数到m的那个人出圈，他的下一位又从1开始报数，数到m的人又出圈，以此类推，直到所有人出圈为止，由此产生一个出圈编号的序列">
@@ -290,7 +290,7 @@
                 
               
 
-              <time title="创建时间：2019-09-15 09:31:36 / 修改时间：10:24:24" itemprop="dateCreated datePublished" datetime="2019-09-15T09:31:36+08:00">2019-09-15</time>
+              <time title="创建时间：2019-09-15 09:31:36 / 修改时间：10:27:17" itemprop="dateCreated datePublished" datetime="2019-09-15T09:31:36+08:00">2019-09-15</time>
             </span>
           
             
@@ -332,9 +332,9 @@
 <li>让helper指向first前一个节点，即指向最初链表的最后一个节点</li>
 <li>将first和helper向后移动k-1次，即让first指向开始报数的小孩</li>
 <li>当helper==first时，说明圈中只有一个小孩</li>
-<li>helper！=first时，将first和boyHelper同时向后移动m-1次</li>
+<li>helper！=first时，将first和helper同时向后移动m-1次</li>
 <li>将移动m-1此之后first指向的节点出圈</li>
-<li>继续执行5，直到boyHelper==first为止</li>
+<li>继续执行5，直到helper==first为止</li>
 </ol>
 <p><img src="/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/1.png" alt><br>其中方法的参数：</p>
 <ul>
