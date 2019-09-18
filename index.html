@@ -285,7 +285,7 @@
                 
               
 
-              <time title="创建时间：2019-09-18 08:11:21 / 修改时间：08:49:38" itemprop="dateCreated datePublished" datetime="2019-09-18T08:11:21+08:00">2019-09-18</time>
+              <time title="创建时间：2019-09-18 08:11:21 / 修改时间：08:50:52" itemprop="dateCreated datePublished" datetime="2019-09-18T08:11:21+08:00">2019-09-18</time>
             </span>
           
             
@@ -317,31 +317,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p><font size="5"><b>迷宫问题</b></font><br>有一个迷宫，迷宫中有一个小球，要求给小球一个起始位置和迷宫的终点位置，给小球找到一条路能够到达终点位置。</p><hr><h1 id="构建迷宫"><a href="#构建迷宫" class="headerlink" title="构建迷宫"></a>构建迷宫</h1><ul>
-<li>用一个二维数组模拟迷宫</li>
-<li>用1表示围墙和障碍物</li>
-<li>用2表示小球从起始位置到终点位置走过的点<br><img src="/2019/09/18/迷宫问题/1.png" alt><br>以下就是构建好的迷宫<br><img src="/2019/09/18/迷宫问题/2.png" alt></li>
-</ul><h1 id="递归解决"><a href="#递归解决" class="headerlink" title="递归解决"></a>递归解决</h1><ul>
-<li>定义一个方法、传递一下参数<ul>
-<li>毫无疑问、要将map二维数组传递进去</li>
-<li>将小球的起始位置传递进去</li>
-<li>由于这里默认出口是最右下角，就不传递终点位置了</li>
-</ul>
-</li>
-<li><font color="red">递归出口：</font>前面说到了，用2表示小球走过的点，那么当终点位置map[6][5]==2时，说明小球已经走到了终点，递归结束</li>
-<li>判断当前点map[i][j]是否为0,如果为0<ul>
-<li>先假定通过当前点能到达终点位置，即将当前点设置为2</li>
-<li>设置寻路策略：即每次到达一个点，就会有上下左右四种走法，所谓寻路策略，即指定小球先向哪个方向走，该方向走不通后再向哪个方向走，这里我指定的寻路策略是<font color="red">下右上左</font></li>
-<li>如果该点的四个位置都走不通，那么说明该点不通，此时将当前点设置为3，即map[i][j]=3,表明该点走过，确认走不通</li>
-</ul>
-</li>
-<li>如果不为0，那么当前点的取值情况有三种<ul>
-<li>map[i][j]==1，说明该点为墙，走不通，返回false</li>
-<li>map[i][j]==2，说明该点走过了，就不能再走了，返回false</li>
-<li>map[i][j]==3，说明该点已经确定了走不通，返回false<br><img src="/2019/09/18/迷宫问题/3.png" alt></li>
-</ul>
-</li>
-</ul>
+          <p><font size="5"><b>迷宫问题</b></font><br>有一个迷宫，迷宫中有一个小球，要求给小球一个起始位置和迷宫的终点位置，给小球找到一条路能够到达终点位置。</p>
+<hr>
           <!--noindex-->
           
             <div class="post-button text-center">
