@@ -1,377 +1,851 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title><![CDATA[八皇后问题]]></title>
-    <url>%2F2019%2F09%2F18%2F%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[八皇后问题一个古老而著名的问题，该问题是回溯算法的典型案例。在8*8格的国际棋盘上摆放8个皇后，使其相互不能攻击。即：任意两个皇后不能处于同一行、同一列或同意斜线上，问有多少中摆法？ 问题分析 第一个皇后先放在第一行第一列 第二个皇后放在第二行第一列，然后判断是否满足条件 不满足：继续放在第二行第二列…依次把所有列放完，找到一个合适的位置 满足：摆放下一个皇后(递归) 直到第八个皇后也能放在一个满足条件的位置，就算找到一个正确解(递归出口) 当得到第一个正确解时，就会开始回溯，即将第一个皇后放在第一列的所有正确节点全部找到 然后回头继续将第一个皇后放在第二列，后面继续循环执行上面的步骤 一维数组代替二维数组理论上，我们应该创建一个二维数组表示棋盘，但实际上可以通过算法，用一个一维数组解决问题例如：arr[8]={0,4,7,5,2,6,1,3} 数组arr的下标：表示第几行，即第几个皇后 arr[i]=val：表示第i+1个皇后放在第i+1行的val+1的位置 检查冲突的方法该方法用于检查当前第n个皇后和前面的n-1个皇后是否发生冲突(即是否在同一行、同一列或同一斜线上) arr[n] == arr[i]：数组的值表示的是列，这里是判断第i+1个皇后是否和第n+1个皇后在同一列 Math.abs(n-i)==Math.abs(arr[n]-arr[i])：判断第i+1个皇后是否和第n+1个皇后在同一斜线 Math.abs(n-i)：第i+1个皇后和第n+1个皇后的行数差 Math.abs(arr[n]-arr[i])：第i+1个皇后和第n+1个皇后的列数差如果行数差==列数差，说明两个皇后在同一斜线上 递归回溯方法 首先，创建一个长度为9的数组，0-7用于表示8个皇后，最后一个用于记录摆放方法个数 当n==MAX=8时：之前说过，n代表第n+1个皇后(例如n=0时代表第一个皇后)，那么n=8应该代表的是第9个皇后，这时候说明前8个皇后都已经摆放好了，即找到了一种摆放方法 arr[MAX]++：个数+1； 打印当前摆放方法 n&lt;MAX说明皇后还没有摆放完，先将当前皇后摆放在第i列，检查这个位置是否和前面已经摆放的皇后位置冲突 如果不冲突，递归调用方法，摆放下一个皇后 如果冲突，i++，回到第3步。(即将当前皇后摆放到下一列，继续判断) 当找到一种正确方法后，会向上回溯 前面7个皇后位置不变，将第8个皇后从当前列往后摆，找到所有正确的摆法 前面6个皇后不变，将第7个皇后向后摆放1列 将第8个皇后从第1列往后摆，找到所有正确的摆法 回到第2步，直到将第7个皇后摆放到最后1列，找到所有正确的摆法 前面5个皇后不变…. 以此类推，直到最后将第1个皇后摆放到最后1列。这样，就找到了所有正确的解法！]]></content>
+<search> 
+  
+  
+    
+    <entry>
+      <title>八皇后问题</title>
+      <link href="/2019/09/18/%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/"/>
+      <url>/2019/09/18/%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<p><font size="5"><b>八皇后问题</b></font><br>一个古老而著名的问题，该问题是回溯算法的典型案例。在8*8格的国际棋盘上摆放8个皇后，使其相互不能攻击。即：任意两个皇后不能处于同一行、同一列或同意斜线上，问有多少中摆法？</p><hr><a id="more"></a><h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><ul><li>第一个皇后先放在第一行第一列</li><li>第二个皇后放在第二行第一列，然后判断是否满足条件<ul><li>不满足：继续放在第二行第二列…依次把所有列放完，找到一个合适的位置</li><li>满足：摆放下一个皇后(递归)</li></ul></li><li>直到第八个皇后也能放在一个满足条件的位置，就算找到一个正确解(递归出口)</li><li>当得到第一个正确解时，就会开始回溯，即将第一个皇后放在第一列的所有正确节点全部找到</li><li>然后回头继续将第一个皇后放在第二列，后面继续循环执行上面的步骤</li></ul><h1 id="一维数组代替二维数组"><a href="#一维数组代替二维数组" class="headerlink" title="一维数组代替二维数组"></a>一维数组代替二维数组</h1><p>理论上，我们应该创建一个二维数组表示棋盘，但实际上可以通过算法，用一个一维数组解决问题<br>例如：arr[8]={0,4,7,5,2,6,1,3}</p><ul><li>数组arr的下标：表示第几行，即第几个皇后</li><li>arr[i]=val：表示第i+1个皇后放在第i+1行的val+1的位置</li></ul><h1 id="检查冲突的方法"><a href="#检查冲突的方法" class="headerlink" title="检查冲突的方法"></a>检查冲突的方法</h1><p><img src="/2019/09/18/八皇后问题/1.png" alt>该方法用于检查当前第n个皇后和前面的n-1个皇后是否发生冲突(即是否在同一行、同一列或同一斜线上)</p><ul><li><font color="red">arr[n] == arr[i]：</font>数组的值表示的是列，这里是判断第i+1个皇后是否和第n+1个皇后在同一列</li><li><font color="red">Math.abs(n-i)==Math.abs(arr[n]-arr[i])：</font>判断第i+1个皇后是否和第n+1个皇后在同一斜线<ul><li><font color="red">Math.abs(n-i)：</font>第i+1个皇后和第n+1个皇后的行数差</li><li><font color="red">Math.abs(arr[n]-arr[i])：</font>第i+1个皇后和第n+1个皇后的列数差<br>如果行数差==列数差，说明两个皇后在同一斜线上</li></ul></li></ul><h1 id="递归回溯方法"><a href="#递归回溯方法" class="headerlink" title="递归回溯方法"></a>递归回溯方法</h1><p><img src="/2019/09/18/八皇后问题/2.png" alt></p><ol><li>首先，创建一个长度为9的数组，0-7用于表示8个皇后，最后一个用于记录摆放方法个数</li><li>当n==MAX=8时：之前说过，n代表第n+1个皇后(例如n=0时代表第一个皇后)，那么n=8应该代表的是第9个皇后，这时候说明前8个皇后都已经摆放好了，即找到了一种摆放方法<ul><li>arr[MAX]++：个数+1；</li><li>打印当前摆放方法</li></ul></li><li>n&lt;MAX说明皇后还没有摆放完，先将当前皇后摆放在第i列，检查这个位置是否和前面已经摆放的皇后位置冲突<ul><li>如果不冲突，递归调用方法，摆放下一个皇后</li><li>如果冲突，i++，回到第3步。(即将当前皇后摆放到下一列，继续判断)</li></ul></li></ol><hr><font size="5" color="red"><b>当找到一种正确方法后，会向上回溯</b></font><br><ol><li>前面7个皇后位置不变，将第8个皇后从当前列往后摆，找到所有正确的摆法</li><li>前面6个皇后不变，将第7个皇后向后摆放1列<ul><li>将第8个皇后从第1列往后摆，找到所有正确的摆法</li><li>回到第2步，直到将第7个皇后摆放到最后1列，找到所有正确的摆法</li></ul></li><li>前面5个皇后不变….</li><li>以此类推，直到最后将第1个皇后摆放到最后1列。这样，就找到了所有正确的解法！</li></ol>]]></content>
+      
+      
       <categories>
-        <category>算法之美</category>
+          
+          <category> 算法之美 </category>
+          
       </categories>
-      <tags>
-        <tag>递归</tag>
-        <tag>回溯</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[迷宫问题]]></title>
-    <url>%2F2019%2F09%2F18%2F%E8%BF%B7%E5%AE%AB%E9%97%AE%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[迷宫问题有一个迷宫，迷宫中有一个小球，要求给小球一个起始位置和迷宫的终点位置，给小球找到一条路能够到达终点位置。 构建迷宫 用一个二维数组模拟迷宫 用1表示围墙和障碍物 用2表示小球从起始位置到终点位置走过的点以下就是构建好的迷宫 递归解决 定义一个方法、传递一下参数 毫无疑问、要将map二维数组传递进去 将小球的起始位置传递进去 由于这里默认出口是最右下角，就不传递终点位置了 递归出口：前面说到了，用2表示小球走过的点，那么当终点位置map[6][5]==2时，说明小球已经走到了终点，递归结束 判断当前点map[i][j]是否为0,如果为0 先假定通过当前点能到达终点位置，即将当前点设置为2 设置寻路策略：即每次到达一个点，就会有上下左右四种走法，所谓寻路策略，即指定小球先向哪个方向走，该方向走不通后再向哪个方向走，这里我指定的寻路策略是下右上左 如果该点的四个位置都走不通，那么说明该点不通，此时将当前点设置为3，即map[i][j]=3,表明该点走过，确认走不通 如果不为0，那么当前点的取值情况有三种 map[i][j]==1，说明该点为墙，走不通，返回false map[i][j]==2，说明该点走过了，就不能再走了，返回false map[i][j]==3，说明该点已经确定了走不通，返回false 找到出路最后根据我下右上左的寻路策略找到的路线其中2代表的就是起点到终点的路线，通过不同寻路策略找到的路线可能不同 对于递归解决迷宫问题，我想可以这么理解每次走到一个点时，都会按照寻路策略的顺序走 如果某个方向能走通，那就继续往下走 如果到了某个点时，该点四个方向都走不通，那么就回溯，即回到该点的上一个节点，从上一个点的其他方向继续走 例如：对于A点，我们按照寻路策略先向下走，走到了B点，这时候发现，B点四个方向都走不通，那么就回退到A点，按照寻路策略向右走。以此类推，直到找到终点和每个点都被标记为3。]]></content>
+      
+      
+        <tags>
+            
+            <tag> 递归 </tag>
+            
+            <tag> 回溯 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>迷宫问题</title>
+      <link href="/2019/09/18/%E8%BF%B7%E5%AE%AB%E9%97%AE%E9%A2%98/"/>
+      <url>/2019/09/18/%E8%BF%B7%E5%AE%AB%E9%97%AE%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<p><font size="5"><b>迷宫问题</b></font><br>有一个迷宫，迷宫中有一个小球，要求给小球一个起始位置和迷宫的终点位置，给小球找到一条路能够到达终点位置。</p><hr><a id="more"></a><h1 id="构建迷宫"><a href="#构建迷宫" class="headerlink" title="构建迷宫"></a>构建迷宫</h1><ul><li>用一个二维数组模拟迷宫</li><li>用1表示围墙和障碍物</li><li>用2表示小球从起始位置到终点位置走过的点<br><img src="/2019/09/18/迷宫问题/1.png" alt><br>以下就是构建好的迷宫<br><img src="/2019/09/18/迷宫问题/2.png" alt></li></ul><h1 id="递归解决"><a href="#递归解决" class="headerlink" title="递归解决"></a>递归解决</h1><ul><li>定义一个方法、传递一下参数<ul><li>毫无疑问、要将map二维数组传递进去</li><li>将小球的起始位置传递进去</li><li>由于这里默认出口是最右下角，就不传递终点位置了</li></ul></li><li><font color="red">递归出口：</font>前面说到了，用2表示小球走过的点，那么当终点位置map[6][5]==2时，说明小球已经走到了终点，递归结束</li><li>判断当前点map[i][j]是否为0,如果为0<ul><li>先假定通过当前点能到达终点位置，即将当前点设置为2</li><li>设置寻路策略：即每次到达一个点，就会有上下左右四种走法，所谓寻路策略，即指定小球先向哪个方向走，该方向走不通后再向哪个方向走，这里我指定的寻路策略是<font color="red">下右上左</font></li><li>如果该点的四个位置都走不通，那么说明该点不通，此时将当前点设置为3，即map[i][j]=3,表明该点走过，确认走不通</li></ul></li><li>如果不为0，那么当前点的取值情况有三种<ul><li>map[i][j]==1，说明该点为墙，走不通，返回false</li><li>map[i][j]==2，说明该点走过了，就不能再走了，返回false</li><li>map[i][j]==3，说明该点已经确定了走不通，返回false<br><img src="/2019/09/18/迷宫问题/3.png" alt></li></ul></li></ul><h1 id="找到出路"><a href="#找到出路" class="headerlink" title="找到出路"></a>找到出路</h1><p>最后根据我下右上左的寻路策略找到的路线<br><img src="/2019/09/18/迷宫问题/4.png" alt>其中2代表的就是起点到终点的路线，通过不同寻路策略找到的路线可能不同</p><hr><p><font size="5"><b>对于递归解决迷宫问题，我想可以这么理解</b></font><br>每次走到一个点时，都会按照寻路策略的顺序走</p><ul><li>如果某个方向能走通，那就继续往下走</li><li>如果到了某个点时，该点四个方向都走不通，那么就回溯，即回到该点的上一个节点，从上一个点的其他方向继续走</li></ul><p>例如：<br>对于A点，我们按照寻路策略先向下走，走到了B点，这时候发现，B点四个方向都走不通，那么<font color="red">就回退到A点，按照寻路策略向右走</font>。以此类推，直到找到终点和每个点都被标记为3。</p>]]></content>
+      
+      
       <categories>
-        <category>算法之美</category>
+          
+          <category> 算法之美 </category>
+          
       </categories>
-      <tags>
-        <tag>递归</tag>
-        <tag>回溯</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[逆波兰计算器]]></title>
-    <url>%2F2019%2F09%2F16%2F%E9%80%86%E6%B3%A2%E5%85%B0%E8%AE%A1%E7%AE%97%E5%99%A8%2F</url>
-    <content type="text"><![CDATA[今天重新学习了一下栈这一经典的数据结构，突然想起来当时大二为了进实验室用安卓写的一个计算器app，当时也是年轻，虽然写出来了，但是对于中缀转后缀却仍是似懂非懂、迷迷糊糊，所以趁着刚复习完栈这个号时候，准备趁热打铁，把这方面给弄明白了。 概念什么是中缀表达式中缀表达式，就是我们平常见到的表达式，例如1+((2+3)*4)-5。它便于我们理解和计算，但是却不利于计算机来运算，因为在运算过程中需要不停的判断操作符优先级 什么是后缀表达式后缀表达式，又称为逆波兰式，上面的1+((2+3)4)-5。转换成后缀表达式就是123+4+5-，计算机在计算后缀表达式的时候，不用判断操作符的优先级，每次遇到操作符，直接从栈中弹出两个操作数进行相应的运算即可，但是这样的表达式对我们来说写出来就比较困难，尤其是在表达式比较长比较复杂的时候。 中缀转后缀首先，我先说一下我的大致思路 将中缀表达式的字符串存储到一个ArrayList中==&gt;这一步主要是方便操作、 一个存放操作符的栈s1 注意：网上大多的教程是准备两个栈，一个存放操作符，一个存放的是逆序的后缀表达式，但这里我用ArrayList集合代替了第二个栈，这样做的好处就是可以直接得到后缀表达式，而非逆序的，至于为什么后面会说 中缀表达式集合 遍历字符串 如果当前字符是操作符，那么直接加入到集合中 如果当前字符是操作数，那么就要考虑多位数操作数的问题 继续向后遍历，如果后面的字符仍是操作数，就将这些数拼接起来 直到当前字符不是操作数为止，将拼接的字符串加入到集合中 判断操作符优先级 后缀表达式集合上一步我们得到了一个集合，集合中存储着中缀表达式内容，这一步就要将中缀表达式转换为后缀表达式并存储到集合中步骤： 创建变量 栈s1用于存放操作数 集合ls用于存放后缀表达式 遍历中缀表达式集合list，如果是操作数，直接放到ls集合中 如果是”(“，直接压入s1中 如果是”)”，将s1中的操作符出栈并加入到ls集合中，直到s1栈顶元素为”(“为止，最后将”(“也出栈(但是不加入ls中)，这一步操作目的是消去”()” 如果是操作符 如果s1栈为空，那么直接入栈 如果当前操作符优先级大于栈顶操作符优先级，将当前操作符入栈 如果当前操作符优先级不大于栈顶操作符优先级，那么将栈顶元素出栈并加入到ls集合中，继续和新的栈顶操作符比较，直到栈为空或者当前操作符优先级大于栈顶操作符优先级为止 将当前操作符压入s1中 集合list遍历完毕后，将s1中所有元素依次出栈加入到ls集合中 最后得到的ls集合就是后缀表达式 注意：这里如果用栈代替集合，那么由于栈先进后出的特性，得到的只能是逆序的后缀表达式，还要进一步的转换才能得到后缀表达式 计算后缀表达式 创建一个栈stack用于存放操作数 从左向右扫描后缀表达式集合 如果是操作数，直接入栈 如果是操作符，就从stack中弹出两个操作数进行运算，并将运算结果重新入栈 集合遍历完毕，stack剩下的元素就是最后的结果 这样一个简单地逆波兰计算器就成功了，核心逻辑在于如何利用栈将中缀表达式转换为后缀表达式(逆波兰式)]]></content>
+      
+      
+        <tags>
+            
+            <tag> 递归 </tag>
+            
+            <tag> 回溯 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>逆波兰计算器</title>
+      <link href="/2019/09/16/%E9%80%86%E6%B3%A2%E5%85%B0%E8%AE%A1%E7%AE%97%E5%99%A8/"/>
+      <url>/2019/09/16/%E9%80%86%E6%B3%A2%E5%85%B0%E8%AE%A1%E7%AE%97%E5%99%A8/</url>
+      
+        <content type="html"><![CDATA[<p>今天重新学习了一下栈这一经典的数据结构，突然想起来当时大二为了进实验室用安卓写的一个计算器app，当时也是年轻，虽然写出来了，但是对于中缀转后缀却仍是似懂非懂、迷迷糊糊，所以趁着刚复习完栈这个号时候，准备趁热打铁，把这方面给弄明白了。</p><hr><a id="more"></a><h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><h2 id="什么是中缀表达式"><a href="#什么是中缀表达式" class="headerlink" title="什么是中缀表达式"></a><font size="5">什么是中缀表达式</font></h2><p>中缀表达式，就是我们平常见到的表达式，例如1+((2+3)*4)-5。<br>它便于我们理解和计算，但是却不利于计算机来运算，因为在运算过程中需要不停的判断操作符优先级</p><h2 id="什么是后缀表达式"><a href="#什么是后缀表达式" class="headerlink" title="什么是后缀表达式"></a><font size="5">什么是后缀表达式</font></h2><p>后缀表达式，又称为逆波兰式，上面的1+((2+3)<em>4)-5。<br>转换成后缀表达式就是123+4</em>+5-，计算机在计算后缀表达式的时候，不用判断操作符的优先级，每次遇到操作符，直接从栈中弹出两个操作数进行相应的运算即可，但是这样的表达式对我们来说写出来就比较困难，尤其是在表达式比较长比较复杂的时候。</p><h1 id="中缀转后缀"><a href="#中缀转后缀" class="headerlink" title="中缀转后缀"></a>中缀转后缀</h1><p>首先，我先说一下我的大致思路</p><ul><li>将中缀表达式的字符串存储到一个ArrayList中==&gt;这一步主要是方便操作、</li><li>一个存放操作符的栈s1</li></ul><p>注意：网上大多的教程是准备两个栈，一个存放操作符，一个存放的是逆序的后缀表达式，但这里我用ArrayList集合代替了第二个栈，这样做的好处就是可以直接得到后缀表达式，而非逆序的，至于为什么后面会说</p><h2 id="中缀表达式集合"><a href="#中缀表达式集合" class="headerlink" title="中缀表达式集合"></a><font size="5">中缀表达式集合</font></h2><ul><li>遍历字符串</li><li>如果当前字符是操作符，那么直接加入到集合中</li><li>如果当前字符是操作数，那么就要考虑多位数操作数的问题<ul><li>继续向后遍历，如果后面的字符仍是操作数，就将这些数拼接起来</li><li>直到当前字符不是操作数为止，将拼接的字符串加入到集合中<br><img src="/2019/09/16/逆波兰计算器/1.png" alt></li></ul></li></ul><h2 id="判断操作符优先级"><a href="#判断操作符优先级" class="headerlink" title="判断操作符优先级"></a><font size="5">判断操作符优先级</font></h2><p><img src="/2019/09/16/逆波兰计算器/3.png" alt></p><h2 id="后缀表达式集合"><a href="#后缀表达式集合" class="headerlink" title="后缀表达式集合"></a><font size="5">后缀表达式集合</font></h2><p>上一步我们得到了一个集合，集合中存储着中缀表达式内容，这一步就要将中缀表达式转换为后缀表达式并存储到集合中<br>步骤：</p><ul><li>创建变量<ul><li>栈s1用于存放操作数</li><li>集合ls用于存放后缀表达式</li></ul></li><li>遍历中缀表达式集合list，如果是操作数，直接放到ls集合中</li><li>如果是”(“，直接压入s1中</li><li>如果是”)”，将s1中的操作符出栈并加入到ls集合中，直到s1栈顶元素为”(“为止，最后将”(“也出栈(但是不加入ls中)，这一步操作目的是消去”()”</li><li>如果是操作符<ul><li>如果s1栈为空，那么直接入栈</li><li>如果当前操作符优先级<font color="red">大于</font>栈顶操作符优先级，将当前操作符入栈</li><li>如果当前操作符优先级<font color="red">不大于</font>栈顶操作符优先级，那么将栈顶元素出栈并加入到ls集合中，继续和新的栈顶操作符比较，直到栈为空或者当前操作符优先级大于栈顶操作符优先级为止</li><li>将当前操作符压入s1中</li></ul></li><li>集合list遍历完毕后，将s1中所有元素依次出栈加入到ls集合中</li><li>最后得到的ls集合就是后缀表达式</li></ul><p><font color="red"><b>注意：</b></font>这里如果用栈代替集合，那么由于栈先进后出的特性，得到的只能是逆序的后缀表达式，还要进一步的转换才能得到后缀表达式<br><img src="/2019/09/16/逆波兰计算器/2.png" alt></p><h1 id="计算后缀表达式"><a href="#计算后缀表达式" class="headerlink" title="计算后缀表达式"></a>计算后缀表达式</h1><ul><li>创建一个栈stack用于存放操作数</li><li>从左向右扫描后缀表达式集合<ul><li>如果是操作数，直接入栈</li><li>如果是操作符，就从stack中弹出两个操作数进行运算，并将运算结果重新入栈</li><li>集合遍历完毕，stack剩下的元素就是最后的结果<br><img src="/2019/09/16/逆波兰计算器/4.png" alt></li></ul></li></ul><hr><font face="宋体" size="5"><b>这样一个简单地逆波兰计算器就成功了，核心逻辑在于如何利用栈将中缀表达式转换为后缀表达式(逆波兰式)</b></font><hr>]]></content>
+      
+      
       <categories>
-        <category>算法之美</category>
+          
+          <category> 算法之美 </category>
+          
       </categories>
-      <tags>
-        <tag>栈</tag>
-        <tag>逆波兰表达式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[单链表的环问题]]></title>
-    <url>%2F2019%2F09%2F15%2F%E5%8D%95%E9%93%BE%E8%A1%A8%E7%9A%84%E7%8E%AF%E9%97%AE%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[首先，关于单链表的环，一般涉及到以下几个问题 给一个单链表，判断是否有环 如果存在环，找出环的入口点 如果存在环，求出环上节点的个数 如果存在环，求出链表的长度 判断是否有环解法一：快慢指针法 有两个指针fast和slow，开始时两个指针都指向链表头head 将两个指针同时向后移动 fast每次走两步==&gt;fast=fast.next.next slow每次走一步==&gt;slow=slow.next 如果没有环，那么fast和slow一定不会相遇；当fast.next==null||slow==null时说明该链表没有环，因为有环的链表没有nul指针 如果有环，那么slow一定会和fast相遇,并且此时slow指针最多绕环一圈，即slow走的步数一定小于等于单链表的节点数 可以这么理解，当链表时环形链表时，环是最大的，此时slow刚好绕环一圈回到头指针指向的节点时 fast的速度是slow的二倍(因为fast每次走2步)，所以fast此时一定走了两圈，也回到了头指针指向的节点，最终会在头节点相遇 如果链表不是环形链表，那么环的长度就会更短，此时fast一定能在slow走完一圈之前和slow相遇 (可以画图帮助理解)方法返回的是相遇的节点 解法二：HashSet法 遍历链表，将当前节点的引用存储到HashSet中 如果当遍历到某个节点时，HashSet集合中已经存在该节点的引用，那么说明该链表有环，并且第一个重复的节点就是入环口 找出环的入口点如果用HashSet方法来解决第一个问题，那么这个问题就同时得到了解决如果用快慢指针法解决第一题，那么得到fast和slow第一次相遇的节点， 假设slow和fast相遇时，slow还没有走完链表，即链表不是首尾相接的环形链表分析 假设 链表的长度为L 环的长度为r(即环有r个节点) head节点到入环口的距离为a(即从head到入环节点要走a步) 入环口和相遇点的距离是x(从入环节点到相遇点要走a步) 假设fast和slow相遇时，fast已经在环内循环了n圈，slow走了s步，在环内走一圈的步数=环的长度 那么fast走过的步数为：2s步 则有：2s=s+n *r–&gt;s=nr 又有s=a+x–&gt;因为前面说过slow节点没有走完一圈，所以这就是最简单的步数相加 所以得到a+x=n*r a+x=(n-1)*r+r a+x=(n-1)*r+L-a a=(n-1)*r+(L-a-x) a：head到入环节点要走a步 (L-a-x)：从向相遇节点到入环节点要走(L-a-x)步 经过上面分析可以总结得到解决方法 设置两个临时指针str1和str2 str1=head str2=slow(slow是第一问得出的相遇节点) 让两个节点同时往后走，直到str1==str2为止 str1=str1.next str2=str2.next str1==str2时退出循环，此时的str1/str2就是入环节点 特殊情况：即链表首尾相接(环长度最大) 此时slow节点和fast节点在head相遇，即slow==head 根据上面的代码会直接返回head/slow，因此也满足特殊情况 求出环上节点的个数解法一：相遇节点法 设置一个临时指针temp=slow(相遇节点) 让临时指针temp后移–&gt;temp=temp.next，并记录移动次数count 当temp==slow时，说明temp绕环走了一圈，count就是换的长度 解法二：快慢指针法 设置两个临时指针，str1=str2=slow(相遇节点) str1每次走一步、str2每次走两步，并记录str1走的步数count str1=str1.next str2=str2.next.next 当str1==str2(再次相遇)时，说明str2刚好比str1多走1圈，此时count就是环上节点的个数 假设再次相遇时str1走了s步、str2走了2*s步、环的长度为r 由分析得到2*s=s+r，所以s=r; 求出链表的长度链表长度L=head节点到入口节点的距离a+环的长度r根据上面两个问题，这个就很好解决]]></content>
+      
+      
+        <tags>
+            
+            <tag> 栈 </tag>
+            
+            <tag> 逆波兰表达式 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>单链表的环问题</title>
+      <link href="/2019/09/15/%E5%8D%95%E9%93%BE%E8%A1%A8%E7%9A%84%E7%8E%AF%E9%97%AE%E9%A2%98/"/>
+      <url>/2019/09/15/%E5%8D%95%E9%93%BE%E8%A1%A8%E7%9A%84%E7%8E%AF%E9%97%AE%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<p><font size="5"><b>首先，关于单链表的环，一般涉及到以下几个问题</b></font></p><ul><li>给一个单链表，判断是否有环</li><li>如果存在环，找出环的入口点</li><li>如果存在环，求出环上节点的个数</li><li>如果存在环，求出链表的长度</li></ul><hr><a id="more"></a><h1 id="判断是否有环"><a href="#判断是否有环" class="headerlink" title="判断是否有环"></a>判断是否有环</h1><h2 id="解法一：快慢指针法"><a href="#解法一：快慢指针法" class="headerlink" title="解法一：快慢指针法"></a><font size="5">解法一：快慢指针法</font></h2><ol><li>有两个指针fast和slow，开始时两个指针都指向链表头head</li><li>将两个指针同时向后移动<ul><li>fast每次走两步==&gt;fast=fast.next.next</li><li>slow每次走一步==&gt;slow=slow.next</li></ul></li><li>如果没有环，那么fast和slow一定不会相遇；当fast.next==null||slow==null时说明该链表没有环，因为<font color="red">有环的链表没有nul指针</font></li><li>如果有环，那么slow一定会和fast相遇,并且此时slow指针最多绕环一圈，即slow走的步数一定小于等于单链表的节点数<ul><li>可以这么理解，当链表时环形链表时，环是最大的，此时slow刚好绕环一圈回到头指针指向的节点时</li><li>fast的速度是slow的二倍(因为fast每次走2步)，所以fast此时一定走了两圈，也回到了头指针指向的节点，最终会在头节点相遇</li><li>如果链表不是环形链表，那么环的长度就会更短，此时fast一定能在slow走完一圈之前和slow相遇</li></ul></li></ol><p>(可以画图帮助理解)<br><img src="/2019/09/15/单链表的环问题/1.png" alt>方法返回的是相遇的节点</p><h2 id="解法二：HashSet法"><a href="#解法二：HashSet法" class="headerlink" title="解法二：HashSet法"></a><font size="5">解法二：HashSet法</font></h2><ol><li>遍历链表，将当前节点的引用存储到HashSet中</li><li>如果当遍历到某个节点时，HashSet集合中已经存在该节点的引用，那么说明该链表有环，并且<font color="red">第一个重复的节点就是入环口</font><br><img src="/2019/09/15/单链表的环问题/2.png" alt></li></ol><h1 id="找出环的入口点"><a href="#找出环的入口点" class="headerlink" title="找出环的入口点"></a>找出环的入口点</h1><p>如果用HashSet方法来解决第一个问题，那么这个问题就同时得到了解决<br>如果用快慢指针法解决第一题，那么<font color="red">得到fast和slow第一次相遇的节点</font>，</p><p><font color="blue">假设slow和fast相遇时，slow还没有走完链表，即链表不是首尾相接的环形链表</font><br><font color="red"><b>分析</b></font></p><ol><li>假设<ul><li>链表的长度为L</li><li>环的长度为r(即环有r个节点)</li><li>head节点到入环口的距离为a(即从head到入环节点要走a步)</li><li>入环口和相遇点的距离是x(从入环节点到相遇点要走a步)</li></ul></li><li>假设fast和slow相遇时，fast已经在环内循环了n圈，slow走了s步，在环内走一圈的步数=环的长度<ul><li>那么fast走过的步数为：2s步</li></ul></li><li>则有：2<em>s=s+n *r–&gt;s=n</em>r</li><li>又有s=a+x–&gt;因为前面说过slow节点没有走完一圈，所以这就是最简单的步数相加</li><li>所以得到a+x=n*r<ul><li>a+x=(n-1)*r+r</li><li>a+x=(n-1)*r+L-a</li></ul></li><li>a=(n-1)*r+(L-a-x)<ul><li>a：head到入环节点要走a步</li><li>(L-a-x)：从向相遇节点到入环节点要走(L-a-x)步</li></ul></li></ol><p><font color="red"><b>经过上面分析可以总结得到解决方法</b></font></p><ul><li>设置两个临时指针str1和str2<ul><li>str1=head</li><li>str2=slow(slow是第一问得出的相遇节点)</li></ul></li><li>让两个节点同时往后走，直到str1==str2为止<ul><li>str1=str1.next</li><li>str2=str2.next</li></ul></li><li>str1==str2时退出循环，此时的str1/str2就是入环节点<br><img src="/2019/09/15/单链表的环问题/3.png" alt></li></ul><p><font color="blue"><b>特殊情况：即链表首尾相接(环长度最大)</b></font></p><ul><li>此时slow节点和fast节点在head相遇，即slow==head</li></ul><p>根据上面的代码会直接返回head/slow，因此也满足特殊情况</p><h1 id="求出环上节点的个数"><a href="#求出环上节点的个数" class="headerlink" title="求出环上节点的个数"></a>求出环上节点的个数</h1><h2 id="解法一：相遇节点法"><a href="#解法一：相遇节点法" class="headerlink" title="解法一：相遇节点法"></a><font size="5">解法一：相遇节点法</font></h2><ol><li>设置一个临时指针temp=slow(相遇节点)</li><li>让临时指针temp后移–&gt;temp=temp.next，并记录移动次数count</li><li>当temp==slow时，说明temp绕环走了一圈，count就是换的长度</li></ol><h2 id="解法二：快慢指针法"><a href="#解法二：快慢指针法" class="headerlink" title="解法二：快慢指针法"></a><font size="5">解法二：快慢指针法</font></h2><ol><li>设置两个临时指针，str1=str2=slow(相遇节点)</li><li>str1每次走一步、str2每次走两步，并记录str1走的步数count<ul><li>str1=str1.next</li><li>str2=str2.next.next</li></ul></li><li>当str1==str2(再次相遇)时，说明str2刚好比str1多走1圈，此时count就是环上节点的个数<ul><li>假设再次相遇时str1走了s步、str2走了2*s步、环的长度为r</li><li>由分析得到2*s=s+r，所以s=r;<br><img src="/2019/09/15/单链表的环问题/4.png" alt></li></ul></li></ol><h1 id="求出链表的长度"><a href="#求出链表的长度" class="headerlink" title="求出链表的长度"></a>求出链表的长度</h1><p>链表长度L=head节点到入口节点的距离a+环的长度r<br>根据上面两个问题，这个就很好解决<br><img src="/2019/09/15/单链表的环问题/5.png" alt></p>]]></content>
+      
+      
       <categories>
-        <category>算法之美</category>
+          
+          <category> 算法之美 </category>
+          
       </categories>
-      <tags>
-        <tag>链表</tag>
-        <tag>HashSet</tag>
-        <tag>集合</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[Josefu问题(约瑟夫环)两种解决方法]]></title>
-    <url>%2F2019%2F09%2F15%2FJosefu%E9%97%AE%E9%A2%98-%E7%BA%A6%E7%91%9F%E5%A4%AB%E7%8E%AF-%E4%B8%A4%E7%A7%8D%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95%2F</url>
-    <content type="text"><![CDATA[约瑟夫问题设编号为1、2….n的n个人坐一圈，约定编号为k(1&lt;=k&lt;=n)的人从1开始报数，数到m的那个人出圈，他的下一位又从1开始报数，数到m的人又出圈，以此类推，直到所有人出圈为止，由此产生一个出圈编号的序列 解法一：循环链表 首先对参数k、m、n进行校验，确保k、m、n在正常范围内 创建一个辅助指针helper 让helper指向first前一个节点，即指向最初链表的最后一个节点 将first和helper向后移动k-1次，即让first指向开始报数的小孩 当helper==first时，说明圈中只有一个小孩 helper！=first时，将first和helper同时向后移动m-1次 将移动m-1此之后first指向的节点出圈 继续执行5，直到helper==first为止 其中方法的参数： k：第一次开始报数的小孩 count：每次数几下(m) nums：最开始圈中小孩数 这个约瑟夫问题是基于我自己创建的单向环形链表实现的(或者说我创建的单向环形链表是用来解决约瑟夫问题的)，helper节点最初就指向first前一个节点，所以2和3两步骤可以省略(可以看一下我创建单项循环链表的博客) 解法二：数组对于数组，进行出圈操作的时候就不能向链表一样删除节点了，因为数组的长度是固定的，那么怎么解决呢？我们可以将已经出圈的孩子所在的元素值赋值为0，这样，当我们遍历到元素值为0的节点时，就可以跳过该节点。步骤： 首先对参数k、m、n进行校验，确保k、m、n在正常范围内 因为数组下标是从0开始，小孩编号从1开始，所以让开始数数的小孩编号-1==&gt;k=k-1 根据nums创建数组，模拟nums个小孩组成的圈 一共有nums个小孩，所以一共要循环报数nums次==&gt;for (int i = 0; i &lt; nums; i++) {} 每一次报数m次，所以k要移动m-1次(起初报数时，自己也算一次)，当k代表的数组元素a[k]==0时，说明当前孩子已经出圈，所以需要k再次移动，直到a[k]!=0==&gt;for (int j = 0; j &lt; m - 1||arr[k]==0;) {} 第5步得到的k是该赋值为0的元素，即该出圈的孩子编号-1==&gt;k+1即为当前该出圈的孩子编号 a[k]=0，并且将k取模移向下一位 重复567nums次，直到所有孩子都出圈]]></content>
+      
+      
+        <tags>
+            
+            <tag> 链表 </tag>
+            
+            <tag> HashSet </tag>
+            
+            <tag> 集合 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Josefu问题(约瑟夫环)两种解决方法</title>
+      <link href="/2019/09/15/Josefu%E9%97%AE%E9%A2%98-%E7%BA%A6%E7%91%9F%E5%A4%AB%E7%8E%AF-%E4%B8%A4%E7%A7%8D%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/"/>
+      <url>/2019/09/15/Josefu%E9%97%AE%E9%A2%98-%E7%BA%A6%E7%91%9F%E5%A4%AB%E7%8E%AF-%E4%B8%A4%E7%A7%8D%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</url>
+      
+        <content type="html"><![CDATA[<p><b>约瑟夫问题</b><br>设编号为1、2….n的n个人坐一圈，约定编号为k(1&lt;=k&lt;=n)的人从1开始报数，数到m的那个人出圈，他的下一位又从1开始报数，数到m的人又出圈，以此类推，直到所有人出圈为止，由此产生一个出圈编号的序列</p><hr><a id="more"></a><h1 id="解法一：循环链表"><a href="#解法一：循环链表" class="headerlink" title="解法一：循环链表"></a>解法一：循环链表</h1><ol><li>首先对参数k、m、n进行校验，确保k、m、n在正常范围内</li><li>创建一个辅助指针helper</li><li>让helper指向first前一个节点，即指向最初链表的最后一个节点</li><li>将first和helper向后移动k-1次，即让first指向开始报数的小孩</li><li>当helper==first时，说明圈中只有一个小孩</li><li>helper！=first时，将first和helper同时向后移动m-1次</li><li>将移动m-1此之后first指向的节点出圈</li><li>继续执行5，直到helper==first为止</li></ol><p><img src="/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/1.png" alt><br>其中方法的参数：</p><ul><li>k：第一次开始报数的小孩</li><li>count：每次数几下(m)</li><li>nums：最开始圈中小孩数</li></ul><p>这个约瑟夫问题是基于我自己创建的单向环形链表实现的(或者说我创建的单向环形链表是用来解决约瑟夫问题的)，helper节点最初就指向first前一个节点，所以2和3两步骤可以省略<br>(可以看一下我创建单项循环链表的博客)</p><h1 id="解法二：数组"><a href="#解法二：数组" class="headerlink" title="解法二：数组"></a>解法二：数组</h1><p>对于数组，进行出圈操作的时候就不能向链表一样删除节点了，因为数组的长度是固定的，那么怎么解决呢？我们可以将<font color="red">已经出圈的孩子所在的元素值赋值为0</font>，这样，当我们遍历到元素值为0的节点时，就可以跳过该节点。<br>步骤：</p><ol><li>首先对参数k、m、n进行校验，确保k、m、n在正常范围内</li><li>因为数组下标是从0开始，小孩编号从1开始，所以让开始数数的小孩编号-1==&gt;k=k-1</li><li>根据nums创建数组，模拟nums个小孩组成的圈</li><li>一共有nums个小孩，所以一共要循环报数nums次==&gt;for (int i = 0; i &lt; nums; i++) {}</li><li>每一次报数m次，所以k要移动m-1次(起初报数时，自己也算一次)，当k代表的数组元素a[k]==0时，说明当前孩子已经出圈，所以需要k再次移动，直到a[k]!=0==&gt;for (int j = 0; j &lt; m - 1||arr[k]==0;) {}</li><li>第5步得到的k是该赋值为0的元素，即该出圈的孩子编号-1==&gt;k+1即为当前该出圈的孩子编号</li><li>a[k]=0，并且将k取模移向下一位</li><li>重复567nums次，直到所有孩子都出圈<br><img src="/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/2.png" alt></li></ol>]]></content>
+      
+      
       <categories>
-        <category>算法之美</category>
+          
+          <category> 算法之美 </category>
+          
       </categories>
-      <tags>
-        <tag>环形链表</tag>
-        <tag>数组</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[数据结构-环形链表]]></title>
-    <url>%2F2019%2F09%2F15%2F%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8%2F</url>
-    <content type="text"><![CDATA[环形链表，顾名思义，就是整个链表构成一个环，将单链表的最后一个节点的next指针指向头节点，这样就构成了循环链表。这里说的循环链表主要用于解决约瑟夫环问题和判断链表是否有环两个算法问题。 环形链表节点 int val：存储数据 Node next：指向另外一个Node节点 单向循环链表成员变量 head：环形链表的头指针 helper：环形链表的尾指针，每次都指向新插入的节点(helper.next=head) 成员方法public void Add(int ele)向链表中添加元素 在添加之前，判断当前链表是否为空 如果为空 将head头指针指向新创建的节点==&gt;head=new Node(ele) helper指针也指向新创建的节点==&gt;helper=head 将新创建节点的next指针指向head，构成一个环==&gt;helper.next=head 如果不为空 将helper指针指向节点(尾节点)的next指针指向新节点==&gt;helper.next=new Node(ele) 将helper指针向后移，保证helper指针仍然指向尾节点==&gt;helper=helper.next 将尾节点的next指针指向head头节点，形成一个环==&gt;helper.next=head 环形链表，其实就是将单链表的尾节点的next指针指向头节点 public void show()打印环形链表逻辑比较简单，因为在打印的过程中指针会移动，所以可以创建两个临时变量，这样打印过后head和helper指针都没有发生变化，下次添加元素的时候仍然能够按照顺序添加 单链表的两个算法问题会在算法之美分类中说到]]></content>
+      
+      
+        <tags>
+            
+            <tag> 环形链表 </tag>
+            
+            <tag> 数组 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>数据结构-环形链表</title>
+      <link href="/2019/09/15/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8/"/>
+      <url>/2019/09/15/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8/</url>
+      
+        <content type="html"><![CDATA[<p>环形链表，顾名思义，就是整个链表构成一个环，将单链表的最后一个节点的next指针指向头节点，这样就构成了循环链表。这里说的循环链表主要用于解决<font color="red">约瑟夫环问题</font>和<font color="red">判断链表是否有环</font>两个算法问题。</p><hr><a id="more"></a><h1 id="环形链表节点"><a href="#环形链表节点" class="headerlink" title="环形链表节点"></a>环形链表节点</h1><p><img src="/2019/09/15/数据结构-环形链表/1.png" alt></p><ol><li>int val：存储数据</li><li>Node next：指向另外一个Node节点</li></ol><h1 id="单向循环链表"><a href="#单向循环链表" class="headerlink" title="单向循环链表"></a>单向循环链表</h1><h2 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a><font size="5">成员变量</font></h2><p><img src="/2019/09/15/数据结构-环形链表/2.png" alt></p><ol><li>head：环形链表的头指针</li><li>helper：环形链表的尾指针，每次都指向新插入的节点<font color="red">(helper.next=head)</font></li></ol><h2 id="成员方法"><a href="#成员方法" class="headerlink" title="成员方法"></a><font size="5">成员方法</font></h2><h3 id="public-void-Add-int-ele"><a href="#public-void-Add-int-ele" class="headerlink" title="public void Add(int ele)"></a><font size="5">public void Add(int ele)</font></h3><p><img src="/2019/09/15/数据结构-环形链表/3.png" alt>向链表中添加元素</p><ol><li>在添加之前，判断当前链表是否为空</li><li>如果为空<ul><li>将head头指针指向新创建的节点==&gt;head=new Node(ele)</li><li>helper指针也指向新创建的节点==&gt;helper=head</li><li>将新创建节点的next指针指向head，构成一个环==&gt;helper.next=head</li></ul></li><li>如果不为空<ul><li>将helper指针指向节点(尾节点)的next指针指向新节点==&gt;helper.next=new Node(ele)</li><li>将helper指针向后移，保证helper指针仍然指向尾节点==&gt;helper=helper.next</li><li>将尾节点的next指针指向head头节点，形成一个环==&gt;helper.next=head</li></ul></li></ol><p><font color="red"><b>环形链表，其实就是将单链表的尾节点的next指针指向头节点</b></font></p><h3 id="public-void-show"><a href="#public-void-show" class="headerlink" title="public void show()"></a><font size="5">public void show()</font></h3><p><img src="/2019/09/15/数据结构-环形链表/4.png" alt>打印环形链表<br>逻辑比较简单，因为在打印的过程中指针会移动，所以可以<font color="red">创建两个临时变量</font>，这样打印过后head和helper指针都没有发生变化，下次添加元素的时候仍然能够按照顺序添加</p><hr>单链表的两个算法问题会在<font color="red"><b>算法之美</b></font>分类中说到]]></content>
+      
+      
       <categories>
-        <category>DataStructure</category>
+          
+          <category> DataStructure </category>
+          
       </categories>
-      <tags>
-        <tag>环形链表</tag>
-        <tag>链表</tag>
-        <tag>数据结构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[数据结构-队列]]></title>
-    <url>%2F2019%2F09%2F14%2F%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%98%9F%E5%88%97%2F</url>
-    <content type="text"><![CDATA[队列的特点：FIFO–&gt;First in First out，即先进先出这篇文章讲的是数组结构存储队列，队列从功能上来说分为两种 普通队列 循环队列。 后面将会分别用Java手写两个队列类来讲述普通队列和循环队列 普通队列概述队列本身是一个有序列表，因为队列的输入、输出是分别从前后端来处理，因此需要两个变量front和rear分别记录队头和队尾 front会随着数据输出而改变 rear会随着数据输入而改变 成员变量 private int maxSize; –&gt;队列最大容量 private int front; –&gt;队列头 private int rear; –&gt;队列尾 private T[] arr;(使用泛型) –&gt;队列存储结构：数组 构造方法这里创建了两个构造方法： 通过参数确定数组大小，即队列的容量 无参构造方法默认数组大小为10 front和rear指向的位置 front：指向队列头的前一个位置 rear：指向队列最后一个元素 成员方法public boolean isFull()对于非循环队列来说，判断队列是否已满很简单，只需要判断rear是否到达数组末尾即可 public boolean isEmpty()对于非循环队列来说，队列为空就是初始状态，即rear==front public void Add(T ele)对于添加元素的方法，有两个步骤 先判断队列是否已满 如果队满，抛出异常 否则，先将rear后移，再进行赋值操作 public T get()取队头元素的方法，同样有两个步骤 判断队列是否为空 如果队空，抛出异常 否则，先将front后移指向队头元素，再返回队头元素 public void show()打印当前队列所有元素 以上就是一个基本的普通数组模拟队列类，不难发现这样的队列是有很大缺陷的 无法复用：即只能用一次，当front指向arr[maxSize-1]的时候，就算此时队列中没有元素，也无法向队列中添加数据。下面来说循环队列 循环队列成员变量 private int maxSize; –&gt;队列最大容量 private int front; –&gt;队列头 private int rear; –&gt;队列尾 private T[] arr;(使用泛型) –&gt;队列存储结构：数组 构造方法这里创建了两个构造方法： 通过参数确定数组大小，即队列的容量 无参构造方法默认数组大小为10 front和rear指向的位置和普通队列不同 front：指向队列头元素 rear：指向队列尾元素的后一个位置 为了便于循环，rear指向的位置自始至终都是空着的，即队列的容量=maxsize-1 public boolean isFull()在循环队列中，判断队满的条件(rear+1)%maxSize==front public boolean isEmpty()在循环队列中，判断队满的条件仍是rear==front，因为rear指向的位置是不存放元素的，当front==rear时，说明队列已经没有元素了 public void Add(T ele)在循环队列中，当rear到达队列末尾时，我们需要它从0开始，因此不能+1，要用取模运算 public T get()在循环队列中，对于front也要用取模运算 public int getNum()对于(rear - front + mixsize) % mixsize运算，可以这么理解 当rear&gt;front时候，说明所有的元素都处于rear和front中间，num=rear-front 当rear&lt;front时候，说明所有元素都处在rear和front两边，即rear比front多走了一个mixsize的长度，num=rear+maxSize-front; 因此两者加起来就是(rear - front + mixsize) % mixsize public void show()特别注意循环条件，i从front开始，做带循环的后移(取模)，直到i==rear是遍历完所有元素]]></content>
+      
+      
+        <tags>
+            
+            <tag> 环形链表 </tag>
+            
+            <tag> 链表 </tag>
+            
+            <tag> 数据结构 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>数据结构-队列</title>
+      <link href="/2019/09/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%98%9F%E5%88%97/"/>
+      <url>/2019/09/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%98%9F%E5%88%97/</url>
+      
+        <content type="html"><![CDATA[<p>队列的特点：<font color="red"><b>FIFO–&gt;First in First out</b></font>，即先进先出<br>这篇文章讲的是数组结构存储队列，队列从功能上来说分为两种</p><ol><li>普通队列</li><li>循环队列。</li></ol><p>后面将会分别用Java手写两个队列类来讲述普通队列和循环队列</p><hr><a id="more"></a><h1 id="普通队列"><a href="#普通队列" class="headerlink" title="普通队列"></a>普通队列</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a><font size="5">概述</font></h2><p>队列本身是一个有序列表，因为队列的输入、输出是分别从前后端来处理，因此需要两个变量front和rear分别记录队头和队尾</p><ul><li>front会随着数据输出而改变</li><li>rear会随着数据输入而改变</li></ul><h2 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a><font size="5">成员变量</font></h2><ol><li><font color="blue">private int maxSize;</font>            –&gt;队列最大容量</li><li><font color="blue">private int front;</font>            –&gt;队列头</li><li><font color="blue">private int rear;</font>            –&gt;队列尾</li><li><font color="blue">private T[] arr;(使用泛型)</font>    –&gt;队列存储结构：数组</li></ol><h2 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a><font size="5">构造方法</font></h2><p><img src="/2019/09/14/数据结构-队列/1.png" alt>这里创建了两个构造方法：</p><ul><li>通过参数确定数组大小，即队列的容量</li><li>无参构造方法默认数组大小为10</li></ul><p><font color="red"><b>front和rear指向的位置</b></font></p><ul><li>front：指向队列头的前一个位置</li><li>rear：指向队列最后一个元素</li></ul><h2 id="成员方法"><a href="#成员方法" class="headerlink" title="成员方法"></a><font size="5">成员方法</font></h2><h3 id="public-boolean-isFull"><a href="#public-boolean-isFull" class="headerlink" title="public boolean isFull()"></a><font size="5">public boolean isFull()</font></h3><p><img src="/2019/09/14/数据结构-队列/2.png" alt>对于非循环队列来说，判断队列是否已满很简单，只需要<font color="blue">判断rear是否到达数组末尾即可</font></p><h3 id="public-boolean-isEmpty"><a href="#public-boolean-isEmpty" class="headerlink" title="public boolean isEmpty()"></a><font size="5">public boolean isEmpty()</font></h3><p><img src="/2019/09/14/数据结构-队列/3.png" alt>对于非循环队列来说，队列为空就是初始状态，即<font color="blue">rear==front</font></p><h3 id="public-void-Add-T-ele"><a href="#public-void-Add-T-ele" class="headerlink" title="public void Add(T ele)"></a><font size="5">public void Add(T ele)</font></h3><p><img src="/2019/09/14/数据结构-队列/4.png" alt>对于添加元素的方法，有两个步骤</p><ol><li>先判断队列是否已满</li><li>如果队满，抛出异常</li><li>否则，先将rear后移，再进行赋值操作</li></ol><h3 id="public-T-get"><a href="#public-T-get" class="headerlink" title="public T get()"></a><font size="5">public T get()</font></h3><p><img src="/2019/09/14/数据结构-队列/5.png" alt>取队头元素的方法，同样有两个步骤</p><ol><li>判断队列是否为空</li><li>如果队空，抛出异常</li><li>否则，先将front后移指向队头元素，再返回队头元素</li></ol><h3 id="public-void-show"><a href="#public-void-show" class="headerlink" title="public void show()"></a><font size="5">public void show()</font></h3><p><img src="/2019/09/14/数据结构-队列/6.png" alt>打印当前队列所有元素</p><hr>以上就是一个基本的普通数组模拟队列类，不难发现这样的队列是有很大缺陷的<br><font color="blue">无法复用</font>：即只能用一次，当front指向arr[maxSize-1]的时候，就算此时队列中没有元素，也无法向队列中添加数据。下面来说循环队列<h1 id="循环队列"><a href="#循环队列" class="headerlink" title="循环队列"></a>循环队列</h1><h2 id="成员变量-1"><a href="#成员变量-1" class="headerlink" title="成员变量"></a><font size="5">成员变量</font></h2><ol><li><font color="blue">private int maxSize;</font>            –&gt;队列最大容量</li><li><font color="blue">private int front;</font>            –&gt;队列头</li><li><font color="blue">private int rear;</font>            –&gt;队列尾</li><li><font color="blue">private T[] arr;(使用泛型)</font>    –&gt;队列存储结构：数组</li></ol><h2 id="构造方法-1"><a href="#构造方法-1" class="headerlink" title="构造方法"></a><font size="5">构造方法</font></h2><p><img src="/2019/09/14/数据结构-队列/8.png" alt>这里创建了两个构造方法：</p><ul><li>通过参数确定数组大小，即队列的容量</li><li>无参构造方法默认数组大小为10</li></ul><p><font color="red"><b>front和rear指向的位置和普通队列不同</b></font></p><ul><li>front：指向队列头元素</li><li>rear：指向队列尾元素的后一个位置</li></ul><p>为了便于循环，<font color="red">rear指向的位置自始至终都是空着的，即队列的容量=maxsize-1</font></p><h3 id="public-boolean-isFull-1"><a href="#public-boolean-isFull-1" class="headerlink" title="public boolean isFull()"></a><font size="5">public boolean isFull()</font></h3><p><img src="/2019/09/14/数据结构-队列/9.png" alt>在循环队列中，判断队满的条件<font color="blue">(rear+1)%maxSize==front</font></p><h3 id="public-boolean-isEmpty-1"><a href="#public-boolean-isEmpty-1" class="headerlink" title="public boolean isEmpty()"></a><font size="5">public boolean isEmpty()</font></h3><p><img src="/2019/09/14/数据结构-队列/10.png" alt>在循环队列中，判断队满的条件仍是rear==front，因为rear指向的位置是不存放元素的，当front==rear时，说明队列已经没有元素了</p><h3 id="public-void-Add-T-ele-1"><a href="#public-void-Add-T-ele-1" class="headerlink" title="public void Add(T ele)"></a><font size="5">public void Add(T ele)</font></h3><p><img src="/2019/09/14/数据结构-队列/11.png" alt>在循环队列中，当rear到达队列末尾时，我们需要它从0开始，因此不能+1，要用<font color="blue">取模运算</font></p><h3 id="public-T-get-1"><a href="#public-T-get-1" class="headerlink" title="public T get()"></a><font size="5">public T get()</font></h3><p><img src="/2019/09/14/数据结构-队列/12.png" alt>在循环队列中，对于front也要用取模运算</p><h3 id="public-int-getNum"><a href="#public-int-getNum" class="headerlink" title="public int getNum()"></a><font size="5">public int getNum()</font></h3><p><img src="/2019/09/14/数据结构-队列/13.png" alt>对于(rear - front + mixsize) % mixsize运算，可以这么理解</p><ol><li>当rear&gt;front时候，说明所有的元素都处于rear和front中间，num=rear-front</li><li>当rear&lt;front时候，说明所有元素都处在rear和front两边，即rear比front多走了一个mixsize的长度，num=rear+maxSize-front;</li></ol><p>因此两者加起来就是<font color="blue">(rear - front + mixsize) % mixsize</font></p><h3 id="public-void-show-1"><a href="#public-void-show-1" class="headerlink" title="public void show()"></a><font size="5">public void show()</font></h3><p><img src="/2019/09/14/数据结构-队列/14.png" alt>特别注意循环条件，<font color="red"><b>i从front开始，做带循环的后移(取模)，直到i==rear是遍历完所有元素</b></font></p>]]></content>
+      
+      
       <categories>
-        <category>DataStructure</category>
+          
+          <category> DataStructure </category>
+          
       </categories>
-      <tags>
-        <tag>数组</tag>
-        <tag>数据结构</tag>
-        <tag>队列</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[数据结构--稀疏数组]]></title>
-    <url>%2F2019%2F09%2F13%2F%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%A8%80%E7%96%8F%E6%95%B0%E7%BB%84%C2%9E%2F</url>
-    <content type="text"><![CDATA[这篇文章主要讲的是数组的应用之一–稀疏数组。那么什么是稀疏数组呢？我们来看一个问题：假设你做了一个五子棋游戏，玩儿过的都知道这个游戏有一个叫做复盘的功能，就是你可以将这句游戏先存档，之后再读档的时候就会接着之前的继续下。我们都知道 用二维数组来构造棋盘 用0表示棋盘上没有落子的位置 用1和2分别表示黑棋和白棋的位置 存档：把二维数组通过流保存到硬盘中那么这里面就有一个问题：如果要存档的棋盘中有大片的空白(数组中有大量的元素为0)，直接将原数组存储进去会浪费空间，这时候可以用到稀疏数组来压缩 稀疏数组的结构行 稀疏数组的行数取决于原数组非0元素的个数–&gt;row=num+1; 第一行存储着原数组的信息 [0][0]=原数组的行数 [0][1]=原数组列数 [0][2]=原数组非0元素的个数 剩下的每一行都存储着原数组非0元素的信息 [i][0]=元素所在行 [i][1]=元素所在列 [i][2]=元素的值 稀疏数组的行数row=num+1：稀疏数组的第一行要用来存储原数组的信息，在还原的时候会用到 列 所有的稀疏数组都只有3列 除了第一行外： 第一列存储非0元素的行位置 第二列存储非0元素的列位置 第三列存储非0元素的值 上面说的非0元素，只是在数组中存在的大量重复元素值为0时的情况 数组–&gt;稀疏数组假设存在一个数组 遍历原数组，获取非0元素的个数 创建稀疏数组 稀疏数组的行数row=num+1 稀疏数组的列数col=3 将原数组信息存储到稀疏数组第一行 稀疏数组的第一行，存储原数组的行数、列数以及非0元素个数 遍历原数组，储存其中非0元素的信息 每一行的第一列存储元素的行信息 每一行的第二列存储元素的列信息 每一行第三列存储元素的值 最后得到的稀疏数组 稀疏数组–&gt;数组 创建普通数组 数组的行数为稀疏数组第一行第一列的值 数组的列数为稀疏数组第一行第二列的值 遍历稀疏数组的每一行 当前行的第一列为元素的行位置 当前行的第二列为元素的列位置 当前行的第三列为元素的值 最后得到原数组 通过实际操作我们发现，将数组转换为稀疏数组后，节省的空间还较为客观，当要存储的数组中含有大量的重复元素时，我们可以采用稀疏数组来存储，能够在一定程度上节省空间]]></content>
+      
+      
+        <tags>
+            
+            <tag> 数组 </tag>
+            
+            <tag> 数据结构 </tag>
+            
+            <tag> 队列 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>数据结构--稀疏数组</title>
+      <link href="/2019/09/13/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%A8%80%E7%96%8F%E6%95%B0%E7%BB%84%C2%9E/"/>
+      <url>/2019/09/13/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%A8%80%E7%96%8F%E6%95%B0%E7%BB%84%C2%9E/</url>
+      
+        <content type="html"><![CDATA[<p>这篇文章主要讲的是数组的应用之一–稀疏数组。那么什么是稀疏数组呢？我们来看一个问题：<br>假设你做了一个五子棋游戏，玩儿过的都知道这个游戏有一个叫做复盘的功能，就是你可以将这句游戏先存档，之后再读档的时候就会接着之前的继续下。我们都知道</p><a id="more"></a><ol><li>用二维数组来构造棋盘</li><li>用0表示棋盘上没有落子的位置</li><li>用1和2分别表示黑棋和白棋的位置</li></ol><p>存档：把二维数组通过流保存到硬盘中<br>那么这里面就有一个问题：如果要存档的棋盘中有大片的空白(数组中有大量的元素为0)，直接将原数组存储进去会浪费空间，这时候可以用到稀疏数组来压缩</p><hr><h1 id="稀疏数组的结构"><a href="#稀疏数组的结构" class="headerlink" title="稀疏数组的结构"></a>稀疏数组的结构</h1><h2 id="行"><a href="#行" class="headerlink" title="行"></a><font size="5">行</font></h2><ol><li>稀疏数组的行数取决于原数组非0元素的个数–&gt;<font color="red">row=num+1;</font></li><li>第一行存储着原数组的信息<ol><li>[0][0]=原数组的行数</li><li>[0][1]=原数组列数</li><li>[0][2]=原数组非0元素的个数</li></ol></li><li>剩下的每一行都存储着原数组非0元素的信息<ol><li>[i][0]=元素所在行</li><li>[i][1]=元素所在列</li><li>[i][2]=元素的值</li></ol></li></ol><p>稀疏数组的行数row=num+1：<font color="red">稀疏数组的第一行要用来存储原数组的信息，在还原的时候会用到</font></p><h2 id="列"><a href="#列" class="headerlink" title="列"></a>列</h2><ol><li><p><font color="red">所有的稀疏数组都只有3列</font></p></li><li><p>除了第一行外：</p><ol><li>第一列存储非0元素的行位置</li><li>第二列存储非0元素的列位置</li><li>第三列存储非0元素的值</li></ol></li></ol><p><b>上面说的非0元素，只是在数组中存在的大量重复元素值为0时的情况</b></p><h1 id="数组–-gt-稀疏数组"><a href="#数组–-gt-稀疏数组" class="headerlink" title="数组–&gt;稀疏数组"></a>数组–&gt;稀疏数组</h1><p>假设存在一个数组<br><img src="/2019/09/13/数据结构-稀疏数组/2.png" alt><br><img src="/2019/09/13/数据结构-稀疏数组/1.png" alt></p><ol><li>遍历原数组，获取非0元素的个数<br><img src="/2019/09/13/数据结构-稀疏数组/3.png" alt></li><li>创建稀疏数组<ul><li>稀疏数组的行数row=num+1</li><li>稀疏数组的列数col=3<br><img src="/2019/09/13/数据结构-稀疏数组/4.png" alt></li></ul></li><li>将原数组信息存储到稀疏数组第一行<ul><li>稀疏数组的第一行，存储原数组的行数、列数以及非0元素个数<br><img src="/2019/09/13/数据结构-稀疏数组/5.png" alt>    </li></ul></li><li>遍历原数组，储存其中非0元素的信息<ul><li>每一行的第一列存储元素的行信息</li><li>每一行的第二列存储元素的列信息</li><li>每一行第三列存储元素的值<br><img src="/2019/09/13/数据结构-稀疏数组/6.png" alt>    </li></ul></li><li>最后得到的稀疏数组<br><img src="/2019/09/13/数据结构-稀疏数组/7.png" alt>    </li></ol><h1 id="稀疏数组–-gt-数组"><a href="#稀疏数组–-gt-数组" class="headerlink" title="稀疏数组–&gt;数组"></a>稀疏数组–&gt;数组</h1><ol><li>创建普通数组<ul><li>数组的行数为稀疏数组第一行第一列的值</li><li>数组的列数为稀疏数组第一行第二列的值<br><img src="/2019/09/13/数据结构-稀疏数组/8.png" alt></li></ul></li><li>遍历稀疏数组的每一行<ul><li>当前行的第一列为元素的行位置</li><li>当前行的第二列为元素的列位置</li><li>当前行的第三列为元素的值<br><img src="/2019/09/13/数据结构-稀疏数组/9.png" alt>    </li></ul></li><li>最后得到原数组<br><img src="/2019/09/13/数据结构-稀疏数组/10.png" alt>    <hr><font size="5"><b>通过实际操作我们发现，将数组转换为稀疏数组后，节省的空间还较为客观，当要存储的数组中含有大量的重复元素时，我们可以采用稀疏数组来存储，能够在一定程度上节省空间<b></b></b></font><hr></li></ol>]]></content>
+      
+      
       <categories>
-        <category>DataStructure</category>
+          
+          <category> DataStructure </category>
+          
       </categories>
-      <tags>
-        <tag>数组</tag>
-        <tag>数据结构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[JDK源码--String类]]></title>
-    <url>%2F2019%2F09%2F10%2FJDK%E6%BA%90%E7%A0%81-String%E7%B1%BB%2F</url>
-    <content type="text"><![CDATA[这一篇的String源码基于JDK8版本，来自于慕课网上文贺老师的JAVA源码专栏(收费)结合张家界的雪以及自己学习String源码的总结，主要的目的在于总结知识，方便后续回顾查看，如转载，请注明出处 成员变量在学习String源码之前，首先要知道String对象再内存中的存放位置，我们都知道JAVA对象一般都是存放在堆中，但是String对象是一个特例，它被存放在常量池中可以看到，String类实现了 Serializable：序列化接口，String对象可以被序列化 Comparable：表明字符串可以比较 CharSequence：表明String对象是一个字符序列 String底层实现是一个char类型的数组并且被final修饰 构造方法public String()值为空串，很少使用 *public String(String original)这个构造方法在创建的过程中会创建两个对象，一个在堆中，一个在常量池中当调用这个构造方法时String str=new String(“abc”) 现在堆中new出一个String对象，并将str指向该对象 查看常量池中是否存在”abc” 如果不存在，那么就会在常量池中在创建一个String对象 如果存在，不做操作 最终str是指向堆中的对象，而不是常量池中的对象 str1和str3都是指向常量池中的”abc”对象，所以str1==str3返回true str4涉及到了变量的相加，内部实现是先new一个StringBuilder，然后 append(str2),append(“c”);然后让str4引用toString()返回的对象;如图，StringBuilder的toString方法实质上也是new了一个String对象，所以str4指向堆中的另外一个String对象，所以str1==str4返回false 上面说了，str5指向堆中的一个String对象，所以str1==str5返回falsepublic String(char value[])如图，该构造方法实质上是调用Arrays工具类的copyof方法public String(char value[], int offset, int count)如图，该构造方法会先对起始位置进行判断，如果不合法会抛出异常。最后调用Arrays工具类的copyOfRange来实现public String(byte bytes[], int offset, int length, String charsetName)如图，该构造方法用byte数组构造String对象，用指定字符集转换后构造String对象。其中StringCoding.decode(charsetName, bytes, offset, length)方法根据指定编码对byte数组进行解码，返回char数组checkBounds方法是对参数进行检查，该方法为私有，只能在String类中使用该构造方法如果不指定charsetName，那么按照系统默认字符集进行解码public String(StringBuffer buffer)通过StringBuffer构造String，因为StringBuffer内部也是一个char数组，所以实质上还是调用Arrays.copyOf方法实现，并且由于StringBuffer是线程安全的，所以这里也加了synchronized块保证线程安全通过StringBuilder构造String对象和StringBuffer原理相同。不过由于StringBuilder是线程不安全的，所以没有加synchronized块*String(char value[] boolean share)这个构造方法是protected修饰的，它和public String(char value[])的区别在于多了一个boolean参数，并且不支持false只支持true，这样做的原因是为了和public String(char value[])方法进行区分，否则没办法构成重载，查看方法体可以发现，它直接将char数组的的地址传递给String对象，要比注意拷贝快很多但是这样做的弊端很大：String对象和char数组共享同一块内存，破坏了String的不可变性，所以将该构造方法设置为protected保证安全,但是由于性能比较好，节约内存，所以replace、concat、valueof等方法也用到了这个构造方法 成员方法public int length()返回char数组的长度 public boolean isEmpty()char数组长度是否为0 public char charAt(int index) 判断index是否超出char数组长度，超出则抛异常 否则返回value[index]。 public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin)将String对象指定的字符从dst[]数组的dstBegin位置向后复制,通过System.arraycopy实现，这是一个本地方法(native)。参数： srcBegin：复制的起始位置(包括) srcEnd：复制的结束位置(不包括) dst[]：目的数组 dstBegin：目的数组dstBegin起始 如果要复制的字符个数srcEnd-srcBegin&gt;dst.length-dstBegin,会抛出异常 public byte[] getBytes(String charsetName)和前面传递Byte数组的构造方法相反，这里将String对象的value数组按照指定字符集编码成字符数组并返回如果不指定字符集，按照默认字符集编码 public boolean equals(Object anObject)重写了Object的equals方法 public boolean equalsIgnoreCase(String anotherString)先判断地址是否相同，地址相同内容肯定相同，再判断长度是否相同，如果长度一样再调用regionMatches方法进行判断，这里用了&amp;&amp;运算符的断路原理regionMatches方法有两种形式 没有boolean参数的 有boolean参数的 该方法的作用是区域比较，比较两个字符串指定长度的内容是否相等，从指定位置开始逐一比较字符数组内容是否相等两方法的区别在于：如果booloean参数为true，那么当字符不相等时 先将两字符转换成大写字符比较，还不相等 将两字符转换成小写比较，还不相等返回false 和String的内部类实现原理一样 public int compareTo(String anotherString)这个方法是实现Comparable接口的方法，用于对字符串大小进行比较这个方法取了两个字符串长度较小的那个作为循环次数，对两个字符串进行逐位比较。 如果不同，就返回两字符串不同那一位字符的差 如果都相同，就返回两字符串的长度差 差的计算:调用方法的字符串-参数字符串 public int compareToIgnoreCase(String str)该方法实际上是调用了静态内部类对象的忽略大小写的compareTo方法 public boolean startsWith(String prefix, int toffset) public int hashCode()重写了Object的hashCode方法在JAVA中，hashCode有两个作用： Object的hashCode返回对象的内存地址 重写的hashCode配合基于散列的集合使用 在使用散列集合例如HashMap时，要保证key唯一，但是对于大量元素比较时直接比较equals效率低下，可以先判断hashCode，如果hashCode相等，然后判断equals，因为不同的对象其hashCode值可能相同，例如”通话”和”重地”、”Aa”和”BB” 为了使字符串计算的hashCode尽可能地少重复(降低哈希冲突)，这里采用的是31这个乘数，有两个好处 31是个不大不小的质数，是作为hashCode乘子的优秀质数之一 31可以被JVM优化，31*i=(i&lt;&lt;5)-i(暂时没弄明白JVM优化) public int indexOf(int ch, int fromIndex)作用：找到ch字符从字符串fromIndex位置开始第一次出现的位置方法中的判断条件ch &lt; Character.MIN_SUPPLEMENTARY_CODE_POINT是什么意思呢？我们知道，在JAVA中，一个char类型字符占2个字节也就是16位 当参数中的ch在这个范围内时，就在String中从fromIndex开始逐一查找ch第一次上出现的位置 当参数超过这个范围(即大于65535)时，调用indexOfSupplementary()方法进行比较 通过查看Character源码可知这个数值就是65535 public int indexOfSupplementary(int ch, int fromIndex)这个方法是private修饰的，只能由String内部调用，用来处理当参数ch大于2个字节时的查找方法不难发现，它将ch字符拆分成高低位来查找，高位和value[i]比较，低位和value[i+1]比较lastIndexof逻辑和Indexof基本类似，不多说 public int indexOf(String str, int fromIndex)参数为字符串，实际上比较的时字符串里的char数组方法是保护的，只能在包内调用 首先分析一下方法的参数： char[] source：调用方法的字符串内部数组–&gt;暂且称为源数组 int sourceOffset：数组的起始位置(一般是0) int sourceCount：数组的长度 char[] target：参数字符串的内部数组–&gt;暂且称为目的数组 int targetOffset：数组的起始位置(一般是0) int targetCount：数组的长度 int fromIndex：从源数组fromIndex位置开始向后查找 前三个if条件判断 当fromIndex &gt;= sourceCount(即指定的起始搜索位置大于源数组数组的长度)时 判断目的数组是否为空串 若为空，则返回源数组的长度 不为空，返回-1 当指定起始搜索位置小于0，默认从0开始搜索 当目的数组为空，并且fromIndex在正常范围内，返回fromIndex 找源数组和目的数组第一个字符相同的位置记为i 逐一比较接来的字符是否相等，如果遍历完目的数组后仍相等，返回i，不相等进行5 从源数组第i个位置后找与目的数组第一个字符相等的位置，再比较接下来的每一个字符是否相等 一直循环查找直到找到i并返回，或源字符串遍历完毕返回-1对于几种特殊情况的测试public int indexOf(String str)默认fromIndex=0，调用上面的indexOf方法 public int lastIndexOf(String str, int fromIndex)逻辑和上面个一样，都是调用比较char数组的保护方法，需要时查看一下JDK8的源码 public String substring(int beginIndex) 对beginIndex进行判断 beginIndex&lt;0，抛出StringIndexOutOfBoundsException异常 大于源数组的长度，抛出StringIndexOutOfBoundsException异常 begin=0，直接返回当前字符串 调用String(char[] value,int beginIndex,int count(value.length-beginIndex))来实现 public String substring(int beginIndex, int endIndex)逻辑和上面一样(含头不含尾) public String concat(String str)拼接字符串，将str拼接到this串后面 如果参数串为空串，直接返回this(当前字符串) 调用Arrays.copyOf方法创建一个新的字符串buf，长度为this.length+str.length，内容为this.value 调用String类的getChars方法，将str复制到buf串中(从buf串的this.length位置开始) 调用String类的protected修饰的构造方法，直接将buf串的地址赋值给新创建的字符串对象–&gt;参考前面protected的构造方法 大致上来说，该方法的实现原理：先创建一个字符数组，复制了两个字符串中的内容，然后通过String(char value[] boolean share)方法来new一个新的字符串因为buf串是在方法内部创建的，外部是不可见的，因此不会破坏String对象的不可变性 public String replace(char oldChar, char newChar)将字符串中所有的oldChar替换为newChar 如果OldChar==newChar，直接返回当前字符串 找到字符串中第一个OldChar，记录位置为i； 新建一个char数组buf，将字符串赋值给buf数组，从buf的i开始，将所有的OldChar替换为newChar 通过String(char value[] boolean share)来创建新的字符串对象并返回 说一下为什么要重建一个val数组，用val数组给buf数组赋值，而不直接用value数组赋值呢？上网查阅，val数组是局部变量，value数组是类变量，getfield操作是一个访问类变量的操作当使用value数组循环赋值的时候，每一次循环都会有一个getfield操作入栈使用局部变量val时，只有一次getfield操作操作，就是将value数组赋值给val的时候当数组长度很大的时候，使用局部变量性能会更好一些(大神真不愧是大神，太细节了) public boolean contains(CharSequence s)判断字符串是否包含制定的字符序列，实际上是调用indexOf(String str)方法，查找序列在字符串中出现的位置来判断的，如果不包含返回-1。 public String toLowerCase()/toUpperCase()对字符串进行大小写转换，只对英文字符有效 public String trim()去掉两端空白字符(空格、tab、回车符) 从左到右循环字符数组，若字符为空字符则继续循环，直到第一个不为空的字符记录位置st 从右往左循环字符数组，若字符为空字符则继续循环，直到第一个不为空的字符记录位置len 如果st=0并且len=value.length，说明该字符两端没有空字符，直接返回字符串 否则，调用substring(st, len)方法获取去掉首尾空字符的字串。 通过分析：一个首尾没有空字符的str调用trim方法，返回它本身，所以得到的新String对象地址相同一个开头或结尾存在空字符的str调用trim方法，返回的新String对象是new出来的，两者地址不同 public String toString()返回他自身 public char[] toCharArray()创建一个resault数组，调用System.arraycopy方法将value复制给resault数组并返回不能直接返回value数组，破坏了String的不可变性源码中有一行注释：Cannot use Arrays.copyOf because of class initialization order issues，由于类初始化顺序问题，不能使用Arrays.copyOf方法可能的原因：String初始化比Arrays早，但是在JDK中存在其他对象使用了toCharArray()方法，而这个对象初始化比String晚但是比Arrays早，导致在使用时Arrays还没有初始化完成而报错而Syatem.arraycopy不会有这样的问题，因为这是本地方法 public static String valueOf系列方法直接查看JDK源码即可，很简单，就不赘述 public native String intern();本地方法，详细解释请见传送门，讲的挺好传送门1传送门2 静态内部类实际上就是String内部定义的一个比较器，用于忽略大小写比较字符串是否相等，CompareToIgnoreCase方法用到了这个类 到这里String类也大致总结完了，但是对于String类，我想要学的远不止这些，做这些只是整理方便后期学习理解，如果哪里不对或者有其他源码学习途径，欢迎私信我一起讨论交流，让我们一起学习，共同进步 暂时只能通过微博，后续会开微信公众号来一起交流，毕竟现在实力还不够]]></content>
+      
+      
+        <tags>
+            
+            <tag> 数组 </tag>
+            
+            <tag> 数据结构 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>JDK源码--String类</title>
+      <link href="/2019/09/10/JDK%E6%BA%90%E7%A0%81-String%E7%B1%BB/"/>
+      <url>/2019/09/10/JDK%E6%BA%90%E7%A0%81-String%E7%B1%BB/</url>
+      
+        <content type="html"><![CDATA[<p>这一篇的String源码基于<font color="red">JDK8</font>版本，来自于慕课网上<a href="https://www.imooc.com/read/47" target="_blank" rel="noopener">文贺老师的JAVA源码专栏(收费)</a>结合<a href="https://www.jianshu.com/p/b3e9deacd155" target="_blank" rel="noopener">张家界的雪</a>以及自己学习String源码的总结，主要的目的在于总结知识，方便后续回顾查看，如转载，请<font color="red"><b>注明出处</b></font></p><hr><a id="more"></a><h1 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h1><p>在学习String源码之前，首先要知道String对象再内存中的存放位置，我们都知道JAVA对象一般都是存放在堆中，但是String对象是一个特例，它被<font color="red">存放在常量池中</font><br><img src="/2019/09/10/JDK源码-String类/1.png" alt>可以看到，String类实现了</p><ol><li>Serializable：序列化接口，String对象可以被序列化</li><li>Comparable：表明字符串可以比较</li><li>CharSequence：表明String对象是一个字符序列</li><li>String底层实现是一个char类型的数组并且被final修饰</li></ol><h1 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h1><h2 id="public-String"><a href="#public-String" class="headerlink" title="public String()"></a><font size="5">public String()</font></h2><p><img src="/2019/09/10/JDK源码-String类/2.png" alt>值为空串，很少使用</p><h2 id="public-String-String-original"><a href="#public-String-String-original" class="headerlink" title="*public String(String original)"></a><font size="5">*public String(String original)</font></h2><p><img src="/2019/09/10/JDK源码-String类/3.png" alt>这个构造方法在创建的过程中会创建两个对象，一个在堆中，一个在常量池中<br>当调用这个构造方法时String str=new String(“abc”)</p><ol><li>现在堆中new出一个String对象，并将str指向该对象</li><li>查看常量池中是否存在”abc”</li><li>如果不存在，那么就会在常量池中在创建一个String对象</li><li>如果存在，不做操作</li></ol><p>最终<font color="red">str是指向堆中的对象，而不是常量池中的对象</font><br><img src="/2019/09/10/JDK源码-String类/4.png" alt></p><ol><li>str1和str3都是指向常量池中的”abc”对象，所以str1==str3返回true</li><li>str4涉及到了变量的相加，内部实现是先new一个StringBuilder，然后 append(str2),append(“c”);然后让str4引用toString()返回的对象;<br><img src="/2019/09/10/JDK源码-String类/5.png" alt>如图，StringBuilder的toString方法实质上也是new了一个String对象，所以<font color="red">str4指向堆中的另外一个String对象</font>，所以str1==str4返回false</li><li>上面说了，str5指向堆中的一个String对象，所以str1==str5返回false<h2 id="public-String-char-value"><a href="#public-String-char-value" class="headerlink" title="public String(char value[])"></a><font size="5">public String(char value[])</font></h2><img src="/2019/09/10/JDK源码-String类/6.png" alt>如图，该构造方法实质上是<font color="red">调用Arrays工具类的copyof方法</font><h2 id="public-String-char-value-int-offset-int-count"><a href="#public-String-char-value-int-offset-int-count" class="headerlink" title="public String(char value[], int offset, int count)"></a><font size="5">public String(char value[], int offset, int count)</font></h2><img src="/2019/09/10/JDK源码-String类/7.png" alt>如图，该构造方法会<font color="red">先对起始位置进行判断，如果不合法会抛出异常</font>。最后<font color="red">调用Arrays工具类的copyOfRange来实现</font><h2 id="public-String-byte-bytes-int-offset-int-length-String-charsetName"><a href="#public-String-byte-bytes-int-offset-int-length-String-charsetName" class="headerlink" title="public String(byte bytes[], int offset, int length, String charsetName)"></a><font size="5">public String(byte bytes[], int offset, int length, String charsetName)</font></h2><img src="/2019/09/10/JDK源码-String类/8.png" alt>如图，该构造方法用byte数组构造String对象，用指定字符集转换后构造String对象。<br>其中StringCoding.decode(charsetName, bytes, offset, length)方法根据指定编码对byte数组进行解码，返回char数组<br>checkBounds方法是对<font color="red">参数进行检查，该方法为私有，只能在String类中使用</font><br><img src="/2019/09/10/JDK源码-String类/9.png" alt>该构造方法如果<font color="red">不指定charsetName，那么按照系统默认字符集进行解码</font><h2 id="public-String-StringBuffer-buffer"><a href="#public-String-StringBuffer-buffer" class="headerlink" title="public String(StringBuffer buffer)"></a><font size="5">public String(StringBuffer buffer)</font></h2><img src="/2019/09/10/JDK源码-String类/10.png" alt>通过StringBuffer构造String，因为StringBuffer内部也是一个char数组，所以实质上还是调用Arrays.copyOf方法实现，并且由于<font color="red">StringBuffer是线程安全的，所以这里也加了synchronized块保证线程安全</font><br>通过StringBuilder构造String对象和StringBuffer原理相同。不过由于StringBuilder是线程不安全的，所以没有加synchronized块<h2 id="String-char-value-boolean-share"><a href="#String-char-value-boolean-share" class="headerlink" title="*String(char value[] boolean share)"></a><font size="5">*String(char value[] boolean share)</font></h2><img src="/2019/09/10/JDK源码-String类/11.png" alt>这个构造方法是<font color="blue">protected修饰</font>的，它和public String(char value[])的区别在于多了一个boolean参数，并且不支持false<br>只支持true，这样做的原因是为了和public String(char value[])方法进行区分，否则没办法构成重载，查看方法体可以发现，它直接将char数组的的地址传递给String对象，要比注意拷贝快很多<br>但是这样做的弊端很大：<font color="red">String对象和char数组共享同一块内存，破坏了String的不可变性，</font>所以将该构造方法设置为protected保证安全,但是由于性能比较好，节约内存，所以replace、concat、valueof等方法也用到了这个构造方法<hr></li></ol><h1 id="成员方法"><a href="#成员方法" class="headerlink" title="成员方法"></a>成员方法</h1><h2 id="public-int-length"><a href="#public-int-length" class="headerlink" title="public int length()"></a><font size="5">public int length()</font></h2><p>返回char数组的长度</p><h2 id="public-boolean-isEmpty"><a href="#public-boolean-isEmpty" class="headerlink" title="public boolean isEmpty()"></a><font size="5">public boolean isEmpty()</font></h2><p>char数组长度是否为0</p><h2 id="public-char-charAt-int-index"><a href="#public-char-charAt-int-index" class="headerlink" title="public char charAt(int index)"></a><font size="5">public char charAt(int index)</font></h2><ol><li>判断index是否超出char数组长度，超出则抛异常</li><li>否则返回value[index]。</li></ol><h2 id="public-void-getChars-int-srcBegin-int-srcEnd-char-dst-int-dstBegin"><a href="#public-void-getChars-int-srcBegin-int-srcEnd-char-dst-int-dstBegin" class="headerlink" title="public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin)"></a><font size="5">public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin)</font></h2><p><img src="/2019/09/10/JDK源码-String类/12.png" alt>将String对象指定的字符从dst[]数组的dstBegin位置向后复制,通过System.arraycopy实现，这是一个本地方法(native)。<br>参数：</p><ol><li>srcBegin：复制的起始位置(包括)</li><li>srcEnd：复制的结束位置(不包括)</li><li>dst[]：目的数组</li><li>dstBegin：目的数组dstBegin起始</li></ol><p>如果要<font color="red">复制的字符个数srcEnd-srcBegin&gt;dst.length-dstBegin,会抛出异常</font></p><h2 id="public-byte-getBytes-String-charsetName"><a href="#public-byte-getBytes-String-charsetName" class="headerlink" title="public byte[] getBytes(String charsetName)"></a><font size="5">public byte[] getBytes(String charsetName)</font></h2><p><img src="/2019/09/10/JDK源码-String类/13.png" alt>和前面传递Byte数组的构造方法相反，这里将String对象的value数组按照<font color="red">指定字符集编码成字符数组并返回</font><br>如果<font color="red">不指定字符集，按照默认字符集编码</font></p><h2 id="public-boolean-equals-Object-anObject"><a href="#public-boolean-equals-Object-anObject" class="headerlink" title="public boolean equals(Object anObject)"></a><font size="5">public boolean equals(Object anObject)</font></h2><p><img src="/2019/09/10/JDK源码-String类/14.png" alt>重写了Object的equals方法</p><h2 id="public-boolean-equalsIgnoreCase-String-anotherString"><a href="#public-boolean-equalsIgnoreCase-String-anotherString" class="headerlink" title="public boolean equalsIgnoreCase(String anotherString)"></a><font size="5">public boolean equalsIgnoreCase(String anotherString)</font></h2><p><img src="/2019/09/10/JDK源码-String类/15.png" alt>先判断地址是否相同，地址相同内容肯定相同，再判断长度是否相同，如果长度一样再调用regionMatches方法进行判断，这里用了&amp;&amp;运算符的<font color="red">断路原理</font><br>regionMatches方法有两种形式</p><ol><li>没有boolean参数的</li><li>有boolean参数的</li></ol><p>该方法的作用是区域比较，比较两个字符串指定长度的内容是否相等，从指定位置开始逐一比较字符数组内容是否相等<br><font color="red">两方法的区别</font>在于：如果booloean参数为true，那么当字符不相等时</p><ol><li>先将两字符转换成大写字符比较，还不相等</li><li>将两字符转换成小写比较，还不相等返回false</li></ol><p>和<font color="red">String的内部类实现原理一样</font></p><h2 id="public-int-compareTo-String-anotherString"><a href="#public-int-compareTo-String-anotherString" class="headerlink" title="public int compareTo(String anotherString)"></a><font size="5">public int compareTo(String anotherString)</font></h2><p><img src="/2019/09/10/JDK源码-String类/16.png" alt>这个方法是实现Comparable接口的方法，用于对字符串大小进行比较这个方法取了两个字符串长度较小的那个作为循环次数，对两个字符串进行逐位比较。</p><ol><li>如果不同，就返回两字符串不同那一位字符的差</li><li>如果都相同，就返回两字符串的长度差</li></ol><p>差的计算:<font color="blue">调用方法的字符串-参数字符串</font></p><h2 id="public-int-compareToIgnoreCase-String-str"><a href="#public-int-compareToIgnoreCase-String-str" class="headerlink" title="public int compareToIgnoreCase(String str)"></a><font size="5">public int compareToIgnoreCase(String str)</font></h2><p><img src="/2019/09/10/JDK源码-String类/18.png" alt>该方法实际上是调用了静态内部类对象的忽略大小写的compareTo方法</p><h2 id="public-boolean-startsWith-String-prefix-int-toffset"><a href="#public-boolean-startsWith-String-prefix-int-toffset" class="headerlink" title="public boolean startsWith(String prefix, int toffset)"></a><font size="5">public boolean startsWith(String prefix, int toffset)</font></h2><p><img src="/2019/09/10/JDK源码-String类/19.png" alt></p><h2 id="public-int-hashCode"><a href="#public-int-hashCode" class="headerlink" title="public int hashCode()"></a><font size="5">public int hashCode()</font></h2><p><img src="/2019/09/10/JDK源码-String类/20.png" alt>重写了Object的hashCode方法<br>在JAVA中，hashCode有两个作用：</p><ol><li>Object的hashCode返回对象的内存地址</li><li>重写的hashCode配合基于散列的集合使用<ul><li>在使用散列集合例如HashMap时，要保证key唯一，但是对于大量元素比较时直接比较equals效率低下，可以先判断hashCode，如果hashCode相等，然后判断equals，因为不同的对象其hashCode值可能相同，例如”通话”和”重地”、”Aa”和”BB”</li><li>为了使字符串计算的hashCode尽可能地少重复(降低哈希冲突)，这里采用的是31这个乘数，有两个好处<ul><li>31是个不大不小的质数，是作为hashCode乘子的优秀质数之一</li><li>31可以被JVM优化，31*i=(i&lt;&lt;5)-i(暂时没弄明白JVM优化)</li></ul></li></ul></li></ol><h2 id="public-int-indexOf-int-ch-int-fromIndex"><a href="#public-int-indexOf-int-ch-int-fromIndex" class="headerlink" title="public int indexOf(int ch, int fromIndex)"></a><font size="5">public int indexOf(int ch, int fromIndex)</font></h2><p><img src="/2019/09/10/JDK源码-String类/21.png" alt>作用：找到ch字符从字符串fromIndex位置开始第一次出现的位置<br>方法中的判断条件<font color="red">ch &lt; Character.MIN_SUPPLEMENTARY_CODE_POINT</font>是什么意思呢？<br>我们知道，在JAVA中，一个<font color="blue">char类型字符占2个字节也就是16位</font></p><ol><li>当参数中的ch在这个范围内时，就在String中从fromIndex开始逐一查找ch第一次上出现的位置</li><li>当参数超过这个范围(即大于65535)时，调用indexOfSupplementary()方法进行比较</li></ol><p>通过查看Character源码可知<br><img src="/2019/09/10/JDK源码-String类/22.png" alt>这个数值就是65535</p><h2 id="public-int-indexOfSupplementary-int-ch-int-fromIndex"><a href="#public-int-indexOfSupplementary-int-ch-int-fromIndex" class="headerlink" title="public int indexOfSupplementary(int ch, int fromIndex)"></a><font size="5">public int indexOfSupplementary(int ch, int fromIndex)</font></h2><p><img src="/2019/09/10/JDK源码-String类/23.png" alt>这个方法是private修饰的，只能由String内部调用，用来处理当参数ch大于2个字节时的查找方法<br>不难发现，它将<font color="red">ch字符拆分成高低位来查找，高位和value[i]比较，低位和value[i+1]比较</font><br><b>lastIndexof逻辑和Indexof基本类似，不多说</b></p><h2 id="public-int-indexOf-String-str-int-fromIndex"><a href="#public-int-indexOf-String-str-int-fromIndex" class="headerlink" title="public int indexOf(String str, int fromIndex)"></a><font size="5">public int indexOf(String str, int fromIndex)</font></h2><p><img src="/2019/09/10/JDK源码-String类/24.png" alt>参数为字符串，实际上比较的时<font color="red">字符串里的char数组</font><br><img src="/2019/09/10/JDK源码-String类/25.png" alt>方法是保护的，<font color="red">只能在包内调用</font></p><ol><li><b>首先分析一下方法的参数：</b><ol><li>char[] source：调用方法的字符串内部数组–&gt;暂且称为<font color="blue">源数组</font></li><li>int sourceOffset：数组的起始位置(一般是0)</li><li>int sourceCount：数组的长度</li><li>char[] target：参数字符串的内部数组–&gt;暂且称为<font color="blue">目的数组</font></li><li>int targetOffset：数组的起始位置(一般是0)</li><li>int targetCount：数组的长度</li><li>int fromIndex：从源数组fromIndex位置开始向后查找</li></ol></li><li><b>前三个if条件判断</b><ol><li>当fromIndex &gt;= sourceCount(即指定的起始搜索位置大于源数组数组的长度)时<ul><li>判断目的数组是否为空串<ul><li>若为空，则返回源数组的长度</li><li>不为空，返回-1</li></ul></li></ul></li><li>当指定起始搜索位置小于0，默认从0开始搜索</li><li>当目的数组为空，并且fromIndex在正常范围内，返回fromIndex</li></ol></li><li>找源数组和目的数组第一个字符相同的位置记为i</li><li>逐一比较接来的字符是否相等，如果遍历完目的数组后仍相等，返回i，不相等进行5</li><li>从源数组第i个位置后找与目的数组第一个字符相等的位置，再比较接下来的每一个字符是否相等</li><li>一直循环查找直到找到i并返回，或源字符串遍历完毕返回-1<br><img src="/2019/09/10/JDK源码-String类/26.png" alt><font color="red">对于几种特殊情况的测试</font><h2 id="public-int-indexOf-String-str"><a href="#public-int-indexOf-String-str" class="headerlink" title="public int indexOf(String str)"></a><font size="5">public int indexOf(String str)</font></h2><img src="/2019/09/10/JDK源码-String类/27.png" alt>默认fromIndex=0，调用上面的indexOf方法</li></ol><h2 id="public-int-lastIndexOf-String-str-int-fromIndex"><a href="#public-int-lastIndexOf-String-str-int-fromIndex" class="headerlink" title="public int lastIndexOf(String str, int fromIndex)"></a><font size="5">public int lastIndexOf(String str, int fromIndex)</font></h2><p>逻辑和上面个一样，都是调用比较char数组的保护方法，需要时查看一下JDK8的源码</p><h2 id="public-String-substring-int-beginIndex"><a href="#public-String-substring-int-beginIndex" class="headerlink" title="public String substring(int beginIndex)"></a><font size="5">public String substring(int beginIndex)</font></h2><p><img src="/2019/09/10/JDK源码-String类/28.png" alt></p><ol><li>对beginIndex进行判断<ul><li>beginIndex&lt;0，抛出StringIndexOutOfBoundsException异常</li><li>大于源数组的长度，抛出StringIndexOutOfBoundsException异常</li><li><font color="red">begin=0，直接返回当前字符串</font></li></ul></li><li>调用<font color="red">String(char[] value,int beginIndex,int count(value.length-beginIndex))</font>来实现</li></ol><h2 id="public-String-substring-int-beginIndex-int-endIndex"><a href="#public-String-substring-int-beginIndex-int-endIndex" class="headerlink" title="public String substring(int beginIndex, int endIndex)"></a><font size="5">public String substring(int beginIndex, int endIndex)</font></h2><p><img src="/2019/09/10/JDK源码-String类/29.png" alt>逻辑和上面一样(<font color="blue">含头不含尾</font>)</p><h2 id="public-String-concat-String-str"><a href="#public-String-concat-String-str" class="headerlink" title="public String concat(String str)"></a><font size="5">public String concat(String str)</font></h2><p><img src="/2019/09/10/JDK源码-String类/30.png" alt>拼接字符串，将str拼接到this串后面</p><ol><li>如果参数串为空串，直接返回this(当前字符串)</li><li>调用Arrays.copyOf方法创建一个新的字符串buf，长度为this.length+str.length，内容为this.value</li><li>调用String类的getChars方法，将str复制到buf串中(从buf串的this.length位置开始)</li><li>调用String类的protected修饰的构造方法，直接将buf串的地址赋值给新创建的字符串对象–&gt;参考前面protected的构造方法</li></ol><p>大致上来说，该方法的实现原理：<br>先创建一个字符数组，复制了两个字符串中的内容，然后通过String(char value[] boolean share)方法来new一个新的字符串<br><font color="red"><b>因为buf串是在方法内部创建的，外部是不可见的，因此不会破坏String对象的不可变性</b></font></p><h2 id="public-String-replace-char-oldChar-char-newChar"><a href="#public-String-replace-char-oldChar-char-newChar" class="headerlink" title="public String replace(char oldChar, char newChar)"></a><font size="5">public String replace(char oldChar, char newChar)</font></h2><p><img src="/2019/09/10/JDK源码-String类/31.png" alt>将字符串中所有的oldChar替换为newChar</p><ol><li>如果OldChar==newChar，直接返回当前字符串</li><li>找到字符串中第一个OldChar，记录位置为i；</li><li>新建一个char数组buf，将字符串赋值给buf数组，从buf的i开始，将所有的OldChar替换为newChar</li><li>通过String(char value[] boolean share)来创建新的字符串对象并返回</li></ol><p><b>说一下为什么要重建一个val数组，用val数组给buf数组赋值，而不直接用value数组赋值呢？</b><br><img src="/2019/09/10/JDK源码-String类/32.png" alt><a href="https://blog.csdn.net/no_hardsoft/article/details/51725822" target="_blank" rel="noopener">上网查阅</a>，val数组是局部变量，value数组是类变量，getfield操作是一个<font color="blue">访问类变量的操作</font><br>当使用value数组循环赋值的时候，<font color="blue">每一次循环都会有一个getfield操作入栈</font><br>使用局部变量val时，<font color="blue">只有一次getfield操作操作，就是将value数组赋值给val的时候</font><br>当数组长度很大的时候，使用局部变量性能会更好一些(大神真不愧是大神，太细节了)</p><h2 id="public-boolean-contains-CharSequence-s"><a href="#public-boolean-contains-CharSequence-s" class="headerlink" title="public boolean contains(CharSequence s)"></a><font size="5">public boolean contains(CharSequence s)</font></h2><p><img src="/2019/09/10/JDK源码-String类/33.png" alt>判断字符串是否包含制定的字符序列，实际上是<font color="red">调用indexOf(String str)方法，查找序列在字符串中出现的位置来判断的</font>，如果不包含返回-1。</p><h2 id="public-String-toLowerCase-toUpperCase"><a href="#public-String-toLowerCase-toUpperCase" class="headerlink" title="public String toLowerCase()/toUpperCase()"></a><font size="5">public String toLowerCase()/toUpperCase()</font></h2><p><img src="/2019/09/10/JDK源码-String类/34.png" alt><br><img src="/2019/09/10/JDK源码-String类/35.png" alt>对字符串进行大小写转换，只对英文字符有效</p><h2 id="public-String-trim"><a href="#public-String-trim" class="headerlink" title="public String trim()"></a><font size="5">public String trim()</font></h2><p><img src="/2019/09/10/JDK源码-String类/36.png" alt>去掉两端空白字符(空格、tab、回车符)</p><ol><li>从左到右循环字符数组，若字符为空字符则继续循环，直到第一个不为空的字符记录位置st</li><li>从右往左循环字符数组，若字符为空字符则继续循环，直到第一个不为空的字符记录位置len</li><li>如果st=0并且len=value.length，说明该字符两端没有空字符，直接返回字符串</li><li>否则，调用substring(st, len)方法获取去掉首尾空字符的字串。</li></ol><p><font color="red">通过分析：一个首尾没有空字符的str调用trim方法，返回它本身，所以得到的新String对象地址相同<br>一个开头或结尾存在空字符的str调用trim方法，返回的新String对象是new出来的，两者地址不同</font></p><h2 id="public-String-toString"><a href="#public-String-toString" class="headerlink" title="public String toString()"></a><font size="5">public String toString()</font></h2><p><img src="/2019/09/10/JDK源码-String类/37.png" alt>返回他自身</p><h2 id="public-char-toCharArray"><a href="#public-char-toCharArray" class="headerlink" title="public char[] toCharArray()"></a><font size="5">public char[] toCharArray()</font></h2><p><img src="/2019/09/10/JDK源码-String类/38.png" alt>创建一个resault数组，调用System.arraycopy方法将value复制给resault数组并返回<br><font color="red">不能直接返回value数组，破坏了String的不可变性</font><br>源码中有一行注释：Cannot use Arrays.copyOf because of class initialization order issues，由于类初始化顺序问题，不能使用Arrays.copyOf方法<br>可能的原因：String初始化比Arrays早，但是在JDK中存在其他对象使用了toCharArray()方法，而<font color="blue">这个对象初始化比String晚但是比Arrays早，导致在使用时Arrays还没有初始化完成而报错</font><br>而Syatem.arraycopy不会有这样的问题，因为这是本地方法</p><h2 id="public-static-String-valueOf系列方法"><a href="#public-static-String-valueOf系列方法" class="headerlink" title="public static String valueOf系列方法"></a><font size="5">public static String valueOf系列方法</font></h2><p>直接查看JDK源码即可，很简单，就不赘述</p><h2 id="public-native-String-intern"><a href="#public-native-String-intern" class="headerlink" title="public native String intern();"></a><font size="5">public native String intern();</font></h2><p>本地方法，详细解释请见传送门，讲的挺好<br><a href="https://www.cnblogs.com/wxgblogs/p/5635099.html" target="_blank" rel="noopener">传送门1</a><br><a href="https://www.jianshu.com/p/9f51e4ccb33a" target="_blank" rel="noopener">传送门2</a></p><h1 id="静态内部类"><a href="#静态内部类" class="headerlink" title="静态内部类"></a>静态内部类</h1><p><img src="/2019/09/10/JDK源码-String类/17.png" alt>实际上就是String内部定义的一个比较器，用于忽略大小写比较字符串是否相等，<font color="red">CompareToIgnoreCase方法用到了这个类</font></p><hr><font size="5">到这里String类也大致总结完了，但是对于String类，我想要学的远不止这些，做这些只是整理方便后期学习理解，如果哪里不对或者有其他源码学习途径，欢迎私信我一起讨论交流，让我们一起学习，共同进步</font><br><hr><div align="center">暂时只能通过微博，后续会开微信公众号来一起交流，毕竟现在实力还不够</div>]]></content>
+      
+      
       <categories>
-        <category>JDK源码</category>
+          
+          <category> JDK源码 </category>
+          
       </categories>
-      <tags>
-        <tag>源码</tag>
-        <tag>String类</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[数据库基础--SQL语句总结(二)]]></title>
-    <url>%2F2019%2F09%2F09%2F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80-SQL%E8%AF%AD%E5%8F%A5%E6%80%BB%E7%BB%93-%E4%BA%8C%2F</url>
-    <content type="text"><![CDATA[今天初步的做了一个web的小Demo，才发现数据库操作对于Web开发的重要性，频繁的对数据库进行操作，发现才学完数据库没多久，连基础的CRUD语句都写不出来，真是让人头大。突然想起来之前的SQL语句还有一半没有总结，现在趁着手机没电不能继续做Demo，就花30分钟左右的时间来总结一下剩下的DQL语句和DCL语句吧 DQL语法 select *from +表名 select字段列表 from表名列表 where条件列表 group by分组字段 having分组之后的条件 order by排序 limit分页限定 基础查询基于上面这个表进行演示 多个字段的查询 select 字段名1，字段名2… from 表名 注意： 如果查询所有字段，则可以使用*来替代字段列表。 去除重复：如果要单独查地址栏：SELECT address FROM student; 就会发现有多个香港地址但是在这种情况下我们并一般不希望出现这种情况 在select后面加distinct关键字就可以取出要查询的字段中重复的值格式：SELECT DISTINCT address(字段名) FROM 表名; 计算列 可以使用四则运算计算一些列的值。（一般只会进行数值型的计算） ifnull(表达式1,表达式2)：null参与的运算，计算结果都为null 表达式1：哪个字段需要判断是否为null 表达式2：如果该字段为null后的替换值。 如图，计算英语成绩和数学成绩之和SELECT NAME,math,english,math+english FROM student;因为英语这一列存在null值，所以就会导致数学和英语的和也为null，这显然是不合理的使用ifnull，如果字段为null，就会在相加的时候替换为0；SELECT NAME,math,english,math+IFNULL(english,0) FROM student; 起别名： as：as也可以省略上面再计算列的时候，最后的列的值发生了变化，变成了(math+english)，顾名思义，其别名就是将列名换一个自己的名字SELECT NAME,math,english,math+IFNULL(english,0)AS 总分 FROM student; 条件查询 在where子句后面跟查询的条件 运算符 &lt; 、&gt;、&lt;= 、&gt;= 、= 、&lt;&gt;(不等于，相当于！=) BETWEEN…AND IN( 集合) LIKE：模糊查询 占位符： _:单个任意字符 %：多个任意字符 IS NULL and 或 &amp;&amp; or 或 || not 或 ! 实例演示 查询年龄大于20岁的：SELECT *FROM student WHERE age&gt;20; 查询年龄在20~30岁之间的(三种方法)SELECT *FROM student WHERE age BETWEEN 20 AND 30;/age&gt;=20&amp;&amp;age&lt;=30;/age&gt;=20 AND age&lt;=30; 查询年龄22岁，18岁，25岁的信息(查询满足指定条件的数据)SELECT *FROM student WHERE age IN(19,22,25);age=22 OR age=19 OR age=25;/age=22 || age=19 || age=25; 查询英语成绩为null–&gt;不能用=和！=来判断是否为null，要用is和is not来判断SELECT * FROM student WHERE english IS NULL; 查询姓马的有哪些 模糊查询–likeSELECT *FROM student WHERE NAME LIKE “马%”;因为用的%占位符，所以马后面不管有几个字符，都符合条件排序查询 语法：order by 子句 order by 排序字段1 排序方式1 ， 排序字段2 排序方式2… 排序方式： ASC：升序，默认的。 DESC：降序。 注意： 如果有多个排序条件，则当前边的条件值一样时，才会判断第二条件。 实例演示 按照数学成绩排名(默认升序排列)SELECT *FROM student ORDER BY math; 按照数学习成绩升序排名，如果数学成绩一样，就按照英语成绩升序排名。SELECT *FROM student ORDER BY math ASC,english ASC;聚合函数将一列数据作为一个整体，进行纵向的计算。 count：计算个数 一般选择非空的列：主键 count(*) max：计算最大值 min：计算最小值 sum：计算和 avg：计算平均值 实例演示 某一列数据总行数(如果这一列有null值，那么为null的行不算)SELECT COUNT(english) FROM student;这时候还要用到ifnull计算行数的时候将null临时替换为0，SELECT COUNT(IFNULL(english,0)) FROM student;使用SELECT COUNT(*) FROM student;来计算行数，只要这一组数据中有一列数据全不为null，就能够正确的计算行数 计算数学成绩最大值(max)其余的min、sum以及avg用法和max一样分组查询 语法：group by 分组字段； 注意： 分组之后查询的字段：分组字段、聚合函数 where 和 having 的区别？ where 在分组之前进行限定，如果不满足条件，则不参与分组。having在分组之后进行限定，如果不满足结果，则不会被查询出来 where 后不可以跟聚合函数，having可以进行聚合函数的判断。 实例演示 按照性别分组。分别查询男、女同学的数学平均分,人数SELECT sex , AVG(math)(平均分),COUNT(id)(人数) FROM student GROUP BY sex(性别分组); 按照性别分组。分别查询男、女同学的平均分,人数 要求：分数低于70分的人，不参与分组SELECT sex , AVG(math),COUNT(id) FROM student WHERE math &gt; 70 GROUP BY sex; 按照性别分组。分别查询男、女同学的平均分,人数 要求：分数低于70分的人，不参与分组,分组之后。人数要大于2个人SELECT sex,AVG(math) ,COUNT(id) FROM student WHERE math&gt;70 GROUP BY sex HAVING COUNT(id)&gt;2 ; 分页查询1. 语法：limit 开始的索引,每页查询的条数; 2. 公式：开始的索引 = （当前的页码 - 1） * 每页显示的条数 -- 每页显示3条记录 SELECT * FROM student LIMIT 0,3; -- 第1页 SELECT * FROM student LIMIT 3,3; -- 第2页 SELECT * FROM student LIMIT 6,3; -- 第3页 3. limit 是一个MySQL&quot;方言&quot; 通过上面的实例演示，结合DQL查询语句的语法不难发现，如果一次有多个查询条件，那么写的顺序一次是Where、Group By、Having、Order By、Limit的顺序 可以这么来理解： where先对数据进行筛选，不满足条件的不进行后面的分组，这是第一次条件 Having再对分完组后的数据进行筛选，不满足条件的数据不会被查询到，这是第二次条件 前面的都完成后，Order By再对查询到的数据进行排序，这是第三次条件 Limit再对排序后的数据进行分页展示，这是第四次条件 发现数据库这方面的知识要掌握的东西太多，多练习才能掌握，死记硬背是很难的，本来以为30分钟，最后俩小时还没搞定，后面大约还有整个基础部分的一半吧，下次再说吧]]></content>
+      
+      
+        <tags>
+            
+            <tag> 源码 </tag>
+            
+            <tag> String类 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>数据库基础--SQL语句总结(二)</title>
+      <link href="/2019/09/09/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80-SQL%E8%AF%AD%E5%8F%A5%E6%80%BB%E7%BB%93-%E4%BA%8C/"/>
+      <url>/2019/09/09/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80-SQL%E8%AF%AD%E5%8F%A5%E6%80%BB%E7%BB%93-%E4%BA%8C/</url>
+      
+        <content type="html"><![CDATA[<p>今天初步的做了一个web的小Demo，才发现数据库操作对于Web开发的重要性，频繁的对数据库进行操作，发现才学完数据库没多久，连基础的CRUD语句都写不出来，真是让人头大。<br>突然想起来之前的SQL语句还有一半没有总结，现在趁着手机没电不能继续做Demo，就花30分钟左右的时间来总结一下剩下的DQL语句和DCL语句吧</p><hr><a id="more"></a><h1 id="DQL"><a href="#DQL" class="headerlink" title="DQL"></a>DQL</h1><h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a><font size="5">语法</font></h2><ol><li>select *from +表名<br> select<pre><code>字段列表</code></pre> from<pre><code>表名列表</code></pre> where<pre><code>条件列表</code></pre> group by<pre><code>分组字段</code></pre> having<pre><code>分组之后的条件</code></pre> order by<pre><code>排序</code></pre> limit<pre><code>分页限定</code></pre><img src="/2019/09/09/数据库基础-SQL语句总结-二/1.png" alt></li></ol><h2 id="基础查询"><a href="#基础查询" class="headerlink" title="基础查询"></a><font size="5">基础查询</font></h2><p><font color="red">基于上面这个表进行演示</font></p><ol><li><p>多个字段的查询<br> <b>select 字段名1，字段名2… from 表名</b></p><ul><li>注意：<ul><li>如果查询所有字段，则可以使用*来替代字段列表。</li></ul></li></ul></li><li><p>去除重复：<br>如果要单独查地址栏：SELECT address FROM student; 就会发现有多个香港地址<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/2.png" alt><br>但是在这种情况下我们并一般不希望出现这种情况<br> <b>在select后面加<font color="red">distinct</font>关键字</b>就可以取出要查询的字段中重复的值<br>格式：<font color="red"><b>SELECT DISTINCT address(字段名) FROM 表名;</b></font></p></li><li><p>计算列</p><ul><li>可以使用四则运算计算一些列的值。（一般只会进行数值型的计算）</li><li>ifnull(表达式1,表达式2)：null参与的运算，计算结果都为null<ul><li>表达式1：哪个字段需要判断是否为null</li><li>表达式2：如果该字段为null后的替换值。</li></ul></li></ul></li></ol><p>如图，计算英语成绩和数学成绩之和<br><font color="red">SELECT NAME,math,english,math+english FROM student;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/3.png" alt><br>因为英语这一列存在null值，所以就会导致数学和英语的和也为null，<font color="red">这显然是不合理的</font><br>使用<font color="red">ifnull</font>，如果字段为null，就会在相加的时候替换为0；<br>SELECT NAME,math,english,<font color="red">math+IFNULL(english,0)</font> FROM student;</p><ol start="4"><li>起别名：<ul><li>as：as也可以省略<br>上面再计算列的时候，最后的列的值发生了变化，变成了(math+english)，顾名思义，其别名就是将列名换一个自己的名字<br><font color="red">SELECT NAME,math,english,math+IFNULL(english,0)AS 总分 FROM student;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/4.png" alt></li></ul></li></ol><h2 id="条件查询"><a href="#条件查询" class="headerlink" title="条件查询"></a><font size="5">条件查询</font></h2><ol><li>在<font color="red"><b>where子句后</b></font>面跟查询的条件</li><li>运算符<ul><li>&lt; 、&gt;、&lt;= 、&gt;= 、= 、&lt;&gt;(不等于，相当于！=)</li><li>BETWEEN…AND  </li><li>IN( 集合) </li><li>LIKE：模糊查询<ul><li>占位符：<ul><li>_:单个任意字符</li><li>%：多个任意字符</li></ul></li></ul></li><li>IS NULL  </li><li>and  或 &amp;&amp;</li><li>or  或 || </li><li>not  或 !</li></ul></li></ol><p><font color="blue"><b>实例演示</b></font></p><ol><li>查询年龄大于20岁的：<font color="red">SELECT *FROM student WHERE age&gt;20;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/5.png" alt></li><li>查询年龄在20~30岁之间的(三种方法)<br>SELECT *FROM student <font color="red">WHERE age BETWEEN 20 AND 30;<br>/age&gt;=20&amp;&amp;age&lt;=30;/age&gt;=20 AND age&lt;=30;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/6.png" alt></li><li>查询年龄22岁，18岁，25岁的信息(查询满足指定条件的数据)<br>SELECT *FROM student <font color="red">WHERE age IN(19,22,25);<br>age=22 OR age=19 OR age=25;/age=22 || age=19 || age=25;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/7.png" alt></li><li>查询英语成绩为null–&gt;不能用=和！=来判断是否为null，要<font color="red">用is和is not来判断</font><br>SELECT * FROM student WHERE english <font color="red">IS NULL;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/8.png" alt></li><li>查询姓马的有哪些 <font color="red">模糊查询–like</font><br>SELECT *FROM student WHERE NAME LIKE “马%”;<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/9.png" alt>因为用的%占位符，所以马后面不管有几个字符，都符合条件<h2 id="排序查询"><a href="#排序查询" class="headerlink" title="排序查询"></a><font size="5">排序查询</font></h2></li></ol><ul><li>语法：<b>order by 子句</b><ul><li>order by 排序字段1 排序方式1 ，  排序字段2 排序方式2…</li></ul></li><li>排序方式：<ul><li>ASC：升序，默认的。</li><li>DESC：降序。</li></ul></li><li>注意：<ul><li>如果有多个排序条件，则当<font color="red">前边的条件值一样时，才会判断第二条件。</font></li></ul></li></ul><p><font color="blue"><b>实例演示</b></font></p><ol><li>按照数学成绩排名(默认升序排列)<br>SELECT *FROM student <font color="red">ORDER BY math;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/10.png" alt></li><li>按照数学习成绩升序排名，如果数学成绩一样，就按照英语成绩升序排名。<br>SELECT *FROM student <font color="red">ORDER BY math ASC,english ASC;</font><br><img src="/2019/09/09/数据库基础-SQL语句总结-二/11.png" alt><h2 id="聚合函数"><a href="#聚合函数" class="headerlink" title="聚合函数"></a><font size="5">聚合函数</font></h2>将一列数据作为一个整体，进行纵向的计算。<ol><li>count：计算个数<ol><li>一般选择非空的列：主键</li><li>count(*)</li></ol></li><li>max：计算最大值</li><li>min：计算最小值</li><li>sum：计算和</li><li>avg：计算平均值</li></ol></li></ol><p><font color="blue"><b>实例演示</b></font></p><ol><li>某一列数据总行数(<font color="red">如果这一列有null值，那么为null的行不算</font>)<br>SELECT <font color="red">COUNT(english)</font> FROM student;<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/12.png" alt><br>这时候还要用到ifnull计算行数的时候将null临时替换为0，<br>SELECT <font color="red">COUNT(IFNULL(english,0))</font> FROM student;<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/13.png" alt>使用SELECT COUNT(*)  FROM student;来计算行数，只要这一组数据中有一列数据全不为null，就能够正确的计算行数</li><li>计算数学成绩最大值(max)<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/14.png" alt><font color="blue">其余的min、sum以及avg用法和max一样</font><h2 id="分组查询"><a href="#分组查询" class="headerlink" title="分组查询"></a><font size="5">分组查询</font></h2><ol><li>语法：group by 分组字段；</li><li>注意：<ol><li>分组之后查询的字段：分组字段、聚合函数</li><li>where 和 having 的区别？<ol><li>where 在分组之前进行限定，如果不满足条件，则不参与分组。having在分组之后进行限定，如果不满足结果，则不会被查询出来</li><li>where 后不可以跟聚合函数，having可以进行聚合函数的判断。</li></ol></li></ol></li></ol></li></ol><p><font color="blue"><b>实例演示</b></font></p><ol><li>按照性别分组。分别查询男、女同学的数学平均分,人数<br>SELECT sex , AVG(math)(平均分),COUNT(id)(人数) FROM student GROUP BY sex(性别分组);<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/15.png" alt></li><li>按照性别分组。分别查询男、女同学的平均分,人数 要求：分数低于70分的人，不参与分组<br>SELECT sex , AVG(math),COUNT(id) FROM student WHERE math &gt; 70 GROUP BY sex;<br><img src="/2019/09/09/数据库基础-SQL语句总结-二/16.png" alt></li><li>按照性别分组。分别查询男、女同学的平均分,人数 要求：分数低于70分的人，不参与分组,分组之后。人数要大于2个人<br>SELECT sex,AVG(math) ,COUNT(id) FROM student WHERE math&gt;70 GROUP BY sex HAVING COUNT(id)&gt;2 ;</li></ol><h2 id="分页查询"><a href="#分页查询" class="headerlink" title="分页查询"></a><font size="5">分页查询</font></h2><pre><code>1. 语法：limit 开始的索引,每页查询的条数;2. 公式：开始的索引 = （当前的页码 - 1） * 每页显示的条数    -- 每页显示3条记录     SELECT * FROM student LIMIT 0,3; -- 第1页    SELECT * FROM student LIMIT 3,3; -- 第2页    SELECT * FROM student LIMIT 6,3; -- 第3页3. limit 是一个MySQL&quot;方言&quot;</code></pre><hr><font size="5"><b>通过上面的实例演示，结合DQL查询语句的语法不难发现，如果一次有多个查询条件，那么写的顺序一次是Where、Group By、Having、Order By、Limit的顺序</b></font><br>可以这么来理解：<br><b>where先对数据进行筛选，不满足条件的不进行后面的分组，<font color="blue">这是第一次条件</font><br>Having再对分完组后的数据进行筛选，不满足条件的数据不会被查询到，<font color="blue">这是第二次条件</font><br>前面的都完成后，Order By再对查询到的数据进行排序，<font color="blue">这是第三次条件</font><br>Limit再对排序后的数据进行分页展示，<font color="blue">这是第四次条件</font></b><hr><p>发现数据库这方面的知识要掌握的东西太多，多练习才能掌握，死记硬背是很难的，本来以为30分钟，最后俩小时还没搞定，后面大约还有整个基础部分的一半吧，下次再说吧</p>]]></content>
+      
+      
       <categories>
-        <category>数据库</category>
+          
+          <category> 数据库 </category>
+          
       </categories>
-      <tags>
-        <tag>数据库</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[会话技术--Cookie&Session]]></title>
-    <url>%2F2019%2F09%2F08%2F%E4%BC%9A%E8%AF%9D%E6%8A%80%E6%9C%AF-Cookie-Session%2F</url>
-    <content type="text"><![CDATA[会话：一次会话中包含多次请求和响应。在一次会话中，浏览器第一次给服务器资源发送请求，会话建立，直到有一方断开为止会话技术能够在一次会话的多次请求响应间共享数据 会话技术的实现方式 客户端会话技术：Cookie 服务器端会话技术：Session 客户端会话技术–CookieCookie使用步骤 创建Cookie对象，绑定数据:new Cookie(String name, String value) 发送Cookie对象::response.addCookie(Cookie cookie) 获取Cookie，拿到数据:Cookie[] request.getCookies() Cookie实现原理基于响应头set-cookie和请求头cookie实现 客户端和服务器第一次请求响应：服务器创建Cookie对象，并在set-cookie响应头将Cookie响应给浏览器 浏览器接收到服务器带有set-cookie头的响应后，将Cookie存储在浏览器中，当下一次浏览器向服务器发送请求时，会在请求头cookie头中附带这cookie 这样就实现了多次请求响应之间的数据共享 Cookie的细节 一次可以发送多个cookie：在服务器端创建多个Cookie对象，多次调用response的addCookie方法将多个Cookie对象发送，但是如果两个Cookie的值相同，那么后加入的Cookie值会覆盖前面的值 cookie在浏览器中保存时间 默认情况下，当浏览器关闭后，Cookie数据被销毁(服务器关闭，Cookie仍然存在，因为Cookie存储在浏览器中) 持久化存储：调用Cookie对象的setMaxAge(int seconds)方法实现 参数取值情况： 正数：将Cookie数据写到硬盘的文件中。持久化存储。并指定cookie存活时间，时间到后，cookie文件自动失效 负数：默认值，即浏览器关闭后Cookie被销毁 零：删除cookie信息 cookie存储中文问题:在tomcat 8 之前 cookie中不能直接存储中文数据。但是在tomcat8之后，支持直接存储中文，但是对于一些特殊字符(如空格等)，仍不能直接存储，需要借助URL编码才行(具体步骤下一篇文章说到) cookie的共享 在一个tomcat服务器中部署了多个项目，在默认情况下，这些项目之间的Cookie是不能共享的但是可以通过Cookie对象的setPath(String path)方法来设置Cookie的共享范围 默认情况下，设置的是当前项目的虚拟目录 如果要在多个项目之间共享，则可以将path设置为"/"(“/”为服务器路径) 不同服务器之间Cookie的共享 setDomain(String path):如果设置一级域名相同，那么多个服务器之间cookie可以共享 例如：设置path为".baidu.com"，那么tieba.baidu.com和news.baidu.com两个不同的服务器之间可以共享数据，因为它们的一级域名是.baidu.com Cookie的特点和作用 特点 cookie存储数据在客户端浏览器 浏览器对于单个cookie 的大小有限制(4kb) 以及 对同一个域名下的总cookie数量也有限制(20个) Cookie存储的键值对都是String类型 作用 cookie一般用于存出少量的不太敏感的数据，这是因为Cookie的存储位置决定的，存储在客户端容易丢失和被篡改。 在不登录的情况下，完成服务器对客户端的身份识别 服务器端会话技术–SessionSession使用步骤 通过resquest获取Session对象：request.getSession() 调用Session对象的方法存储数据(和request请求转发方法一样) Object getAttribute(String name)：通过键获取值 void setAttribute(String name, Object value)：将数据存储进Session对象 void removeAttribute(String name)：通过键移除相应的键值对 Session实现原理Session的实现是依赖于Cookie的。 客户端第一次向服务器发送请求，服务器在服务器内部开辟一块内存空间，存放Session对象，并给该内存空间指定一个id 服务器在响应头set-cookie中设置JSESSIONID=id这个键值对发送给客户端 客户端接收到服务器的相应后，会将保存着Sessionid的Cookie对象保存在浏览器内存 当客户端下一次向服务器发送请求的时候，会带着Cookie一起(在请求头cookie中有JSESSIONID=id键值对) 服务器接收到请求后，得到JSESSIONID=id键值对的id后，会在内存中找到对应id的Session对象 这就是为什么说Session依赖于Cookie的原因以及多次请求响应之间共享数据的原理 Session细节 当客户端关闭后，服务器不关闭，两次获取session不是同一个：前面说到过，Session是依赖于Cookie的，Cookie在默认情况下当客户端浏览器关闭后是自动销毁的，因此Cookie中的键值对自然也就销毁了，所以两次获取的Session不是同一个，如果需要两次的Cookie是同一个 创建一个Cookie对象，设置cookie的键为JSESSIONID，值为session对象的id 设置cookie的存活时间 那么在cookie存活时间内，服务器通过cookie请求头拿到session的id都是一样的，这样通过id找到的Session对象自然也是同一个 客户端不关闭，服务器关闭后，两次获取的session不是同一个，因为服务器关闭后相应内存会被释放，Session自然也会被释放 但是一般我们需要获取到的Session对象是同一个，确保数据不丢失，tomcat会自动完成Session的钝化和活化 Session的钝化：在服务器正常关闭之前，将session对象序列化到硬盘上 Session的活化：在服务器启动后，将session文件转化为内存中的session对象。 Session被销毁 服务器关闭 session对象调用invalidate() 自杀 session默认失效时间 30分钟,可以tomcat服务器的web.xml配置文件中session-config设置所有项目的失效时间,也可以在项目的wen.xml配置文件单独配置项目的失效时间 Session的特点 用于一次会话的多次请求间共享数据，存储在服务器端 session可以存储任意类型，任意大小的数据]]></content>
+      
+      
+        <tags>
+            
+            <tag> 数据库 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>会话技术--Cookie&amp;Session</title>
+      <link href="/2019/09/08/%E4%BC%9A%E8%AF%9D%E6%8A%80%E6%9C%AF-Cookie-Session/"/>
+      <url>/2019/09/08/%E4%BC%9A%E8%AF%9D%E6%8A%80%E6%9C%AF-Cookie-Session/</url>
+      
+        <content type="html"><![CDATA[<p><b>会话：一次会话中包含多次请求和响应。<br>在一次会话中，浏览器第一次给服务器资源发送请求，会话建立，直到有一方断开为止<br>会话技术能够在一次会话的多次请求响应间共享数据</b></p><hr><a id="more"></a><h1 id="会话技术的实现方式"><a href="#会话技术的实现方式" class="headerlink" title="会话技术的实现方式"></a>会话技术的实现方式</h1><ul><li>客户端会话技术：Cookie</li><li>服务器端会话技术：Session</li></ul><h1 id="客户端会话技术–Cookie"><a href="#客户端会话技术–Cookie" class="headerlink" title="客户端会话技术–Cookie"></a>客户端会话技术–Cookie</h1><h2 id="Cookie使用步骤"><a href="#Cookie使用步骤" class="headerlink" title="Cookie使用步骤"></a><font size="5">Cookie使用步骤</font></h2><ol><li> 创建Cookie对象，绑定数据:<font color="blue">new Cookie(String name, String value)</font></li><li>发送Cookie对象::<font color="blue">response.addCookie(Cookie cookie)</font></li><li> 获取Cookie，拿到数据:<font color="blue">Cookie[]  request.getCookies()</font></li></ol><h2 id="Cookie实现原理"><a href="#Cookie实现原理" class="headerlink" title="Cookie实现原理"></a><font size="5">Cookie实现原理</font></h2><p><font color="red">基于响应头set-cookie和请求头cookie实现</font><br></p><ol><li>客户端和服务器第一次请求响应：服务器创建Cookie对象，并在set-cookie响应头将Cookie响应给浏览器</li><li>浏览器接收到服务器带有set-cookie头的响应后，将Cookie存储在浏览器中，当下一次浏览器向服务器发送请求时，会在请求头cookie头中附带这cookie</li><li>这样就实现了多次请求响应之间的数据共享</li></ol><hr><h2 id="Cookie的细节"><a href="#Cookie的细节" class="headerlink" title="Cookie的细节"></a><font size="5">Cookie的细节</font></h2><ul><li><font color="red">一次可以发送多个cookie：</font>在服务器端创建多个Cookie对象，多次调用response的addCookie方法将多个Cookie对象发送，但是如果两个Cookie的值相同，那么后加入的Cookie值会覆盖前面的值</li><li><font color="red">cookie在浏览器中保存时间</font><ul><li>默认情况下，当浏览器关闭后，Cookie数据被销毁(服务器关闭，Cookie仍然存在，因为Cookie存储在浏览器中)</li><li>持久化存储：调用Cookie对象的<font color="blue">setMaxAge(int seconds)</font>方法实现<ul>参数取值情况：<li><font color="red">正数</font>：将Cookie数据写到硬盘的文件中。<font color="red">持久化存储</font>。并指定cookie存活时间，时间到后，cookie文件自动失效</li><li>负数：默认值，即浏览器关闭后Cookie被销毁</li><li><font color="red">零：删除cookie信息</font></li></ul></li></ul></li><li><font color="red">cookie存储中文问题</font>:在tomcat 8 之前 cookie中不能直接存储中文数据。但是在tomcat8之后，支持直接存储中文，但是对于一些特殊字符(如空格等)，仍不能直接存储，需要借助URL编码才行(具体步骤下一篇文章说到)</li><li>cookie的共享<ul><li><font color="red">在一个tomcat服务器中部署了多个项目，在默认情况下，这些项目之间的Cookie是不能共享</font>的<br>但是可以通过Cookie对象的setPath(String path)方法来设置Cookie的共享范围<ul><li>默认情况下，设置的是当前项目的虚拟目录</li><li> 如果要在多个项目之间共享，则可以将path设置为"/"(“/”为服务器路径)</li></ul></li><li>不同服务器之间Cookie的共享<ul><li>setDomain(String path):如果设置一级域名相同，那么多个服务器之间cookie可以共享</li><li>例如：设置path为".baidu.com"，那么tieba.baidu.com和news.baidu.com两个不同的服务器之间可以共享数据，因为它们的一级域名是.baidu.com</li></ul></li></ul></li></ul><hr><h2 id="Cookie的特点和作用"><a href="#Cookie的特点和作用" class="headerlink" title="Cookie的特点和作用"></a><font size="5">Cookie的特点和作用</font></h2> <ul> <li>特点 <ul> <li>cookie存储数据在客户端浏览器</li><li>浏览器对于单个cookie 的大小有限制(4kb) 以及 对同一个域名下的总cookie数量也有限制(20个)</li><li><font color="red">Cookie存储的键值对都是String类型</font></li> </ul></li><li>作用<ul><li>cookie一般用于存出少量的不太敏感的数据，这是因为Cookie的存储位置决定的，存储在客户端容易丢失和被篡改。</li><li>在不登录的情况下，完成服务器对客户端的身份识别</li></ul></li></ul><hr><h1 id="服务器端会话技术–Session"><a href="#服务器端会话技术–Session" class="headerlink" title="服务器端会话技术–Session"></a>服务器端会话技术–Session</h1><h2 id="Session使用步骤"><a href="#Session使用步骤" class="headerlink" title="Session使用步骤"></a><font size="5">Session使用步骤</font></h2><ol><li> 通过resquest获取Session对象：<font color="blue">request.getSession()</font></li><li>调用Session对象的方法存储数据(和request请求转发方法一样)<ul><li><font color="blue">Object getAttribute(String name)</font>：通过键获取值</li><li><font color="blue">void setAttribute(String name, Object value)</font>：将数据存储进Session对象</li><li><font color="blue">void removeAttribute(String name)</font>：通过键移除相应的键值对</li></ul></li></ol><h2 id="Session实现原理"><a href="#Session实现原理" class="headerlink" title="Session实现原理"></a><font size="5">Session实现原理</font></h2><ol><font color="red">Session的实现是依赖于Cookie的。</font><li>客户端第一次向服务器发送请求，服务器在服务器内部开辟一块内存空间，存放Session对象，并给该内存空间指定一个id</li><li>服务器在响应头set-cookie中设置JSESSIONID=id这个键值对发送给客户端</li><li>客户端接收到服务器的相应后，会将保存着Sessionid的Cookie对象保存在浏览器内存</li><li>当客户端下一次向服务器发送请求的时候，会带着Cookie一起(在请求头cookie中有JSESSIONID=id键值对)</li><li>服务器接收到请求后，得到JSESSIONID=id键值对的id后，会在内存中找到对应id的Session对象</li><li>这就是为什么说Session依赖于Cookie的原因以及多次请求响应之间共享数据的原理</li></ol><hr><h2 id="Session细节"><a href="#Session细节" class="headerlink" title="Session细节"></a><font size="5">Session细节</font></h2><ul><li><font color="red">当客户端关闭后，服务器不关闭，两次获取session不是同一个</font>：前面说到过，Session是依赖于Cookie的，Cookie在默认情况下当客户端浏览器关闭后是自动销毁的，因此Cookie中的键值对自然也就销毁了，所以两次获取的Session不是同一个，如果需要两次的Cookie是同一个<ul><li>创建一个Cookie对象，设置cookie的键为JSESSIONID，值为session对象的id</li><li>设置cookie的存活时间</li><li>那么在cookie存活时间内，服务器通过cookie请求头拿到session的id都是一样的，这样通过id找到的Session对象自然也是同一个</li></ul></li><li><font color="red">客户端不关闭，服务器关闭后，两次获取的session不是同一个</font>，因为服务器关闭后相应内存会被释放，Session自然也会被释放<br>但是一般我们需要获取到的Session对象是同一个，确保数据不丢失，<font color="red">tomcat会自动完成Session的钝化和活化</font><ul><li>Session的钝化：在服务器正常关闭之前，将session对象序列化到硬盘上</li><li>Session的活化：在服务器启动后，将session文件转化为内存中的session对象。</li></ul></li><li>Session被销毁<ul><li> 服务器关闭</li><li>session对象调用invalidate() 自杀</li><li>session默认失效时间 30分钟,可以tomcat服务器的web.xml配置文件中session-config设置所有项目的失效时间,也可以在项目的wen.xml配置文件单独配置项目的失效时间</li></ul></li></ul><hr><h2 id="Session的特点"><a href="#Session的特点" class="headerlink" title="Session的特点"></a><font size="5">Session的特点</font></h2><ul><li>用于一次会话的多次请求间共享数据，存储在服务器端</li><li><font color="red">session可以存储任意类型，任意大小的数据</font></li></ul>]]></content>
+      
+      
       <categories>
-        <category>JAVAWEB</category>
+          
+          <category> JAVAWEB </category>
+          
       </categories>
-      <tags>
-        <tag>会话技术</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[服务器中的四种路径]]></title>
-    <url>%2F2019%2F09%2F08%2F%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E8%B7%AF%E5%BE%84%2F</url>
-    <content type="text"><![CDATA[在Web开发中，会很频繁的用到各种路径，路径又大致分为四种，分别是相对路径、绝对路径、虚拟路径、资源路径 # 相对路径 通过相对路径不能确定唯一资源 例如：./index.html ## 相对路径的使用规则 以"./"开头, 在使用时先确定当前资源和目标资源的之间的相对位置关系 如果两资源位于同一级目录：./+目标资源名称 ./可以不加，默认有./ 如果目标资源位于上一级目录：../+目标资源名称 如何确定当前资源和目标资源的关系 对于src目录下的资源，可以用request.getRequestURL()来得到该资源的位置src下的java资源的URI都是虚拟路径+资源名称无论该java文件位于src下的哪一级目录，只要在src目录里，都是这个形式。这里说的资源名称并不是实际的java类名，而是@WebServlet中的资源名称，服务器通过这个资源名称找到实际的类。 对于web目录下的资源，如果直接在web目录下，那么资源的URI就是虚拟路径+/文件名称如果在web目录下的其他目录，那么资源的URI就是虚拟路径+/目录名称+/文件名称，有几级目录写几级目录。 绝对路径通过绝对路径确定唯一资源例如：http://localhost/response/responseDemo2或者/response/responseDemo2协议名+ip地址+端口号+虚拟路径+文件资源 两种路径使用规则规则：判断要定义的路径是给谁用的，即判断请求将来从哪发出 给客户端浏览器使用 需要加虚拟目录(项目的访问路径,查看项目的xml配置文件) 例如：&lt;\a&gt;标签，&lt;\form&gt;，重定向等从浏览器发出，需要加虚拟路径 给服务器使用不需要加虚拟目录例如：请求转发就是服务器内部的资源跳转，不需要加虚拟路径，直接写资源名称就可以了 虚拟路径虚拟路径代表的是项目实际部署的位置，服务器通过虚拟路径能够映射到项目实际部署的位置通过查看项目的xml文件可以发现:&lt;\Context path=”虚拟路径” docBase=”资源在电脑上存储的位置” /&gt;这就是配置文件的内容，我们在浏览器输入的是Contextpath，也就是项目的虚拟路径，服务器就通过该虚拟目录映射到后面项目部署的真实目录 虚拟路径的好处 虚拟目录的名称通常要比物理目录的名称易记，因此更便于用户访问。 使用虚拟目录可以提高安全性，因为客户端并不知道文件在服务器上的实际物理位置，所以无法使用该信息来修改服务器中的目标文件。 使用虚拟目录可以更方便地移动网站中的目录，只需更改虚拟目录物理位置之间的映射，无需更改目录的URL。 使用虚拟目录可以发布多个目录下的内容，并可以单独控制每个虚拟目录的访问权限。 使用虚拟目录可以均衡Web服务器的负载，因为网站中资源来自于多个不同的服务器，从而避免单一服务器负载过重，响应缓慢。 资源路径资源路径也不是文件的真实路径，它和真是路径之间存在着映射关系，服务器可以通过资源路径找到文件link这篇文章提到了配置Servlet的方法，一种是通过web.xml来配置，通过这种方法很容易理解资源路径和文件路径的映射关系，服务器通过资源路径映射到实际文件，通过@WebServlet配置原理一样 我们在浏览器输入的是项目的URL是由协议名+ip地址+端口号+虚拟路径+文件资源组成，服务器会通过虚拟路径找到项目在电脑上部署的位置，通过文件资源路径找到文件在电脑上的实际位置]]></content>
+      
+      
+        <tags>
+            
+            <tag> 会话技术 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>服务器中的四种路径</title>
+      <link href="/2019/09/08/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E8%B7%AF%E5%BE%84/"/>
+      <url>/2019/09/08/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E8%B7%AF%E5%BE%84/</url>
+      
+        <content type="html"><![CDATA[<p>在Web开发中，会很频繁的用到各种路径，路径又大致分为四种，分别是相对路径、绝对路径、虚拟路径、资源路径</p><hr><a id="more"></a># 相对路径<font color="red" size="4"><b>通过相对路径不能确定唯一资源</b></font><br>例如：./index.html<br>## <font size="5">相对路径的使用规则</font>以<font color="red" size="4"><i>"./"开头</i></font>,<br>在使用时先确定<font color="red"><b>当前资源和目标资源的之间的相对位置关系</b></font><br>如果两资源位于<font color="blue">同一级目录</font>：./+目标资源名称<br>./可以不加，默认有./<br>如果目标资源<font color="blue">位于上一级目录</font>：../+目标资源名称<hr><h2 id="如何确定当前资源和目标资源的关系"><a href="#如何确定当前资源和目标资源的关系" class="headerlink" title="如何确定当前资源和目标资源的关系"></a><font size="5">如何确定当前资源和目标资源的关系</font></h2><ol><li>对于<font color="blue">src目录下的资源</font>，可以用<font color="red">request.getRequestURL()</font>来得到该资源的位置<br>src下的java资源的URI都是<font color="red">虚拟路径+资源名称</font>无论该java文件位于src下的哪一级目录，只要在src目录里，都是这个形式。<br><b><i>这里说的资源名称并不是实际的java类名，而是@WebServlet中的资源名称，服务器通过这个资源名称找到实际的类。</i></b></li><li>对于<font color="blue">web目录下的资源</font>，如果直接在web目录下，那么资源的URI就是<font color="red">虚拟路径+/文件名称</font><br>如果在web目录下的其他目录，那么资源的URI就是<font color="red">虚拟路径+/目录名称+/文件名称</font>，有几级目录写几级目录。<hr></li></ol><h1 id="绝对路径"><a href="#绝对路径" class="headerlink" title="绝对路径"></a>绝对路径</h1><p><font color="red" size="4"><b>通过绝对路径确定唯一资源</b></font><br><br>例如：<a href="http://localhost/response/responseDemo2或者/response/responseDemo2" target="_blank" rel="noopener">http://localhost/response/responseDemo2或者/response/responseDemo2</a><br><br><font color="red">协议名+ip地址+端口号+虚拟路径+文件资源</font></p><hr><h1 id="两种路径使用规则"><a href="#两种路径使用规则" class="headerlink" title="两种路径使用规则"></a>两种路径使用规则</h1><p><font color="red"><b>规则：判断要定义的路径是给谁用的，即判断请求将来从哪发出</b></font><br></p><ol><li>给客户端浏览器使用<br> 需要加虚拟目录(项目的访问路径,查看项目的xml配置文件)<br> 例如：&lt;\a&gt;标签，&lt;\form&gt;，重定向等从浏览器发出，需要加虚拟路径</li><li>给服务器使用<br>不需要加虚拟目录<br>例如：请求转发就是服务器内部的资源跳转，不需要加虚拟路径，直接写资源名称就可以了</li></ol><hr><h1 id="虚拟路径"><a href="#虚拟路径" class="headerlink" title="虚拟路径"></a>虚拟路径</h1><p>虚拟路径代表的是项目实际部署的位置，服务器通过虚拟路径能够映射到项目实际部署的位置<br>通过查看<b>项目</b>的xml文件可以发现:<br><font color="red">&lt;\Context path=”虚拟路径” docBase=”资源在电脑上存储的位置” /&gt;</font><br>这就是配置文件的内容，我们在浏览器输入的是Contextpath，也就是项目的虚拟路径，服务器就通过该虚拟目录映射到后面项目部署的真实目录</p><h2 id="虚拟路径的好处"><a href="#虚拟路径的好处" class="headerlink" title="虚拟路径的好处"></a><font size="5">虚拟路径的好处</font></h2><ul><li>虚拟目录的名称通常要比物理目录的名称易记，因此更便于用户访问。</li><li> 使用虚拟目录可以提高安全性，因为客户端并不知道文件在服务器上的实际物理位置，所以无法使用该信息来修改服务器中的目标文件。</li><li>使用虚拟目录可以更方便地移动网站中的目录，只需更改虚拟目录物理位置之间的映射，无需更改目录的URL。</li><li>使用虚拟目录可以发布多个目录下的内容，并可以单独控制每个虚拟目录的访问权限。 使用虚拟目录可以均衡Web服务器的负载，因为网站中资源来自于多个不同的服务器，从而避免单一服务器负载过重，响应缓慢。</li></ul><hr><h1 id="资源路径"><a href="#资源路径" class="headerlink" title="资源路径"></a>资源路径</h1><p>资源路径也不是文件的真实路径，它和真是路径之间存在着映射关系，服务器可以通过资源路径找到文件<br><a href="https://blog.csdn.net/weixin_42387411/article/details/100191979" target="_blank" rel="noopener">link</a><br>这篇文章提到了配置Servlet的方法，一种是通过web.xml来配置，通过这种方法很容易理解资源路径和文件路径的映射关系，服务器通过资源路径映射到实际文件，通过@WebServlet配置原理一样</p><hr><p><b><i>我们在浏览器输入的是项目的URL是由协议名+ip地址+端口号+虚拟路径+文件资源组成，</i></b><br><b><i>服务器会通过虚拟路径找到项目在电脑上部署的位置，通过文件资源路径找到文件在电脑上的实际位置</i></b></p>]]></content>
+      
+      
       <categories>
-        <category>JAVAWEB</category>
+          
+          <category> JAVAWEB </category>
+          
       </categories>
-      <tags>
-        <tag>Http协议</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[ServletContext对象]]></title>
-    <url>%2F2019%2F09%2F08%2FServletContext%E5%AF%B9%E8%B1%A1%2F</url>
-    <content type="text"><![CDATA[ServletContext对象，代表了整个web应用，可以和程序的容器(服务器)来通信 获取方式 通过request对象获取:request.getServletContext() 通过HttpServlet获取:this.getServletContext(); ServletContext对象的功能 获取MIME类型(文后将什么是MIME类型):String getMimeType(String file) 获取到数据的类型后，可以用于设置响应头content-type的值 获取方法：String getMimeType(String file)； 域对象：共享数据，前面说到，ServletContext代表了整个web应用，因此ServletContext对象中存放的数据整个web应用的资源都可以访问和修改 方法和request域对象的三个方法一样，只是两者的作用范围不同 动态的获取文件的真实(服务器)路径 方法：String getRealPath(String path) 文件直接位于web目录下时：context.getRealPath("/+文件名称"); 文件位于web目录下下的目录a中时：context.getRealPath("/a/+文件名称"); 文件直接位于src目录下时：context.getRealPath("/WEB-INF/classes+文件名称"); 以上可以通过查看tomcat项目的层次结构，以tomcat项目的web目录为基准 tomcat项目目录位于IDEA工作空间目录的\out\artifacts下 MIME类型MIME类型:在互联网通信过程中定义的一种文件数据类型MIME类型的格式：大类型/小类型&nbsp;&nbsp;&nbsp;&nbsp;例如：text/html、image/jpg getMimeType方法获取MIME类型的原理在web.xml配置文件中，tomcat定义了上千种MIME类型和文件后缀名的对应关系，而ServletContext又可以和服务器通信，所以ServletContext的getMimeType实际上是通过文件的后缀名来映射获取的文件的MIME类型。]]></content>
+      
+      
+        <tags>
+            
+            <tag> Http协议 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>ServletContext对象</title>
+      <link href="/2019/09/08/ServletContext%E5%AF%B9%E8%B1%A1/"/>
+      <url>/2019/09/08/ServletContext%E5%AF%B9%E8%B1%A1/</url>
+      
+        <content type="html"><![CDATA[<p><b>ServletContext对象，代表了整个web应用，可以和程序的容器(服务器)来通信</b></p><h1 id="获取方式"><a href="#获取方式" class="headerlink" title="获取方式"></a>获取方式</h1><ul><li>通过request对象获取:<font color="blue">request.getServletContext()</font></li><li>通过HttpServlet获取:<font color="blue">this.getServletContext();</font></li></ul><a id="more"></a><h1 id="ServletContext对象的功能"><a href="#ServletContext对象的功能" class="headerlink" title="ServletContext对象的功能"></a>ServletContext对象的功能</h1><ul><li> 获取MIME类型(文后将什么是MIME类型):<font color="blue">String getMimeType(String file)</font><br>获取到数据的类型后，可以<font color="red">用于设置响应头content-type</font>的值<br>获取方法：<font color="blue">String getMimeType(String file)；</font></li><li>域对象：共享数据，前面说到，ServletContext代表了整个web应用，<font color="red">因此ServletContext对象中存放的数据整个web应用的资源都可以访问和修改</font><br>方法<font color="blue">和request域对象的三个方法一样，只是两者的作用范围不同</font></li><li><i>动态的获取文件的真实(服务器)路径</i><ul><font color="red" size="4"><b><i>方法：String getRealPath(String path)</i><li>文件直接位于web目录下时：<font color="blue">context.getRealPath("/+文件名称");</font></li><li>文件位于web目录下下的目录a中时：<font color="blue">context.getRealPath("/a/+文件名称");</font></li><li>文件直接位于src目录下时：<font color="blue">context.getRealPath("/WEB-INF/classes+文件名称");</font></li></b></font></ul>以上可以通过查看tomcat项目的层次结构，以<font color="red" size="5"><i>tomcat项目的web目录为基准</i></font></li></ul><hr><font size="5" color="red"><b><i>tomcat项目目录位于IDEA工作空间目录的\out\artifacts下</i></b></font><hr><h1 id="MIME类型"><a href="#MIME类型" class="headerlink" title="MIME类型"></a>MIME类型</h1><p><font color="red" size="4"><i>MIME类型:在互联网通信过程中定义的一种文件数据类型</i></font><br><br>MIME类型的格式：<font color="red">大类型/小类型</font>&nbsp;&nbsp;&nbsp;&nbsp;例如：text/html、image/jpg<br></p><h2 id="getMimeType方法获取MIME类型的原理"><a href="#getMimeType方法获取MIME类型的原理" class="headerlink" title="getMimeType方法获取MIME类型的原理"></a><font size="5">getMimeType方法获取MIME类型的原理</font></h2><p>在web.xml配置文件中，tomcat定义了上千种MIME类型和文件后缀名的对应关系，而ServletContext又可以和服务器通信，所以ServletContext的getMimeType实际上是通过文件的后缀名来映射获取的文件的MIME类型。</p>]]></content>
+      
+      
       <categories>
-        <category>JAVAWEB</category>
+          
+          <category> JAVAWEB </category>
+          
       </categories>
-      <tags>
-        <tag>Http协议</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[请求转发和重定向]]></title>
-    <url>%2F2019%2F09%2F08%2F%E8%AF%B7%E6%B1%82%E8%BD%AC%E5%8F%91%E5%92%8C%E9%87%8D%E5%AE%9A%E5%90%91%2F</url>
-    <content type="text"><![CDATA[目前已经学习了两种资源跳转的方式：分别是request对象的请求转发和response的重定向，那么这两者各自有什么特点以及它们之间的区别是什么呢？ request请求转发一种在服务器内部的资源跳转方式举个例子：浏览器向服务器发出请求，服务器中的AServlet收到了请求，但是AServlet无法单独完成这个请求，如果要完成这个请求，还需要服务器内BServlet的参与，这时候就会用到请求转发，AServlet执行完自己能执行的部分后跳转到BServlet中继续执行，(这中间还涉及到了共享数据，文章后面会将) 请求转发的特点 浏览器地址栏路径不发生变化：就是说，浏览器请求访问AServlet，Aservlet执行完自己能执行的部分后跳转到BServlet，在这个过程中浏览器地址栏的路径还是AServlet的路径，并不会发生改变 只能转发到当前服务器内部资源中。 转发是一次请求：从上面的例子可以看出，整个转发的过程中，无论在服务器内部资源跳转多少次，浏览器只发出过一次请求，而服务请经过多次跳转处理完浏览器的请求后只会做出一次响应 共享数据上面说到了，AServlet和BServlet一起完成浏览器的请求，那么这两者之间必定是有数据交互的，因为AServlet要告诉BServlet自己做了哪些部分(修改了那些数据..)，并将这些部分共享给BServlet说共享数据之前，先说一个概念域对象：一个有作用范围的对象，可以在范围内共享数据request域：代表一次请求的范围，即在一个请求的范围内各个服务器资源可以共享数据。因为上面说到了请求转发这个过程是一次请求响应的过程，所以请求转发过程中的多个资源可以共享数据 存储数据，在当前资源中调用此方法(转发之前调用)void setAttribute(String name, Object o)参数：String name：给数据起一个名，在后面取出数据用到Object o：要共享的数据 在跳转后的资源调用此方法，可以达到共享数据的目的：Object getAttribute(String name) 参数：String name：存储数据时起的名 还有一个相关的方法：通过键来移除键值对void removeAttribute(String name) response重定向一种资源跳转的方式，不限于服务器内部，可以跳转到其他服务器资源(如跳转到百度) 重定向实现步骤 设置状态码为302(代表重定向) 设置响应头location：response.setHeader("location","目的资源的路径"); 以上是分步实现，其实一个方法就能够完成上述步骤 调用response的sendRedirect方法，方法中传递跳转资源的路径 response.sendRedirect("https://www.baidu.com"); 重定向的原理 浏览器向服务器发出请求，AServlet接收到了这个请求,AServlet表示无法处理服务器的这个请求，但AServlet却知道BServlet(可以是服务器内部的资源也可以是其他服务器的资源) 所以AServlet在在响应消息中干了两件事情 设置状态码为302，告诉服务器重定向 告诉浏览器BServlet的路径，(设置响应头location为BServlet的路径) 浏览器收到了AServlet的响应消息后，根据AServlet给出的location路径去访问BServlet 重定向的特点 地址栏发生变化：在资源跳转的过程中，浏览器地址栏会发生变化 重定向可以访问其他站点(服务器)的资源 重定向是两次请求。不能使用request对象来共享数据]]></content>
+      
+      
+        <tags>
+            
+            <tag> Http协议 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>请求转发和重定向</title>
+      <link href="/2019/09/08/%E8%AF%B7%E6%B1%82%E8%BD%AC%E5%8F%91%E5%92%8C%E9%87%8D%E5%AE%9A%E5%90%91/"/>
+      <url>/2019/09/08/%E8%AF%B7%E6%B1%82%E8%BD%AC%E5%8F%91%E5%92%8C%E9%87%8D%E5%AE%9A%E5%90%91/</url>
+      
+        <content type="html"><![CDATA[<p>目前已经学习了两种资源跳转的方式：分别是request对象的请求转发和response的重定向，那么这两者各自有什么特点以及它们之间的区别是什么呢？</p><hr><a id="more"></a><h1 id="request请求转发"><a href="#request请求转发" class="headerlink" title="request请求转发"></a>request请求转发</h1><p><b>一种在服务器内部的资源跳转方式</b><br>举个例子：浏览器向服务器发出请求，服务器中的AServlet收到了请求，但是AServlet无法单独完成这个请求，如果要完成这个请求，还需要服务器内BServlet的参与，这时候就会用到请求转发，AServlet执行完自己能执行的部分后跳转到BServlet中继续执行，(这中间还涉及到了共享数据，文章后面会将)</p><h2 id="请求转发的特点"><a href="#请求转发的特点" class="headerlink" title="请求转发的特点"></a><font size="5">请求转发的特点</font></h2><ul><li><font color="red">浏览器地址栏路径不发生变化</font>：就是说，浏览器请求访问AServlet，Aservlet执行完自己能执行的部分后跳转到BServlet，在这个过程中浏览器地址栏的路径还是AServlet的路径，并不会发生改变</li><li>只能转发到当前<font color="red">服务器内部资源</font>中。</li><li>转发是<font color="red">一次请求</font>：从上面的例子可以看出，整个转发的过程中，<font color="red">无论在服务器内部资源跳转多少次，浏览器只发出过一次请求</font>，而服务请经过多次跳转处理完浏览器的请求后只会做出一次响应</li></ul><hr><h2 id="共享数据"><a href="#共享数据" class="headerlink" title="共享数据"></a><font size="5">共享数据</font></h2><p>上面说到了，AServlet和BServlet一起完成浏览器的请求，那么<font color="blue">这两者之间必定是有数据交互</font>的，因为AServlet要告诉BServlet自己做了哪些部分(修改了那些数据..)，并将这些部分共享给BServlet<br><br><i><font color="red" size="4">说共享数据之前，先说一个概念</font></i><br><font color="red">域对象：</font>一个有作用范围的对象，可以在范围内共享数据<br><font color="red">request域：</font>代表一次请求的范围，即在一个请求的范围内各个服务器资源可以共享数据。因为上面说到了请求转发这个过程是一次请求响应的过程，所以<font color="blue">请求转发过程中的多个资源可以共享数据</font><br></p><ol><li>存储数据，在当前资源中调用此方法(<font color="red">转发之前调用</font>)<font color="blue">void setAttribute(String name, Object o)</font><br><font color="red">参数：</font><br>String name：给数据起一个名，在后面取出数据用到<br>Object o：要共享的数据</li><li>在跳转后的资源调用此方法，可以达到共享数据的目的：<font color="blue">Object getAttribute(String name)</font><br><font color="red">参数：</font><br>String name：存储数据时起的名</li></ol>还有一个相关的方法：通过键来移除键值对<font color="blue">void removeAttribute(String name)</font><hr><h1 id="response重定向"><a href="#response重定向" class="headerlink" title="response重定向"></a>response重定向</h1><p><b>一种资源跳转的方式，不限于服务器内部，可以跳转到其他服务器资源(如跳转到百度)</b></p><h2 id="重定向实现步骤"><a href="#重定向实现步骤" class="headerlink" title="重定向实现步骤"></a><font size="5">重定向实现步骤</font></h2><ol><li>设置状态码为302(代表重定向)</li><li>设置响应头<font color="blue">location：</font>response.setHeader("location","目的资源的路径");</li></ol>以上是分步实现，其实一个方法就能够完成上述步骤调用response的sendRedirect方法，方法中传递跳转资源的路径<font color="red">response.sendRedirect("https://www.baidu.com");</font><hr><h2 id="重定向的原理"><a href="#重定向的原理" class="headerlink" title="重定向的原理"></a><font size="5">重定向的原理</font></h2><ol><li>浏览器向服务器发出请求，AServlet接收到了这个请求,AServlet表示无法处理服务器的这个请求，但AServlet却知道BServlet(可以是服务器内部的资源也可以是其他服务器的资源)</li><li>所以AServlet在在响应消息中干了两件事情<ol><li>设置状态码为302，告诉服务器重定向</li><li>告诉浏览器BServlet的路径，(设置响应头location为BServlet的路径)</li></ol></li><li>浏览器收到了AServlet的响应消息后，根据AServlet给出的location路径去访问BServlet</li></ol><hr><h2 id="重定向的特点"><a href="#重定向的特点" class="headerlink" title="重定向的特点"></a><font size="5">重定向的特点</font></h2><ul><li>地址栏发生变化：在资源跳转的过程中，浏览器地址栏会发生变化</li><li>重定向<font color="blue">可以访问其他站点(服务器)的资源</font></li><li>重定向是<font color="blue">两次请求</font>。不能使用request对象来共享数据</li></ul><hr>]]></content>
+      
+      
       <categories>
-        <category>JAVAWEB</category>
+          
+          <category> JAVAWEB </category>
+          
       </categories>
-      <tags>
-        <tag>Http协议</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[response输出中文乱码]]></title>
-    <url>%2F2019%2F09%2F08%2Fresponse%E8%BE%93%E5%87%BA%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2F</url>
-    <content type="text"><![CDATA[使用response对象设置响应体时有两个步骤： 获取输出流(字节流或字符流) 使用输出流，将数据输出到客户端浏览器这时候如果传输的数据是中文，输出到浏览器就会乱码 乱码原因首先，要知道乱码的根本原因是什么，乱码的根本原因在于编码和解码使用的字符集不一样。那么在从服务器输出数据到客户端的过程中，有几次编码和解码过程？又分别是在哪里执行的？在输出数据的过程中，有一次编码，是tomcat执行的，它按照自己的字符集将数据编码后发送给客户端浏览器有一次解码，是浏览器执行的，浏览器将接收的数据按照自己的字符集解码后打印在屏幕上。而tomcat的默认编码是ISO-8859-1，浏览器的默认编码是操作系统的编码，也就是GBK，两者的编码格式不一样，就造成了中文乱码问题 解决方案解决方案不止一种，记录一种比较简单地使用response设置响应头的方法来设置 Content-Type 具体操作在获取输出流之前(一定是之前)设置响应头content-typeresponse.setHeader(“content-type”,”text/html;charset=utf-8”);这个方法不仅可以设置流的编码，还可以告诉浏览器发送数据的编码方式，并建议浏览器使用同样的字符集解码，这样就解决了乱码的问题由于只需要设置content-type这个响应头，所以有另一个方法更为简单response.setContentType(“text/html;charset=utf-8”);]]></content>
+      
+      
+        <tags>
+            
+            <tag> Http协议 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>response输出中文乱码</title>
+      <link href="/2019/09/08/response%E8%BE%93%E5%87%BA%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/"/>
+      <url>/2019/09/08/response%E8%BE%93%E5%87%BA%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/</url>
+      
+        <content type="html"><![CDATA[<p><b>使用response对象设置响应体时有两个步骤：<b></b></b></p><ol><li>获取输出流(字节流或字符流)</li><li>使用输出流，将数据输出到客户端浏览器<br>这时候如果传输的数据是中文，输出到浏览器就会<font color="red">乱码</font><hr><a id="more"></a></li></ol><h1 id="乱码原因"><a href="#乱码原因" class="headerlink" title="乱码原因"></a>乱码原因</h1><p>首先，要知道乱码的根本原因是什么，乱码的根本原因在于<font color="red">编码和解码使用的字符集不一样</font>。那么在从服务器输出数据到客户端的过程中，有几次编码和解码过程？又分别是在哪里执行的？<br><br>在输出数据的过程中，有<font color="blue">一次编码</font>，是<font color="red"><i>tomcat执行</i></font>的，它按照自己的字符集将数据编码后发送给客户端浏览器<br>有<font color="blue">一次解码</font>，是<font color="red"><i>浏览器执行</i></font>的，浏览器将接收的数据按照自己的字符集解码后打印在屏幕上。<br>而<font size="4" color="red"><i>tomcat的默认编码是ISO-8859-1</i></font>，<font size="4" color="red"><i>浏览器的默认编码是操作系统的编码，也就是GBK</i></font>，两者的编码格式不一样，就造成了中文乱码问题<br></p><h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>解决方案不止一种，记录一种比较简单地<br><br>使用response设置响应头的方法来设置<font color="blue"> Content-Type</font></p><h1 id="具体操作"><a href="#具体操作" class="headerlink" title="具体操作"></a>具体操作</h1><p>在获取输出流<font color="red">之前</font>(一定是之前)<br>设置响应头content-type<font color="blue">response.setHeader(“content-type”,”text/html;charset=utf-8”);</font><br>这个方法<font size="4" color="red"><i>不仅可以设置流的编码，还可以告诉浏览器发送数据的编码方式，并建议浏览器使用同样的字符集解码，这样就解决了乱码的问题</i></font><br><br>由于只需要设置content-type这个响应头，所以有另一个方法更为简单<br><font color="blue">response.setContentType(“text/html;charset=utf-8”);</font></p>]]></content>
+      
+      
       <categories>
-        <category>JAVAWEB</category>
+          
+          <category> JAVAWEB </category>
+          
       </categories>
-      <tags>
-        <tag>Http协议</tag>
-        <tag>乱码</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[Http协议概述--request和response对象]]></title>
-    <url>%2F2019%2F09%2F08%2FHttp%E5%8D%8F%E8%AE%AE%E6%A6%82%E8%BF%B0-request%E5%92%8Cresponse%E5%AF%B9%E8%B1%A1%2F</url>
-    <content type="text"><![CDATA[首先要知道request对象和response对象是由服务器创建的，我们只是使用并不创建request对象是来获取请求消息，response对象是来设置响应消息 request对象request继承结构&nbsp;&nbsp;&nbsp;&nbsp;ServletRequest(接口)–&gt;HttpServletRequest(接口)–&gt;RequestFacade 类(tomcat实现) request功能获取请求消息数据 获取请求行数据:这是一个GET请求方式的请求行：GET /day14/demo1?name=zhangsan HTTP/1.1 获取请求方式 ：String getMethod() -->上例得到结果：GET 获取虚拟目录(常用)：String getContextPath() -->上例得到结果：/day14 获取Servlet路径: String getServletPath()-->上例得到结果：/demo1 获取get方式请求参数：String getQueryString()-->上例得到结果：name=zhangsan 获取请求URI(常用)(有两个方法) String getRequestURI()-->上例得到结果：/day14/demo1 StringBuffer getRequestURL()上例得到结果 :http://localhost/day14/demo1 获取协议及版本：String getProtocol()-->上例得到结果：HTTP/1.1 获取客户机的IP地址：String getRemoteAddr() 获取请求头数据: 通过请求头的名称获取请求头的值(常用):String getHeader(String name) 获取所有的请求头名称:Enumeration getHeaderNames() 获取请求体数据:只有POST请求方式，才有请求体，在请求体中封装了POST请求的请求参数 获取流对象 获取字符输入流，只能操作字符数据:BufferedReader getReader() 获取字节输入流，可以操作所有类型数据:ServletInputStream getInputStream() 其他功能因为对于不同的请求方式，它们的请求参数所在位置不同，GET方式请求参数在请求行中，POST方式请求参数封装在请求体中，所以服务器在获取请求参数的时候，需要分别在doGet和doPost方法中写不同的逻辑代码来获取请求参数，比较麻烦，因此就有一种通用的获取请求参数的方法 获取请求参数通用方式 根据参数名称获取参数值:String getParameter(String name) 根据参数名称获取参数值的数组(多选框):String[] getParameterValues(String name) 获取所有请求的参数名称:Enumeration getParameterNames() 获取所有参数的map集合:Map' 请求转发:一种在服务器内部的资源跳转方式 通过request对象获取请求转发器对象:RequestDispatcher getRequestDispatcher(String path) 使用RequestDispatcher对象来进行转发:forward(ServletRequest re, ServletResponse res) 注意:path是要跳转的资源的路径， 获取ServletContext(后面博客会详细讲到): ServletContext getServletContext() request的请求转发和资源共享以及response的重定向，它们各自的特点和区别会新开一篇博客 response对象response功能:设置响应消息 设置响应行(设置状态码):setStatus(int sc) 设置响应头:setHeader(String name, String value) 设置响应体: 使用步骤 获取输出流 字符输出流:PrintWriter getWriter() 字节输出流:ServletOutputStream getOutputStream() 使用输出流，将数据输出到客户端浏览器]]></content>
+      
+      
+        <tags>
+            
+            <tag> Http协议 </tag>
+            
+            <tag> 乱码 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Http协议概述--request和response对象</title>
+      <link href="/2019/09/08/Http%E5%8D%8F%E8%AE%AE%E6%A6%82%E8%BF%B0-request%E5%92%8Cresponse%E5%AF%B9%E8%B1%A1/"/>
+      <url>/2019/09/08/Http%E5%8D%8F%E8%AE%AE%E6%A6%82%E8%BF%B0-request%E5%92%8Cresponse%E5%AF%B9%E8%B1%A1/</url>
+      
+        <content type="html"><![CDATA[<p><b>首先要知道request对象和response对象是<font color="red">由服务器创建</font>的，我们只是使用并不创建<br>request对象是来<font color="blue">获取请求消息</font>，<br>response对象是来<font color="blue">设置响应消息</font></b><hr></p><a id="more"></a><h1 id="request对象"><a href="#request对象" class="headerlink" title="request对象"></a>request对象</h1><h2 id="request继承结构"><a href="#request继承结构" class="headerlink" title="request继承结构"></a><font size="5">request继承结构</font></h2><p>&nbsp;&nbsp;&nbsp;&nbsp;<font color="blue">ServletRequest(接口)–&gt;HttpServletRequest(接口)–&gt;RequestFacade 类(tomcat实现)</font></p><hr><h2 id="request功能"><a href="#request功能" class="headerlink" title="request功能"></a><font size="5">request功能</font></h2><h3 id="获取请求消息数据"><a href="#获取请求消息数据" class="headerlink" title="获取请求消息数据"></a><font size="5">获取请求消息数据</font></h3><ul><ul><li><font face="宋体"><b>获取请求行数据:</b></font><br>这是一个GET请求方式的请求行：<font color="red">GET /day14/demo1?name=zhangsan HTTP/1.1</font><ul><li>获取请求方式 ：<font color="blue">String getMethod() </font>-->上例得到结果：GET</li><li>获取虚拟目录<font color="red">(常用)</font>：<font color="blue">String getContextPath() </font>-->上例得到结果：/day14</li><li> 获取Servlet路径: <font color="blue">String getServletPath()</font>-->上例得到结果：/demo1</li><li>获取get方式请求参数：<font color="blue">String getQueryString()</font>-->上例得到结果：name=zhangsan</li><li>获取请求URI<font color="red">(常用)</font>(有两个方法)<ul><li><font color="blue">String getRequestURI()</font>-->上例得到结果：/day14/demo1</li><li><font color="blue">StringBuffer getRequestURL()</font><br>上例得到结果 :http://localhost/day14/demo1</li></ul></li><li>获取协议及版本：<font color="blue">String getProtocol()</font>-->上例得到结果：HTTP/1.1</li><li>获取客户机的IP地址：<font color="blue">String getRemoteAddr()</font></li></ul></li><br><li><font face="宋体"><b>获取请求头数据:</b></font><ul><li>通过请求头的名称获取请求头的值<font color="red">(常用)</font>:<font color="blue">String getHeader(String name)</font></li><li>获取所有的请求头名称:<font color="blue">Enumeration<string> getHeaderNames()</string></font></li></ul></li><br><li><font face="宋体"><b>获取请求体数据:</b></font><br><font color="red">只有POST请求方式，才有请求体，在请求体中封装了POST请求的请求参数</font><ul><li> 获取流对象<ul><li>获取字符输入流，只能操作字符数据:<font color="blue">BufferedReader getReader()</font></li><li>获取字节输入流，可以操作所有类型数据:<font color="blue">ServletInputStream getInputStream()</font></li></ul></li></ul></li></ul><hr><h3 id="其他功能"><a href="#其他功能" class="headerlink" title="其他功能"></a><font color="red" size="5">其他功能</font></h3><ul>因为对于不同的请求方式，它们的请求参数所在位置不同，GET方式请求参数在请求行中，POST方式请求参数封装在请求体中，所以服务器在获取请求参数的时候，需要分别在doGet和doPost方法中写不同的逻辑代码来获取请求参数，比较麻烦，因此就有一种通用的获取请求参数的方法<li><font face="宋体"><b>获取请求参数通用方式</b></font><ul><li>根据参数名称获取参数值:<font color="blue">String getParameter(String name)</font></li><li>根据参数名称获取参数值的数组<font color="red">(多选框)</font>:<font color="blue">String[] getParameterValues(String name)</font></li><li>获取所有请求的参数名称:<font color="blue">Enumeration<string> getParameterNames()</string></font></li><li>获取所有参数的map集合:<font color="blue">Map'<'string,string[]> getParameterMap()</'string,string[]></font></li></ul><br></li><li><font face="宋体"><b>请求转发:一种在<font color="red">服务器内部</font>的资源跳转方式</b></font><ol><li>通过request对象获取请求转发器对象:<font color="blue">RequestDispatcher getRequestDispatcher(String path)</font></li><li>使用RequestDispatcher对象来进行转发:<font color="blue">forward(ServletRequest re, ServletResponse res)</font></li><font color="red">注意:</font>path是要跳转的资源的路径，</ol></li><li>获取ServletContext(后面博客会详细讲到): <font color="blue">ServletContext getServletContext()</font></li></ul></ul><br><hr><font color="red" face="宋体" size="5"><i>request的请求转发和资源共享以及response的重定向，它们各自的特点和区别会新开一篇博客</i></font><hr><h1 id="response对象"><a href="#response对象" class="headerlink" title="response对象"></a>response对象<br></h1><p>response功能:<font color="red">设置响应消息</font></p><ul><li><font face="宋体"><b>设置响应行(设置状态码):</b></font><font color="blue">setStatus(int sc)</font></li><li><font face="宋体"><b>设置响应头:</b></font><font color="blue">setHeader(String name, String value) </font></li><li><font face="宋体"><b>设置响应体:</b></font><ol>使用步骤<li>获取输出流<ul><li>字符输出流:<font color="blue">PrintWriter getWriter() </font></li><li>字节输出流:<font color="blue">ServletOutputStream getOutputStream()</font></li></ul></li><li>使用输出流，将数据输出到客户端浏览器<br></li></ol></li></ul><hr>]]></content>
+      
+      
       <categories>
-        <category>计算机网络</category>
+          
+          <category> 计算机网络 </category>
+          
       </categories>
-      <tags>
-        <tag>Http协议</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[Http协议概述--请求响应模型]]></title>
-    <url>%2F2019%2F09%2F08%2FHttp%E5%8D%8F%E8%AE%AE%E6%A6%82%E8%BF%B0-%E8%AF%B7%E6%B1%82%E5%93%8D%E5%BA%94%E6%A8%A1%E5%9E%8B%2F</url>
-    <content type="text"><![CDATA[Http–Hyper Text Transfer Protocol 超文本传输协议传输协议：定义了客户端和服务器端通信时，发送数据的格式 # Http协议的特点 基于TCP/IP的高级协议,默认端口是80 基于请求/响应模型的:一次请求对应一次响应 无状态的：每次请求之间相互独立，不能交互数据 Http协议的历史版本 1.0版本每次请求响应之后都会断开连接，下一次请求响应又会建立新的连接，即每次请求响应都会建立新的连接缺点：连接会被多次建立和多次丢弃掉，影响传输速度，消耗资源 1.1版本在一次请求响应之后，连接不会立刻断开，而是会等待一定的时间，如果在这一定时间内，还有其他请求，就会默认使用该连接，而不去建立新的连接，这样就实现了连接的复用 上面说了，Http定义了客户端和服务器通信时传输数据的格式，而传输数据分为两种： 客户端向服务器传输数据：请求消息数据 服务器向客户端传输数据：相应消息数据 Http请求消息数据格式 请求行:请求方式 请求url 请求协议/版本例如：GET /login.html HTTP/1.1请求url=虚拟路径+Servlet资源路径 请求头：客户端浏览器告诉服务器一些信息请求头消息以键值对的方式给出：请求头名称：请求头值常见的请求头： User-Agent：浏览器告诉服务器，使用的浏览器版本信息,可以在服务器端获取该头的信息，解决浏览器的兼容性问题(可以在服务器端对不同的服务器写不同的逻辑代码，然后根据该头的内容获取浏览器名称，执行对应浏览器的代码) Referer：告诉服务器，当前请求从哪里来？可以用来防盗链和统计工作 请求空行：一个空行，用于分割请求头和请求体 请求体(正文)：封装POST请求消息的请求参数 对于请求行中的请求方式，http协议7中请求方式，常用的有2种 GET:请求参数在请求行中，跟在url后。 请求的url长度有限制的 不太安全 POST: 请求参数在请求体中 请求的url长度没有限制的 相对安全 Http响应消息数据格式 响应行:协议/版本 响应状态码 状态码描述例如：HTTP/1.1 200 OK请求url=虚拟路径+Servlet资源路径 响应头：服务器告诉浏览器一些信息响应头消息以键值对的方式给出：响应头名称：响应头值常见的响应头： Content-Type：服务器告诉客户端本次响应体数据格式以及编码格式 Content-disposition：服务器告诉客户端以什么格式打开响应体数据常见有两种取值 in-line:默认值,在当前页面内打开 attachment;filename=xxx：以附件形式打开响应体，用于文件下载 注意：这个filename是浏览器在弹出框显示，和服务器中要下载的文件名无关 响应空行：一个空行，用于分割响应头和响应体 响应体(正文)：传输的数据 响应状态码服务器告诉客户端浏览器本次请求和响应的一个状态。状态码都是3位数字 1xx：服务器接收客户端消息，但没有接受完成，等待一段时间后，发送1xx多状态码 2xx：本次请求响应成功。代表码：200 4xx：客户端错误。 404:请求路径没有对应的资源-->路径错误 405:请求方式没有对应的doxxx方法-->比如浏览器请求方式是Post方式，而客户端没有doPost方法 5xx：服务器端错误。代表码：500(服务器内部出现异常)]]></content>
+      
+      
+        <tags>
+            
+            <tag> Http协议 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Http协议概述--请求响应模型</title>
+      <link href="/2019/09/08/Http%E5%8D%8F%E8%AE%AE%E6%A6%82%E8%BF%B0-%E8%AF%B7%E6%B1%82%E5%93%8D%E5%BA%94%E6%A8%A1%E5%9E%8B/"/>
+      <url>/2019/09/08/Http%E5%8D%8F%E8%AE%AE%E6%A6%82%E8%BF%B0-%E8%AF%B7%E6%B1%82%E5%93%8D%E5%BA%94%E6%A8%A1%E5%9E%8B/</url>
+      
+        <content type="html"><![CDATA[<p><b>Http–Hyper Text Transfer Protocol 超文本传输协议<b><br><font color="red"><b>传输协议</b></font>：定义了客户端和服务器端通信时，发送数据的格式</b></b></p><hr><a id="more"></a># Http协议的特点<ul><li>基于TCP/IP的高级协议,<font color="blue">默认端口是80</font></li><li>基于请求/响应模型的:<font color="blue">一次请求对应一次响应</font></li><li>无状态的：每次请求之间<font color="blue">相互独立，不能交互数据</font></li></ul><h1 id="Http协议的历史版本"><a href="#Http协议的历史版本" class="headerlink" title="Http协议的历史版本"></a>Http协议的历史版本</h1><ul><li><input disabled type="checkbox"> 1.0版本<br>每次请求响应之后都会断开连接，下一次请求响应又会建立新的连接，即<font color="blue">每次请求响应都会建立新的连接</font><br>缺点：连接会被多次建立和多次丢弃掉，影响传输速度，消耗资源<br></li><li><input disabled type="checkbox"> 1.1版本<br>在一次请求响应之后，连接不会立刻断开，而是会等待一定的时间，如果在这一定时间内，还有其他请求，就会默认使用该连接，而不去建立新的连接，这样就实现了<font color="red"><b>连接的复用</b></font><hr>上面说了，Http定义了客户端和服务器通信时传输数据的格式，而传输数据分为两种：<br><b>客户端向服务器传输数据：</b><font color="red">请求消息数据</font><br><b>服务器向客户端传输数据：</b><font color="red">相应消息数据</font></li></ul><h1 id="Http请求消息数据格式"><a href="#Http请求消息数据格式" class="headerlink" title="Http请求消息数据格式"></a>Http请求消息数据格式</h1> <ul><li><font face="宋体"><b>请求行:</b></font><font color="blue">请求方式 请求url 请求协议/版本</font><br>例如：GET /login.html    HTTP/1.1<br><font color="red">请求url=虚拟路径+Servlet资源路径</font></li><li><font face="宋体"><b>请求头：</b></font>客户端浏览器告诉服务器一些信息<br>请求头消息以键值对的方式给出：<font color="blue">请求头名称：请求头值</font><br>常见的请求头：<ul><li>User-Agent：浏览器告诉服务器，使用的<font color="red">浏览器版本信息</font>,可以在服务器端获取该头的信息，<font color="red">解决浏览器的兼容性问题(可以在服务器端对不同的服务器写不同的逻辑代码，然后根据该头的内容获取浏览器名称，执行对应浏览器的代码)</font></li><li>Referer：告诉服务器，当前请求从哪里来？可以用来<font color="red">防盗链和统计工作</font></li></ul></li><li><font face="宋体"><b>请求空行：</b></font>一个空行，用于分割请求头和请求体</li><li><font face="宋体"><b>请求体(正文)：</b></font>封装<font color="red">POST</font>请求消息的请求参数</li></ul><hr>对于请求行中的请求方式，http协议7中请求方式，常用的有2种<ul><li>GET:<br><font color="red">请求参数在请求行</font>中，跟在url后。<br>请求的url长度有限制的<br>不太安全</li><li>POST:<br><font color="red">请求参数在请求体</font>中<br>请求的url长度没有限制的<br>相对安全</li></ul><hr><h1 id="Http响应消息数据格式"><a href="#Http响应消息数据格式" class="headerlink" title="Http响应消息数据格式"></a>Http响应消息数据格式</h1>  <ul><li><font face="宋体"><b>响应行:</b></font><font color="blue">协议/版本 响应状态码 状态码描述</font><br>例如：HTTP/1.1 200 OK<br><font color="red">请求url=虚拟路径+Servlet资源路径</font></li><li><font face="宋体"><b>响应头：</b></font>服务器告诉浏览器一些信息<br>响应头消息以键值对的方式给出：<font color="blue">响应头名称：响应头值</font><br>常见的响应头：<ul><li>Content-Type：服务器告诉客户端本次<font color="red">响应体数据格式以及编码格式</font></li><li>Content-disposition：服务器告诉客户端<font color="red">以什么格式打开响应体数据</font><br><ul>常见有两种取值<li>in-line:默认值,在<font color="blue">当前页面内打开</font></li><li>attachment;filename=xxx：以<font color="blue">附件形式打开响应体，用于文件下载</font><br>注意：这个filename是浏览器在弹出框显示，和服务器中要下载的文件名无关</li></ul></li></ul></li><li><font face="宋体"><b>响应空行：</b></font>一个空行，用于分割响应头和响应体</li><li><font face="宋体"><b>响应体(正文)：</b></font>传输的数据</li></ul><hr><h2 id="响应状态码"><a href="#响应状态码" class="headerlink" title="响应状态码"></a><font size="5">响应状态码</font></h2><p>服务器告诉客户端浏览器本次请求和响应的一个状态。<br><br><font color="red"><b>状态码都是3位数字</b></font><br></p><ul><li>1xx：服务器接收客户端消息，但<font color="blue">没有接受完成</font>，等待一段时间后，发送1xx多状态码</li><li>2xx：本次请求响应成功。代表码：200</li><li>4xx：<font color="red">客户端错误。</font><ul><li>404:请求路径没有对应的资源--><font color="blue">路径错误</font></li><li>405:请求方式没有对应的doxxx方法-->比如浏览器请求方式是Post方式，而客户端没有doPost方法</li></ul></li><li>5xx：<font color="red">服务器端错误。</font>代表码：500(服务器内部出现异常)</li></ul> ]]></content>
+      
+      
       <categories>
-        <category>计算机网络</category>
+          
+          <category> 计算机网络 </category>
+          
       </categories>
-      <tags>
-        <tag>Http协议</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[Servlet基础学习]]></title>
-    <url>%2F2019%2F09%2F08%2FServlet%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%2F</url>
-    <content type="text"><![CDATA[Servlet：server applet官方给出的解释是运行在服务器端的小程序 # Servlet的本质 浏览器通过ip和端口来找到服务器，服务器中的资源分为两类 静态资源， 动态资源所谓动态资源，就是不同的用户访问到的页面是不一样的，这说明动态资源中肯定有一些逻辑性，来实现不同的用户访问同样的资源看到的是不一样的。而这些逻辑性，就要通过Java代码(Java类)来实现。 也就是说浏览器请求动态资源的时候，访问的就是服务器上的Java类 要注意的是：这里说的Java类没有main方法，不能自己运行，需要依赖服务器才能运行，相当于Tomcat(服务器软件)来执行它。那么问题来了，如果要Tomcat能够认识这个类并执行这个类，这个类就需要遵守一定的规则，在Java中，规则==接口 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上面说的规则，就是Servlet，它本质上就是一个接口，定义了Java类被tomcat识别的规则 Servlet的使用 创建JavaEE项目 在src目录内定义一个类，实现Servlet接口 实现接口中的抽象方法 配置Servlet(一共有两种方法，这里先记录第一种)在web.xml中配置 123456789&lt;servlet&gt; &lt;servlet-name&gt;demo1&lt;/servlet-name&gt; &lt;servlet-class&gt;全类名(包名+类名)&lt;/servlet-class&gt;&lt;/servlet&gt; &lt;servlet-mapping&gt; &lt;servlet-name&gt;demo1&lt;/servlet-name&gt; &lt;url-pattern&gt;/demo1(Servlet资源路径)&lt;/url-pattern&gt;&lt;/servlet-mapping&gt; 在web.xml中加上以上内容 Servlet配置原理 当服务器接受到客户端浏览器的请求后，会解析请求URL路径，获取访问的Servlet的资源路径 查找web.xml文件，是否有对应的url-pattern标签体内容。 如果有，则通过映射找到对应的servlet-class全类名 tomcat会将字节码文件加载进内存，并且创建其对象注意：这个实现了Servlet接口的类是由Tomcat通过反射创建的对象，并不是由程序员创建的 调用对象的方法 Servlet的生命周期 被创建：执行init()方法，该方法只执行一次 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;那么Servlet在什么时候被创建呢？&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;默认情况下，在资源第一次被访问时，Servlet被创建 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;可以在web.xml文件中配置改变Servlet被创建的时机&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在上面说到的servlet标签下配置，具体下面有图 提供服务：执行service方法，可以执行多次&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;每次访问Servlet时，Service方法都会被调用一次。 被销毁：执行destroy方法，只执行一次&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;只有服务器正常关闭时，才会执行destroy方法。&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;destroy方法在Servlet被销毁之前执行，一般用于释放资源 设置Servlet被创建的时机使用load-on-startup标签，这是一个围堵标签，当标签的值为负数的时候，默认第一次被访问时创建当标签的值为正数或0的时候，服务器启动时创建 注解配置Servlet在Servlet3.0以后，可以使用注解配置Servlet，相比较在web.xml文件中配置更加方便使用方法：在类上加注解@WebServlet(“资源路径”)，这样就可以通过注解的资源路径找到相应的类，直接将类加载进内存 Servlet体系结构 Servlet是一个接口，里面有5个抽象方法，每次继承Servlet接口的时候，都需要重写这5个抽象方法，而实际上，很多时候并用不到其中的有些方法，所以每次都要重写，很麻烦 Servlet的子类GenericServletGenericServlet也是一个抽象类，将Servlet接口中其他的方法做了默认空实现，只将service()方法作为抽象，将来定义Servlet类时，可以继承GenericServlet，只实现service()方法即可(但实际上，这种方法使用较少) HttpServletHttpServlet出现原因HttpServlet extends GenericServlet该类是对Http协议的一种封装和描述对于一般的Servlet实现类，在service方法中通过一些操作获取浏览器的数据，但在获取数据之前，需要判断浏览器的请求方式是get方式还是put方式，因为两种方式封装数据的位置和格式是不一样的，对于不同的方式需要进行不同的逻辑处理。也就是说，我们需要在service方法里作两步操作： 判断浏览器请求方式 根据不同的请求方式编写不同的逻辑代码 HttpServlet实现原理这个过程比较麻烦，但却是所有的service方法都必须要做的一个过程，因此sun公司就提供了HttpServlet这个类。在HttpServlet类的Service方法中，已经写好了判断浏览器请求方式的逻辑代码，我们需要做的就是重写相应doxxx()方法，service方法判断请求方式后，会根据判断的结果调用我们重写的doxxx()方法以上是HttpServlet类service的源码，可以发现，HttpServlet中的service方法主要用于判断浏览器的请求方式，然后根据不同的请求方式调用相应的doxxx()方法，我们只需要重写这些方法，省略了判断请求方式的步骤]]></content>
+      
+      
+        <tags>
+            
+            <tag> Http协议 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Servlet基础学习</title>
+      <link href="/2019/09/08/Servlet%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/"/>
+      <url>/2019/09/08/Servlet%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/</url>
+      
+        <content type="html"><![CDATA[<p><b><font size="5">Servlet：server applet</font></b><br>官方给出的解释是<font color="red">运行在服务器端的小程序</font></p><hr><a id="more"></a># Servlet的本质<p>浏览器通过<font color="red">ip和端口</font>来找到服务器，服务器中的资源分为两类</p><ol><li>静态资源，</li><li>动态资源<p>所谓<b>动态资源</b>，就是不同的用户访问到的页面是不一样的，这说明<font color="red">动态资源中肯定有一些逻辑性</font>，来实现不同的用户访问同样的资源看到的是不一样的。而这些逻辑性，就要通过Java代码(Java类)来实现。<font color="red" size="4"><i>也就是说浏览器请求动态资源的时候，访问的就是服务器上的Java类</i></font><br></p>要注意的是：这里说的Java类没有main方法，不能自己运行，需要<font color="red">依赖服务器才能运行</font>，相当于Tomcat(服务器软件)来执行它。那么问题来了，如果要<font color="red">Tomcat能够认识这个类并执行这个类，这个类就需要遵守一定的规则，</font>在Java中，<b>规则==接口</b><br><hr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="blue" size="5" face="楷体">上面说的规则，就是Servlet，它本质上就是一个接口，定义了Java类被tomcat识别的规则</font><hr></li></ol><h1 id="Servlet的使用"><a href="#Servlet的使用" class="headerlink" title="Servlet的使用"></a>Servlet的使用</h1><ol><li>创建JavaEE项目</li><li> 在<font color="red">src目录内</font>定义一个类，实现Servlet接口</li><li>实现接口中的抽象方法</li><li>配置Servlet(一共有两种方法，这里先记录第一种)<font color="red">在web.xml中配置</font>                                <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;servlet&gt;</span><br><span class="line">    &lt;servlet-name&gt;demo1&lt;/servlet-name&gt;</span><br><span class="line">    &lt;servlet-class&gt;全类名(包名+类名)&lt;/servlet-class&gt;</span><br><span class="line">&lt;/servlet&gt;</span><br><span class="line"></span><br><span class="line">&lt;servlet-mapping&gt;</span><br><span class="line">    &lt;servlet-name&gt;demo1&lt;/servlet-name&gt;</span><br><span class="line">    &lt;url-pattern&gt;/demo1(Servlet资源路径)&lt;/url-pattern&gt;</span><br><span class="line">&lt;/servlet-mapping&gt;</span><br></pre></td></tr></table></figure><p>在web.xml中加上以上内容</p></li><b><font color="red">Servlet配置原理</font></b><ol><li> 当服务器接受到客户端浏览器的请求后，会解析请求URL路径，获取访问的Servlet的资源路径</li><li>查找web.xml文件，是否有对应的url-pattern标签体内容。</li><li>如果有，则通过映射找到对应的servlet-class全类名</li><li>tomcat会将字节码文件加载进内存，并且<font color="red">创建其对象</font><br><font color="red">注意：这个实现了Servlet接口的类是由Tomcat通过反射创建的对象，并不是由程序员创建的</font></li><li>调用对象的方法</li></ol></ol><hr><h1 id="Servlet的生命周期"><a href="#Servlet的生命周期" class="headerlink" title="Servlet的生命周期"></a>Servlet的生命周期</h1><ol><li><b>被创建：</b>执行init()方法，<font color="blue">该方法只执行一次</font><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;那么Servlet在什么时候被创建呢？<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;默认情况下，在<font color="red">资源第一次被访问时，Servlet被创建</font><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;可以在web.xml文件中配置改变Servlet被创建的时机<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在上面说到的<font color="red">servlet标签</font>下配置，具体下面有图</li><li><b>提供服务：</b>执行service方法，可以执行多次<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<font color="blue">每次访问Servlet时，Service方法都会被调用一次。</font></li><li><b>被销毁：</b>执行destroy方法，只<font color="blue">执行一次</font><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;只有服务器<b>正常关闭</b>时，才会执行destroy方法。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;destroy方法在Servlet被<font color="red">销毁之前</font>执行，一般用于释放资源</li></ol><p><b><font color="red">设置Servlet被创建的时机</font></b><br>使用<font color="red">load-on-startup</font>标签，这是一个围堵标签，当<font color="red">标签的值为负数</font>的时候，默认第一次被访问时创建<br>当<font color="red">标签的值为正数或0</font>的时候，服务器启动时创建</p><p><img src="https://img-blog.csdnimg.cn/20190902105855215.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="上接设置Servlet被创建的时机"></p><hr><p><b><font color="red">注解配置Servlet</font></b><br><i>在<font color="red">Servlet3.0以后</font>，可以使用注解配置Servlet，相比较在web.xml文件中配置更加方便</i><br><br><b>使用方法：</b><br>在类上加注解<font color="red">@WebServlet(“资源路径”)</font>，这样就可以通过注解的资源路径找到相应的类，直接将类加载进内存<br></p><hr>Servlet体系结构Servlet是一个接口，里面有5个抽象方法，每次继承Servlet接口的时候，都需要重写这5个抽象方法，而实际上，很多时候并用不到其中的有些方法，所以每次都要重写，很麻烦<br><h1 id="Servlet的子类"><a href="#Servlet的子类" class="headerlink" title="Servlet的子类"></a>Servlet的子类</h1><h2 id="GenericServlet"><a href="#GenericServlet" class="headerlink" title="GenericServlet"></a>GenericServlet</h2><p>GenericServlet也是一个<font color="red">抽象类，</font>将Servlet接口中其他的方法做了<b>默认空实现</b>，<font color="red">只将service()方法作为抽象</font>，将来定义Servlet类时，可以继承GenericServlet，只实现service()方法即可(但实际上，这种方法使用较少)<br></p><h2 id="HttpServlet"><a href="#HttpServlet" class="headerlink" title="HttpServlet"></a>HttpServlet</h2><h3 id="HttpServlet出现原因"><a href="#HttpServlet出现原因" class="headerlink" title="HttpServlet出现原因"></a><font size="5">HttpServlet出现原因</font></h3><p><font color="blue">HttpServlet extends GenericServlet</font><br><b>该类是对Http协议的一种封装和描述</b><br>对于一般的Servlet实现类，在service方法中通过一些操作获取浏览器的数据，但在获取数据之前，需要判断浏览器的请求方式是get方式还是put方式，因为两种方式封装数据的位置和格式是不一样的，对于不同的方式需要进行不同的逻辑处理。<br>也就是说，我们需要在service方法里作两步操作：</p><ol><li><b>判断浏览器请求方式</b></li><li><b>根据不同的请求方式编写不同的逻辑代码</b><hr></li></ol><h3 id="HttpServlet实现原理"><a href="#HttpServlet实现原理" class="headerlink" title="HttpServlet实现原理"></a><font size="5">HttpServlet实现原理</font></h3><p>这个<b>过程比较麻烦，但却是所有的service方法都必须要做<b>的一个过程，因此sun公司就提供了HttpServlet这个类。<br><b>在HttpServlet类的Service方法中，已经写好了判断浏览器请求方式的逻辑代码，我们需要做的就是重写相应doxxx()方法，service方法判断请求方式后，会根据判断的结果调用我们重写的doxxx()方法<b><br><img src="https://img-blog.csdnimg.cn/20190902140302516.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/2019090214065965.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>以上是HttpServlet类service的源码，可以发现，<strong>HttpServlet中的service方法主要用于判断浏览器的请求方式，然后根据不同的请求方式调用相应的doxxx()方法，我们只需要重写这些方法，省略了判断请求方式的步骤</strong></b></b></b></b></p>]]></content>
+      
+      
       <categories>
-        <category>JAVAWEB</category>
+          
+          <category> JAVAWEB </category>
+          
       </categories>
-      <tags>
-        <tag>Servlet类</tag>
-        <tag>HttpServlet类</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[数据库基础--SQL语句总结(一)]]></title>
-    <url>%2F2019%2F09%2F08%2F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80-SQL%E8%AF%AD%E5%8F%A5%E6%80%BB%E7%BB%93-%E4%B8%80%2F</url>
-    <content type="text"><![CDATA[这里主要总结两类SQL语句 DDL和DML，即操作数据库和表的语句以及对表中数据进行增删改操作的语句 DDL语句这类语句又分为两部分 操作数据库(CRUD) 操作表(CRUD) 操作数据库 (Create)创建： 1. 创建数据库：create database 数据库名称; 2. 先判断数据库是否存在，如果不存在，再创建：create database if not exists 数据库名称; 3. 创建数据库，并指定字符集：create database 数据库名称 character set 字符集名; 4. 创建db4数据库，判断是否存在，并指定字符集为gbk：create database if not exists db4 character set gbk; (Retrieve)查询： 1. 查询所有数据库名称：show databases; 2. 查询某个数据库的字符集:show create database 数据库名称; (Update)修改： 修改数据库的字符集:alter database 数据库名称 character set 字符集名称; (Delete)删除： 1. 删除数据库:drop database 数据库名称; 2. 判断数据库存在，存在再删除:drop database if exists 数据库名称; 使用数据库： 1. 查询当前正在使用的数据库名称:select database(); 2. 使用数据库:use 数据库名称; 操作表 (Create)创建： 1. 创建表：create table 表名( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;列名1 数据类型1, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;列名2 数据类型2, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.... &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;列名n 数据类型n); 注意：最后一列不加逗号 2. 复制表：create table 表名 like 被复制的表名; 数据库数据类型 int：整数类型 double:小数类型 date:日期，只包含年月日，形如yyyy-MM-dd datetime:日期，包含年月日时分秒, yyyy-MM-dd HH:mm:ss timestamp:时间戳类型，包含年月日时分秒 yyyy-MM-dd HH:mm:ss 如果将来不给这个字段赋值，或赋值为null，则默认使用当前的系统时间，来自动赋值 varchar：字符串，在使用的时候需要指定长度，例如varchar(2)表示最大长度2个字符 (Retrieve)查询： 1. 查询某个数据库中所有的表名称:show tables; 2. 查询表结构:desc 表名; (Update)修改： 1. 修改表名:alter table 表名 rename to 新的表名; 2. alter table 表名 character set 字符集名称:alter table 表名 character set 字符集名称; 3. 添加一列:alter table 表名 add 列名 数据类型; 4. 修改列名称 类型:alter table 表名 modify 列名 新数据类型; (Delete)删除： 1. 判断数据库存在，存在再删除:drop table if exists 表名 ; 从上面这些语句不难总结得出，无论是数据库还是表，它们的增删改语句都和create、alter、drop、show有关 DML语句增删改表中的语句 添加数据insert into 表名(列名1,列名2,…列名n) values(值1,值2,…值n);列名和值要一一对应如果不指定列名，则默认给所有列添加值：insert into 表名 values(值1,值2,…值n);除了数字类型，其他类型需要使用引号(单双都可以)引起来 删除数据delete from 表名 [where 条件]如果不加条件，则默认删除表中所有数据但是，如果要删除表中所有的话，不推荐使用这种方法，因为效率低推荐使用TRUNCATE TABLE 表名; 效率更高 先删除表，然后再创建一张一样的表。 修改数据update 表名 set 列名1 = 值1, 列名2 = 值2,… [where 条件];注意：如果不加条件，则会将表中的记录全部修改 总结：DML语句用来操作表中的数据，主要对数据进行增删改操作，主要有insert 、delete、update三个关键字]]></content>
+      
+      
+        <tags>
+            
+            <tag> Servlet类 </tag>
+            
+            <tag> HttpServlet类 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>数据库基础--SQL语句总结(一)</title>
+      <link href="/2019/09/08/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80-SQL%E8%AF%AD%E5%8F%A5%E6%80%BB%E7%BB%93-%E4%B8%80/"/>
+      <url>/2019/09/08/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80-SQL%E8%AF%AD%E5%8F%A5%E6%80%BB%E7%BB%93-%E4%B8%80/</url>
+      
+        <content type="html"><![CDATA[<p><font size="5">这里主要总结两类SQL语句</font></p><p>DDL和DML，即<font color="red">操作数据库和表</font>的语句以及对<font color="red">表中数据进行增删改操作</font>的语句</p><hr><h1 id="DDL语句"><a href="#DDL语句" class="headerlink" title="DDL语句"></a>DDL语句</h1><p>这类语句又分为两部分</p><ul><li>操作数据库(CRUD)</li><li>操作表(CRUD)</li></ul><hr><a id="more"></a><h2 id="操作数据库"><a href="#操作数据库" class="headerlink" title="操作数据库"></a>操作数据库</h2><ul type="square"><li><b>(Create)创建：</b><br>1. 创建数据库：<font color="blue">create database 数据库名称;</font><br>2. 先判断数据库是否存在，如果不存在，再创建：<font color="blue">create database if not exists 数据库名称;</font><br>3. 创建数据库，并指定字符集：<font color="blue">create database 数据库名称 character set 字符集名;</font><br>4. 创建db4数据库，判断是否存在，并指定字符集为gbk：<font color="red">create database if not exists db4 character set gbk;</font><br></li><li><b>(Retrieve)查询：</b><br>1. 查询所有数据库名称：<font color="blue">show databases;</font><br>2. 查询某个数据库的字符集:<font color="blue">show create database 数据库名称;</font></li><li><b>(Update)修改：</b><br>修改数据库的字符集:<font color="blue">alter database 数据库名称 character set 字符集名称;</font></li><li><b>(Delete)删除：</b><br>1. 删除数据库:<font color="blue">drop database 数据库名称;</font><br>2. 判断数据库存在，存在再删除:<font color="blue">drop database if exists 数据库名称;</font></li><li><b>使用数据库：</b><br>1. 查询当前正在使用的数据库名称:<font color="blue">select database();</font><br>2. 使用数据库:<font color="blue">use 数据库名称;</font></li></ul><h2 id="操作表"><a href="#操作表" class="headerlink" title="操作表"></a>操作表</h2><ul type="square"><li><b>(Create)创建：</b><br>1. 创建表：<br><font color="blue">create table 表名(<br>            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;列名1 数据类型1,<br>                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;列名2 数据类型2,<br>                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;....<br>                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;列名n 数据类型n);</font><br>                    注意：<font color="red">最后一列不加逗号</font><br>2. 复制表：<font color="blue">create table 表名 like 被复制的表名;</font><br>                                        <hr><ul><font color="red" size="5"><b>数据库数据类型</b></font><li>int：整数类型</li><li>double:小数类型</li><li> date:日期，只包含年月日，形如<font color="blue">yyyy-MM-dd</font></li><li>datetime:日期，包含年月日时分秒,<font color="blue"> yyyy-MM-dd HH:mm:ss</font></li><li>timestamp:时间戳类型，包含年月日时分秒    <font color="blue">  yyyy-MM-dd HH:mm:ss</font><br>如果将来<font color="red">不给这个字段赋值，或赋值为null，则默认使用当前的系统时间，来自动赋值</font></li><li>varchar：字符串，在使用的时候需要指定长度，例如<font color="blue">varchar(2)表示最大长度2个字符</font></li></ul><hr></li><li><b>(Retrieve)查询：</b><br>1. 查询某个数据库中所有的表名称:<font color="blue">show tables;</font><br> 2. 查询表结构:<font color="blue">desc 表名;</font></li><li><b>(Update)修改：</b><br>1. 修改表名:<font color="blue">alter table 表名 rename to 新的表名;</font><br>2. alter table 表名 character set 字符集名称:<font color="blue">alter table 表名 character set 字符集名称;</font><br>3. 添加一列:<font color="blue">alter table 表名 add 列名 数据类型;</font><br>4. 修改列名称 类型:<font color="blue">alter table 表名 modify 列名 新数据类型;</font></li><li><b>(Delete)删除：</b><br>1. 判断数据库存在，存在再删除:<font color="blue">drop table  if exists 表名 ;</font></li></ul><hr><font size="5" face="楷体" color="red"><i><b>从上面这些语句不难总结得出，无论是数据库还是表，它们的增删改语句都和create、alter、drop、show有关</b></i></font><hr><br><br><hr><h1 id="DML语句"><a href="#DML语句" class="headerlink" title="DML语句"></a>DML语句</h1><p><font color="red">增删改</font>表中的语句<br><hr></p><h2 id="添加数据"><a href="#添加数据" class="headerlink" title="添加数据"></a>添加数据</h2><p><font color="blue">insert into 表名(列名1,列名2,…列名n) values(值1,值2,…值n);</font><br>列名和值要一一对应<br>如果不指定列名，则默认给所有列添加值：<font color="blue">insert into 表名 values(值1,值2,…值n);</font><br><font color="red">除了数字类型，其他类型需要使用引号(单双都可以)引起来</font></p><h2 id="删除数据"><a href="#删除数据" class="headerlink" title="删除数据"></a>删除数据</h2><p><font color="blue">delete from 表名 [where 条件]</font><br>如果不加条件，则默认删除表中所有数据<br>但是，如果要删除表中所有的话，不推荐使用这种方法，因为效率低<br>推荐使用<font color="blue">TRUNCATE TABLE 表名;</font> 效率更高 先删除表，然后再创建一张一样的表。</p><h2 id="修改数据"><a href="#修改数据" class="headerlink" title="修改数据"></a>修改数据</h2><p><font color="blue">update 表名 set 列名1 = 值1, 列名2 = 值2,… [where 条件];</font><font color="red"><br>注意：如果不加条件，则会将表中的记录全部修改</font></p><hr><font size="5" face="楷体" color="red"><i><b>总结：DML语句用来操作表中的数据，主要对数据进行增删改操作，主要有insert 、delete、update三个关键字</b></i></font><hr>]]></content>
+      
+      
       <categories>
-        <category>数据库</category>
+          
+          <category> 数据库 </category>
+          
       </categories>
-      <tags>
-        <tag>数据库</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[数据库基础--数据库概念和SQL简介]]></title>
-    <url>%2F2019%2F09%2F08%2F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A6%82%E5%BF%B5%E5%92%8CSQL%E7%AE%80%E4%BB%8B%2F</url>
-    <content type="text"><![CDATA[数据库(DataBase)，简称DB，用于存储和管理数据的仓库能够持久化存储数据，实际上，数据库就是一个文件系统，能够方便的存储和管理数据，使用了统一的方式来操作数据库，即SQL MySQL的配置MySQL服务启动 cmd--> services.msc 打开服务的窗口 使用管理员方式打开cmd net start mysql : 启动mysql的服务 net start mysql :关闭mysql的服务 MySQL登录 mysql -uroot -p密码 mysql -hip -uroot -p连接目标的密码 mysql –host=ip –user=root –password=连接目标的密码 MySQL退出 exit/quit命令 SQLStructured Query Language：结构化查询语言定义了操作所有关系型数据库的规则，但是不同的数据库操作的方式可能存在不同的地方，可以理解为‘方言’SQL分为四类 DL(Data Definition Language)数据定义语言用来定义数据库对象：数据库，表，列等。关键字：create, drop,alter 等 DML(Data Manipulation Language)数据操作语言用来对数据库中表的数据进行增删改。关键字：insert, delete, update 等 DQL(Data Query Language)数据查询语言用来查询数据库中表的记录(数据)。关键字：select, where 等 DCL(Data Control Language)数据控制语言用来定义数据库的访问权限和安全级别，及创建用户。关键字：GRANT， REVOKE 等 一张图来帮助理解四类SQL语句]]></content>
+      
+      
+        <tags>
+            
+            <tag> 数据库 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>数据库基础--数据库概念和SQL简介</title>
+      <link href="/2019/09/08/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A6%82%E5%BF%B5%E5%92%8CSQL%E7%AE%80%E4%BB%8B/"/>
+      <url>/2019/09/08/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A6%82%E5%BF%B5%E5%92%8CSQL%E7%AE%80%E4%BB%8B/</url>
+      
+        <content type="html"><![CDATA[<p>数据库(DataBase)，简称DB，用于存储和管理数据的仓库能够持久化存储数据，实际上，<font color="red"><strong>数据库就是一个文件系统</strong></font>，能够方便的存储和管理数据，使用了统一的方式来操作数据库，即<strong>SQL</strong></p><hr><a id="more"></a><h1 id="MySQL的配置"><a href="#MySQL的配置" class="headerlink" title="MySQL的配置"></a>MySQL的配置</h1><h2 id="MySQL服务启动"><a href="#MySQL服务启动" class="headerlink" title="MySQL服务启动"></a><font size="5">MySQL服务启动</font></h2><ul><li>cmd--> services.msc 打开服务的窗口</li><li>使用管理员方式打开cmd<ul><li>net start mysql : 启动mysql的服务</li><li>net start mysql :关闭mysql的服务</li></ul></li></ul><h2 id="MySQL登录"><a href="#MySQL登录" class="headerlink" title="MySQL登录"></a><font size="5">MySQL登录</font></h2><ol><li>mysql -uroot -p密码</li><li>mysql -hip -uroot -p连接目标的密码</li><li>mysql –host=ip –user=root –password=连接目标的密码</li></ol><h2 id="MySQL退出"><a href="#MySQL退出" class="headerlink" title="MySQL退出"></a>MySQL退出</h2><p> exit/quit命令</p><hr><h1 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h1><p><strong>Structured Query Language</strong>：结构化查询语言定义了操作所有关系型数据库的规则，但是不同的数据库操作的方式可能存在不同的地方，可以理解为‘方言’<br>SQL分为四类</p><ol><li><p>DL(Data Definition Language)数据定义语言<br>用来<font color="red">定义数据库对象</font>：数据库，表，列等。关键字：<font color="blue">create, drop,alter</font> 等</p></li><li><p>DML(Data Manipulation Language)数据操作语言<br>用来对<font color="red">数据库中表的数据</font>进行<font color="red">增删改</font>。关键字：<font color="blue">insert, delete, update </font>等</p></li><li><p>DQL(Data Query Language)数据查询语言<br>用来<font color="red">查询数据库中表的记录</font>(数据)。关键字：<font color="blue">select, where</font> 等</p></li><li><p>DCL(Data Control Language)数据控制语言用来<font color="red">定义数据库的访问权限和安全级别</font>，及创建用户。关键字：GRANT， REVOKE 等</p></li></ol><p>一张图来帮助理解四类SQL语句<br><img src="https://img-blog.csdnimg.cn/2019090122091487.bmp?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>]]></content>
+      
+      
       <categories>
-        <category>数据库</category>
+          
+          <category> 数据库 </category>
+          
       </categories>
-      <tags>
-        <tag>数据库</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[IDEA中创建多个Project]]></title>
-    <url>%2F2019%2F09%2F08%2FIDEA%E4%B8%AD%E5%88%9B%E5%BB%BA%E5%A4%9A%E4%B8%AAProject%2F</url>
-    <content type="text"><![CDATA[我们知道，IDEA是没有workspace这个概念的，它是以Project为单位，一个窗口对应着一个Project，而一个Project对应着很多Model，Model相当于eclipse中的project，那么如何在一个项目中存放多个Project呢？ 首先，创建一个空的Project 给项目命名并点击finish会进入到新创建的Project窗口中，接着IDEA就会弹出下面界面，让你为新的Priject创建一个Model：在这里很重要，不选择给新的Project创建一个Model，直接点OK这样，常见出来的没有Model的Project就相当于一个空文件夹，(查看创建的Project文件夹，会发现它是没有src的) 在新的Projrect中，new一个Model我这里创建的时web项目，如果要创建普通的项目，点击左侧第一个按钮JAVA就可以给新创建的Model起名，通过这里就可以发现，第一个untitled是创建的project名(由于没有命名，默认就是untitled)，第二个是正在创建的Model名，点击finish这样就创建成功了一个，按照上面的方法再来一遍这样就成功地在一个窗口创建了两个Project 另外IDEA会为这两个web项目分别部署一份配置文件，这样这两个web项目就可以分别设置不同的端口，虚拟路径等配置运行项目的时候，查看控制台的log：Using CATALINA_BASE: 的值，就能找到配置文件的路径]]></content>
+      
+      
+        <tags>
+            
+            <tag> 数据库 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>IDEA中创建多个Project</title>
+      <link href="/2019/09/08/IDEA%E4%B8%AD%E5%88%9B%E5%BB%BA%E5%A4%9A%E4%B8%AAProject/"/>
+      <url>/2019/09/08/IDEA%E4%B8%AD%E5%88%9B%E5%BB%BA%E5%A4%9A%E4%B8%AAProject/</url>
+      
+        <content type="html"><![CDATA[<p>我们知道，IDEA是没有workspace这个概念的，它是以Project为单位，一个窗口对应着一个Project，而一个Project对应着很多Model，Model相当于eclipse中的project，那么如何在一个项目中存放多个Project呢？</p><a id="more"></a><h2 id="首先，创建一个空的Project"><a href="#首先，创建一个空的Project" class="headerlink" title="首先，创建一个空的Project"></a>首先，创建一个空的Project</h2><p><img src="https://img-blog.csdnimg.cn/20190901110856188.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><h2 id="给项目命名并点击finish"><a href="#给项目命名并点击finish" class="headerlink" title="给项目命名并点击finish"></a>给项目命名并点击finish</h2><p>会进入到新创建的Project窗口中，接着IDEA就会弹出下面界面，让你为新的Priject创建一个Model：<br><img src="https://img-blog.csdnimg.cn/20190901111135250.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>在这里很重要，<strong>不选择给新的Project创建一个Model</strong>，直接点OK<br>这样，常见出来的没有Model的Project就<strong>相当于</strong>一个空文件夹，(查看创建的Project文件夹，会发现它是没有src的)</p><h2 id="在新的Projrect中，new一个Model"><a href="#在新的Projrect中，new一个Model" class="headerlink" title="在新的Projrect中，new一个Model"></a>在新的Projrect中，new一个Model</h2><p><img src="https://img-blog.csdnimg.cn/20190901111531177.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>我这里创建的时web项目，如果要创建普通的项目，点击左侧第一个按钮JAVA就可以<br><img src="https://img-blog.csdnimg.cn/20190901111704647.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>给新创建的Model起名，通过这里就可以发现，<strong>第一个untitled是创建的project名(由于没有命名，默认就是untitled)，第二个是正在创建的Model名</strong>，点击finish<br>这样就创建成功了一个，按照上面的方法再来一遍<br><img src="https://img-blog.csdnimg.cn/20190901112058507.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>这样就成功地在一个窗口创建了两个Project</p><p>另外<br>IDEA会为这两个web项目分别部署一份配置文件，这样这两个web项目就<strong>可以分别设置不同的端口，虚拟路径等配置</strong><br>运行项目的时候，查看控制台的log：<strong>Using CATALINA_BASE:</strong> 的值，就能找到配置文件的路径<br><img src="https://img-blog.csdnimg.cn/20190901113153885.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>]]></content>
+      
+      
       <categories>
-        <category>Utils</category>
+          
+          <category> Utils </category>
+          
       </categories>
-      <tags>
-        <tag>IDEA</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[Tomcat部署项目的方式]]></title>
-    <url>%2F2019%2F09%2F08%2FTomcat%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE%E7%9A%84%E6%96%B9%E5%BC%8F%2F</url>
-    <content type="text"><![CDATA[Tomcat有三种部署项目的方式将项目直接放到Tomcat的webapps目录下也可以将项目打包成war包，放到webapps目录下，运行时Tomcat会自动解压 利用Tomcat的配置文件sever.xm打开conf目录，找到sever.xml配置文件(先关闭Tomcat服务) 找到Host标签，加上一个Context标签，path值可以自己设置 启动Tomcat服务 在浏览器输入localhost:8080(端口号)/path的值/docBase的值就能正确访问项目 这种部署方式项目可以放在硬盘上的任意位置，Tomcat会通过path映射到docBase。 注意：因为server.xml是Tomcat服务核心的配置文件，是配置Tomcat整体的，在里面配置项目有可能损坏配置文件，导致出错，比较危险，所以一般不推荐使用 自定义xml配置文件(先**关闭Tomcat**) 打开Tomcat下的conf\Catalina\localhost这个目录，在localhost下创建一个xml配置文件， 文件名可以任意起(但是这个文件名就是浏览器搜索时的虚拟路径)，假设是aaa.xml； 在配置文件中：将上图中红框里的Context标签及内容写进去，把后面的path键值对删掉(因为虚拟路径已经指定为xml文件名，所以不需要再指定虚拟路径) 再次启动Tomcat 浏览器搜索**localhost:8080(端口号)/xml文件名/docBase的值**即可这种部署方式还有一个好处： 这是一种热部署的方式，如果不想要这个项目，可以将创建的xml文件删掉，或者后缀名改一下 例如：将aaa.xml改为aaa.xml_bak；无需重新启动Tomcat就能生效(浏览器就访问不到项目资源)]]></content>
+      
+      
+        <tags>
+            
+            <tag> IDEA </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Tomcat部署项目的方式</title>
+      <link href="/2019/09/08/Tomcat%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE%E7%9A%84%E6%96%B9%E5%BC%8F/"/>
+      <url>/2019/09/08/Tomcat%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE%E7%9A%84%E6%96%B9%E5%BC%8F/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Tomcat有三种部署项目的方式"><a href="#Tomcat有三种部署项目的方式" class="headerlink" title="Tomcat有三种部署项目的方式"></a>Tomcat有三种部署项目的方式</h1><h2 id="将项目直接放到Tomcat的webapps目录下"><a href="#将项目直接放到Tomcat的webapps目录下" class="headerlink" title="将项目直接放到Tomcat的webapps目录下"></a><font size="5">将项目直接<strong>放到Tomcat的webapps目录下</strong></font></h2><p>也可以将项目打包成war包，放到webapps目录下，运行时Tomcat会自动解压</p><a id="more"></a><h2 id="利用Tomcat的配置文件sever-xm"><a href="#利用Tomcat的配置文件sever-xm" class="headerlink" title="利用Tomcat的配置文件sever.xm"></a><font size="5">利用Tomcat的配置文件sever.xm</font></h2><pre><code>打开conf目录，找到sever.xml配置文件</code></pre><p>(先关闭Tomcat服务)<img src="https://img-blog.csdnimg.cn/20190831162553805.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>    找到Host标签，加上一个Context标签，path值可以自己设置<br>    启动Tomcat服务<br>    在浏览器输入<strong>localhost:8080(端口号)/path的值/docBase的值</strong>就能正确访问项目<br>    这种部署方式项目可以放在硬盘上的任意位置，Tomcat会通过path映射到docBase。</p><p><strong>注意：</strong>因为server.xml是Tomcat服务核心的配置文件，是配置Tomcat整体的，在里面配置项目有可能损坏配置文件，导致出错，比较危险，所以一般不推荐使用</p><h2 id="自定义xml配置文件"><a href="#自定义xml配置文件" class="headerlink" title="自定义xml配置文件"></a><font size="5">自定义xml配置文件</font></h2><pre><code>(先**关闭Tomcat**)打开Tomcat下的conf\Catalina\localhost这个目录，在localhost下创建一个xml配置文件， 文件名可以任意起(但是这个文件名就是浏览器搜索时的虚拟路径)，假设是aaa.xml； 在配置文件中：将上图中红框里的Context标签及内容写进去，把后面的path键值对删掉(因为虚拟路径已经指定为xml文件名，所以不需要再指定虚拟路径) 再次启动Tomcat 浏览器搜索**localhost:8080(端口号)/xml文件名/docBase的值**即可</code></pre><p>这种部署方式还有一个好处：</p><ul><li>这是一种热部署的方式，如果不想要这个项目，可以将创建的xml文件删掉，或者后缀名改一下<br>  例如：将aaa.xml改为aaa.xml_bak；无需重新启动Tomcat就能生效(浏览器就访问不到项目资源)</li></ul>]]></content>
+      
+      
       <categories>
-        <category>JAVAWEB</category>
+          
+          <category> JAVAWEB </category>
+          
       </categories>
-      <tags>
-        <tag>Tomcat</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[Tomcat启动问题分析]]></title>
-    <url>%2F2019%2F09%2F08%2Ftomcat%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90%2F</url>
-    <content type="text"><![CDATA[问题前提在Tomcat目录下的bin目录中双击startup.bat直接打开tomcat时，可能会出现以下两个问题 Tomcat的窗口一闪而过 启动报错 Tomcat的窗口一闪而过原因没有正确配置JAVA_HOME环境变量在安装JDK时，需要将JDK的目录配置到Path变量下，问题就在这里，因为配置的时候，有可能是直接将JDK的目录配置到了Path环境变量双击Path变量，如下图所示这样的做法是错误的 正确的做法应该先创建一个JAVA_HOME环境变量将JAVA_HOME的值设置问JDK的路径，如下图然后再将JAVA_HOME代替JDK安装路径给Path变量将startup.bat关掉，重新启动即可 分析一下原因先以文档的形式打开startup.bat，发现和catolina.bat有关，我们就以文档形式打开bin目录下的catolina.bat在文档里可以看到，这里用到了环境变量的JAVA_HOME，所以在配置环境变量的时候，必须用JAVA_HOME来设置JDK路径，否则这里就无法找到JDK，由于Tomcat是纯java编写的，它的启动和运行要依赖与JDK，所以Tomcat就无法正常运行 启动报错，然后窗口自动关闭原因有可能是已经打开了一个Tomcat(或者有其他程序占用了Tomcat的端口号)，再次启动的时候由于端口被占用，所以无法正常启动如果是这种情况，通过查看日志会发现有一个异常：java.net.BindException:Address already in use 解决方法找到占用Tomcat端口号(一般是8080)的程序，关闭该程序1、打开cmd窗口，输入 netstat -ano命令找到Tomcat端口(我的是默认8080)，记录该端口程序的PID2、打开任务管理器找到刚记录的PID对应的程序，把它关掉。这样，Tomcat就能正确启动了]]></content>
+      
+      
+        <tags>
+            
+            <tag> Tomcat </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Tomcat启动问题分析</title>
+      <link href="/2019/09/08/tomcat%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/"/>
+      <url>/2019/09/08/tomcat%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/</url>
+      
+        <content type="html"><![CDATA[<h1 id="问题前提"><a href="#问题前提" class="headerlink" title="问题前提"></a>问题前提</h1><p>在Tomcat目录下的bin目录中双击startup.bat直接打开tomcat时，可能会出现以下两个问题</p><ul><li>Tomcat的窗口一闪而过</li><li>启动报错<a id="more"></a></li></ul><h2 id="Tomcat的窗口一闪而过"><a href="#Tomcat的窗口一闪而过" class="headerlink" title="Tomcat的窗口一闪而过"></a><strong>Tomcat的窗口一闪而过</strong></h2><h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p><strong>没有正确配置JAVA_HOME环境变量</strong><br>在安装JDK时，需要将JDK的目录配置到Path变量下，问题就在这里，因为配置的时候，有可能是直接将JDK的目录配置到了Path环境变量<br>双击Path变量，如下图所示<img src="https://img-blog.csdnimg.cn/20190831151212475.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>这样的<strong>做法是错误的</strong>    </p><h3 id="正确的做法"><a href="#正确的做法" class="headerlink" title="正确的做法"></a>正确的做法</h3><p>应该先创建一个JAVA_HOME环境变量<br><img src="https://img-blog.csdnimg.cn/20190831151442686.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>将JAVA_HOME的值设置问JDK的路径，如下图<br><img src="https://img-blog.csdnimg.cn/20190831151627898.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>然后再将JAVA_HOME代替JDK安装路径给Path变量<br><img src="https://img-blog.csdnimg.cn/20190831151900812.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>将startup.bat关掉，重新启动即可</p><h3 id="分析一下原因"><a href="#分析一下原因" class="headerlink" title="分析一下原因"></a>分析一下原因</h3><p>先以文档的形式打开startup.bat，发现和catolina.bat有关，<br>我们就以<strong>文档形式</strong>打开bin目录下的catolina.bat<br><img src="https://img-blog.csdnimg.cn/20190831152302712.png" alt="在这里插入图片描述"><br>在文档里可以看到，这里用到了环境变量的JAVA_HOME，所以在配置环境变量的时候，必须用JAVA_HOME来设置JDK路径，否则这里<strong>就无法找到JDK</strong>，由于Tomcat是纯java编写的，它的启动和运行要依赖与JDK，所以Tomcat就无法正常运行</p><h2 id="启动报错，然后窗口自动关闭"><a href="#启动报错，然后窗口自动关闭" class="headerlink" title="启动报错，然后窗口自动关闭"></a><strong>启动报错，然后窗口自动关闭</strong></h2><h3 id="原因-1"><a href="#原因-1" class="headerlink" title="原因"></a>原因</h3><p>有可能是<strong>已经打开了一个Tomcat</strong>(或者有其他程序占用了Tomcat的端口号)，再次启动的时候由于<strong>端口被占用</strong>，所以无法正常启动<br>如果是这种情况，通过查看日志会发现有一个异常：<strong>java.net.BindException:Address already in use</strong></p><h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>找到占用Tomcat端口号(一般是8080)的程序，关闭该程序<br>1、打开cmd窗口，输入 <strong>netstat -ano</strong>命令<br><img src="https://img-blog.csdnimg.cn/20190831161113175.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>找到Tomcat端口(我的是默认8080)，记录该<strong>端口程序的PID</strong><br>2、打开任务管理器<br><img src="https://img-blog.csdnimg.cn/2019083116142190.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>找到刚记录的PID对应的程序，把它关掉。<br>这样，Tomcat就能正确启动了</p>]]></content>
+      
+      
       <categories>
-        <category>JAVAWEB</category>
+          
+          <category> JAVAWEB </category>
+          
       </categories>
-      <tags>
-        <tag>Tomcat</tag>
-        <tag>问题分析</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[BOM模型基础学习]]></title>
-    <url>%2F2019%2F09%2F08%2FBOM%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%2F</url>
-    <content type="text"><![CDATA[BOM，全称Browser Object Model，浏览器对象模型它将浏览器的各个组成部分封装成对象 五个对象window-窗口对象Location-地址栏对象History-历史记录对象Screen-显示器屏幕对象Navigator-浏览器对象 window-窗口对象该对象无需创建，可以直接使用对象的方法和属性 window对象的方法与弹出框有关的方法alert()显示带有一段消息和一个确认按钮的警告框。 confirm()显示带有一段消息以及确认按钮和取消按钮的对话框。 如果用户点击确定按钮，则方法返回true 如果用户点击取消按钮，则方法返回false prompt()显示可提示用户输入的对话框。 返回值：获取用户输入的值 与打开关闭有关的方法close()关闭浏览器窗口。 谁调用我 ，我关谁 open()打开一个新的浏览器窗口 返回新的Window对象 与定时器有关的方式setTimeout()在指定的毫秒数后调用函数或计算表达式。 参数： js代码或者方法对象 毫秒值 返回值：唯一标识，用于取消定时器clearTimeout()取消由 setTimeout() 方法设置的 timeout。setInterval()按照指定的周期（以毫秒计）来调用函数或计算表达式。clearInterval()取消由 setInterval() 设置的 timeout。window对象的属性获取其他BOM对象historylocationNavigatorScreen获取DOM对象document Location-地址栏对象创建(获取)1. window.location 2. location方法reload() 重新加载当前文档。刷新 属性href 设置或返回完整的 URL。如图，给按钮设置监听器，点击按钮后修改页面的URL为百度页面，就会自动跳转到百度的页面 History-历史记录对象创建(获取)1. window.history 2. history方法back()加载 history 列表中的前一个 URL。 forward()加载 history 列表中的下一个 URL。 go(参数)加载 history 列表中的某个具体页面。 参数： 正数：前进几个历史记录 负数：后退几个历史记录 属性length返回当前窗口历史列表中的 URL 数量。]]></content>
+      
+      
+        <tags>
+            
+            <tag> Tomcat </tag>
+            
+            <tag> 问题分析 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>BOM模型基础学习</title>
+      <link href="/2019/09/08/BOM%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/"/>
+      <url>/2019/09/08/BOM%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/</url>
+      
+        <content type="html"><![CDATA[<hr><p>BOM，全称Browser Object Model，浏览器对象模型<br>它将浏览器的各个组成部分封装成对象</p><hr><a id="more"></a><h1 id="五个对象"><a href="#五个对象" class="headerlink" title="五个对象"></a>五个对象</h1><h2 id="window-窗口对象"><a href="#window-窗口对象" class="headerlink" title="window-窗口对象"></a><font size="4">window-窗口对象</font></h2><h2 id="Location-地址栏对象"><a href="#Location-地址栏对象" class="headerlink" title="Location-地址栏对象"></a><font size="4">Location-地址栏对象</font></h2><h2 id="History-历史记录对象"><a href="#History-历史记录对象" class="headerlink" title="History-历史记录对象"></a><font size="4">History-历史记录对象</font></h2><h2 id="Screen-显示器屏幕对象"><a href="#Screen-显示器屏幕对象" class="headerlink" title="Screen-显示器屏幕对象"></a><font size="4">Screen-显示器屏幕对象</font></h2><h2 id="Navigator-浏览器对象"><a href="#Navigator-浏览器对象" class="headerlink" title="Navigator-浏览器对象"></a><font size="4">Navigator-浏览器对象</font></h2><hr><h1 id="window-窗口对象-1"><a href="#window-窗口对象-1" class="headerlink" title="window-窗口对象"></a>window-窗口对象</h1><p>该对象<strong>无需创建</strong>，可以直接使用对象的方法和属性</p><h2 id="window对象的方法"><a href="#window对象的方法" class="headerlink" title="window对象的方法"></a><font size="5">window对象的方法</font></h2><h3 id="与弹出框有关的方法"><a href="#与弹出框有关的方法" class="headerlink" title="与弹出框有关的方法"></a><font size="5">与弹出框有关的方法</font></h3><h4 id="alert"><a href="#alert" class="headerlink" title="alert()"></a><font size="4">alert()</font></h4><p>显示带有一段消息和一个确认按钮的警告框。</p><h4 id="confirm"><a href="#confirm" class="headerlink" title="confirm()"></a><font size="4">confirm()</font></h4><p>显示带有一段消息以及确认按钮和取消按钮的对话框。</p><ul><li><p>如果用户点击确定按钮，则方法返回true</p></li><li><p>如果用户点击取消按钮，则方法返回false</p><h4 id="prompt"><a href="#prompt" class="headerlink" title="prompt()"></a><font size="4">prompt()</font></h4><p>显示可提示用户输入的对话框。</p></li><li><p>返回值：获取用户输入的值 </p><h3 id="与打开关闭有关的方法"><a href="#与打开关闭有关的方法" class="headerlink" title="与打开关闭有关的方法"></a><font size="5">与打开关闭有关的方法</font></h3><h4 id="close"><a href="#close" class="headerlink" title="close()"></a><font size="4">close()</font></h4><p>关闭浏览器窗口。</p></li><li><p>谁调用我 ，我关谁</p><h4 id="open"><a href="#open" class="headerlink" title="open()"></a><font size="4">open()</font></h4><p>打开一个新的浏览器窗口</p></li><li><p>返回新的Window对象</p><h3 id="与定时器有关的方式"><a href="#与定时器有关的方式" class="headerlink" title="与定时器有关的方式"></a><font size="5">与定时器有关的方式</font></h3><h4 id="setTimeout"><a href="#setTimeout" class="headerlink" title="setTimeout()"></a><font size="4">setTimeout()</font></h4><p>在指定的毫秒数后调用函数或计算表达式。</p><ul><li>参数：<ol><li>js代码或者方法对象</li><li>毫秒值</li></ol></li><li>返回值：唯一标识，用于取消定时器<h4 id="clearTimeout"><a href="#clearTimeout" class="headerlink" title="clearTimeout()"></a><font size="4">clearTimeout()</font></h4>取消由 setTimeout() 方法设置的 timeout。<h4 id="setInterval"><a href="#setInterval" class="headerlink" title="setInterval()"></a><font size="4">setInterval()</font></h4>按照指定的周期（以毫秒计）来调用函数或计算表达式。<h4 id="clearInterval"><a href="#clearInterval" class="headerlink" title="clearInterval()"></a><font size="4">clearInterval()</font></h4>取消由 setInterval() 设置的 timeout。<h2 id="window对象的属性"><a href="#window对象的属性" class="headerlink" title="window对象的属性"></a><font size="5">window对象的属性</font></h2><h3 id="获取其他BOM对象"><a href="#获取其他BOM对象" class="headerlink" title="获取其他BOM对象"></a><font size="4">获取其他BOM对象</font></h3>history<br>location<br>Navigator<br>Screen<h3 id="获取DOM对象"><a href="#获取DOM对象" class="headerlink" title="获取DOM对象"></a><font size="4">获取DOM对象</font></h3>document</li></ul><hr></li></ul><h1 id="Location-地址栏对象-1"><a href="#Location-地址栏对象-1" class="headerlink" title="Location-地址栏对象"></a>Location-地址栏对象</h1><h2 id="创建-获取"><a href="#创建-获取" class="headerlink" title="创建(获取)"></a><font size="5">创建(获取)</font></h2><pre><code>1. window.location2. location</code></pre><h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a><font size="5">方法</font></h2><p>reload()    重新加载当前文档。刷新</p><h2 id="属性"><a href="#属性" class="headerlink" title="属性"></a><font size="5">属性</font></h2><p>href    设置或返回完整的 URL。<br><img src="https://img-blog.csdnimg.cn/2019082814430963.png" alt="在这里插入图片描述"><br>如图，给按钮设置监听器，点击按钮后修改页面的URL为百度页面，就会自动跳转到百度的页面</p><hr><h1 id="History-历史记录对象-1"><a href="#History-历史记录对象-1" class="headerlink" title="History-历史记录对象"></a>History-历史记录对象</h1><h2 id="创建-获取-1"><a href="#创建-获取-1" class="headerlink" title="创建(获取)"></a><font size="5">创建(获取)</font></h2><pre><code>1. window.history2. history</code></pre><h2 id="方法-1"><a href="#方法-1" class="headerlink" title="方法"></a><font size="5">方法</font></h2><h3 id="back"><a href="#back" class="headerlink" title="back()"></a><font size="4">back()</font></h3><p>加载 history 列表中的前一个 URL。</p><h3 id="forward"><a href="#forward" class="headerlink" title="forward()"></a><font size="4">forward()</font></h3><p>加载 history 列表中的下一个 URL。</p><h3 id="go-参数"><a href="#go-参数" class="headerlink" title="go(参数)"></a><font size="4">go(参数)</font></h3><p>加载 history 列表中的某个具体页面。<br>    参数：<br>        正数：前进几个历史记录<br>        负数：后退几个历史记录</p><h2 id="属性-1"><a href="#属性-1" class="headerlink" title="属性"></a><font size="5">属性</font></h2><h3 id="length"><a href="#length" class="headerlink" title="length"></a><font size="4">length</font></h3><pre><code>返回当前窗口历史列表中的 URL 数量。</code></pre>]]></content>
+      
+      
       <categories>
-        <category>前端基础</category>
+          
+          <category> 前端基础 </category>
+          
       </categories>
-      <tags>
-        <tag>前端</tag>
-        <tag>BOM</tag>
-        <tag>JavaScript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[JavaScript基础]]></title>
-    <url>%2F2019%2F09%2F08%2FJavaScript%E5%9F%BA%E7%A1%80%2F</url>
-    <content type="text"><![CDATA[JS和HTML结合方式内部样式在html文件内部定义一个script标签、在标签里面写的JS代码注意：和CSS不同的是，JS标签可以有很多个，而且可以写在HTML文件中的任意位置 外部样式在html文件内部定义一个script标签，通过script的src属性，来指定JS配置文件的路径 JS代码写在JS配置文件中 数据类型和变量JS数据类型和JAVA类似，分为**原始数据类型**和**引用数据类型**两大类数据类型number包括整数、小数和NaN类型(不是数字的数字类型 not a numebr) string字符/字符串类型 booleantrue/false、 null一个对象为空的占位符 undefined未定义，如果一个表量没有给初始化值，就会被默认赋值为 undefined ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190828110402952.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70)变量一小块存储数据的内存空间 JAVA是强类型语言，而JavaScript是弱类型语言强类型在开辟内存空间时，定义了空间将来存储数据的类型，只能存储固定的类型 弱类型在开辟内存空间时，没有定义空间将来存储数据的类型，可以存放任意类型的数据 运算符在JS中，如果运算数不是运算符要求的类型，那么JS会自动将运算数进行类型转换 例如：一元运算符+(正号)和-(负号)是对数字类型进行操作，但是有+&apos;a&apos;这样的运算，就会将字符串类型的&apos;a&apos;转换为number类型其他类型转numberstring--&gt;number：**按照字面值转换**，如果字面值是数字，如&apos;123&apos;，会转换成数字123， 如果字面值不是数字，如&apos;abc&apos;，会转换为NaN(不是数字的数字)注意：NaN和整数小数运算，还是NaN; boolean–&gt;number: true=1 false=0 比较运算符字符串按照字典顺序比较(如c&gt;b),按位逐一比较，直到得出大小 **类型不同比较，先进行类型转换** ”===“运算符：在比较之前先进行类型判断，如果类型不同，直接返回false逻辑运算符！：非运算其他类型转boolean number--&gt;boolean：0和NaN为false，其他都是true string--&gt;boolean：除了空字符串，都是true null/undefined--&gt;boolean：false 对象--&gt;boolean：true 注意：在JS中，所有的**变量都是关键字var**定义的，var可以省略，但是，**用var定义的是局部变量**，不用var定义的 是全局变量常用对象function对象 方法对象 Array对象数组对象 数组长度可变 Date对象 Math对象该对象不用创建，可以直接使用对象的方法和属性，Math.调用 常用方法和属性： Global对象 特点：是一个全局对象，这个对象中封装的方法不需要对象就能够直接使用,和Math不同的是，使用它的方法前面不 用加对象名 在说该对象的方法之前先说一下**URL编码**： 浏览器将从表单中收集的数据经过URL编码后发送给服务器，服务器再将接收到的URL编码的数据解码。 URL编码的规则：对于汉字，先将汉字按照GBK/UTF8编码成对应的二进制数字，再将每四位二进制数字组合在 一起转换成十六进制数字，这样就将汉字转换成了一串十六进制数字，最后，每两个十六进制数字一组，在前面 +%，这样就组成了URL编码，字母和数字不编码第二组方法编码的字符更多，会将网址中./等符号也用URL编码]]></content>
+      
+      
+        <tags>
+            
+            <tag> 前端 </tag>
+            
+            <tag> BOM </tag>
+            
+            <tag> JavaScript </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>JavaScript基础</title>
+      <link href="/2019/09/08/JavaScript%E5%9F%BA%E7%A1%80/"/>
+      <url>/2019/09/08/JavaScript%E5%9F%BA%E7%A1%80/</url>
+      
+        <content type="html"><![CDATA[<h1 id="JS和HTML结合方式"><a href="#JS和HTML结合方式" class="headerlink" title="JS和HTML结合方式"></a><strong>JS和HTML结合方式</strong></h1><h2 id="内部样式"><a href="#内部样式" class="headerlink" title="内部样式"></a><font size="5">内部样式</font></h2><pre><code>在html文件内部定义一个script标签、在标签里面写的JS代码</code></pre><p>注意：<strong>和CSS不同的是，JS标签可以有很多个，而且可以写在HTML文件中的任意位置</strong>    </p><h2 id="外部样式"><a href="#外部样式" class="headerlink" title="外部样式"></a><font size="5">外部样式</font></h2><pre><code>在html文件内部定义一个script标签，通过script的src属性，来指定JS配置文件的路径JS代码写在JS配置文件中</code></pre><a id="more"></a><h1 id="数据类型和变量"><a href="#数据类型和变量" class="headerlink" title="数据类型和变量"></a><strong>数据类型和变量</strong></h1><pre><code>JS数据类型和JAVA类似，分为**原始数据类型**和**引用数据类型**两大类</code></pre><h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a><font size="5">数据类型</font></h2><h3 id="number"><a href="#number" class="headerlink" title="number"></a><font size="5">number</font></h3><p>包括整数、小数和NaN类型(不是数字的数字类型 not a numebr)</p><h3 id="string"><a href="#string" class="headerlink" title="string"></a><font size="5">string</font></h3><p>字符/字符串类型</p><h3 id="boolean"><a href="#boolean" class="headerlink" title="boolean"></a><font size="5">boolean</font></h3><p>true/false、</p><h3 id="null"><a href="#null" class="headerlink" title="null"></a><font size="5">null</font></h3><p>一个对象为空的占位符</p><h3 id="undefined"><a href="#undefined" class="headerlink" title="undefined"></a><font size="5">undefined</font></h3><p>未定义，如果一个表量没有给初始化值，就会被默认赋值为 undefined</p><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190828110402952.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70)</code></pre><h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a><font size="5">变量</font></h2><pre><code>一小块存储数据的内存空间JAVA是强类型语言，而JavaScript是弱类型语言</code></pre><h3 id="强类型"><a href="#强类型" class="headerlink" title="强类型"></a><font size="5">强类型</font></h3><p>在开辟内存空间时，定义了空间将来存储数据的类型，只能存储固定的类型</p><h3 id="弱类型"><a href="#弱类型" class="headerlink" title="弱类型"></a><font size="5">弱类型</font></h3><p>在开辟内存空间时，没有定义空间将来存储数据的类型，可以存放任意类型的数据</p><h1 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a><strong>运算符</strong></h1><pre><code>在JS中，如果运算数不是运算符要求的类型，那么JS会自动将运算数进行类型转换例如：一元运算符+(正号)和-(负号)是对数字类型进行操作，但是有+&apos;a&apos;这样的运算，就会将字符串类型的&apos;a&apos;转换为number类型</code></pre><h2 id="其他类型转number"><a href="#其他类型转number" class="headerlink" title="其他类型转number"></a><font size="5">其他类型转number</font></h2><pre><code>string--&gt;number：**按照字面值转换**，如果字面值是数字，如&apos;123&apos;，会转换成数字123，如果字面值不是数字，如&apos;abc&apos;，会转换为NaN(不是数字的数字)</code></pre><p>注意：<strong>NaN和整数小数运算，还是NaN;</strong><br>    boolean–&gt;number: true=1    false=0</p><h2 id="比较运算符"><a href="#比较运算符" class="headerlink" title="比较运算符"></a><font size="5">比较运算符</font></h2><pre><code>字符串按照字典顺序比较(如c&gt;b),按位逐一比较，直到得出大小**类型不同比较，先进行类型转换**”===“运算符：在比较之前先进行类型判断，如果类型不同，直接返回false</code></pre><h2 id="逻辑运算符"><a href="#逻辑运算符" class="headerlink" title="逻辑运算符"></a><font size="5"><strong>逻辑运算符</strong></font></h2><pre><code>！：非运算</code></pre><h2 id="其他类型转boolean"><a href="#其他类型转boolean" class="headerlink" title="其他类型转boolean"></a><font size="5">其他类型转boolean</font></h2><pre><code>    number--&gt;boolean：0和NaN为false，其他都是true    string--&gt;boolean：除了空字符串，都是true    null/undefined--&gt;boolean：false    对象--&gt;boolean：true注意：在JS中，所有的**变量都是关键字var**定义的，var可以省略，但是，**用var定义的是局部变量**，不用var定义的    是全局变量</code></pre><h1 id="常用对象"><a href="#常用对象" class="headerlink" title="常用对象"></a>常用对象</h1><h2 id="function对象"><a href="#function对象" class="headerlink" title="function对象"></a><font size="5">function对象<font></font></font></h2><p> 方法对象<br><img src="https://img-blog.csdnimg.cn/20190828112256343.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="1、创建"></p><h2 id="Array对象"><a href="#Array对象" class="headerlink" title="Array对象"></a><font size="5">Array对象</font></h2><p>数组对象<br> <img src="https://img-blog.csdnimg.cn/20190828112447511.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 数组长度可变<br> <img src="https://img-blog.csdnimg.cn/20190828112613787.png" alt="在这里插入图片描述"></p><h2 id="Date对象"><a href="#Date对象" class="headerlink" title="Date对象"></a><font size="5">Date对象</font></h2><p><img src="https://img-blog.csdnimg.cn/20190828140543392.png" alt="在这里插入图片描述"></p><h2 id="Math对象"><a href="#Math对象" class="headerlink" title="Math对象"></a><font size="5">Math对象</font></h2><pre><code>该对象不用创建，可以直接使用对象的方法和属性，Math.调用常用方法和属性：</code></pre><p><img src="https://img-blog.csdnimg.cn/20190828140726715.png" alt="在这里插入图片描述"></p><h2 id="Global对象"><a href="#Global对象" class="headerlink" title="Global对象"></a><font size="5">Global对象</font></h2><pre><code> 特点：是一个全局对象，这个对象中封装的方法不需要对象就能够直接使用,和Math不同的是，使用它的方法前面不            用加对象名在说该对象的方法之前先说一下**URL编码**：    浏览器将从表单中收集的数据经过URL编码后发送给服务器，服务器再将接收到的URL编码的数据解码。    URL编码的规则：对于汉字，先将汉字按照GBK/UTF8编码成对应的二进制数字，再将每四位二进制数字组合在                一起转换成十六进制数字，这样就将汉字转换成了一串十六进制数字，最后，每两个十六进制数字一组，在前面    +%，这样就组成了URL编码，字母和数字不编码</code></pre><p><img src="https://img-blog.csdnimg.cn/20190828141907481.png" alt="在这里插入图片描述"><br>第二组方法编码的字符更多，会将网址中./等符号也用URL编码<br><img src="https://img-blog.csdnimg.cn/20190828142057995.png" alt="在这里插入图片描述"></p>]]></content>
+      
+      
       <categories>
-        <category>前端基础</category>
+          
+          <category> 前端基础 </category>
+          
       </categories>
-      <tags>
-        <tag>前端</tag>
-        <tag>JavaScript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[CSS选择器和常用属性]]></title>
-    <url>%2F2019%2F09%2F08%2FCSS%E9%80%89%E6%8B%A9%E5%99%A8%E5%92%8C%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%2F</url>
-    <content type="text"><![CDATA[基础选择器id选择器使用此选择器要求HTML相应的标签必须指定了id属性 格式： #+标签id属性{ //对应id标签的属性 如color等}通过HTML标签的id来指定标签，修改样式 元素选择器格式：标签名称{ //通过标签名称找到标签(可能不止一个)并修改内容样式 }这个元素选择器会找到HTML中所有的div标签，并将标签内容字体改为红色 类选择器 格式： .+类名{ 通过标签的class属性值找到标签 }其中：三个选择器中 id选择器优先级最高，元素选择器优先级最低 扩展选择器![在这里插入图片描述](https://img-blog.csdnimg.cn/20190828103900651.png) CSS常见属性 盒子模型 参见JAVA_WEB/HTML&amp;CSS]]></content>
+      
+      
+        <tags>
+            
+            <tag> 前端 </tag>
+            
+            <tag> JavaScript </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>CSS选择器和常用属性</title>
+      <link href="/2019/09/08/CSS%E9%80%89%E6%8B%A9%E5%99%A8%E5%92%8C%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7/"/>
+      <url>/2019/09/08/CSS%E9%80%89%E6%8B%A9%E5%99%A8%E5%92%8C%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7/</url>
+      
+        <content type="html"><![CDATA[<h2 id="基础选择器"><a href="#基础选择器" class="headerlink" title="基础选择器"></a><strong>基础选择器</strong></h2><h1 id="id选择器"><a href="#id选择器" class="headerlink" title="id选择器"></a><font size="5">id选择器</font></h1><p><strong>使用此选择器要求HTML相应的标签必须指定了id属性</strong></p><a id="more"></a><p>格式：</p><p>#+标签id属性{<br>    <strong>//对应id标签的属性</strong><br>    如color等<br>}<br><img src="https://img-blog.csdnimg.cn/20190828102502128.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190828102519950.png" alt="在这里插入图片描述"><br>通过HTML标签的id来指定标签，修改样式</p><h1 id="元素选择器"><a href="#元素选择器" class="headerlink" title="元素选择器"></a><font size="5">元素选择器</font></h1><p>格式：<br>标签名称{<br>        //通过标签名称找到标签(可能不止一个)并修改内容样式<br>    }<br><img src="https://img-blog.csdnimg.cn/20190828102904335.png" alt="在这里插入图片描述"><br>这个元素选择器会找到HTML中所有的div标签，并将标签内容字体改为红色</p><h1 id="类选择器"><a href="#类选择器" class="headerlink" title="类选择器"></a><font size="5">类选择器</font></h1><p> 格式：<br> .+类名{<br>    通过标签的class属性值找到标签<br>     }<br><img src="https://img-blog.csdnimg.cn/20190828103244137.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190828103300130.png" alt="在这里插入图片描述"><br>其中：三个选择器中     <strong>id选择器优先级最高，元素选择器优先级最低</strong></p><h2 id="扩展选择器"><a href="#扩展选择器" class="headerlink" title="扩展选择器"></a><strong>扩展选择器</strong></h2><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190828103900651.png)</code></pre><p><img src="https://img-blog.csdnimg.cn/20190828103950418.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><h2 id="CSS常见属性"><a href="#CSS常见属性" class="headerlink" title="CSS常见属性"></a><strong>CSS常见属性</strong></h2><p><img src="https://img-blog.csdnimg.cn/20190828104257512.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><h2 id="盒子模型"><a href="#盒子模型" class="headerlink" title="盒子模型"></a><strong>盒子模型</strong></h2><p> <strong>参见JAVA_WEB/HTML&amp;CSS</strong></p>]]></content>
+      
+      
       <categories>
-        <category>前端基础</category>
+          
+          <category> 前端基础 </category>
+          
       </categories>
-      <tags>
-        <tag>前端</tag>
-        <tag>CSS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[HTML5基础回顾]]></title>
-    <url>%2F2019%2F09%2F08%2FHTML5%E5%9F%BA%E7%A1%80%E5%9B%9E%E9%A1%BE%2F</url>
-    <content type="text"><![CDATA[HTML用于搭建基础页面，展示页面内容，一般和CSS以及JS搭配使用HTML标签分类# 1、围堵标签 顾名思义，就是开始和结束标签，例如&lt; html&gt; &lt; /html&gt;，内容放在标签中 # 2、自闭合标签 开始标签和结束标签在一起。例如换行标签&lt; br/&gt;、超链接标签&lt; a&gt;等 标签不区分大小写，建议小写无论是哪种标签，都可以在开始标签中定义属性，属性是由键值对组成，其中值需要由引(单/双)号引起来 &lt; html&gt; &lt;head&gt; &lt;title&gt;title&lt;/title&gt; &lt;/head&gt; &lt;body&gt; &lt;FONT color=&apos;red&apos;&gt;Hello World&lt;/font&gt;&lt;br/&gt; &lt;font color=&apos;green&apos;&gt;Hello World&lt;/font&gt; &lt;/body&gt; &lt; /html&gt;文件标签&lt; html&gt;文档的根标签 &lt; head&gt;头标签，用于指定html文档的一些属性，引入外部资源，如CSS、JS文件等 &lt; title&gt; 标题标签 &lt; body&gt; 体标签，html代码写在body标签中 以上均为围堵标签 文本标签&lt; h1&gt;~&lt; h6&gt;标题标签，从h1到h6字体大小递减 –&gt;围堵标签 &lt; p&gt;段落标签：被该标签包裹的文本会换行两次 –&gt;围堵标签 &lt; br&gt;换行标签 &lt; hr&gt;展示一条水平线 该标签有一些属性：color、width、height、align(对齐方式)来设置水平线的样式 &lt; b&gt;字体加粗标签 &lt; i&gt;字体斜体标签以上四个均为自闭合标签 &lt; font&gt;字体标签 该标签属性：color、size、face(字体)来改变字体 center：文本居中标签 图片标签&lt; img&gt;图片标签，是一个自闭合标签，其中有src属性，可以指定展示图片的路径 相对路径： 其中如果html文件和图片所在文件夹目录是同一级目录，那么./+图片所在文件夹目录/图片 如果图片所在文件夹目录是html文件上一级目录，那么就用../ 列表标签&lt; ol&gt;/&lt; li&gt;有序列表 type属性：指定序号的样式 &lt; ul&gt;/&lt; li&gt;无序列表无序列表的type属性有三种： disc：原点 square：正方形点 circle：圆圈 链接标签&lt; a&gt;定义一个超链接 属性： href 指定访问资源的URL()统一资源定位符)，可以是网址 target 指定打开资源的方式，有两种方式 _ selt:在当前页面打开 _ blank：在新空白页面打开 和CSS以及JS搭配的标签 div标签和span标签，两者的区别是div自带换行，而span没有换行功能 表格标签&lt; table&gt; 定义表格，table的开始标签可以指定一些属性 width：表格宽度 border：边框 cellpadding：定义内容和单元格的距离 cellspacing：定义单元格之间的距离。如果指定为0，则单元格的线会合为一条 bgcolor：背景色 align：对齐方式 &lt; tr&gt;标签定义行标签 &lt; td&gt;标签定义单元格标签 &lt; th&gt;标签定义表头单元格标签 表单标签注意：表单中的数据要想被提交，必须指定其name属性 表单：用于采集用户输入的数据，用于和服务器进行交互 &lt; form&gt;用于定义表单的，可以定义一个范围，范围代表采集用户数据的范围form标签有以下属性 action：指定提交数据的URL路径 method：指定提交方式，有两种比较常用，分别是post和get form只是制定了收集用户数据的范围，并没有指定提交形式(输入框、按钮、下拉列表…)因此就会用到表单项标签表单项标签主要有三种：input标签、select标签、textarea标签 &lt; input&gt;标签展示效果 &lt; select&gt;标签子元素：option，指定列表项展示效果 文本域标签主要有两个属性：cols：指定列数，每一行有多少个字符rows：默认多少行。]]></content>
+      
+      
+        <tags>
+            
+            <tag> 前端 </tag>
+            
+            <tag> CSS </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>HTML5基础回顾</title>
+      <link href="/2019/09/08/HTML5%E5%9F%BA%E7%A1%80%E5%9B%9E%E9%A1%BE/"/>
+      <url>/2019/09/08/HTML5%E5%9F%BA%E7%A1%80%E5%9B%9E%E9%A1%BE/</url>
+      
+        <content type="html"><![CDATA[<p>HTML用于搭建基础页面，展示页面内容，一般和CSS以及JS搭配使用</p><h2 id="HTML标签分类"><a href="#HTML标签分类" class="headerlink" title="HTML标签分类"></a>HTML标签分类</h2><pre><code># 1、围堵标签    顾名思义，就是开始和结束标签，例如&lt; html&gt; &lt; /html&gt;，内容放在标签中# 2、自闭合标签    开始标签和结束标签在一起。例如换行标签&lt; br/&gt;、超链接标签&lt; a&gt;等</code></pre><a id="more"></a><p>标签不区分大小写，建议小写<br>无论是哪种标签，都可以在<strong>开始标签中定义属性</strong>，属性是由<strong>键值对</strong>组成，其中<strong>值需要由引(单/双)号引</strong>起来</p><pre><code>&lt; html&gt;&lt;head&gt; &lt;title&gt;title&lt;/title&gt;&lt;/head&gt;&lt;body&gt; &lt;FONT color=&apos;red&apos;&gt;Hello World&lt;/font&gt;&lt;br/&gt; &lt;font color=&apos;green&apos;&gt;Hello World&lt;/font&gt;&lt;/body&gt;&lt; /html&gt;</code></pre><h2 id="文件标签"><a href="#文件标签" class="headerlink" title="文件标签"></a><strong>文件标签</strong></h2><h1 id="lt-html-gt"><a href="#lt-html-gt" class="headerlink" title="&lt; html&gt;"></a>&lt; html&gt;</h1><p>文档的根标签</p><h1 id="lt-head-gt"><a href="#lt-head-gt" class="headerlink" title="&lt; head&gt;"></a>&lt; head&gt;</h1><p>头标签，用于指定html文档的一些属性，引入外部资源，如CSS、JS文件等</p><h1 id="lt-title-gt"><a href="#lt-title-gt" class="headerlink" title="&lt; title&gt;"></a>&lt; title&gt;</h1><p> 标题标签</p><h1 id="lt-body-gt"><a href="#lt-body-gt" class="headerlink" title="&lt; body&gt;"></a>&lt; body&gt;</h1><p> 体标签，html代码写在body标签中<br> 以上均为<strong>围堵标签</strong></p><h2 id="文本标签"><a href="#文本标签" class="headerlink" title="文本标签"></a><strong>文本标签</strong></h2><h1 id="lt-h1-gt-lt-h6-gt"><a href="#lt-h1-gt-lt-h6-gt" class="headerlink" title="&lt; h1&gt;~&lt; h6&gt;"></a>&lt; h1&gt;~&lt; h6&gt;</h1><p>标题标签，从h1到h6字体大小递减    –&gt;围堵标签</p><h1 id="lt-p-gt"><a href="#lt-p-gt" class="headerlink" title="&lt; p&gt;"></a>&lt; p&gt;</h1><p>段落标签：被该标签包裹的文本会换行两次    –&gt;围堵标签</p><h1 id="lt-br-gt"><a href="#lt-br-gt" class="headerlink" title="&lt; br&gt;"></a>&lt; br&gt;</h1><p>换行标签</p><h1 id="lt-hr-gt"><a href="#lt-hr-gt" class="headerlink" title="&lt; hr&gt;"></a>&lt; hr&gt;</h1><p>展示一条水平线<br>    该标签有一些属性：color、width、height、align(对齐方式)来设置水平线的样式</p><h1 id="lt-b-gt"><a href="#lt-b-gt" class="headerlink" title="&lt; b&gt;"></a>&lt; b&gt;</h1><p>字体加粗标签</p><h1 id="lt-i-gt"><a href="#lt-i-gt" class="headerlink" title="&lt; i&gt;"></a>&lt; i&gt;</h1><p>字体斜体标签<br>以上四个均为<strong>自闭合标签</strong></p><h1 id="lt-font-gt"><a href="#lt-font-gt" class="headerlink" title="&lt; font&gt;"></a>&lt; font&gt;</h1><p>字体标签<br>    该标签属性：color、size、face(字体)来改变字体<br>    center：文本居中标签    </p><h2 id="图片标签"><a href="#图片标签" class="headerlink" title="图片标签"></a><strong>图片标签</strong></h2><h1 id="lt-img-gt"><a href="#lt-img-gt" class="headerlink" title="&lt; img&gt;"></a>&lt; img&gt;</h1><p>图片标签，是一个自闭合标签，其中有<strong>src属性</strong>，可以指定展示<strong>图片的路径</strong><br>     <strong>相对路径</strong>：<br>         其中如果html文件和<strong>图片所在文件夹目录</strong>是同一级目录，那么<strong>./+图片所在文件夹目录/图片</strong><br>         如果图片所在文件夹目录是html文件上一级目录，那么就用<strong>../</strong></p><h2 id="列表标签"><a href="#列表标签" class="headerlink" title="列表标签"></a><strong>列表标签</strong></h2><h1 id="lt-ol-gt-lt-li-gt"><a href="#lt-ol-gt-lt-li-gt" class="headerlink" title="&lt; ol&gt;/&lt; li&gt;"></a>&lt; ol&gt;/&lt; li&gt;</h1><p>有序列表</p><p><img src="https://img-blog.csdnimg.cn/20190828091446194.png" alt="在这里插入图片描述"><br>type属性：指定序号的样式<br><img src="https://img-blog.csdnimg.cn/20190828091536997.png" alt="在这里插入图片描述"></p><h1 id="lt-ul-gt-lt-li-gt"><a href="#lt-ul-gt-lt-li-gt" class="headerlink" title="&lt; ul&gt;/&lt; li&gt;"></a>&lt; ul&gt;/&lt; li&gt;</h1><p>无序列表<br><img src="https://img-blog.csdnimg.cn/20190828091641556.png" alt="在这里插入图片描述"><br>无序列表的type属性有三种：</p><ul><li><p>disc：原点</p></li><li><p>square：正方形点</p></li><li><p>circle：圆圈</p><h2 id="链接标签"><a href="#链接标签" class="headerlink" title="链接标签"></a><strong>链接标签</strong></h2><h1 id="lt-a-gt"><a href="#lt-a-gt" class="headerlink" title="&lt; a&gt;"></a>&lt; a&gt;</h1><p>定义一个超链接<br>  属性：<br> <strong>href</strong><br> 指定访问资源的URL()统一资源定位符)，可以是网址<br> <strong>target</strong><br> 指定打开资源的方式，有两种方式</p><ul><li><p>_ selt:在当前页面打开</p></li><li><p>_ blank：在新空白页面打开</p></li></ul></li></ul><h2 id="和CSS以及JS搭配的标签"><a href="#和CSS以及JS搭配的标签" class="headerlink" title="和CSS以及JS搭配的标签"></a><strong>和CSS以及JS搭配的标签</strong></h2><p> div标签和span标签，两者的区别是div自带换行，而span没有换行功能</p><h2 id="表格标签"><a href="#表格标签" class="headerlink" title="表格标签"></a><strong>表格标签</strong></h2><h1 id="lt-table-gt"><a href="#lt-table-gt" class="headerlink" title="&lt; table&gt;"></a>&lt; table&gt;</h1><p> 定义表格，table的开始标签可以指定一些属性</p><ul><li><p>width：表格宽度</p></li><li><p>border：边框</p></li><li><p>cellpadding：定义内容和单元格的距离</p></li><li><p>cellspacing：定义单元格之间的距离。如果指定为0，则单元格的线会合为一条    </p></li><li><p>bgcolor：背景色</p></li><li><p>align：对齐方式</p><h1 id="lt-tr-gt-标签"><a href="#lt-tr-gt-标签" class="headerlink" title="&lt; tr&gt;标签"></a>&lt; tr&gt;标签</h1><p>定义行标签</p><h1 id="lt-td-gt-标签"><a href="#lt-td-gt-标签" class="headerlink" title="&lt; td&gt;标签"></a>&lt; td&gt;标签</h1><p>定义单元格标签</p><h1 id="lt-th-gt-标签"><a href="#lt-th-gt-标签" class="headerlink" title="&lt; th&gt;标签"></a>&lt; th&gt;标签</h1><p>定义表头单元格标签<br><img src="https://img-blog.csdnimg.cn/20190828093432266.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190828093456827.png" alt="在这里插入图片描述"></p><h2 id="表单标签"><a href="#表单标签" class="headerlink" title="表单标签"></a><strong>表单标签</strong></h2><p><strong>注意：表单中的数据要想被提交，必须指定其name属性</strong></p><p>表单：用于采集用户输入的数据，用于和服务器进行交互</p><h1 id="lt-form-gt"><a href="#lt-form-gt" class="headerlink" title="&lt; form&gt;"></a>&lt; form&gt;</h1><p>用于定义表单的，可以定义一个范围，范围代表采集用户数据的范围<br>form标签有以下属性</p><ul><li>action：指定提交数据的URL路径</li><li>method：指定提交方式，有两种比较常用，分别是post和get</li></ul><p>form只是制定了收集用户数据的范围，并没有指定提交形式(输入框、按钮、下拉列表…)<br>因此就会用到<strong>表单项标签</strong><br>表单项标签主要有三种：input标签、select标签、textarea标签</p><h1 id="lt-input-gt-标签"><a href="#lt-input-gt-标签" class="headerlink" title="&lt; input&gt;标签"></a><strong>&lt; input&gt;标签</strong></h1><p><img src="https://img-blog.csdnimg.cn/20190828095605481.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190828095805666.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>展示效果<br><img src="https://img-blog.csdnimg.cn/20190828095919345.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><h1 id="lt-select-gt-标签"><a href="#lt-select-gt-标签" class="headerlink" title="&lt; select&gt;标签"></a><strong>&lt; select&gt;标签</strong></h1><p>子元素：option，指定列表项<br><img src="https://img-blog.csdnimg.cn/20190828100135207.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>展示效果<br><img src="https://img-blog.csdnimg.cn/20190828100222610.png" alt="在这里插入图片描述"></p><h2 id="文本域标签"><a href="#文本域标签" class="headerlink" title="文本域标签"></a><strong>文本域标签</strong></h2><p><strong>主要有两个属性：</strong><br>cols：指定列数，每一行有多少个字符<br>rows：默认多少行。</p></li></ul>]]></content>
+      
+      
       <categories>
-        <category>前端基础</category>
+          
+          <category> 前端基础 </category>
+          
       </categories>
-      <tags>
-        <tag>前端</tag>
-        <tag>HTML5</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[JDK源码--Byte类]]></title>
-    <url>%2F2019%2F09%2F08%2F%E5%B0%8F%E7%99%BD%E5%AD%A6JDK%E6%BA%90%E7%A0%81--Byte%E7%B1%BB%2F</url>
-    <content type="text"><![CDATA[学习过程中参考此篇文章，写的很好 1、观察它继承的父类，实现了那些接口 2、找到它的成员变量 3、学习构造方法 4、学习方法 一、父类和接口从图中可以知道，Byte类继承了Number类，实现了Comparable接口 对于Comparable接口，只有一个抽象方法这个接口赋予它和它的子类比较的能力，用于排序，比较大小对于一个存储自定义类的数组或集合，只有这个类实现了该接口，重写了接口中的compareTo()方法，重写了排序规则才能使用Arrays类的sort方法进行排序； 二、成员变量定义了Byte类型数据的边界值，就是说，Byte类型的值只能在-128~127之间TYPE是一个Byte的Class类对象，相当于TYPE=Byte.class；这就是Byte类型的基础类型，数据存储的地方(从下面的构造方法可以看出)这三个成员变量分别表示Byte数据的位数，字节数和UID(用于序列化和反序列化) 三、构造方法Byte的构造方法有两个，可以看出，两个构造方法都会将传入的数据存放到成员变量byte中 四、私有静态内部类![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820171705760.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70) 这是Byte类的一个静态内部类，类里面还有一个静态代码块 静态代码块会在类第一次被加载的时候执行，并且只执行一次 这里的作用就是，创建一个Byte类型的数组，数组的长度是256 里面存储着-128~127的数字(Byte类数据所有可能的取值) 并且数组是静态的并且final修饰， 因为后面的有些成员方法会需要用到Byte对象，所以这样做就避免了重复创建对象和回收对象五、成员方法1、toString(byte b)方法![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820171318100.png) 注意：这个toString()方法不是重写Object的toString方法，因为它有参数 作用：将一个byte类型数据转化为String字符串类型 实质上是直接调用Integer类的toString方法， radix：10：用10进制表示2、valueOf(byte b)![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820172235507.png) 作用：将基本类型--&gt;包装类型，直接从上面的数组中得到3、parseByte(String s,int radix) 参数： String s:要解析的字符串 int radix:指定字符串表示的进制 例如：s=“10000”，radix=2，解析出来的值就是16 作用： 将字符串按照指定进制解析为byte类型 实质上调用的是Integer的parseInt方法，解析成int类型 判断是否超出范围，超出范围就抛异常，否则就返回 4、parseByte(String s)![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820172742458.png) 不指定进制默认十进制解析5、valueOf(String s,int radix) 参数： String s:要转换的字符串 int radix：字符串表示的进制，和解析方法一样作用： 将字符串转换为按照指定进制形式表示的Byte类型，先将字符串解析为byte类型，在调用valueOf()方法，从静态代码块初始的数组中找到对应的Byte并返回 6、valueOf(String s)默认10进制7、xxxValue()方法重写父类的方法，由于byte数值最小，不用担心出现溢出 直接用强制类型转换，然后return8、hashCode()重写了父类的hashCode方法，对于Byte类型，它的hashCode方法实质上就是返回它的值 9、equals()方法 重写了父类的equals方法 10、compareTo()方法 重写了接口中的compareTo方法，直接返回两个对象的差值 调用方法的对象-方法的参数]]></content>
+      
+      
+        <tags>
+            
+            <tag> 前端 </tag>
+            
+            <tag> HTML5 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>JDK源码--Byte类</title>
+      <link href="/2019/09/08/%E5%B0%8F%E7%99%BD%E5%AD%A6JDK%E6%BA%90%E7%A0%81--Byte%E7%B1%BB/"/>
+      <url>/2019/09/08/%E5%B0%8F%E7%99%BD%E5%AD%A6JDK%E6%BA%90%E7%A0%81--Byte%E7%B1%BB/</url>
+      
+        <content type="html"><![CDATA[<p><a href="https://www.jianshu.com/p/26bedb3ae3c4" target="_blank" rel="noopener">学习过程中参考此篇文章，写的很好</a></p><pre><code>1、观察它继承的父类，实现了那些接口2、找到它的成员变量3、学习构造方法4、学习方法</code></pre><a id="more"></a><h2 id="一、父类和接口"><a href="#一、父类和接口" class="headerlink" title="一、父类和接口"></a>一、父类和接口</h2><p><img src="https://img-blog.csdnimg.cn/20190820165734747.png" alt="在这里插入图片描述"><br>从图中可以知道，Byte类继承了Number类，实现了Comparable接口</p><p>对于Comparable接口，只有一个抽象方法<br><img src="https://img-blog.csdnimg.cn/20190820165913264.png" alt="在这里插入图片描述"><br>这个接口赋予它和它的子类比较的能力，用于排序，比较大小<br>对于一个存储自定义类的数组或集合，只有这个类实现了该接口，重写了接口中的compareTo()方法，重写了排序规则<br>才能使用Arrays类的sort方法进行排序；</p><h2 id="二、成员变量"><a href="#二、成员变量" class="headerlink" title="二、成员变量"></a>二、成员变量</h2><p><img src="https://img-blog.csdnimg.cn/20190820170344112.png" alt="在这里插入图片描述"><br>定义了Byte类型数据的边界值，就是说，Byte类型的值只能在-128~127之间<br><img src="https://img-blog.csdnimg.cn/20190820170442432.png" alt="在这里插入图片描述"><br>TYPE是一个Byte的Class类对象，相当于TYPE=Byte.class；<br><img src="https://img-blog.csdnimg.cn/20190820170619953.png" alt="在这里插入图片描述"><br>这就是Byte类型的基础类型，数据存储的地方(从下面的构造方法可以看出)<br><img src="https://img-blog.csdnimg.cn/20190820170834358.png" alt="在这里插入图片描述"><br>这三个成员变量分别表示Byte数据的位数，字节数和UID(用于序列化和反序列化)</p><h2 id="三、构造方法"><a href="#三、构造方法" class="headerlink" title="三、构造方法"></a>三、构造方法</h2><p><img src="https://img-blog.csdnimg.cn/20190820171029523.png" alt="在这里插入图片描述"><br>Byte的构造方法有两个，可以看出，两个构造方法都会将传入的数据存放到成员变量byte中</p><h2 id="四、私有静态内部类"><a href="#四、私有静态内部类" class="headerlink" title="四、私有静态内部类"></a>四、私有静态内部类</h2><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820171705760.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70)这是Byte类的一个静态内部类，类里面还有一个静态代码块静态代码块会在类第一次被加载的时候执行，并且只执行一次这里的作用就是，创建一个Byte类型的数组，数组的长度是256里面存储着-128~127的数字(Byte类数据所有可能的取值)并且数组是静态的并且final修饰，因为后面的有些成员方法会需要用到Byte对象，所以这样做就避免了重复创建对象和回收对象</code></pre><h2 id="五、成员方法"><a href="#五、成员方法" class="headerlink" title="五、成员方法"></a>五、成员方法</h2><h1 id="1、toString-byte-b-方法"><a href="#1、toString-byte-b-方法" class="headerlink" title="1、toString(byte b)方法"></a>1、toString(byte b)方法</h1><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820171318100.png)注意：这个toString()方法不是重写Object的toString方法，因为它有参数作用：将一个byte类型数据转化为String字符串类型实质上是直接调用Integer类的toString方法，radix：10：用10进制表示</code></pre><h1 id="2、valueOf-byte-b"><a href="#2、valueOf-byte-b" class="headerlink" title="2、valueOf(byte b)"></a>2、valueOf(byte b)</h1><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820172235507.png)作用：将基本类型--&gt;包装类型，直接从上面的数组中得到</code></pre><h1 id="3、parseByte-String-s-int-radix"><a href="#3、parseByte-String-s-int-radix" class="headerlink" title="3、parseByte(String s,int radix)"></a>3、parseByte(String s,int radix)</h1><p><img src="https://img-blog.csdnimg.cn/20190820172354614.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 参数：<br>     String s:要解析的字符串<br>     int radix:指定字符串表示的进制<br>     例如：s=“10000”，radix=2，解析出来的值就是16<br> 作用：<br>     将字符串按照指定进制解析为byte类型<br>     实质上调用的是Integer的parseInt方法，解析成int类型<br>     判断是否超出范围，超出范围就抛异常，否则就返回</p><h1 id="4、parseByte-String-s"><a href="#4、parseByte-String-s" class="headerlink" title="4、parseByte(String s)"></a>4、parseByte(String s)</h1><pre><code>![在这里插入图片描述](https://img-blog.csdnimg.cn/20190820172742458.png)不指定进制默认十进制解析</code></pre><h1 id="5、valueOf-String-s-int-radix"><a href="#5、valueOf-String-s-int-radix" class="headerlink" title="5、valueOf(String s,int radix)"></a>5、valueOf(String s,int radix)</h1><p>  <img src="https://img-blog.csdnimg.cn/20190820172830452.png" alt="在这里插入图片描述"><br>参数：<br>    String s:要转换的字符串<br>    int radix：字符串表示的进制，和解析方法一样<br>作用：<br>    将字符串转换为按照指定进制形式表示的Byte类型，<br>先将字符串解析为byte类型，在调用valueOf()方法，从静态代码块初始的数组中找到对应的Byte并返回</p><h1 id="6、valueOf-String-s"><a href="#6、valueOf-String-s" class="headerlink" title="6、valueOf(String s)"></a>6、valueOf(String s)</h1><pre><code>默认10进制</code></pre><h1 id="7、xxxValue-方法"><a href="#7、xxxValue-方法" class="headerlink" title="7、xxxValue()方法"></a>7、xxxValue()方法</h1><pre><code>重写父类的方法，由于byte数值最小，不用担心出现溢出直接用强制类型转换，然后return</code></pre><h1 id="8、hashCode"><a href="#8、hashCode" class="headerlink" title="8、hashCode()"></a>8、hashCode()</h1><p><img src="https://img-blog.csdnimg.cn/20190820174011475.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>重写了父类的hashCode方法，对于Byte类型，它的hashCode方法实质上就是返回它的值</p><h1 id="9、equals-方法"><a href="#9、equals-方法" class="headerlink" title="9、equals()方法"></a>9、equals()方法</h1><p> <img src="https://img-blog.csdnimg.cn/20190820174148966.png?x-ossprocess=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 重写了父类的equals方法</p><h1 id="10、compareTo-方法"><a href="#10、compareTo-方法" class="headerlink" title="10、compareTo()方法"></a>10、compareTo()方法</h1><p> <img src="https://img-blog.csdnimg.cn/20190820174320144.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 重写了接口中的compareTo方法，直接返回两个对象的差值<br> 调用方法的对象-方法的参数</p>]]></content>
+      
+      
       <categories>
-        <category>JDK源码</category>
+          
+          <category> JDK源码 </category>
+          
       </categories>
-      <tags>
-        <tag>Byte</tag>
-        <tag>源码</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[青蛙跳台阶]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
+      
+      
+        <tags>
+            
+            <tag> Byte </tag>
+            
+            <tag> 源码 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>青蛙跳台阶</title>
+      <link href="/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/"/>
+      <url>/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<p><strong>难度： 简单</strong></p><p><img src="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="题目如图"></p><a id="more"></a><p><strong>1、动态规划</strong><br>可以知道，如果要到达第n阶台阶，有两种方式：<br>第一：从n-1阶台阶跨1步<br>第二：从n-2阶台阶跨2步<br>设到达第n阶台阶的方法总数为sum(n)<br>那么由上面可以知道：<strong>sum(n)=sum(n-2)+sum(n-1)</strong></p><p>可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法<br>1、从第1阶台阶跨2步上去<br>2、从第2阶跨1步上去</p><p>相应的，到达第1阶台阶只有一种方法，sum(1)=1；<br>到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；<br>所以sum(3)=3;<br><img src="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><p><strong>2、斐波那契数列</strong><br>通过观察规律可以知道：<br>假设第0阶为1；<br>那么可以得到从第1阶往后分别是：<br><strong>1，2，3，5，8，13…..</strong><br>这是一个很明显的斐波那契数列</p><p>3、递归<br>同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和<br>递归出口：n=0的时候返回1，n&lt;0的时候返回0；<br><img src="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>运行到44个样例的时候栈爆了…..</p>]]></content>
+      
+      
       <categories>
-        <category>算法之美</category>
+          
+          <category> 算法之美 </category>
+          
       </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>动态规划</tag>
-        <tag>斐波那契数列</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[二叉树镜像对称]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
+      
+      
+        <tags>
+            
+            <tag> LeetCode </tag>
+            
+            <tag> 动态规划 </tag>
+            
+            <tag> 斐波那契数列 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>二叉树镜像对称</title>
+      <link href="/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/"/>
+      <url>/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<p><strong>难度–简单</strong><br>题目<br><img src="https://img-blog.csdnimg.cn/2019081919202426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><a id="more"></a><p><strong>分析：</strong><br>    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称<br>    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的</p><h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><pre><code>//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接//快1ms，亲测1、pre(TreeNode tree.left,TreeNode tree.right)        2、如果A.val==B.val    --&gt;return true                3、如果A==null&amp;&amp;B==null    --&gt;return true4、如果A和B不同时为空，说明树是不对称的        --&gt;return false5、遍历A的左子树和B的右子树        //pre(A.left,B.right)6、遍历A的右子树和A的左子树        //pre(A.right,B.left)</code></pre><h2 id="迭代法"><a href="#迭代法" class="headerlink" title="迭代法"></a>迭代法</h2><p>使用队列，比较容易理解，直接上代码(LeetCode官方题解)<br><img src="https://img-blog.csdnimg.cn/20190819195622590.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>]]></content>
+      
+      
       <categories>
-        <category>算法之美</category>
+          
+          <category> 算法之美 </category>
+          
       </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>递归</tag>
-        <tag>迭代法</tag>
-        <tag>二叉树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[字符流和字节流]]></title>
-    <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
-    <content type="text"><![CDATA[深入理解字符流编码 首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入 字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码 写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
+      
+      
+        <tags>
+            
+            <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
+            
+            <tag> 迭代法 </tag>
+            
+            <tag> 二叉树 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>字符流和字节流</title>
+      <link href="/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/"/>
+      <url>/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/</url>
+      
+        <content type="html"><![CDATA[<p><a href="http://www.itcast.cn/news/20181219/14592257466.shtml" target="_blank" rel="noopener">深入理解字符流编码</a></p><p><strong>首先要理解字符流输入的原理：</strong><br>字符流输入其实底层也是字节流输入</p><p>字符–&gt;计算机二进制数字（字节）：编码<br>字节(计算机二进制数字)–&gt;字符：解码</p><a id="more"></a><h2 id="写入时："><a href="#写入时：" class="headerlink" title="写入时："></a>写入时：</h2><pre><code>1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中</code></pre><h2 id="读取时："><a href="#读取时：" class="headerlink" title="读取时："></a>读取时：</h2><pre><code>使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序</code></pre><h2 id="图片不能用字符流的原因"><a href="#图片不能用字符流的原因" class="headerlink" title="图片不能用字符流的原因"></a>图片不能用字符流的原因</h2><pre><code>因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符，在写入的时候，会将未知字符丢掉，所以图片拷贝不成功因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节**举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1....使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1....但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符；例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)；在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1....这样拷贝自然就失败了</code></pre><h2 id="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"><a href="#关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接" class="headerlink" title="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"></a>关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接</h2><pre><code>**最后**：字符流因为解码编码等原因，比字节流慢很多字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输图片等视频音频文件要用字节流</code></pre>]]></content>
+      
+      
       <categories>
-        <category>JAVA</category>
+          
+          <category> JAVA </category>
+          
       </categories>
-      <tags>
-        <tag>I/O</tag>
-        <tag>乱码</tag>
-        <tag>字符流/字节流</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[Hello World]]></title>
-    <url>%2F2019%2F09%2F07%2Fhello-world%2F</url>
-    <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy More info: Deployment]]></content>
-  </entry>
+      
+      
+        <tags>
+            
+            <tag> I/O </tag>
+            
+            <tag> 乱码 </tag>
+            
+            <tag> 字符流/字节流 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hello World</title>
+      <link href="/2019/09/07/hello-world/"/>
+      <url>/2019/09/07/hello-world/</url>
+      
+        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p><a id="more"></a><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+  
+  
 </search>
