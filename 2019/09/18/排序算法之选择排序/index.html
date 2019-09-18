@@ -57,26 +57,25 @@
   };
 </script>
 
-  <meta name="description" content="我们知道，IDEA是没有workspace这个概念的，它是以Project为单位，一个窗口对应着一个Project，而一个Project对应着很多Model，Model相当于eclipse中的project，那么如何在一个项目中存放多个Project呢？">
-<meta name="keywords" content="IDEA">
+  <meta name="description" content="前面说过了冒泡排序，这次来说一下选择排序。同样的，这次也会从算法思路、代码实现以及算法分析三个思路来剖析选择排序">
+<meta name="keywords" content="排序,选择排序">
 <meta property="og:type" content="article">
-<meta property="og:title" content="IDEA中创建多个Project">
-<meta property="og:url" content="https://HoA-W.github.io/2019/09/08/IDEA中创建多个Project/index.html">
+<meta property="og:title" content="排序算法之选择排序">
+<meta property="og:url" content="https://HoA-W.github.io/2019/09/18/排序算法之选择排序/index.html">
 <meta property="og:site_name" content="CommonGuy">
-<meta property="og:description" content="我们知道，IDEA是没有workspace这个概念的，它是以Project为单位，一个窗口对应着一个Project，而一个Project对应着很多Model，Model相当于eclipse中的project，那么如何在一个项目中存放多个Project呢？">
+<meta property="og:description" content="前面说过了冒泡排序，这次来说一下选择排序。同样的，这次也会从算法思路、代码实现以及算法分析三个思路来剖析选择排序">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190901110856188.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190901111135250.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190901111531177.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190901111704647.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190901112058507.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190901113153885.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:updated_time" content="2019-09-08T06:27:16.958Z">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/18/排序算法之选择排序/1.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/18/排序算法之选择排序/2.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/18/排序算法之选择排序/3.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/18/排序算法之选择排序/4.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/18/排序算法之选择排序/5.png">
+<meta property="og:updated_time" content="2019-09-18T09:30:05.890Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="IDEA中创建多个Project">
-<meta name="twitter:description" content="我们知道，IDEA是没有workspace这个概念的，它是以Project为单位，一个窗口对应着一个Project，而一个Project对应着很多Model，Model相当于eclipse中的project，那么如何在一个项目中存放多个Project呢？">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190901110856188.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70">
-  <link rel="canonical" href="https://HoA-W.github.io/2019/09/08/IDEA中创建多个Project/">
+<meta name="twitter:title" content="排序算法之选择排序">
+<meta name="twitter:description" content="前面说过了冒泡排序，这次来说一下选择排序。同样的，这次也会从算法思路、代码实现以及算法分析三个思路来剖析选择排序">
+<meta name="twitter:image" content="https://hoa-w.github.io/2019/09/18/排序算法之选择排序/1.png">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/09/18/排序算法之选择排序/">
 
 
 <script id="page-configurations">
@@ -90,7 +89,7 @@
   };
 </script>
 
-  <title>IDEA中创建多个Project | CommonGuy</title>
+  <title>排序算法之选择排序 | CommonGuy</title>
   
 
 
@@ -266,7 +265,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/09/08/IDEA中创建多个Project/">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/09/18/排序算法之选择排序/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="买太平湖底陈年水墨">
@@ -278,7 +277,7 @@
       <meta itemprop="name" content="CommonGuy">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">IDEA中创建多个Project
+        <h1 class="post-title" itemprop="name headline">排序算法之选择排序
 
           
         </h1>
@@ -294,7 +293,7 @@
                 
               
 
-              <time title="创建时间：2019-09-08 14:22:38 / 修改时间：14:27:16" itemprop="dateCreated datePublished" datetime="2019-09-08T14:22:38+08:00">2019-09-08</time>
+              <time title="创建时间：2019-09-18 17:14:04 / 修改时间：17:30:05" itemprop="dateCreated datePublished" datetime="2019-09-18T17:14:04+08:00">2019-09-18</time>
             </span>
           
             
@@ -307,7 +306,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Utils/" itemprop="url" rel="index"><span itemprop="name">Utils</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法之美/" itemprop="url" rel="index"><span itemprop="name">算法之美</span></a></span>
 
                 
                 
@@ -326,12 +325,56 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>我们知道，IDEA是没有workspace这个概念的，它是以Project为单位，一个窗口对应着一个Project，而一个Project对应着很多Model，Model相当于eclipse中的project，那么如何在一个项目中存放多个Project呢？</p>
+        <p>前面说过了冒泡排序，这次来说一下<b>选择排序</b>。同样的，这次也会从算法思路、代码实现以及算法分析三个思路来剖析选择排序</p>
+<hr>
 <a id="more"></a>
-<h2 id="首先，创建一个空的Project"><a href="#首先，创建一个空的Project" class="headerlink" title="首先，创建一个空的Project"></a>首先，创建一个空的Project</h2><p><img src="https://img-blog.csdnimg.cn/20190901110856188.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<h2 id="给项目命名并点击finish"><a href="#给项目命名并点击finish" class="headerlink" title="给项目命名并点击finish"></a>给项目命名并点击finish</h2><p>会进入到新创建的Project窗口中，接着IDEA就会弹出下面界面，让你为新的Priject创建一个Model：<br><img src="https://img-blog.csdnimg.cn/20190901111135250.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>在这里很重要，<strong>不选择给新的Project创建一个Model</strong>，直接点OK<br>这样，常见出来的没有Model的Project就<strong>相当于</strong>一个空文件夹，(查看创建的Project文件夹，会发现它是没有src的)</p>
-<h2 id="在新的Projrect中，new一个Model"><a href="#在新的Projrect中，new一个Model" class="headerlink" title="在新的Projrect中，new一个Model"></a>在新的Projrect中，new一个Model</h2><p><img src="https://img-blog.csdnimg.cn/20190901111531177.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>我这里创建的时web项目，如果要创建普通的项目，点击左侧第一个按钮JAVA就可以<br><img src="https://img-blog.csdnimg.cn/20190901111704647.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>给新创建的Model起名，通过这里就可以发现，<strong>第一个untitled是创建的project名(由于没有命名，默认就是untitled)，第二个是正在创建的Model名</strong>，点击finish<br>这样就创建成功了一个，按照上面的方法再来一遍<br><img src="https://img-blog.csdnimg.cn/20190901112058507.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>这样就成功地在一个窗口创建了两个Project</p>
-<p>另外<br>IDEA会为这两个web项目分别部署一份配置文件，这样这两个web项目就<strong>可以分别设置不同的端口，虚拟路径等配置</strong><br>运行项目的时候，查看控制台的log：<strong>Using CATALINA_BASE:</strong> 的值，就能找到配置文件的路径<br><img src="https://img-blog.csdnimg.cn/20190901113153885.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+
+<h1 id="算法思路"><a href="#算法思路" class="headerlink" title="算法思路"></a>算法思路</h1><ol>
+<li>第一次从arr[0]和arr[n-1]中选取最小值，与arr[0]交换</li>
+<li>第二次从arr[1]和arr[n-1]中选取最小值，与arr[1]交换</li>
+<li>……以此类推</li>
+<li>第n-1次从arr[n-2]和arr[n-1]中选取最小值，与arr[n-2]交换</li>
+<li>至此，得到一个从小到大的有序数组，一共进行n-1轮</li>
+</ol>
+<p>对于一个数组<font color="red">arr={3,-1,9,10,-2}</font><br><img src="/2019/09/18/排序算法之选择排序/1.png" alt></p>
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><p><img src="/2019/09/18/排序算法之选择排序/2.png" alt></p>
+<h1 id="优化冒泡排序"><a href="#优化冒泡排序" class="headerlink" title="优化冒泡排序"></a>优化冒泡排序</h1><p>因为每一趟排序都是将未排序部分的相邻元素进行比较，逆序则交换位置，那么反过来，在某一趟排序中，<font color="red">如果没有发生元素交换，说明该数组已经有序</font>，就不用在进行之后的排序<br>对于一个数组<font color="red">arr={3,-1,9,10,20}</font><br><img src="/2019/09/18/排序算法之选择排序/3.png" alt></p>
+<ol>
+<li>设置一个boolean类型的flag，初始化为true</li>
+<li>将循环趟数的条件改为flag==true&amp;&amp;i &lt; arr.length</li>
+<li>在进入某一趟排序之前，先将flag设置为false。<ul>
+<li>如果在这一趟排序中，发生了相邻元素的交换，那么将flag重新设置为true</li>
+<li>如果在这一趟排序中，没有发生相邻元素的交换，flag不变</li>
+</ul>
+</li>
+<li>在进行下一趟循环时，判断flag是否为true<ul>
+<li>如果为true，进行下一趟循环</li>
+<li>如果为false，说明在上一趟排序中已经得到有序数组，那么不再进行下一趟排序</li>
+</ul>
+</li>
+</ol>
+<p><b>优化冒泡排序算法代码实现</b><br><img src="/2019/09/18/排序算法之选择排序/4.png" alt><br>同样对于上面的数组<font color="red">arr={3,-1,9,10,20}</font>，使用优化冒泡排序<br><img src="/2019/09/18/排序算法之选择排序/5.png" alt><br>这样就达到了优化的目的</p>
+<h1 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h1><ol>
+<li>算法的时间复杂度<ul>
+<li>平均时间：O(n²)</li>
+<li>最差情况：O(n²)</li>
+</ul>
+</li>
+</ol>
+<p>这不难理解，因为对于一个简单地双重循环来说，时间复杂度都是O(n²)</p>
+<ol start="2">
+<li>空间复杂度<ul>
+<li>只用了一个临时变量和一个flag，和n的大小无关，所以是O(1)</li>
+</ul>
+</li>
+<li>稳定性<ul>
+<li>稳定性：即在排序过程中，对于两个大小相等的数A和B，排序前A在B的前面，如果排序后A还在B的前面，<font color="red">即排序前后不改变想等元素的顺序</font>，那么称该排序方法时稳定的</li>
+<li>不难发现，冒泡排序是稳定的</li>
+</ul>
+</li>
+<li>另外，该排序算法在<font color="red">n比较小时较好</font><hr>
+</li>
+</ol>
 
     </div>
 
@@ -379,7 +422,9 @@
           
           <div class="post-tags">
             
-              <a href="/tags/IDEA/" rel="tag"><i class="fa fa-tag"></i>IDEA</a>
+              <a href="/tags/排序/" rel="tag"><i class="fa fa-tag"></i>排序</a>
+            
+              <a href="/tags/选择排序/" rel="tag"><i class="fa fa-tag"></i>选择排序</a>
             
           </div>
         
@@ -389,8 +434,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/09/08/Tomcat部署项目的方式/" rel="next" title="Tomcat部署项目的方式">
-                  <i class="fa fa-chevron-left"></i> Tomcat部署项目的方式
+                <a href="/2019/09/18/排序算法之冒泡排序/" rel="next" title="排序算法之冒泡排序">
+                  <i class="fa fa-chevron-left"></i> 排序算法之冒泡排序
                 </a>
               
             </div>
@@ -398,10 +443,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/09/08/数据库基础-数据库概念和SQL简介/" rel="prev" title="数据库基础--数据库概念和SQL简介">
-                  数据库基础--数据库概念和SQL简介 <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -450,7 +491,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#首先，创建一个空的Project"><span class="nav-number">1.</span> <span class="nav-text">首先，创建一个空的Project</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#给项目命名并点击finish"><span class="nav-number">2.</span> <span class="nav-text">给项目命名并点击finish</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在新的Projrect中，new一个Model"><span class="nav-number">3.</span> <span class="nav-text">在新的Projrect中，new一个Model</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#算法思路"><span class="nav-number">1.</span> <span class="nav-text">算法思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码实现"><span class="nav-number">2.</span> <span class="nav-text">代码实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#优化冒泡排序"><span class="nav-number">3.</span> <span class="nav-text">优化冒泡排序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分析"><span class="nav-number">4.</span> <span class="nav-text">分析</span></a></li></ol></div>
         
       </div>
       <!--/noindex-->
