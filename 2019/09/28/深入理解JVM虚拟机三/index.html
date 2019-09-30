@@ -65,7 +65,7 @@
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="前面已经介绍了JVM的内存布局、自动内存管理、垃圾回收以及Class文件结构，那么虚拟机又是怎么加载Class文件的？Class文件的信息进入到JVM中会不会发生变化呢？那么这次就记录一下虚拟机类加载机制。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-28T10:13:55.950Z">
+<meta property="og:updated_time" content="2019-09-30T09:31:14.421Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入理解JVM虚拟机三">
 <meta name="twitter:description" content="前面已经介绍了JVM的内存布局、自动内存管理、垃圾回收以及Class文件结构，那么虚拟机又是怎么加载Class文件的？Class文件的信息进入到JVM中会不会发生变化呢？那么这次就记录一下虚拟机类加载机制。">
@@ -287,11 +287,19 @@
                 
               
 
-              <time title="创建时间：2019-09-28 11:12:48 / 修改时间：18:13:55" itemprop="dateCreated datePublished" datetime="2019-09-28T11:12:48+08:00">2019-09-28</time>
+              <time title="创建时间：2019-09-28 11:12:48" itemprop="dateCreated datePublished" datetime="2019-09-28T11:12:48+08:00">2019-09-28</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-09-30 17:31:14" itemprop="dateModified" datetime="2019-09-30T17:31:14+08:00">2019-09-30</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -399,6 +407,15 @@
 <li><b>符号引用</b><br>用一组符号来描述所引用的目标(如字段表集合中对字段的描述)，符号引用可以是任意形式的字面量，只要能无歧义的定位到所引用的目标。符号引用的目标不一定已经被加载进内存。</li>
 <li><b>直接引用</b><br>可以是指向目标的指针的相对偏移量、或能间接定位目标的句柄，能够直接在内存中定位到目标。如果有了直接引用，那么引用的目标肯定在内存中存在。</li>
 </ul>
+<p>需要注意的是，虚拟机规范并未规定解析阶段发生的具体时间，只要求在执行<b>anewarray、checkcast、getfield、getstatic、instanceof、invokedynamic、invokespecial、invokestatic、invokevirtual、ldc、ldc_w、new、putfield、putstatic</b>等<font color="bllue">操作符号引用的字节码指令之前，先对他们所使用的符号引用进行解析。</font><br>对一个符号引用进行多次请求解析是很常见的，除了invokedynamic指令外，虚拟机实现可以对第一次解析的结果进行缓存(在运行时常量池中记录直接引用，并把常量标识为已解析状态)从而避免重复解析，这些解析被称为<font color="red">静态解析</font>。<br>而<font color="blue">对于invokedynamic指令，必须等到程序实际运行到这条指令时，才会对符号引用进行解析，并且不会缓存。每一次运行时都要讲符号引用转换为直接引用</font>，这种解析被称为<font color="red">动态连接<font>。(后面讲到动态分派和重写时会介绍)</font></font></p>
+<p><font color="bllue"><b>解析动作主要针对</b></font></p>
+<ul>
+<li><b>类或接口</b></li>
+<li><b>字段</b></li>
+<li><b>类方法</b></li>
+<li><b>接口方法等</b></li>
+</ul>
+<p><font color="blue">对于虚方法和final方法，会在运行时动态连接。</font>(后面会说到动态连接)</p>
 <p>具体对类、接口、类字段、类方法的解析见书P221</p>
 <h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a><font size="5">初始化</font></h2><p>该阶段是类加载过程的最后一步，前面的类加载过程，除了加载阶段用户可以参与，其余动作完全由虚拟机控制。到了初始化阶段，才真正开始执行类中定义的Java代码(Java代码编译后的字节码更准确一些)。<br>在准备阶段，变量已经赋过一次值，而在初始化阶段，则根据程序员通过程序制定的计划去初始化类变量和其他资源。<font color="bllue">初始化阶段是执行类构造器&lt; clinit&gt;方法的过程。</font></p>
 <ul>
@@ -515,6 +532,10 @@
 
             <div class="post-nav-prev post-nav-item">
               
+                <a href="/2019/09/30/深入理解JVM虚拟机四/" rel="prev" title="深入理解JVM虚拟机四">
+                  深入理解JVM虚拟机四 <i class="fa fa-chevron-right"></i>
+                </a>
+              
             </div>
           </div>
         
@@ -580,7 +601,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

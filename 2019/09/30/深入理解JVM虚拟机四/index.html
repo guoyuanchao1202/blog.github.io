@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="这一节主要介绍一下虚拟机是怎么执行Class文件的字节码以及《深入理解JVM虚拟机》后面一些知识，因为后面很多都不是很理解，所以结合在一起记录，如果以后再次翻看弄懂了一些，就再另外记录吧。">
+<meta name="keywords" content="JVM,读书笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解JVM虚拟机四">
+<meta property="og:url" content="https://HoA-W.github.io/2019/09/30/深入理解JVM虚拟机四/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="这一节主要介绍一下虚拟机是怎么执行Class文件的字节码以及《深入理解JVM虚拟机》后面一些知识，因为后面很多都不是很理解，所以结合在一起记录，如果以后再次翻看弄懂了一些，就再另外记录吧。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/30/深入理解JVM虚拟机四/1.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/09/30/深入理解JVM虚拟机四/2.png">
+<meta property="og:updated_time" content="2019-09-30T09:12:24.649Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入理解JVM虚拟机四">
+<meta name="twitter:description" content="这一节主要介绍一下虚拟机是怎么执行Class文件的字节码以及《深入理解JVM虚拟机》后面一些知识，因为后面很多都不是很理解，所以结合在一起记录，如果以后再次翻看弄懂了一些，就再另外记录吧。">
+<meta name="twitter:image" content="https://hoa-w.github.io/2019/09/30/深入理解JVM虚拟机四/1.png">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/09/30/深入理解JVM虚拟机四/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>深入理解JVM虚拟机四 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/09/30/深入理解JVM虚拟机四/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">深入理解JVM虚拟机四
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-30 11:03:29 / 修改时间：17:12:24" itemprop="dateCreated datePublished" datetime="2019-09-30T11:03:29+08:00">2019-09-30</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JVM虚拟机/" itemprop="url" rel="index"><span itemprop="name">JVM虚拟机</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>这一节主要介绍一下虚拟机是怎么执行Class文件的字节码以及《深入理解JVM虚拟机》后面一些知识，因为后面很多都不是很理解，所以结合在一起记录，如果以后再次翻看弄懂了一些，就再另外记录吧。</p>
+<a id="more"></a>
+
+<p>执行引擎是Java虚拟机最核心的组成部分之一，Java虚拟机在执行Java代码时可能会有解释执行(通过解释器执行)和编译执行(通过编译器执行)两种选择，或者两者都有。所有Java虚拟机的执行引擎都是一致的</p>
+<ul>
+<li>输入过程：输入字节码文件</li>
+<li>处理过程：字节码解析，执行相应指令</li>
+<li>输出过程：输出执行结果</li>
+</ul>
+<h1 id="运行时栈帧结构"><a href="#运行时栈帧结构" class="headerlink" title="运行时栈帧结构"></a>运行时栈帧结构</h1><ul>
+<li><font color="bllue"><b>栈帧</b></font><br>是<font color="blue">用于支持虚拟机进行方法调用和方法执行的数据结构，它是虚拟机运行时数据区中的虚拟机栈的栈元素</font>。每一个方法从调用开始到执行完成的过程，对应着栈帧在虚拟机中从入栈到出栈的过程。栈帧中包括<ul>
+<li><b>方法的局部变量表</b></li>
+<li><b>操作数栈</b></li>
+<li><b>动态连接</b></li>
+<li><b>方法返回地址等</b></li>
+</ul>
+</li>
+</ul>
+<p>另外前面说到过，在编译阶段，局部变量表和操作数栈的大小都已经确定并写在Code属性中，因此<font color="bllue">一个栈桢分配多少内存不会受到运行时数据的影响。</font><br>对于执行引擎来说，只有线程栈顶的栈帧才是有效的，称为当前栈帧，与栈帧相关联的方法称为当前方法。<br>虚拟机使用<font color="bllue">局部变量表完成参数值到参数列表的传递过程</font>，如果是一个实例方法，那局部变量表第0位索引的Slot默认用于传递方法所属对象实例的引用，在方法中可以通过this关键字来访问这个隐含的参数。其余参数按照参数表顺序排列，占用从1开始的Slot。参数表分配完毕后再根据方法体内定义变量的顺序和作用域分配其余Slot。<br><font color="blue">局部变量表的Slot是可以重用的，如果当前字节码PC计数器已经超过了方法体中的某个变量的作用域，那么该变量对应的Slot就可以交给其他变量使用。</font></p>
+<ol>
+<li>对于类变量(sttaic)，会有两次赋值<ul>
+<li><b>一次是在准备阶段赋初始值</b></li>
+<li><b>一次是在初始化阶段赋予程序设置的值</b><br>因此<font color="red">初始化阶段不为类类变量赋值也可以直接使用。</font></li>
+</ul>
+</li>
+<li>对于<font color="red">局部变量，如果定义了但没有赋初始值是不能使用的。</font></li>
+<li>对于类成员变量，也会有两次赋值<ul>
+<li><b>第一次是new指令过后，&lt; init&gt;方法执行之前，对象的字段(即成员变量)已经被赋初始化值</b></li>
+<li><b>第二次是在&lt; init&gt;方法(实例构造器)，赋予字段程序设置的值</b><br>因此<font color="red">对于成员变量，不赋初值也能直接使用</font></li>
+</ul>
+</li>
+</ol>
+<ul>
+<li><p><font color="bllue"><b>操作数栈</b></font><br>和局部变量表一样，操作数栈的大小在编译后就已经确定，记录在Code属性中。<font color="blue">操作数栈的每一个元素可以是任意的Java数据类型。</font><br>当一个方法开始执行时，方法的操作数栈是空的，在方法的执行过程中，会有各种字节码指令往操作数栈中写入和提取内容，也就是入栈出栈操作。<font color="bllue">Java虚拟机的解释执行引擎被称为”基于栈的执行引擎”，这里指的就是操作数栈。</font></p>
+</li>
+<li><p><font color="bllue"><b>动态连接</b></font><br><font color="blue">每个栈帧中都包含一个指向运行时常量池中该栈帧所属方法的引用。</font>前面说到，Class文件的常量池中有大量符号引用，字节码中的方法调用指令就常以常量池中指向方法的符号引用作为参数，这些符号引用</p>
+<ul>
+<li><b>一部分会在类加载阶段或第一次使用时转换为直接引用，即静态解析</b></li>
+<li><b>另外一部分将在每次运行期间转换为直接引用，这部分称为动态连接</b></li>
+</ul>
+</li>
+<li><p><font color="bllue"><b>方法返回地址</b></font><br>当一个方法开始执行，有两种方式可以退出这个方法。</p>
+<ul>
+<li><b>执行引擎遇到任意一个方法返回的字节码指令。</b><br>这时可能会有返回值传递给调用该方法的方法，至于是否有返回值或者返回值类型取决于返回指令的类型。这种退出方式被称为正常完成出口。<br><font color="blue">此时调用该方法的方法PC计数器的值可以作为返回地址。</font></li>
+<li><b>方法执行过程中遇到了异常，并且这个异常没有在方法体内得到处理。</b><br>无论是Java虚拟机内部产生的异常，还是代码中使用athrow字节码产生的异常(throw语句)只要在方法的方法表中内有搜索到匹配的异常处理器(即不属于Java代码中catch语句列举的异常)，就会导致方法退出。这种退出方式被称为异常完成出口。是不会给上层调用方法任何返回值的。<br><font color="blue">此时，返回地址是通过异常处理器来确定的。</font></li>
+</ul>
+</li>
+</ul>
+<h1 id="方法调用"><a href="#方法调用" class="headerlink" title="方法调用"></a>方法调用</h1><p><font color="blue">方法调用不等同于方法执行，方法调用阶段唯一的任务就是确定被调用方法的版本，即调用哪一个方法(因为Java中重写和重载机制)</font>，不涉及方法的执行。前面说过，一切调用在Class文件里存储的都只是符号引用，而不是方法在实际运行时内存布局的入口地址(直接引用)，这就导致Java方法调用时，需要在类加载期，甚至是运行期才能确定目标方法的直接引用。</p>
+<ul>
+<li><p><font color="bllue"><b>解析</b></font><br>在类加载的解析阶段，会将一部分符号引用转化为直接引用。这种解析能成立的前提是：方法在程序运行之前就有一个确定的调用版本，并且这个调用版本在运行期间是不可变的。即编译器可知，运行期不可变，这类方法主要有两类</p>
+<ul>
+<li><b>静态方法</b><br>与类型直接关联</li>
+<li><b>私有方法</b><br>外部不可被访问</li>
+<li><b>实例构造器</b></li>
+<li><b>父类方法</b><br>这四类方法<font color="blue">适合在类加载阶段进行解析</font>。这四类方法又被称为<font color="red">非虚方法</font>。<font color="bllue">除此之外final方法也是非虚方法。</font></li>
+<li><b>解析调用是静态过程</b><br>在编译期就完全确定，在类加载的解析阶段就会把涉及的符号引用全部转变为直接引用。这时第一次的解析结果会被缓存在运行时常量池中，并将常量标识为已解析，从而避免重复解析。</li>
+<li><b>分派调用可能是静态的也可能是动态的</b></li>
+</ul>
+</li>
+<li><p><font color="bllue"><b>静态分派</b></font><br>Java具备三大特征：继承、封装和多态。分派将会揭示重写和重载在Java虚拟机中是如何实现的。来测试一下下面一段代码，然后看一看结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">public class StaticDispath &#123;</span><br><span class="line">    static abstract class Human&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    static class Man extends Human &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    static class Woman extends Human &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void sayHello(Human human) &#123;</span><br><span class="line">        System.out.println(&quot;Human&quot;);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    public void sayHello(Man human) &#123;</span><br><span class="line">        System.out.println(&quot;Man&quot;);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    public void sayHello(Woman human) &#123;</span><br><span class="line">        System.out.println(&quot;Woman&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Human man = new Man();</span><br><span class="line">        Human woman=new Woman();</span><br><span class="line"></span><br><span class="line">        StaticDispath s=new StaticDispath();</span><br><span class="line">        s.sayHello(man);</span><br><span class="line">        s.sayHello(woman);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>执行结果<br><img src="/2019/09/30/深入理解JVM虚拟机四/1.png" alt>有三个重载的方法，为什么会选择执行参数类型为Human的重载呢？先介绍一下两个概念</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Human man = new Man();</span><br></pre></td></tr></table></figure>
+
+<p>上面这段代码中的”Human”被称为静态类型，new后面的”Man”被称为实际类型。</p>
+<ul>
+<li>静态类型<br>仅仅在使用时发生变化，而变量本身的静态类型不会改变，并且静态类型在编译期可知</li>
+<li>实际类型<br>在运行期才能确定变化的结果，编译器在编译时并不知道实际类型是什么</li>
+</ul>
+<p>例如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//在这里实际类型从Man变成了Woman，而静态类型仍是Hunman</span><br><span class="line">Human man=new Man()</span><br><span class="line">man=new Woman()</span><br><span class="line"></span><br><span class="line">//这时候静态类型仅仅在使用时发生了变化，但是man和woman仍旧是Human类型。</span><br><span class="line">//如果这样调用，那么输出结果就是Man和Woman而不是Human了。</span><br><span class="line">s.sayHello((Man)man);</span><br><span class="line">s.sayHello((Woman)woman);</span><br></pre></td></tr></table></figure>
+
+<p>虚拟机(确切的说是编译器)在重载时通过参数的静态类型(即参数字面值)作为判定依据而不是实际类型。并且静态类型是编译期可知的，因此，<font color="bllue">在编译期Javac编译器会根据参数的静态类型选择使用哪个重载方法。</font><br>所有依赖静态分派来定位方法执行版本的分派动作称为静态分派。<font color="blue">静态分派的典型就是<b>方法重载</b></font></p>
+<ul>
+<li><font color="bllue"><b>动态分派</b></font><br>同样的，还用一段代码来做测试<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">public class DynamicDispatch &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Human man = new Man();</span><br><span class="line">        Human woman = new Woman();</span><br><span class="line"></span><br><span class="line">        man.sayHello();</span><br><span class="line">        woman.sayHello();</span><br><span class="line">        man=new Woman();</span><br><span class="line">        man.sayHello();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">abstract class Human&#123;</span><br><span class="line">    protected abstract void sayHello();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Man extends Human&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected void sayHello() &#123;</span><br><span class="line">        System.out.println(&quot;man&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Woman extends Human &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected void sayHello() &#123;</span><br><span class="line">        System.out.println(&quot;woman&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>很简单的一段代码，用到了重写，运行结果<br><img src="/2019/09/30/深入理解JVM虚拟机四/2.png" alt>这里显然不是根据静态类型来决定的，因为静态类型都是Human的两个变量在调用sayHello时执行了不同的方法，并且man两次调用sayHello方法输出结果不同。<br>来看一下字节码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">16: aload_1</span><br><span class="line">17: invokevirtual #6                  // Method Human.sayHello:()V</span><br><span class="line">20: aload_2</span><br><span class="line">21: invokevirtual #6                  // Method Human.sayHello:()V</span><br></pre></td></tr></table></figure>
+
+<p>其中aload_1和aload_2就是将man和woman两个对象的引用入操作数栈，这两个对象是将要执行的sayHello方法的所有者。<br>17和21行的invokevirtual是方法调用指令，从字节码角度来看，无论是指令(都是invokevirtual指令)还是参数(注释显示了参数是Human.sayHello的符号引用)都完全一样，两行指令一模一样。但是执行的结果却不同。<br>这就要从invokevirtual的多态查找过程说起，该指令运行使得解析过程大致分为一下几个步骤</p>
+<ol>
+<li>找到操作数栈顶的<font color="blue">第一个元素指向的对象的实际类型</font>(在这里man的实际类型是Man，woman的实际类型是Woman)，记为C。</li>
+<li>如果在C中找到了与常量中的描述符和简单名称都相符(Human.sayHello:()V)的方法，则进行访问权限校验，如果通过返回该方法的直接引用，否则抛出异常。</li>
+<li>否则，按照继承关系从下往上依次对C的父类进行第二步操作</li>
+<li>如果始终没有找到，抛出异常。</li>
+</ol>
+<p>从上面过程可以发现，该指令第一步就是在<font color="red">运行期间找到执行方法所有者的实际类型，所以两次invokevirtual虽然参数一模一样，但是却将符号引用解析到了不同的直接引用上，这就是<b>Java重写的本质</b>。</font><br>这种运行期间根据实际类型确定具体实行哪个方法的分派过程称为动态分派。</p>
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/JVM/" rel="tag"><i class="fa fa-tag"></i>JVM</a>
+            
+              <a href="/tags/读书笔记/" rel="tag"><i class="fa fa-tag"></i>读书笔记</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/09/28/深入理解JVM虚拟机三/" rel="next" title="深入理解JVM虚拟机三">
+                  <i class="fa fa-chevron-left"></i> 深入理解JVM虚拟机三
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#运行时栈帧结构"><span class="nav-number">1.</span> <span class="nav-text">运行时栈帧结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方法调用"><span class="nav-number">2.</span> <span class="nav-text">方法调用</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
