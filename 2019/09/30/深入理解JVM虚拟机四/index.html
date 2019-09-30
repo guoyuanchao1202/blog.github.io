@@ -67,7 +67,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://hoa-w.github.io/2019/09/30/深入理解JVM虚拟机四/1.png">
 <meta property="og:image" content="https://hoa-w.github.io/2019/09/30/深入理解JVM虚拟机四/2.png">
-<meta property="og:updated_time" content="2019-09-30T09:12:24.649Z">
+<meta property="og:updated_time" content="2019-09-30T09:36:04.166Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入理解JVM虚拟机四">
 <meta name="twitter:description" content="这一节主要介绍一下虚拟机是怎么执行Class文件的字节码以及《深入理解JVM虚拟机》后面一些知识，因为后面很多都不是很理解，所以结合在一起记录，如果以后再次翻看弄懂了一些，就再另外记录吧。">
@@ -290,7 +290,7 @@
                 
               
 
-              <time title="创建时间：2019-09-30 11:03:29 / 修改时间：17:12:24" itemprop="dateCreated datePublished" datetime="2019-09-30T11:03:29+08:00">2019-09-30</time>
+              <time title="创建时间：2019-09-30 11:03:29 / 修改时间：17:36:04" itemprop="dateCreated datePublished" datetime="2019-09-30T11:03:29+08:00">2019-09-30</time>
             </span>
           
             
@@ -377,7 +377,7 @@
 <li><b>静态方法</b><br>与类型直接关联</li>
 <li><b>私有方法</b><br>外部不可被访问</li>
 <li><b>实例构造器</b></li>
-<li><b>父类方法</b><br>这四类方法<font color="blue">适合在类加载阶段进行解析</font>。这四类方法又被称为<font color="red">非虚方法</font>。<font color="bllue">除此之外final方法也是非虚方法。</font></li>
+<li><b>父类方法</b><br>这四类方法<font color="blue">适合在类加载阶段进行解析</font>。这四类方法又被称为<font color="red">非虚方法</font>，其他方法都是虚方法。<font color="bllue">除此之外final方法也是非虚方法。</font></li>
 <li><b>解析调用是静态过程</b><br>在编译期就完全确定，在类加载的解析阶段就会把涉及的符号引用全部转变为直接引用。这时第一次的解析结果会被缓存在运行时常量池中，并将常量标识为已解析，从而避免重复解析。</li>
 <li><b>分派调用可能是静态的也可能是动态的</b></li>
 </ul>
@@ -484,6 +484,10 @@
 
             <div class="post-nav-prev post-nav-item">
               
+                <a href="/2019/09/30/Java中的语法糖/" rel="prev" title="Java中的语法糖">
+                  Java中的语法糖 <i class="fa fa-chevron-right"></i>
+                </a>
+              
             </div>
           </div>
         
@@ -549,7 +553,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-count">44</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -575,7 +579,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-count">46</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>

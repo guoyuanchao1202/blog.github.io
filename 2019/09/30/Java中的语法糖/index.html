@@ -57,19 +57,19 @@
   };
 </script>
 
-  <meta name="description" content="会话：一次会话中包含多次请求和响应。在一次会话中，浏览器第一次给服务器资源发送请求，会话建立，直到有一方断开为止会话技术能够在一次会话的多次请求响应间共享数据">
-<meta name="keywords" content="会话技术">
+  <meta name="description" content="语法糖，是指在计算机中添加某种语法这种语法对语言的功能并没有影响，但是更方便程序员使用。通常来说，语法糖能够增加程序的可读性。Java中常用的语法糖有泛型、变长参数、自动拆箱/装箱等。下面就介绍一下这些语法糖的原理。">
+<meta name="keywords" content="泛型,Java基础">
 <meta property="og:type" content="article">
-<meta property="og:title" content="会话技术--Cookie&amp;Session">
-<meta property="og:url" content="https://HoA-W.github.io/2019/09/08/会话技术-Cookie-Session/index.html">
+<meta property="og:title" content="Java中的语法糖">
+<meta property="og:url" content="https://HoA-W.github.io/2019/09/30/Java中的语法糖/index.html">
 <meta property="og:site_name" content="CommonGuy">
-<meta property="og:description" content="会话：一次会话中包含多次请求和响应。在一次会话中，浏览器第一次给服务器资源发送请求，会话建立，直到有一方断开为止会话技术能够在一次会话的多次请求响应间共享数据">
+<meta property="og:description" content="语法糖，是指在计算机中添加某种语法这种语法对语言的功能并没有影响，但是更方便程序员使用。通常来说，语法糖能够增加程序的可读性。Java中常用的语法糖有泛型、变长参数、自动拆箱/装箱等。下面就介绍一下这些语法糖的原理。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-08T11:07:28.612Z">
+<meta property="og:updated_time" content="2019-09-30T10:51:59.270Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="会话技术--Cookie&amp;Session">
-<meta name="twitter:description" content="会话：一次会话中包含多次请求和响应。在一次会话中，浏览器第一次给服务器资源发送请求，会话建立，直到有一方断开为止会话技术能够在一次会话的多次请求响应间共享数据">
-  <link rel="canonical" href="https://HoA-W.github.io/2019/09/08/会话技术-Cookie-Session/">
+<meta name="twitter:title" content="Java中的语法糖">
+<meta name="twitter:description" content="语法糖，是指在计算机中添加某种语法这种语法对语言的功能并没有影响，但是更方便程序员使用。通常来说，语法糖能够增加程序的可读性。Java中常用的语法糖有泛型、变长参数、自动拆箱/装箱等。下面就介绍一下这些语法糖的原理。">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/09/30/Java中的语法糖/">
 
 
 <script id="page-configurations">
@@ -83,7 +83,7 @@
   };
 </script>
 
-  <title>会话技术--Cookie&Session | CommonGuy</title>
+  <title>Java中的语法糖 | CommonGuy</title>
   
 
 
@@ -259,7 +259,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/09/08/会话技术-Cookie-Session/">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/09/30/Java中的语法糖/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="买太平湖底陈年水墨">
@@ -271,7 +271,7 @@
       <meta itemprop="name" content="CommonGuy">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">会话技术--Cookie&Session
+        <h1 class="post-title" itemprop="name headline">Java中的语法糖
 
           
         </h1>
@@ -287,7 +287,7 @@
                 
               
 
-              <time title="创建时间：2019-09-08 19:00:58 / 修改时间：19:07:28" itemprop="dateCreated datePublished" datetime="2019-09-08T19:00:58+08:00">2019-09-08</time>
+              <time title="创建时间：2019-09-30 17:38:14 / 修改时间：18:51:59" itemprop="dateCreated datePublished" datetime="2019-09-30T17:38:14+08:00">2019-09-30</time>
             </span>
           
             
@@ -300,7 +300,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JAVAWEB/" itemprop="url" rel="index"><span itemprop="name">JAVAWEB</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JVM虚拟机/" itemprop="url" rel="index"><span itemprop="name">JVM虚拟机</span></a></span>
 
                 
                 
@@ -319,131 +319,39 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><b>会话：一次会话中包含多次请求和响应。<br>在一次会话中，浏览器第一次给服务器资源发送请求，会话建立，直到有一方断开为止<br>会话技术能够在一次会话的多次请求响应间共享数据</b></p>
-<hr>
+        <p>语法糖，是指在计算机中添加某种语法这种语法对语言的功能并没有影响，但是更方便程序员使用。通常来说，语法糖能够增加程序的可读性。Java中常用的语法糖有泛型、变长参数、自动拆箱/装箱等。下面就介绍一下这些语法糖的原理。</p>
 <a id="more"></a>
 
-<h1 id="会话技术的实现方式"><a href="#会话技术的实现方式" class="headerlink" title="会话技术的实现方式"></a>会话技术的实现方式</h1><ul>
-<li>客户端会话技术：Cookie</li>
-<li>服务器端会话技术：Session</li>
-</ul>
+<h1 id="泛型和类型擦除"><a href="#泛型和类型擦除" class="headerlink" title="泛型和类型擦除"></a>泛型和类型擦除</h1><p>泛型时JDK1.5的新增特性，本质是参数化类型的应用。即将所操作的数据类型指定为一个参数，这种参数可以用在类、接口、方法的创建中，分别被称为泛型类、泛型接口和泛型方法。<br>Java中的泛型被称为伪泛型，它<font color="bllue">只在Java源码中存在，在编译后的字节码文件中就已经被替换为原生类型了(裸类型)，并且在相应地方插入了强制转型代码</font>。因此对于运行期的Java语言来说，ArrayList<integer>和ArrayList<string>就是同一个类，所以Java中泛型实现方法被称为类型擦擦除。<br>举一个Java泛型的例子</string></integer></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">	Map&lt;String, String&gt; map = new HashMap&lt;&gt;();</span><br><span class="line">	map.put(&quot;hello&quot;, &quot;你好&quot;);</span><br><span class="line">	map.put(&quot;how are you&quot;, &quot;吃了没&quot;);</span><br><span class="line">	System.out.println(map.get(&quot;hello&quot;));</span><br><span class="line">	System.out.println(map.get(&quot;how are you&quot;));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h1 id="客户端会话技术–Cookie"><a href="#客户端会话技术–Cookie" class="headerlink" title="客户端会话技术–Cookie"></a>客户端会话技术–Cookie</h1><h2 id="Cookie使用步骤"><a href="#Cookie使用步骤" class="headerlink" title="Cookie使用步骤"></a><font size="5">Cookie使用步骤</font></h2><ol>
-<li> 创建Cookie对象，绑定数据:<font color="blue">new Cookie(String name, String value)</font></li>
-<li>发送Cookie对象::<font color="blue">response.addCookie(Cookie cookie)</font></li>
-<li> 获取Cookie，拿到数据:<font color="blue">Cookie[]  request.getCookies()</font></li>
-</ol>
+<p>对于上面代码，编译成Class文件，然后再反编译进行反编译后，会变成下main这样</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">	Map map = new HashMap();</span><br><span class="line">	map.put(&quot;hello&quot;, &quot;你好&quot;);</span><br><span class="line">	map.put(&quot;how are you&quot;, &quot;吃了没&quot;);</span><br><span class="line">	System.out.println((String) map.get(&quot;hello&quot;));</span><br><span class="line">	System.out.println((String) map.get(&quot;how are you&quot;));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="Cookie实现原理"><a href="#Cookie实现原理" class="headerlink" title="Cookie实现原理"></a><font size="5">Cookie实现原理</font></h2><p><font color="red">基于响应头set-cookie和请求头cookie实现</font><br></p>
-<ol>
-<li>客户端和服务器第一次请求响应：服务器创建Cookie对象，并在set-cookie响应头将Cookie响应给浏览器
-</li>
-<li>浏览器接收到服务器带有set-cookie头的响应后，将Cookie存储在浏览器中，当下一次浏览器向服务器发送请求时，会在请求头cookie头中附带这cookie</li>
-<li>这样就实现了多次请求响应之间的数据共享</li>
-</ol>
-<hr>
+<p>从代码可以看到，程序中所有的泛型又变回的原生类型，并且加上了强制转型。这说明，<font color="blue">在编译后的字节码文件中是没有泛型的，即反省在编译过程中已经被擦除。</font><br>既然知道了泛型的实现原理，那么看一看下面这段代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public class Test1 &#123;</span><br><span class="line">    public static void method(List&lt;String&gt; list) &#123;</span><br><span class="line">        System.out.println(&quot;List&lt;String&gt; list&quot;);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    public static void method(List&lt;Integer&gt; list) &#123;</span><br><span class="line">        System.out.println(&quot;List&lt;Integer&gt; list&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="Cookie的细节"><a href="#Cookie的细节" class="headerlink" title="Cookie的细节"></a><font size="5">Cookie的细节</font></h2><ul>
-<li><font color="red">一次可以发送多个cookie：</font>在服务器端创建多个Cookie对象，多次调用response的addCookie方法将多个Cookie对象发送，但是如果两个Cookie的值相同，那么后加入的Cookie值会覆盖前面的值</li>
-<li><font color="red">cookie在浏览器中保存时间</font>
+<p>毫无疑问，上面这段代码是无法通过编译的，这是为什么呢？<font color="blue">因为编译期对泛型进行类型擦除后，这两个方法实际上是一模一样的，不构成重载</font>。因此自然无法通过编译。<br>让我们再回顾一下<font color="blue">Signature属性，它能够存储一个方法在字节码层次上的特征签名，这个属性中保存的参数并不是原生类型，而是包括了参数化类型的信息。</font><br>另外，通过Signature属性可以看出，擦除法所谓的擦除，<font color="red"><b>仅仅是对方法的Code属性中的字节码进行擦除，实际上元数据还是保留了泛型信息，这也是我们能通过反射取得参数化类型的根本依据。</b></font></p>
+<h1 id="自动装箱、拆箱和遍历循环"><a href="#自动装箱、拆箱和遍历循环" class="headerlink" title="自动装箱、拆箱和遍历循环"></a>自动装箱、拆箱和遍历循环</h1><ul>
+<li><p><b>自动装箱</b><br>实际上调用的是<font color="blue">包装类的valueOf()</font>方法；</p>
+</li>
+<li><p><b>自动拆箱</b><br>调用的则是<font color="blue">包装类的xxxValue()</font>方法。下面以Integer和int为例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">int i=1;</span><br><span class="line">//自动装箱</span><br><span class="line">Integer.valueOf(i)</span><br><span class="line">=======================</span><br><span class="line">Integer=new Integer(4)</span><br><span class="line">//自动拆箱</span><br><span class="line">i=Integer.intValue()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><b>遍历循环for-each</b><br>使用的则是<font color="blue">Iterator迭代器</font>来实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; list=new ArrayList;</span><br><span class="line">for(int i:list)&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">//实际上是通过迭代器实现</span><br><span class="line">for(Iterator localIterator=list.iterator();localIterator.hasNext;)&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><b>使用包装类要注意两点</b></p>
 <ul>
-<li>默认情况下，当浏览器关闭后，Cookie数据被销毁(服务器关闭，Cookie仍然存在，因为Cookie存储在浏览器中)</li>
-<li>持久化存储：调用Cookie对象的<font color="blue">setMaxAge(int seconds)</font>方法实现
-<ul>参数取值情况：
-<li><font color="red">正数</font>：将Cookie数据写到硬盘的文件中。<font color="red">持久化存储</font>。并指定cookie存活时间，时间到后，cookie文件自动失效</li>
-<li>负数：默认值，即浏览器关闭后Cookie被销毁</li>
-<li><font color="red">零：删除cookie信息</font></li>
+<li>包装类的”==”再不遇到算术运算的情况下不会自动拆箱</li>
+<li>包装类的”equals()方法”不处理数据转型的关系</li>
 </ul>
 </li>
 </ul>
-</li>
-<li><font color="red">cookie存储中文问题</font>:在tomcat 8 之前 cookie中不能直接存储中文数据。但是在tomcat8之后，支持直接存储中文，但是对于一些特殊字符(如空格等)，仍不能直接存储，需要借助URL编码才行(具体步骤下一篇文章说到)</li>
-<li>cookie的共享
-<ul>
-<li><font color="red">在一个tomcat服务器中部署了多个项目，在默认情况下，这些项目之间的Cookie是不能共享</font>的<br>但是可以通过Cookie对象的setPath(String path)方法来设置Cookie的共享范围
-<ul>
-<li>默认情况下，设置的是当前项目的虚拟目录</li>
-<li> 如果要在多个项目之间共享，则可以将path设置为"/"(“/”为服务器路径)</li>
-</ul></li>
-<li>不同服务器之间Cookie的共享
-<ul>
-<li>setDomain(String path):如果设置一级域名相同，那么多个服务器之间cookie可以共享</li>
-<li>例如：设置path为".baidu.com"，那么tieba.baidu.com和news.baidu.com两个不同的服务器之间可以共享数据，因为它们的一级域名是.baidu.com</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<hr>
-
-<h2 id="Cookie的特点和作用"><a href="#Cookie的特点和作用" class="headerlink" title="Cookie的特点和作用"></a><font size="5">Cookie的特点和作用</font></h2> <ul>
- <li>特点
- <ul>
- <li>cookie存储数据在客户端浏览器</li>
-<li>浏览器对于单个cookie 的大小有限制(4kb) 以及 对同一个域名下的总cookie数量也有限制(20个)</li>
-<li><font color="red">Cookie存储的键值对都是String类型</font></li>
- </ul>
-</li>
-<li>作用
-<ul>
-<li>cookie一般用于存出少量的不太敏感的数据，这是因为Cookie的存储位置决定的，存储在客户端容易丢失和被篡改。</li>
-<li>在不登录的情况下，完成服务器对客户端的身份识别</li>
-</ul>
-</li>
-</ul>
-<hr>
-
-<h1 id="服务器端会话技术–Session"><a href="#服务器端会话技术–Session" class="headerlink" title="服务器端会话技术–Session"></a>服务器端会话技术–Session</h1><h2 id="Session使用步骤"><a href="#Session使用步骤" class="headerlink" title="Session使用步骤"></a><font size="5">Session使用步骤</font></h2><ol>
-<li> 通过resquest获取Session对象：<font color="blue">request.getSession()</font></li>
-<li>调用Session对象的方法存储数据(和request请求转发方法一样)
-<ul>
-<li><font color="blue">Object getAttribute(String name)</font>：通过键获取值</li>
-<li><font color="blue">void setAttribute(String name, Object value)</font>：将数据存储进Session对象</li>
-<li><font color="blue">void removeAttribute(String name)</font>：通过键移除相应的键值对</li>
-</ul>
-</li>
-</ol>
+<p>给出下面一段测试代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">	Integer a = 1;</span><br><span class="line">	Integer b = 2;</span><br><span class="line">	Integer c = 3;</span><br><span class="line">	Integer d = 3;</span><br><span class="line">	Integer e = 321;</span><br><span class="line">	Integer f = 321;</span><br><span class="line">	Long g = 3L;</span><br><span class="line"></span><br><span class="line">	System.out.println(c == d); //true ,-128~127之间用到Integer内的缓存池</span><br><span class="line">	System.out.println(e == f); //false</span><br><span class="line"></span><br><span class="line">	//遇到算术运算，自动拆箱</span><br><span class="line">	System.out.println(c == (a + b));   //true</span><br><span class="line">	//equals不会处理数据转型</span><br><span class="line">	System.out.println(c.equals(a + b));//true</span><br><span class="line">	System.out.println(g.equals(a + b));//false</span><br><span class="line">	//遇到算术运算自动拆箱，进行数据转型</span><br><span class="line">	System.out.println(g == a + b);     //true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
-<h2 id="Session实现原理"><a href="#Session实现原理" class="headerlink" title="Session实现原理"></a><font size="5">Session实现原理</font></h2><ol><font color="red">Session的实现是依赖于Cookie的。</font>
-<li>客户端第一次向服务器发送请求，服务器在服务器内部开辟一块内存空间，存放Session对象，并给该内存空间指定一个id</li>
-<li>服务器在响应头set-cookie中设置JSESSIONID=id这个键值对发送给客户端</li>
-<li>客户端接收到服务器的相应后，会将保存着Sessionid的Cookie对象保存在浏览器内存</li>
-<li>当客户端下一次向服务器发送请求的时候，会带着Cookie一起(在请求头cookie中有JSESSIONID=id键值对)</li>
-<li>服务器接收到请求后，得到JSESSIONID=id键值对的id后，会在内存中找到对应id的Session对象</li>
-<li>这就是为什么说Session依赖于Cookie的原因以及多次请求响应之间共享数据的原理</li>
-</ol>
-<hr>
-
-<h2 id="Session细节"><a href="#Session细节" class="headerlink" title="Session细节"></a><font size="5">Session细节</font></h2><ul>
-<li><font color="red">当客户端关闭后，服务器不关闭，两次获取session不是同一个</font>：前面说到过，Session是依赖于Cookie的，Cookie在默认情况下当客户端浏览器关闭后是自动销毁的，因此Cookie中的键值对自然也就销毁了，所以两次获取的Session不是同一个，如果需要两次的Cookie是同一个
-<ul>
-<li>创建一个Cookie对象，设置cookie的键为JSESSIONID，值为session对象的id</li>
-<li>设置cookie的存活时间</li>
-<li>那么在cookie存活时间内，服务器通过cookie请求头拿到session的id都是一样的，这样通过id找到的Session对象自然也是同一个</li>
-</ul>
-</li>
-<li><font color="red">客户端不关闭，服务器关闭后，两次获取的session不是同一个</font>，因为服务器关闭后相应内存会被释放，Session自然也会被释放<br>
-但是一般我们需要获取到的Session对象是同一个，确保数据不丢失，<font color="red">tomcat会自动完成Session的钝化和活化</font>
-<ul>
-<li>Session的钝化：在服务器正常关闭之前，将session对象序列化到硬盘上</li>
-<li>Session的活化：在服务器启动后，将session文件转化为内存中的session对象。</li>
-</ul>
-</li>
-<li>Session被销毁
-<ul>
-<li> 服务器关闭</li>
-<li>session对象调用invalidate() 自杀</li>
-<li>session默认失效时间 30分钟,可以tomcat服务器的web.xml配置文件中session-config设置所有项目的失效时间,也可以在项目的wen.xml配置文件单独配置项目的失效时间</li>
-</ul>
-</li>
-</ul>
-<hr>
-
-<h2 id="Session的特点"><a href="#Session的特点" class="headerlink" title="Session的特点"></a><font size="5">Session的特点</font></h2><ul>
-<li>用于一次会话的多次请求间共享数据，存储在服务器端</li>
-<li><font color="red">session可以存储任意类型，任意大小的数据</font></li>
-</ul>
     </div>
 
     
@@ -490,7 +398,9 @@
           
           <div class="post-tags">
             
-              <a href="/tags/会话技术/" rel="tag"><i class="fa fa-tag"></i>会话技术</a>
+              <a href="/tags/泛型/" rel="tag"><i class="fa fa-tag"></i>泛型</a>
+            
+              <a href="/tags/Java基础/" rel="tag"><i class="fa fa-tag"></i>Java基础</a>
             
           </div>
         
@@ -500,8 +410,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/09/08/服务器中的四种路径/" rel="next" title="服务器中的四种路径">
-                  <i class="fa fa-chevron-left"></i> 服务器中的四种路径
+                <a href="/2019/09/30/深入理解JVM虚拟机四/" rel="next" title="深入理解JVM虚拟机四">
+                  <i class="fa fa-chevron-left"></i> 深入理解JVM虚拟机四
                 </a>
               
             </div>
@@ -509,10 +419,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/09/09/数据库基础-SQL语句总结-二/" rel="prev" title="数据库基础--SQL语句总结(二)">
-                  数据库基础--SQL语句总结(二) <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -561,7 +467,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#会话技术的实现方式"><span class="nav-number">1.</span> <span class="nav-text">会话技术的实现方式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#客户端会话技术–Cookie"><span class="nav-number">2.</span> <span class="nav-text">客户端会话技术–Cookie</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Cookie使用步骤"><span class="nav-number">2.1.</span> <span class="nav-text">Cookie使用步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cookie实现原理"><span class="nav-number">2.2.</span> <span class="nav-text">Cookie实现原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cookie的细节"><span class="nav-number">2.3.</span> <span class="nav-text">Cookie的细节</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cookie的特点和作用"><span class="nav-number">2.4.</span> <span class="nav-text">Cookie的特点和作用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务器端会话技术–Session"><span class="nav-number">3.</span> <span class="nav-text">服务器端会话技术–Session</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Session使用步骤"><span class="nav-number">3.1.</span> <span class="nav-text">Session使用步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Session实现原理"><span class="nav-number">3.2.</span> <span class="nav-text">Session实现原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Session细节"><span class="nav-number">3.3.</span> <span class="nav-text">Session细节</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Session的特点"><span class="nav-number">3.4.</span> <span class="nav-text">Session的特点</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#泛型和类型擦除"><span class="nav-number">1.</span> <span class="nav-text">泛型和类型擦除</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自动装箱、拆箱和遍历循环"><span class="nav-number">2.</span> <span class="nav-text">自动装箱、拆箱和遍历循环</span></a></li></ol></div>
         
       </div>
       <!--/noindex-->
