@@ -3,7 +3,7 @@
   <entry>
     <title><![CDATA[设计模式之单例模式]]></title>
     <url>%2F2019%2F10%2F03%2F%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%2F</url>
-    <content type="text"><![CDATA[单例模式是23种设计模式中最简单的一种。简单地说，单例模式就是整个程序中有且只有一个实例。该类负责创建自己的对象，同时确保只有一个对象。 单例模式分为两种 * 懒汉式 线程不安全，即在使用时在进行初始化。 * 饿汉式 线程安全，容易产生垃圾，因为类加载时就将对象初始化。 饿汉式饿汉式的实现很简单，类的实例作为该类的静态的成员属性和一个静态的public成员方法用于获取该属性，类加载时就已经生成了类的实例，调用静态方法可以获取该实例。代码如下 12345678910111213public class Singleton1 &#123; //私有化构造方法 private Singleton1() &#123; &#125; //饿汉式，类加载时就已经创建 private static Singleton1 s = new Singleton1(); //通过静态方法获取单例 public static Singleton1 getInstance() &#123; return s; &#125;&#125; 显而易见，getInstance方法里面的操作是原子性的，因此饿汉式单例模式是线程安全的 懒汉式线程不安全的实现代码如下 12345678910111213public class Singleton2 &#123; private Singleton2()&#123;&#125;; private static Singleton2 instance; //线程不安全的单例模式 public static Singleton2 getInstance() &#123; if (instance == null) &#123; instance=new Singleton2(); &#125; return instance; &#125;&#125; 由于懒汉式是线程不安全的，因此有两种实现方式 给相应部分加上同步代码块，使之变成线程安全这里用的是双重检查加锁123456789101112131415161718//双重检查加锁public class Singleton2 &#123; private Singleton2()&#123;&#125;; private static volatile Singleton2 instance; //一个线程安全的单例模式 public static Singleton2 getInstance() &#123; if (instance == null) &#123; synchronized (Singleton2.class) &#123; if (instance == null) &#123; instance=new Singleton2(); &#125; &#125; &#125; return instance; &#125;&#125; 以上实现代码只需要在第一次实例化单例的时候会执行到同步代码部分。 利用内部类实现使用静态内部类123456789101112public class Singleton3 &#123; private Singleton3() &#123; &#125; private static class inner&#123; private static Singleton3 instance=new Singleton3(); &#125; public static Singleton3 getInstance() &#123; return inner.instance; &#125;&#125; 可以看出，在获取方法中的操作也是原子性的，因此是线程安全的。]]></content>
+    <content type="text"><![CDATA[单例模式是23种设计模式中最简单的一种。简单地说，单例模式就是整个程序中有且只有一个实例。该类负责创建自己的对象，同时确保只有一个对象。 单例模式分为两种 懒汉式线程不安全，即在使用时在进行初始化。 饿汉式线程安全，容易产生垃圾，因为类加载时就将对象初始化。 饿汉式饿汉式的实现很简单，类的实例作为该类的静态的成员属性和一个静态的public成员方法用于获取该属性，类加载时就已经生成了类的实例，调用静态方法可以获取该实例。代码如下 12345678910111213public class Singleton1 &#123; //私有化构造方法 private Singleton1() &#123; &#125; //饿汉式，类加载时就已经创建 private static Singleton1 s = new Singleton1(); //通过静态方法获取单例 public static Singleton1 getInstance() &#123; return s; &#125;&#125; 显而易见，getInstance方法里面的操作是原子性的，因此饿汉式单例模式是线程安全的 懒汉式线程不安全的实现代码如下 12345678910111213public class Singleton2 &#123; private Singleton2()&#123;&#125;; private static Singleton2 instance; //线程不安全的单例模式 public static Singleton2 getInstance() &#123; if (instance == null) &#123; instance=new Singleton2(); &#125; return instance; &#125;&#125; 由于懒汉式是线程不安全的，因此有两种实现方式 给相应部分加上同步代码块，使之变成线程安全这里用的是双重检查加锁123456789101112131415161718//双重检查加锁public class Singleton2 &#123; private Singleton2()&#123;&#125;; private static volatile Singleton2 instance; //一个线程安全的单例模式 public static Singleton2 getInstance() &#123; if (instance == null) &#123; synchronized (Singleton2.class) &#123; if (instance == null) &#123; instance=new Singleton2(); &#125; &#125; &#125; return instance; &#125;&#125; 以上实现代码只需要在第一次实例化单例的时候会执行到同步代码部分。 利用内部类实现使用静态内部类123456789101112public class Singleton3 &#123; private Singleton3() &#123; &#125; private static class inner&#123; private static Singleton3 instance=new Singleton3(); &#125; public static Singleton3 getInstance() &#123; return inner.instance; &#125;&#125; 可以看出，在获取方法中的操作也是原子性的，因此是线程安全的。]]></content>
       <categories>
         <category>设计模式</category>
       </categories>
@@ -249,8 +249,8 @@
       </categories>
       <tags>
         <tag>数组</tag>
-        <tag>数据结构</tag>
         <tag>队列</tag>
+        <tag>数据结构</tag>
       </tags>
   </entry>
   <entry>
@@ -442,8 +442,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>BOM</tag>
         <tag>前端</tag>
+        <tag>BOM</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
