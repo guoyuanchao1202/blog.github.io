@@ -58,14 +58,14 @@
 </script>
 
   <meta name="description" content="题目：给定一个数组，在数组所有的子序列中找到和最大的子序列。我将用4中解法来对该题进行求解">
-<meta name="keywords" content="数组,动态规划,分治算法">
+<meta name="keywords" content="动态规划,数组,分治算法">
 <meta property="og:type" content="article">
 <meta property="og:title" content="最大子序列和问题">
 <meta property="og:url" content="https://HoA-W.github.io/2019/10/11/最大子序列和问题/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="题目：给定一个数组，在数组所有的子序列中找到和最大的子序列。我将用4中解法来对该题进行求解">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-11T11:55:05.533Z">
+<meta property="og:updated_time" content="2019-10-11T11:55:54.497Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="最大子序列和问题">
 <meta name="twitter:description" content="题目：给定一个数组，在数组所有的子序列中找到和最大的子序列。我将用4中解法来对该题进行求解">
@@ -287,7 +287,7 @@
                 
               
 
-              <time title="创建时间：2019-10-11 19:24:49 / 修改时间：19:55:05" itemprop="dateCreated datePublished" datetime="2019-10-11T19:24:49+08:00">2019-10-11</time>
+              <time title="创建时间：2019-10-11 19:24:49 / 修改时间：19:55:54" itemprop="dateCreated datePublished" datetime="2019-10-11T19:24:49+08:00">2019-10-11</time>
             </span>
           
             
@@ -322,14 +322,15 @@
         <p>题目：给定一个数组，在数组所有的子序列中找到和最大的子序列。我将用4中解法来对该题进行求解</p>
 <hr>
 <a id="more"></a>
-# 暴力求解
-* <font color="blue"><b>算法思想</b></font>
-思路很简单，遍历数组所有的子序列，对每个子序列进行求和，找到最大的和并返回
-* <font color="blue"><b>代码实现</b></font>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 暴力求解</span><br><span class="line"> * @param arr </span><br><span class="line"> * @return</span><br><span class="line"> */</span><br><span class="line">public static int maxSubSum(int[] arr) &#123;</span><br><span class="line">	int maxsum=0;</span><br><span class="line">	//遍历以数组中所有元素开头的子序列</span><br><span class="line">	for (int i = 0; i &lt; arr.length; i++) &#123;</span><br><span class="line">		//对于每个元素，以该元素开头的所有长度序列都要计算一次</span><br><span class="line">		for (int j = i; j &lt; arr.length; j++) &#123;</span><br><span class="line">			int thissum = 0;</span><br><span class="line">			//计算序列和</span><br><span class="line">			for (int k = i; k &lt;= j; k++) &#123;</span><br><span class="line">				thissum += arr[k];</span><br><span class="line">			&#125;</span><br><span class="line">			if (maxsum &lt; thissum) &#123;</span><br><span class="line">				maxsum = thissum;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return maxsum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li><font color="blue"><b>时间复杂度</b></font><br>三重循环，所以时间复杂度为O(N3)</li>
+<h1 id="暴力求解"><a href="#暴力求解" class="headerlink" title="暴力求解"></a>暴力求解</h1><ul>
+<li><p><font color="blue"><b>算法思想</b></font><br>思路很简单，遍历数组所有的子序列，对每个子序列进行求和，找到最大的和并返回</p>
+</li>
+<li><p><font color="blue"><b>代码实现</b></font></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 暴力求解</span><br><span class="line"> * @param arr </span><br><span class="line"> * @return</span><br><span class="line"> */</span><br><span class="line">public static int maxSubSum(int[] arr) &#123;</span><br><span class="line">	int maxsum=0;</span><br><span class="line">	//遍历以数组中所有元素开头的子序列</span><br><span class="line">	for (int i = 0; i &lt; arr.length; i++) &#123;</span><br><span class="line">		//对于每个元素，以该元素开头的所有长度序列都要计算一次</span><br><span class="line">		for (int j = i; j &lt; arr.length; j++) &#123;</span><br><span class="line">			int thissum = 0;</span><br><span class="line">			//计算序列和</span><br><span class="line">			for (int k = i; k &lt;= j; k++) &#123;</span><br><span class="line">				thissum += arr[k];</span><br><span class="line">			&#125;</span><br><span class="line">			if (maxsum &lt; thissum) &#123;</span><br><span class="line">				maxsum = thissum;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return maxsum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><font color="blue"><b>时间复杂度</b></font><br>三重循环，所以时间复杂度为O(N3)</p>
+</li>
 </ul>
 <h1 id="优化暴力求解"><a href="#优化暴力求解" class="headerlink" title="优化暴力求解"></a>优化暴力求解</h1><ul>
 <li><p><font color="blue"><b>算法思想</b></font><br>我们需要知道，f(k+1)=k+f(k)，即对于一个子序列，该子序列的和，等于它前一个子序列的和加上一个元素得到。借此可以消除一层循环</p>
@@ -413,9 +414,9 @@
           
           <div class="post-tags">
             
-              <a href="/tags/数组/" rel="tag"><i class="fa fa-tag"></i>数组</a>
-            
               <a href="/tags/动态规划/" rel="tag"><i class="fa fa-tag"></i>动态规划</a>
+            
+              <a href="/tags/数组/" rel="tag"><i class="fa fa-tag"></i>数组</a>
             
               <a href="/tags/分治算法/" rel="tag"><i class="fa fa-tag"></i>分治算法</a>
             
@@ -484,7 +485,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#优化暴力求解"><span class="nav-number">1.</span> <span class="nav-text">优化暴力求解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分治算法"><span class="nav-number">2.</span> <span class="nav-text">分治算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#动态规划"><span class="nav-number">3.</span> <span class="nav-text">动态规划</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#暴力求解"><span class="nav-number">1.</span> <span class="nav-text">暴力求解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#优化暴力求解"><span class="nav-number">2.</span> <span class="nav-text">优化暴力求解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分治算法"><span class="nav-number">3.</span> <span class="nav-text">分治算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#动态规划"><span class="nav-number">4.</span> <span class="nav-text">动态规划</span></a></li></ol></div>
         
       </div>
       <!--/noindex-->
