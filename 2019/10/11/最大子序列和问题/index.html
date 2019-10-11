@@ -57,21 +57,19 @@
   };
 </script>
 
-  <meta name="description" content="BOM，全称Browser Object Model，浏览器对象模型它将浏览器的各个组成部分封装成对象">
-<meta name="keywords" content="前端,BOM,JavaScript">
+  <meta name="description" content="题目：给定一个数组，在数组所有的子序列中找到和最大的子序列。我将用4中解法来对该题进行求解">
+<meta name="keywords" content="数组,动态规划,分治算法">
 <meta property="og:type" content="article">
-<meta property="og:title" content="BOM模型基础学习">
-<meta property="og:url" content="https://HoA-W.github.io/2019/09/08/BOM模型基础学习/index.html">
+<meta property="og:title" content="最大子序列和问题">
+<meta property="og:url" content="https://HoA-W.github.io/2019/10/11/最大子序列和问题/index.html">
 <meta property="og:site_name" content="CommonGuy">
-<meta property="og:description" content="BOM，全称Browser Object Model，浏览器对象模型它将浏览器的各个组成部分封装成对象">
+<meta property="og:description" content="题目：给定一个数组，在数组所有的子序列中找到和最大的子序列。我将用4中解法来对该题进行求解">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/2019082814430963.png">
-<meta property="og:updated_time" content="2019-09-08T06:00:45.754Z">
+<meta property="og:updated_time" content="2019-10-11T11:55:05.533Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="BOM模型基础学习">
-<meta name="twitter:description" content="BOM，全称Browser Object Model，浏览器对象模型它将浏览器的各个组成部分封装成对象">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/2019082814430963.png">
-  <link rel="canonical" href="https://HoA-W.github.io/2019/09/08/BOM模型基础学习/">
+<meta name="twitter:title" content="最大子序列和问题">
+<meta name="twitter:description" content="题目：给定一个数组，在数组所有的子序列中找到和最大的子序列。我将用4中解法来对该题进行求解">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/10/11/最大子序列和问题/">
 
 
 <script id="page-configurations">
@@ -85,7 +83,7 @@
   };
 </script>
 
-  <title>BOM模型基础学习 | CommonGuy</title>
+  <title>最大子序列和问题 | CommonGuy</title>
   
 
 
@@ -261,7 +259,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/09/08/BOM模型基础学习/">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/10/11/最大子序列和问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="买太平湖底陈年水墨">
@@ -273,7 +271,7 @@
       <meta itemprop="name" content="CommonGuy">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">BOM模型基础学习
+        <h1 class="post-title" itemprop="name headline">最大子序列和问题
 
           
         </h1>
@@ -289,7 +287,7 @@
                 
               
 
-              <time title="创建时间：2019-09-08 10:45:46 / 修改时间：14:00:45" itemprop="dateCreated datePublished" datetime="2019-09-08T10:45:46+08:00">2019-09-08</time>
+              <time title="创建时间：2019-10-11 19:24:49 / 修改时间：19:55:05" itemprop="dateCreated datePublished" datetime="2019-10-11T19:24:49+08:00">2019-10-11</time>
             </span>
           
             
@@ -302,7 +300,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/前端基础/" itemprop="url" rel="index"><span itemprop="name">前端基础</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法之美/" itemprop="url" rel="index"><span itemprop="name">算法之美</span></a></span>
 
                 
                 
@@ -321,53 +319,54 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <hr>
-
-<p>BOM，全称Browser Object Model，浏览器对象模型<br>它将浏览器的各个组成部分封装成对象</p>
+        <p>题目：给定一个数组，在数组所有的子序列中找到和最大的子序列。我将用4中解法来对该题进行求解</p>
 <hr>
 <a id="more"></a>
+# 暴力求解
+* <font color="blue"><b>算法思想</b></font>
+思路很简单，遍历数组所有的子序列，对每个子序列进行求和，找到最大的和并返回
+* <font color="blue"><b>代码实现</b></font>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 暴力求解</span><br><span class="line"> * @param arr </span><br><span class="line"> * @return</span><br><span class="line"> */</span><br><span class="line">public static int maxSubSum(int[] arr) &#123;</span><br><span class="line">	int maxsum=0;</span><br><span class="line">	//遍历以数组中所有元素开头的子序列</span><br><span class="line">	for (int i = 0; i &lt; arr.length; i++) &#123;</span><br><span class="line">		//对于每个元素，以该元素开头的所有长度序列都要计算一次</span><br><span class="line">		for (int j = i; j &lt; arr.length; j++) &#123;</span><br><span class="line">			int thissum = 0;</span><br><span class="line">			//计算序列和</span><br><span class="line">			for (int k = i; k &lt;= j; k++) &#123;</span><br><span class="line">				thissum += arr[k];</span><br><span class="line">			&#125;</span><br><span class="line">			if (maxsum &lt; thissum) &#123;</span><br><span class="line">				maxsum = thissum;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return maxsum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h1 id="五个对象"><a href="#五个对象" class="headerlink" title="五个对象"></a>五个对象</h1><h2 id="window-窗口对象"><a href="#window-窗口对象" class="headerlink" title="window-窗口对象"></a><font size="4">window-窗口对象</font></h2><h2 id="Location-地址栏对象"><a href="#Location-地址栏对象" class="headerlink" title="Location-地址栏对象"></a><font size="4">Location-地址栏对象</font></h2><h2 id="History-历史记录对象"><a href="#History-历史记录对象" class="headerlink" title="History-历史记录对象"></a><font size="4">History-历史记录对象</font></h2><h2 id="Screen-显示器屏幕对象"><a href="#Screen-显示器屏幕对象" class="headerlink" title="Screen-显示器屏幕对象"></a><font size="4">Screen-显示器屏幕对象</font></h2><h2 id="Navigator-浏览器对象"><a href="#Navigator-浏览器对象" class="headerlink" title="Navigator-浏览器对象"></a><font size="4">Navigator-浏览器对象</font></h2><hr>
-
-<h1 id="window-窗口对象-1"><a href="#window-窗口对象-1" class="headerlink" title="window-窗口对象"></a>window-窗口对象</h1><p>该对象<strong>无需创建</strong>，可以直接使用对象的方法和属性</p>
-<h2 id="window对象的方法"><a href="#window对象的方法" class="headerlink" title="window对象的方法"></a><font size="5">window对象的方法</font></h2><h3 id="与弹出框有关的方法"><a href="#与弹出框有关的方法" class="headerlink" title="与弹出框有关的方法"></a><font size="5">与弹出框有关的方法</font></h3><h4 id="alert"><a href="#alert" class="headerlink" title="alert()"></a><font size="4">alert()</font></h4><p>显示带有一段消息和一个确认按钮的警告框。</p>
-<h4 id="confirm"><a href="#confirm" class="headerlink" title="confirm()"></a><font size="4">confirm()</font></h4><p>显示带有一段消息以及确认按钮和取消按钮的对话框。</p>
 <ul>
-<li><p>如果用户点击确定按钮，则方法返回true</p>
+<li><font color="blue"><b>时间复杂度</b></font><br>三重循环，所以时间复杂度为O(N3)</li>
+</ul>
+<h1 id="优化暴力求解"><a href="#优化暴力求解" class="headerlink" title="优化暴力求解"></a>优化暴力求解</h1><ul>
+<li><p><font color="blue"><b>算法思想</b></font><br>我们需要知道，f(k+1)=k+f(k)，即对于一个子序列，该子序列的和，等于它前一个子序列的和加上一个元素得到。借此可以消除一层循环</p>
 </li>
-<li><p>如果用户点击取消按钮，则方法返回false</p>
-<h4 id="prompt"><a href="#prompt" class="headerlink" title="prompt()"></a><font size="4">prompt()</font></h4><p>显示可提示用户输入的对话框。</p>
+<li><p><font color="blue"><b>代码实现</b></font></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 优化暴力解法</span><br><span class="line"> * @param arr</span><br><span class="line"> * @return</span><br><span class="line"> */</span><br><span class="line">public static int maxSubSum1(int[] arr) &#123;</span><br><span class="line">	int maxsum=0;</span><br><span class="line">	//同样的，遍历以每个元素开头的序列</span><br><span class="line">	for (int i = 0; i &lt; arr.length; i++) &#123;</span><br><span class="line">		int thissum = 0;</span><br><span class="line">		//找到以arr[i]开头的所有序列中最大和序列</span><br><span class="line">		for (int j = 0; j &lt; arr.length; j++) &#123;</span><br><span class="line">			thissum += arr[j];</span><br><span class="line">			if (maxsum &lt; thissum) &#123;</span><br><span class="line">				maxsum = thissum;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return maxsum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>返回值：获取用户输入的值 </p>
-<h3 id="与打开关闭有关的方法"><a href="#与打开关闭有关的方法" class="headerlink" title="与打开关闭有关的方法"></a><font size="5">与打开关闭有关的方法</font></h3><h4 id="close"><a href="#close" class="headerlink" title="close()"></a><font size="4">close()</font></h4><p>关闭浏览器窗口。</p>
+<li><p><font color="blue"><b>时间复杂度</b></font><br>双重循环，时间复杂度为O(N2)</p>
 </li>
-<li><p>谁调用我 ，我关谁</p>
-<h4 id="open"><a href="#open" class="headerlink" title="open()"></a><font size="4">open()</font></h4><p>打开一个新的浏览器窗口</p>
-</li>
-<li><p>返回新的Window对象</p>
-<h3 id="与定时器有关的方式"><a href="#与定时器有关的方式" class="headerlink" title="与定时器有关的方式"></a><font size="5">与定时器有关的方式</font></h3><h4 id="setTimeout"><a href="#setTimeout" class="headerlink" title="setTimeout()"></a><font size="4">setTimeout()</font></h4><p>在指定的毫秒数后调用函数或计算表达式。</p>
-<ul>
-<li>参数：<ol>
-<li>js代码或者方法对象</li>
-<li>毫秒值</li>
+</ul>
+<h1 id="分治算法"><a href="#分治算法" class="headerlink" title="分治算法"></a>分治算法</h1><ul>
+<li><font color="blue"><b>算法思想</b></font><br>分治的思想就是把问题分成两个大致相等的子问题，然后递归对它们进行求解这就是”分”；”治”阶段将两个子问题的解修补到一起并可能再做一些少量步骤的附加工作，最后得到整个问题的解。<br>对于这个题，最大子序列可能在三处出现</li>
+</ul>
+<ol>
+<li>该子序列全部位于数组的左边</li>
+<li>改子序列全部位于数组的右边</li>
+<li>该子序列跨越数组中部，即一部分在左边一部分在右边</li>
 </ol>
+<p>因此我们可以进行分治递归求解</p>
+<ul>
+<li><p><font color="blue"><b>代码实现</b></font></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 分治算法</span><br><span class="line"> * @param arr</span><br><span class="line"> * @param left</span><br><span class="line"> * @param right</span><br><span class="line"> * @return</span><br><span class="line"> */</span><br><span class="line">public static int maxSubRec(int[] arr, int left, int right) &#123;</span><br><span class="line">	//递归出口，当左边界等于右边界时只有一个数，直接返回</span><br><span class="line">	if (left == right) &#123;</span><br><span class="line">		return arr[left];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	int center = (left + right) / 2;</span><br><span class="line">	//左递归，求出数组左边部分最大子序列</span><br><span class="line">	int leftsum = maxSubRec(arr, left, center);</span><br><span class="line">	//右递归，求出数组右边部分最大子序列</span><br><span class="line">	int rightsum = maxSubRec(arr, center + 1, right);</span><br><span class="line">	</span><br><span class="line">	//求出跨越数组中部的子序列左边部分的最大值</span><br><span class="line">	int leftbordersum = arr[center];</span><br><span class="line">	int maxleftborder = arr[center];</span><br><span class="line">	for (int i = center - 1; i &gt;= left; i--) &#123;</span><br><span class="line">		maxleftborder += arr[i];</span><br><span class="line">		if (leftbordersum &lt; maxleftborder) &#123;</span><br><span class="line">			leftbordersum = maxleftborder;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	//求出跨越数组中部的子序列右边部分的最大值</span><br><span class="line">	int rightbordersum = arr[center + 1];</span><br><span class="line">	int maxrightborder = arr[center + 1];</span><br><span class="line">	for (int i = center +2; i &lt;= right; i++) &#123;</span><br><span class="line">		maxrightborder += arr[i];</span><br><span class="line">		if (rightbordersum &lt; maxrightborder) &#123;</span><br><span class="line">			rightbordersum = maxrightborder;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//leftbordersum+rightbordersum即为数组中间部分的最大值</span><br><span class="line"></span><br><span class="line">	//返回三者最大值，即为最大子序列和</span><br><span class="line">	return Math.max(Math.max(leftsum, rightsum), leftbordersum + rightbordersum);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-<li>返回值：唯一标识，用于取消定时器<h4 id="clearTimeout"><a href="#clearTimeout" class="headerlink" title="clearTimeout()"></a><font size="4">clearTimeout()</font></h4>取消由 setTimeout() 方法设置的 timeout。<h4 id="setInterval"><a href="#setInterval" class="headerlink" title="setInterval()"></a><font size="4">setInterval()</font></h4>按照指定的周期（以毫秒计）来调用函数或计算表达式。<h4 id="clearInterval"><a href="#clearInterval" class="headerlink" title="clearInterval()"></a><font size="4">clearInterval()</font></h4>取消由 setInterval() 设置的 timeout。<h2 id="window对象的属性"><a href="#window对象的属性" class="headerlink" title="window对象的属性"></a><font size="5">window对象的属性</font></h2><h3 id="获取其他BOM对象"><a href="#获取其他BOM对象" class="headerlink" title="获取其他BOM对象"></a><font size="4">获取其他BOM对象</font></h3>history<br>location<br>Navigator<br>Screen<h3 id="获取DOM对象"><a href="#获取DOM对象" class="headerlink" title="获取DOM对象"></a><font size="4">获取DOM对象</font></h3>document</li>
+<li><p><font color="blue"><b>时间复杂度</b></font><br>O(NlogN)</p>
+</li>
+</ul>
+<h1 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h1><p>我们需要知道，负数不可能是最大子序列的前缀，这不难理解，因为一个负数对于序列和没有任何增益效果反而会使得序列和变小。那么可以推广的到任何负序列也不可能是最大子序列的前缀。由此可以得到动态规划解法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 动态规划</span><br><span class="line"> * 时间复杂度：O(n)</span><br><span class="line"> * @param arr</span><br><span class="line"> * @return</span><br><span class="line"> */</span><br><span class="line">public static int maxSubSumdyn(int[] arr) &#123;</span><br><span class="line">	int maxsum=0;</span><br><span class="line">	int thissum = 0;</span><br><span class="line">	for (int i = 0; i &lt; arr.length; i++) &#123;</span><br><span class="line">		thissum += arr[i];</span><br><span class="line">		//当前最大子序列和小于当先序列和时，更新最大子序列和</span><br><span class="line">		if (maxsum &lt; thissum) &#123;</span><br><span class="line">			maxsum = thissum;</span><br><span class="line">		&#125;</span><br><span class="line">		//当thissum&lt;0时，说明当前子序列和为负，丢弃该子序列</span><br><span class="line">		else if (thissum &lt; 0) &#123;</span><br><span class="line">			thissum = 0;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return maxsum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//该算法中加了一个可以得到最大子序列左右边界的实现</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font color="blue"><b>时间复杂度</b></font><br>很明显的。只有一重循环，复杂度为O(N)，是线性的</li>
 </ul>
 <hr>
+四种解法，动态规划法最优，个人感觉分治算法较为考验细节部分
 
-</li>
-</ul>
-<h1 id="Location-地址栏对象-1"><a href="#Location-地址栏对象-1" class="headerlink" title="Location-地址栏对象"></a>Location-地址栏对象</h1><h2 id="创建-获取"><a href="#创建-获取" class="headerlink" title="创建(获取)"></a><font size="5">创建(获取)</font></h2><pre><code>1. window.location
-2. location</code></pre><h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a><font size="5">方法</font></h2><p>reload()    重新加载当前文档。刷新</p>
-<h2 id="属性"><a href="#属性" class="headerlink" title="属性"></a><font size="5">属性</font></h2><p>href    设置或返回完整的 URL。<br><img src="https://img-blog.csdnimg.cn/2019082814430963.png" alt="在这里插入图片描述"><br>如图，给按钮设置监听器，点击按钮后修改页面的URL为百度页面，就会自动跳转到百度的页面</p>
-<hr>
 
-<h1 id="History-历史记录对象-1"><a href="#History-历史记录对象-1" class="headerlink" title="History-历史记录对象"></a>History-历史记录对象</h1><h2 id="创建-获取-1"><a href="#创建-获取-1" class="headerlink" title="创建(获取)"></a><font size="5">创建(获取)</font></h2><pre><code>1. window.history
-2. history</code></pre><h2 id="方法-1"><a href="#方法-1" class="headerlink" title="方法"></a><font size="5">方法</font></h2><h3 id="back"><a href="#back" class="headerlink" title="back()"></a><font size="4">back()</font></h3><p>加载 history 列表中的前一个 URL。</p>
-<h3 id="forward"><a href="#forward" class="headerlink" title="forward()"></a><font size="4">forward()</font></h3><p>加载 history 列表中的下一个 URL。</p>
-<h3 id="go-参数"><a href="#go-参数" class="headerlink" title="go(参数)"></a><font size="4">go(参数)</font></h3><p>加载 history 列表中的某个具体页面。<br>    参数：<br>        正数：前进几个历史记录<br>        负数：后退几个历史记录</p>
-<h2 id="属性-1"><a href="#属性-1" class="headerlink" title="属性"></a><font size="5">属性</font></h2><h3 id="length"><a href="#length" class="headerlink" title="length"></a><font size="4">length</font></h3><pre><code>返回当前窗口历史列表中的 URL 数量。</code></pre>
+
     </div>
 
     
@@ -414,11 +413,11 @@
           
           <div class="post-tags">
             
-              <a href="/tags/前端/" rel="tag"><i class="fa fa-tag"></i>前端</a>
+              <a href="/tags/数组/" rel="tag"><i class="fa fa-tag"></i>数组</a>
             
-              <a href="/tags/BOM/" rel="tag"><i class="fa fa-tag"></i>BOM</a>
+              <a href="/tags/动态规划/" rel="tag"><i class="fa fa-tag"></i>动态规划</a>
             
-              <a href="/tags/JavaScript/" rel="tag"><i class="fa fa-tag"></i>JavaScript</a>
+              <a href="/tags/分治算法/" rel="tag"><i class="fa fa-tag"></i>分治算法</a>
             
           </div>
         
@@ -428,8 +427,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/09/08/JavaScript基础/" rel="next" title="JavaScript基础">
-                  <i class="fa fa-chevron-left"></i> JavaScript基础
+                <a href="/2019/10/09/自顶向下之计算机网络和因特网-运输层/" rel="next" title="自顶向下之计算机网络和因特网-运输层">
+                  <i class="fa fa-chevron-left"></i> 自顶向下之计算机网络和因特网-运输层
                 </a>
               
             </div>
@@ -437,10 +436,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/09/08/tomcat启动问题分析/" rel="prev" title="Tomcat启动问题分析">
-                  Tomcat启动问题分析 <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -489,7 +484,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#五个对象"><span class="nav-number">1.</span> <span class="nav-text">五个对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#window-窗口对象"><span class="nav-number">1.1.</span> <span class="nav-text">window-窗口对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Location-地址栏对象"><span class="nav-number">1.2.</span> <span class="nav-text">Location-地址栏对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#History-历史记录对象"><span class="nav-number">1.3.</span> <span class="nav-text">History-历史记录对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Screen-显示器屏幕对象"><span class="nav-number">1.4.</span> <span class="nav-text">Screen-显示器屏幕对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Navigator-浏览器对象"><span class="nav-number">1.5.</span> <span class="nav-text">Navigator-浏览器对象</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#window-窗口对象-1"><span class="nav-number">2.</span> <span class="nav-text">window-窗口对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#window对象的方法"><span class="nav-number">2.1.</span> <span class="nav-text">window对象的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#与弹出框有关的方法"><span class="nav-number">2.1.1.</span> <span class="nav-text">与弹出框有关的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#alert"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">alert()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#confirm"><span class="nav-number">2.1.1.2.</span> <span class="nav-text">confirm()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#prompt"><span class="nav-number">2.1.1.3.</span> <span class="nav-text">prompt()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与打开关闭有关的方法"><span class="nav-number">2.1.2.</span> <span class="nav-text">与打开关闭有关的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#close"><span class="nav-number">2.1.2.1.</span> <span class="nav-text">close()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#open"><span class="nav-number">2.1.2.2.</span> <span class="nav-text">open()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与定时器有关的方式"><span class="nav-number">2.1.3.</span> <span class="nav-text">与定时器有关的方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#setTimeout"><span class="nav-number">2.1.3.1.</span> <span class="nav-text">setTimeout()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#clearTimeout"><span class="nav-number">2.1.3.2.</span> <span class="nav-text">clearTimeout()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setInterval"><span class="nav-number">2.1.3.3.</span> <span class="nav-text">setInterval()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#clearInterval"><span class="nav-number">2.1.3.4.</span> <span class="nav-text">clearInterval()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#window对象的属性"><span class="nav-number">2.2.</span> <span class="nav-text">window对象的属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#获取其他BOM对象"><span class="nav-number">2.2.1.</span> <span class="nav-text">获取其他BOM对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取DOM对象"><span class="nav-number">2.2.2.</span> <span class="nav-text">获取DOM对象</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Location-地址栏对象-1"><span class="nav-number">3.</span> <span class="nav-text">Location-地址栏对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建-获取"><span class="nav-number">3.1.</span> <span class="nav-text">创建(获取)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法"><span class="nav-number">3.2.</span> <span class="nav-text">方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#属性"><span class="nav-number">3.3.</span> <span class="nav-text">属性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#History-历史记录对象-1"><span class="nav-number">4.</span> <span class="nav-text">History-历史记录对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建-获取-1"><span class="nav-number">4.1.</span> <span class="nav-text">创建(获取)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法-1"><span class="nav-number">4.2.</span> <span class="nav-text">方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#back"><span class="nav-number">4.2.1.</span> <span class="nav-text">back()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#forward"><span class="nav-number">4.2.2.</span> <span class="nav-text">forward()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#go-参数"><span class="nav-number">4.2.3.</span> <span class="nav-text">go(参数)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#属性-1"><span class="nav-number">4.3.</span> <span class="nav-text">属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#length"><span class="nav-number">4.3.1.</span> <span class="nav-text">length</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#优化暴力求解"><span class="nav-number">1.</span> <span class="nav-text">优化暴力求解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分治算法"><span class="nav-number">2.</span> <span class="nav-text">分治算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#动态规划"><span class="nav-number">3.</span> <span class="nav-text">动态规划</span></a></li></ol></div>
         
       </div>
       <!--/noindex-->
