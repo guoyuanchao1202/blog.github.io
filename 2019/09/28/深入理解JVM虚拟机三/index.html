@@ -58,14 +58,14 @@
 </script>
 
   <meta name="description" content="前面已经介绍了JVM的内存布局、自动内存管理、垃圾回收以及Class文件结构，那么虚拟机又是怎么加载Class文件的？Class文件的信息进入到JVM中会不会发生变化呢？那么这次就记录一下虚拟机类加载机制。">
-<meta name="keywords" content="JVM,读书笔记">
+<meta name="keywords" content="读书笔记,JVM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入理解JVM虚拟机三">
 <meta property="og:url" content="https://HoA-W.github.io/2019/09/28/深入理解JVM虚拟机三/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="前面已经介绍了JVM的内存布局、自动内存管理、垃圾回收以及Class文件结构，那么虚拟机又是怎么加载Class文件的？Class文件的信息进入到JVM中会不会发生变化呢？那么这次就记录一下虚拟机类加载机制。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-30T09:31:14.421Z">
+<meta property="og:updated_time" content="2019-10-12T08:56:11.690Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入理解JVM虚拟机三">
 <meta name="twitter:description" content="前面已经介绍了JVM的内存布局、自动内存管理、垃圾回收以及Class文件结构，那么虚拟机又是怎么加载Class文件的？Class文件的信息进入到JVM中会不会发生变化呢？那么这次就记录一下虚拟机类加载机制。">
@@ -298,7 +298,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-09-30 17:31:14" itemprop="dateModified" datetime="2019-09-30T17:31:14+08:00">2019-09-30</time>
+                <time title="修改时间：2019-10-12 16:56:11" itemprop="dateModified" datetime="2019-10-12T16:56:11+08:00">2019-10-12</time>
               </span>
             
           
@@ -415,7 +415,6 @@
 <li><b>类方法</b></li>
 <li><b>接口方法等</b></li>
 </ul>
-<p><font color="blue">对于虚方法和final方法，会在运行时动态连接。</font>(后面会说到动态连接)</p>
 <p>具体对类、接口、类字段、类方法的解析见书P221</p>
 <h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a><font size="5">初始化</font></h2><p>该阶段是类加载过程的最后一步，前面的类加载过程，除了加载阶段用户可以参与，其余动作完全由虚拟机控制。到了初始化阶段，才真正开始执行类中定义的Java代码(Java代码编译后的字节码更准确一些)。<br>在准备阶段，变量已经赋过一次值，而在初始化阶段，则根据程序员通过程序制定的计划去初始化类变量和其他资源。<font color="bllue">初始化阶段是执行类构造器&lt; clinit&gt;方法的过程。</font></p>
 <ul>
@@ -510,9 +509,9 @@
           
           <div class="post-tags">
             
-              <a href="/tags/JVM/" rel="tag"><i class="fa fa-tag"></i>JVM</a>
-            
               <a href="/tags/读书笔记/" rel="tag"><i class="fa fa-tag"></i>读书笔记</a>
+            
+              <a href="/tags/JVM/" rel="tag"><i class="fa fa-tag"></i>JVM</a>
             
           </div>
         
@@ -601,7 +600,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-count">56</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -614,7 +613,7 @@
             <a href="/categories/">
           
         
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
