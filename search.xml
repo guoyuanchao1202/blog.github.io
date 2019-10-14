@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[设计模式之工厂模式]]></title>
+    <url>%2F2019%2F10%2F14%2F%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F%2F</url>
+    <content type="text"><![CDATA[本文主要介绍工厂模式的两种实现方式：即接口实现和匿名内部类实现。在介绍工厂模式之前，会先对接口的一些细节性知识做一个记录和小结。 接口 接口的访问权限 public公共接口，所有类都能访问 default包访问权限，只有同一个包内的类可以访问 接口的变量可以含有变量，但是接口中的变量默认都是sttaic final public修饰，即接口中只有常量。 接口的方法对于接口中的方法可以显式的声明为public，也可以不声明，接口中的方法默认是public的。因此当实现一个接口时，在接口中被定义的方法必须为public，否则会报错。接口中可以有三种方法 默认方法(default修饰) 123456789101112131415161718192021222324251. 接口方法和父类方法参数列表和返回值一样，那么&quot;类优先原则&quot;，使用父类方法interface inter3&#123; default void show() &#123; System.out.println(&quot;接口方法&quot;); &#125; &#125;class sub extends classDefault implements inter3 &#123;&#125;public class classDefault &#123; public void show() &#123; System.out.println(&quot;父类方法&quot;); &#125; public static void main(String[] args) &#123; sub s=new sub(); s.show(); &#125;&#125;=============Output：父类方法2. 接口方法和父类方法参数列表不同时，构成重载3. 接口方法和父类方法参数列表一样，返回值不一样时，报错，因为返回值不同不构成重载。 抽象方法(没有方法体) 静态方法 12345678910111213141516171819JDK8中，添加了静态方法 interface inter3&#123; static void show() &#123; System.out.println(&quot;接口方法&quot;); &#125; &#125;class sub extends classDefault implements inter3 &#123;&#125;public class classDefault &#123; public void show() &#123; System.out.println(&quot;父类方法&quot;); &#125; public static void main(String[] args) &#123; sub s=new sub(); s.show(); &#125;&#125;同样的，也是类优先原则。不同的是，接口中的静态方法和类一样，可以使用接口直接调用。 工厂模式(接口) 需要两个接口，一个是工厂接口，一个是想要的实现类接口(比如这里最后想要得到Animal对象，那就创建一个Animal接口) 创建不同的类来实现Animal。这里我想要一个狗和一个猫，那我就分别创建两个类来实现Animal接口。如果还想要别的动物，那就创建再创建类来实现Animal接口。 为每一个实现类创建一个单独的工厂类，每一个工厂类都实现工厂接口。这样通过不同的工厂类就能够得到不同的动物实现类。 最后只需要传入相应的工厂类即可得到不同的Animal实现类，即得到不同的动物。123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263//Animal接口interface Animal&#123; void eat();&#125;//工厂接口interface AnimalFactory&#123; Animal getAnimal();&#125;//Animal接口实现类--Dogclass Dog implements Animal &#123; @Override public void eat() &#123; System.out.println(this.getClass().getSimpleName() + &quot; eat meet&quot;); &#125;&#125;//Animal接口实现类--Catclass Cat implements Animal&#123; @Override public void eat() &#123; System.out.println(this.getClass().getSimpleName() + &quot; eat fish&quot;); &#125;&#125;//相应实现类的工厂实现类class DogFactory implements AnimalFactory &#123; @Override public Animal getAnimal() &#123; return new Dog(); &#125;&#125;//相应实现类的工厂实现类class CatFactory implements AnimalFactory &#123; @Override public Animal getAnimal() &#123; return new Cat(); &#125;&#125;public class Factories &#123; //静态方法，返回Animal接口的实现类(多态) public static Animal CreateAnimal(AnimalFactory factory) &#123; return factory.getAnimal(); &#125; public static void main(String[] args) &#123; Factories.CreateAnimal(new DogFactory()).eat(); Factories.CreateAnimal(new CatFactory()).eat(); &#125;&#125;=============Output：Dog eat meetCat eat fish 工厂模式(匿名内部类+Lambda表达式)12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849//Animal接口interface Animal&#123; void eat();&#125;//工厂接口interface AnimalFactory&#123; Animal getAnimal();&#125;//Animal接口实现类--Dogclass Dog implements Animal &#123; @Override public void eat() &#123; System.out.println(this.getClass().getSimpleName() + &quot; eat meet&quot;); &#125; //使用匿名内部类实现工厂接口 public static AnimalFactory factory = () -&gt; new Dog();&#125;//Animal接口实现类--Catclass Cat implements Animal&#123; @Override public void eat() &#123; System.out.println(this.getClass().getSimpleName() + &quot; eat fish&quot;); &#125; //使用匿名内部类实现工厂接口 public static AnimalFactory factory = () -&gt; new Cat();&#125;public class Factories &#123; //静态方法，返回Animal接口的实现类(多态) public static Animal CreateAnimal(AnimalFactory factory) &#123; return factory.getAnimal(); &#125; public static void main(String[] args) &#123; //调用不同Animal实现类的类变量作为参数传入 Factories.CreateAnimal(Dog.factory).eat(); Factories.CreateAnimal(Dog.factory).eat(); &#125;&#125;==============Dog eat meetCat eat fish 这种方式不同为每一个Animal实现类单独创建一个工厂实现类，而是以匿名内部类的方式实现工厂接口并作为相应动物类的静态变量，看起来更为优雅简单。]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>读书笔记</tag>
+        <tag>设计模式</tag>
+        <tag>接口</tag>
+        <tag>匿名内部类</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[手写简单的LinkedList集合]]></title>
     <url>%2F2019%2F10%2F13%2F%E6%89%8B%E5%86%99%E7%AE%80%E5%8D%95%E7%9A%84LinkedList%E9%9B%86%E5%90%88%2F</url>
     <content type="text"><![CDATA[前面介绍了一个简单了AyyayList集合，现在来继续整个复杂一点的，那就是双向链表组成的LinkedList集合。 实现功能集合底层是一个带头节点和尾节点的双向链表，主要步骤和完成的功能 创建一个节点类，可以是一个私有的嵌套类 创建一个链表类 一个私有的内部类实现了Iterator接口，作为迭代器 实现的接口方法 isEmpty()、clear()、size()等基础方法 add()方法几种重载形式、get()方法 set()方法、remove()方法 内部方法我们知道，当我们在使用链表进行操作的时候，输入的总是值或者是index位置，但是实际上我们需要通过位置来定位到链表中具体的节点从而对链表进行操作。 代码实现123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186187188189190191192193194195196197198199200201202203204205206207208209210211212213214215216217218219220221222223224225226227228229230231232233import java.util.ConcurrentModificationException;import java.util.Iterator;import java.util.NoSuchElementException;public class MyLinkedList&lt;T&gt; implements Iterable&lt;T&gt; &#123; //记录元素个数 private int size = 0; //分为指向头节点和为尾节点 private Node&lt;T&gt; first; private Node&lt;T&gt; last; //用于判断迭代器是否过时 private int modeCount = 0; //节点类 private static class Node&lt;T&gt;&#123; private Node&lt;T&gt; pre; private Node&lt;T&gt; next; private T d; //构造方法 public Node(T ele, Node p, Node n) &#123; d = ele; this.pre = p; this.next = n; &#125; &#125; //以下为接口方法 /*=========================================*/ /** * 构造方法 */ public MyLinkedList() &#123; doclear(); &#125; /** * 清空集合 */ public void clear() &#123; doclear(); &#125; /** * 创建带头节点的链表 */ public void doclear() &#123; size = 0; first = new Node&lt;&gt;(null, null, null); last = new Node&lt;&gt;(null, first, null); first.next = last; modeCount++; &#125; /** * 判断是否为空 * @return */ public boolean isEmpty() &#123; return size() == 0; &#125; /** * 返回集合元素个数 * @return */ public int size() &#123; return this.size; &#125; /** * 移除指定位置元素 * @param index * @return */ public T remove(int index) &#123; return remove(getNode(index)); &#125; /** * 修改指定位置元素的值 * @param index * @param val * @return */ public T set(int index, T val) &#123; Node&lt;T&gt; p = getNode(index); T oldValue = p.d; p.d = val; return oldValue; &#125; /** * 指定位置添加元素 * @param index * @param x */ public void add(int index, T x) &#123; addBefore(getNode(index, 0, size()), x); &#125; /** * 默认尾添加 * @param ele */ public void add(T ele) &#123; add(size(), ele); &#125; /** * 获取指定位置的元素 * @param index * @return */ public T get(int index) &#123; return getNode(index).d; &#125; /** * 返回一个迭代器，用于遍历链表 * @return */ @Override public Iterator&lt;T&gt; iterator() &#123; return new LinkedListIterator(); &#125; //以下为内部方法 /*===========================================*/ /** * 内部方法 * @param p * @return */ private T remove(Node&lt;T&gt; p) &#123; T ele = p.d; p.pre.next = p.next; p.next.pre = p.pre; size--; modeCount++; return ele; &#125; /** * 获取指定索引元素值 * @param index * @return */ private Node&lt;T&gt; getNode(int index) &#123; return getNode(index, 0, size() - 1); &#125; /** * 返回指定索引元素节点 * @param index * @param lower * @param upper * @return */ private Node&lt;T&gt; getNode(int index, int lower, int upper) &#123; Node&lt;T&gt; p; if (index &lt; lower || index &gt; upper) &#123; throw new IndexOutOfBoundsException(); &#125; if (index &lt; size() / 2) &#123; p = first.next; for (int i = 0; i &lt; index; i++) &#123; p = p.next; &#125; &#125; else &#123; p = last; for (int i = size(); i &gt; index; i--) &#123; p = p.pre; &#125; &#125; return p; &#125; /** * 插入到指定节点前面 * @param p * @param ele */ private void addBefore(Node&lt;T&gt; p, T ele) &#123; p.pre = p.pre.next = new Node(ele, p.pre, p); size++; modeCount++; &#125; //私有内部类，实现Iterator接口，用作迭代器 private class LinkedListIterator implements Iterator&lt;T&gt; &#123; private Node&lt;T&gt; current = first.next; private int expCount = modeCount; private boolean canRemove = false; @Override public boolean hasNext() &#123; return current!=last; &#125; @Override public T next() &#123; if (modeCount != expCount) &#123; throw new ConcurrentModificationException(); &#125; if (!hasNext()) &#123; throw new NoSuchElementException(); &#125; T ele = current.d; current = current.next; canRemove = true; return ele; &#125; @Override public void remove() &#123; if (expCount != modeCount) &#123; throw new ConcurrentModificationException(); &#125; if (!canRemove) &#123; throw new IllegalStateException(); &#125; MyLinkedList.this.remove(current.pre); expCount++; canRemove = false; &#125; &#125; &#125; 一个简单地双向链表实现的LinkedList集合就完成了，其实难度并不高，但是在上手之前，最好先明确自己要实现什么功能(也就是实现几个接口方法)，有了大方向之后在动手实现就会事半功倍。]]></content>
@@ -171,8 +185,8 @@
         <category>JVM虚拟机</category>
       </categories>
       <tags>
-        <tag>Java基础</tag>
         <tag>泛型</tag>
+        <tag>Java基础</tag>
       </tags>
   </entry>
   <entry>
@@ -314,8 +328,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>回溯</tag>
         <tag>递归</tag>
+        <tag>回溯</tag>
       </tags>
   </entry>
   <entry>
@@ -326,8 +340,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>回溯</tag>
         <tag>递归</tag>
+        <tag>回溯</tag>
       </tags>
   </entry>
   <entry>
@@ -389,8 +403,8 @@
       </categories>
       <tags>
         <tag>数组</tag>
-        <tag>队列</tag>
         <tag>数据结构</tag>
+        <tag>队列</tag>
       </tags>
   </entry>
   <entry>
@@ -636,6 +650,19 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[字符流和字节流]]></title>
+    <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
+    <content type="text"><![CDATA[深入理解字符流编码 首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入 字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码 写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
+      <categories>
+        <category>JAVA</category>
+      </categories>
+      <tags>
+        <tag>I/O</tag>
+        <tag>乱码</tag>
+        <tag>字符流/字节流</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[二叉树镜像对称]]></title>
     <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
     <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
@@ -660,19 +687,6 @@
         <tag>LeetCode</tag>
         <tag>动态规划</tag>
         <tag>斐波那契数列</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[字符流和字节流]]></title>
-    <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
-    <content type="text"><![CDATA[深入理解字符流编码 首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入 字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码 写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
-      <categories>
-        <category>JAVA</category>
-      </categories>
-      <tags>
-        <tag>I/O</tag>
-        <tag>乱码</tag>
-        <tag>字符流/字节流</tag>
       </tags>
   </entry>
   <entry>
