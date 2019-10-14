@@ -65,7 +65,7 @@
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="可以将一个类的定义放在另一个类的定义内部，这就是内部类，Java的内部类用者很多妙用和特性。但对于内部类，总是有一些不明白的地方，最近看了书，算是有所收获，来记录一下内部类相关知识。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-14T03:33:15.243Z">
+<meta property="og:updated_time" content="2019-10-14T05:55:48.242Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java编程思想之内部类">
 <meta name="twitter:description" content="可以将一个类的定义放在另一个类的定义内部，这就是内部类，Java的内部类用者很多妙用和特性。但对于内部类，总是有一些不明白的地方，最近看了书，算是有所收获，来记录一下内部类相关知识。">
@@ -287,7 +287,7 @@
                 
               
 
-              <time title="创建时间：2019-10-14 10:39:04 / 修改时间：11:33:15" itemprop="dateCreated datePublished" datetime="2019-10-14T10:39:04+08:00">2019-10-14</time>
+              <time title="创建时间：2019-10-14 10:39:04 / 修改时间：13:55:48" itemprop="dateCreated datePublished" datetime="2019-10-14T10:39:04+08:00">2019-10-14</time>
             </span>
           
             
@@ -360,7 +360,18 @@
 </li>
 </ul>
 <p>当出现下列情况，即<font color="red"><b>子类和父类不在一个包下时，子类如果想创建父类内部类的对象，那么父类的内部类构造器必须为public，否则子类无法访问到父类内部类的构造器。</b></font></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">//Pricitice6有一个protected修饰的内部类，如果不显式指明，其构造方法也是protected的</span><br><span class="line">public class Pricitice6 &#123;</span><br><span class="line">    protected class Inner implements inter&#123;</span><br><span class="line">		//显式指明public构造方法</span><br><span class="line">		public Inner() &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        @Override</span><br><span class="line">        public void show() &#123;</span><br><span class="line">            System.out.println(&quot;内部类实现的接口&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">===================</span><br><span class="line">在另一个包下，有Pricitice6的一个子类Pricitice6Test</span><br><span class="line">public class Pricitice6Test extends Pricitice6 &#123;</span><br><span class="line">    public inter geta() &#123;</span><br><span class="line">	//在另一个包下，如果想要创建其父类的内部类对象，那么要求该内部类的构造方法必须是public</span><br><span class="line">	//否则子类无法访问到其父类内部类的构造器(因为不在一个包下)</span><br><span class="line">        return new Inner();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Pricitice6Test p=new Pricitice6Test();</span><br><span class="line">        Pricitice6Test.Inner inner=p.new Inner();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">//Pricitice6有一个protected修饰的内部类，如果不显式指明，其构造方法也是protected的</span><br><span class="line">public class Pricitice6 &#123;</span><br><span class="line">    protected class Inner implements inter&#123;</span><br><span class="line">		//显式指明public构造方法</span><br><span class="line">		public Inner() &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        @Override</span><br><span class="line">        public void show() &#123;</span><br><span class="line">            System.out.println(&quot;内部类实现的接口&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">=========================================================================</span><br><span class="line">//在另一个包下，有Pricitice6的一个子类Pricitice6Test</span><br><span class="line">public class Pricitice6Test extends Pricitice6 &#123;</span><br><span class="line">    public inter geta() &#123;</span><br><span class="line">	//在另一个包下，如果想要创建其父类的内部类对象，那么要求该内部类的构造方法必须是public</span><br><span class="line">	//否则子类无法访问到其父类内部类的构造器(因为不在一个包下)</span><br><span class="line">        return new Inner();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Pricitice6Test p=new Pricitice6Test();</span><br><span class="line">        Pricitice6Test.Inner inner=p.new Inner();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+
+
+
+
+
+
+
+
 
 
     </div>
