@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Java编程思想之内部类]]></title>
+    <url>%2F2019%2F10%2F14%2FJava%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E4%B9%8B%E5%86%85%E9%83%A8%E7%B1%BB%2F</url>
+    <content type="text"><![CDATA[可以将一个类的定义放在另一个类的定义内部，这就是内部类，Java的内部类用者很多妙用和特性。但对于内部类，总是有一些不明白的地方，最近看了书，算是有所收获，来记录一下内部类相关知识。 内部类主要分为一下几种(还有一些接口内部类省略) 非静态内部类 普通内部类 局部内部类 匿名内部类(前面介绍工厂模式用过，这里不赘述) 静态内部类(嵌套类) 非静态内部类 非静态内部类的创建非静态内部类的创建必须依赖于其外部类(稍后会说到为什么)，对于非静态内部类而言，在拥有外部类对象之前是不可能创建内部类对象的。 创建内部类对象格式外部类名.内部类名 内部类对象名=外部类对象.new 内部类名() 指向外部类的引用在内部类中，使用外部类.this可以获取对外部类对象的引用。直接使用this就是对自身的引用 123456789101112131415161718192021222324//外部类public class DoThis &#123; void f() &#123; System.out.println(&quot;DoThis.f()&quot;); &#125; //DoThis类的内部类 public class Inner&#123; //返回对外部类对象的引用 public DoThis outer() &#123; //通过外部类名.this获取外部类对象的引用 return DoThis.this; &#125; &#125; public static void main(String[] args) &#123; //先创建外部类对象 DoThis dt=new DoThis(); 通过外部类对象创建内部类对象 DoThis.Inner inner = dt.new Inner(); DoThis outer = inner.outer(); System.out.println(outer == dt); //两个引用指向同一个对象，因此返回true &#125;&#125; 内部类对象和外部类对象的关系当生成一个内部类对象时，该对象与制造它的外部类对象之间存在着一种联系，它能够无条件的访问其外部类对象的所有成员。内部类自动拥有对其外围类所有成员的访问权，这是如何做到的呢？当某个外部类对象创建了一个内部类对象时，该内部类对象会自动获取一个指向该外部类对象的引用。然后在使用内部类来访问外部类的成员时，就会使用那个引用来操作。因为内部类中会有一个指向外部类对象的引用，因此内部类对象的创建必须依靠外部类对象，否则无法获取到该引用。 局部内部类在一个方法的作用域内(而不是在类内)创建一个完整的类，这被称为局部内部类。 123456789101112131415161718192021222324252627282930313233public class Parcel6 &#123; private void inter(boolean b) &#123; if (b) &#123; //该类被嵌入在if语句的作用域内，这并不是说该类的创建是有条件的，它其实和别的类一起编译过了， // 然而在定义该类的作用域之外，他是不可用的。除此之外，它与普通的类一样 class Tracking&#123; private String id; Tracking(String s) &#123; id = s; &#125; String get() &#123; return id; &#125; &#125; Tracking t = new Tracking(&quot;局部内部类&quot;); System.out.println(t.get()); &#125; &#125; //在方法之外无法访问Tracking类 //Tracking t = new Tracking(&quot;局部内部类&quot;); public void track() &#123; inter(true); &#125; public static void main(String[] args) &#123; Parcel6 p=new Parcel6(); p.track(); &#125;&#125; 注意，上面代码中Tracking类是一个局部内部类，它是inter(boolean b)方法的一部分，而不是Parcel6类的一部分。所以，在方法之外不能访问该内部类。 静态内部类(嵌套类)如果不需要内部类对象和其外部类对象之间的引用关系，可以将类声明为static，这通常称为嵌套类。需要牢记：普通内部类(包括局部内部类)对象隐式的保存了一个引用，指向创建它的外部类对象，而static不存在这个引用。这也就是说，嵌套类的创建不需要依赖于外部类的对象。 嵌套类创建外部类名.内部类名 对象名=new 内部类名() 1234567891011121314//外部类public class Practice18 &#123; //内部类 protected static class Inner&#123; public void show() &#123; System.out.println(&quot;你好，嵌套类&quot;); &#125; &#125; public static void main(String[] args) &#123; //对于嵌套类(静态内部类)，不需要创建其外围类对象啊，通过外围类名可以直接调用 Practice18.Inner inner = new Inner(); inner.show(); &#125;&#125; 多层类的嵌套一个内部类被嵌套多少层并不重要，他能透明的访问所有它嵌入的外围类的所有成员 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253//最外围类public class Practice20 &#123; //创建内部类对象 Practice20.Innerclass1 innerclass1=new Innerclass1(); //创建内部类的内部类对象 Practice20.Innerclass1.Innerclass2 innerclass2=innerclass1.new Innerclass2(); private void show() &#123; System.out.println(&quot;Practice20.show()&quot;); &#125; //内部类 private class Innerclass1&#123; //创建内部类对象 Innerclass1.Innerclass2 innerclass2 = new Innerclass2(); private void show() &#123; //对外围类的引用 Practice20.this.show(); System.out.println(&quot;Innerclass1.show()&quot;); &#125; //内部类的内部类 private class Innerclass2&#123; private void show() &#123; //对最外围类的引用 Practice20.this.show(); //对外围类的引用 Innerclass1.this.show(); System.out.println(&quot;Innerclass2.show()&quot;); &#125; &#125; &#125; public static void main(String[] args) &#123; //创建最外部类对象 Practice20 p=new Practice20(); p.show(); System.out.println(&quot;===============&quot;); //通过最外部类对象创建其内部类对象 Practice20.Innerclass1 innerclass1 = p.new Innerclass1(); innerclass1.show(); System.out.println(&quot;===============&quot;); //通过内部类对象创建内部类的内部类对象 Practice20.Innerclass1.Innerclass2 innerclass2=innerclass1.new Innerclass2(); innerclass2.show(); &#125;&#125; 当出现下列情况，即子类和父类不在一个包下时，子类如果想创建父类内部类的对象，那么父类的内部类构造器必须为public，否则子类无法访问到父类内部类的构造器。 12345678910111213141516171819202122232425262728//Pricitice6有一个protected修饰的内部类，如果不显式指明，其构造方法也是protected的public class Pricitice6 &#123; protected class Inner implements inter&#123; //显式指明public构造方法 public Inner() &#123; &#125; @Override public void show() &#123; System.out.println(&quot;内部类实现的接口&quot;); &#125; &#125;&#125;===================在另一个包下，有Pricitice6的一个子类Pricitice6Testpublic class Pricitice6Test extends Pricitice6 &#123; public inter geta() &#123; //在另一个包下，如果想要创建其父类的内部类对象，那么要求该内部类的构造方法必须是public //否则子类无法访问到其父类内部类的构造器(因为不在一个包下) return new Inner(); &#125; public static void main(String[] args) &#123; Pricitice6Test p=new Pricitice6Test(); Pricitice6Test.Inner inner=p.new Inner(); &#125;&#125;]]></content>
+      <categories>
+        <category>Java编程思想</category>
+      </categories>
+      <tags>
+        <tag>Java基础</tag>
+        <tag>读书笔记</tag>
+        <tag>内部类</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[设计模式之工厂模式]]></title>
     <url>%2F2019%2F10%2F14%2F%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F%2F</url>
     <content type="text"><![CDATA[本文主要介绍工厂模式的两种实现方式：即接口实现和匿名内部类实现。在介绍工厂模式之前，会先对接口的一些细节性知识做一个记录和小结。 接口 接口的访问权限 public公共接口，所有类都能访问 default包访问权限，只有同一个包内的类可以访问 接口的变量可以含有变量，但是接口中的变量默认都是sttaic final public修饰，即接口中只有常量。 接口的方法对于接口中的方法可以显式的声明为public，也可以不声明，接口中的方法默认是public的。因此当实现一个接口时，在接口中被定义的方法必须为public，否则会报错。接口中可以有三种方法 默认方法(default修饰) 123456789101112131415161718192021222324251. 接口方法和父类方法参数列表和返回值一样，那么&quot;类优先原则&quot;，使用父类方法interface inter3&#123; default void show() &#123; System.out.println(&quot;接口方法&quot;); &#125; &#125;class sub extends classDefault implements inter3 &#123;&#125;public class classDefault &#123; public void show() &#123; System.out.println(&quot;父类方法&quot;); &#125; public static void main(String[] args) &#123; sub s=new sub(); s.show(); &#125;&#125;=============Output：父类方法2. 接口方法和父类方法参数列表不同时，构成重载3. 接口方法和父类方法参数列表一样，返回值不一样时，报错，因为返回值不同不构成重载。 抽象方法(没有方法体) 静态方法 12345678910111213141516171819JDK8中，添加了静态方法 interface inter3&#123; static void show() &#123; System.out.println(&quot;接口方法&quot;); &#125; &#125;class sub extends classDefault implements inter3 &#123;&#125;public class classDefault &#123; public void show() &#123; System.out.println(&quot;父类方法&quot;); &#125; public static void main(String[] args) &#123; sub s=new sub(); s.show(); &#125;&#125;同样的，也是类优先原则。不同的是，接口中的静态方法和类一样，可以使用接口直接调用。 工厂模式(接口) 需要两个接口，一个是工厂接口，一个是想要的实现类接口(比如这里最后想要得到Animal对象，那就创建一个Animal接口) 创建不同的类来实现Animal。这里我想要一个狗和一个猫，那我就分别创建两个类来实现Animal接口。如果还想要别的动物，那就创建再创建类来实现Animal接口。 为每一个实现类创建一个单独的工厂类，每一个工厂类都实现工厂接口。这样通过不同的工厂类就能够得到不同的动物实现类。 最后只需要传入相应的工厂类即可得到不同的Animal实现类，即得到不同的动物。123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263//Animal接口interface Animal&#123; void eat();&#125;//工厂接口interface AnimalFactory&#123; Animal getAnimal();&#125;//Animal接口实现类--Dogclass Dog implements Animal &#123; @Override public void eat() &#123; System.out.println(this.getClass().getSimpleName() + &quot; eat meet&quot;); &#125;&#125;//Animal接口实现类--Catclass Cat implements Animal&#123; @Override public void eat() &#123; System.out.println(this.getClass().getSimpleName() + &quot; eat fish&quot;); &#125;&#125;//相应实现类的工厂实现类class DogFactory implements AnimalFactory &#123; @Override public Animal getAnimal() &#123; return new Dog(); &#125;&#125;//相应实现类的工厂实现类class CatFactory implements AnimalFactory &#123; @Override public Animal getAnimal() &#123; return new Cat(); &#125;&#125;public class Factories &#123; //静态方法，返回Animal接口的实现类(多态) public static Animal CreateAnimal(AnimalFactory factory) &#123; return factory.getAnimal(); &#125; public static void main(String[] args) &#123; Factories.CreateAnimal(new DogFactory()).eat(); Factories.CreateAnimal(new CatFactory()).eat(); &#125;&#125;=============Output：Dog eat meetCat eat fish 工厂模式(匿名内部类+Lambda表达式)12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849//Animal接口interface Animal&#123; void eat();&#125;//工厂接口interface AnimalFactory&#123; Animal getAnimal();&#125;//Animal接口实现类--Dogclass Dog implements Animal &#123; @Override public void eat() &#123; System.out.println(this.getClass().getSimpleName() + &quot; eat meet&quot;); &#125; //使用匿名内部类实现工厂接口 public static AnimalFactory factory = () -&gt; new Dog();&#125;//Animal接口实现类--Catclass Cat implements Animal&#123; @Override public void eat() &#123; System.out.println(this.getClass().getSimpleName() + &quot; eat fish&quot;); &#125; //使用匿名内部类实现工厂接口 public static AnimalFactory factory = () -&gt; new Cat();&#125;public class Factories &#123; //静态方法，返回Animal接口的实现类(多态) public static Animal CreateAnimal(AnimalFactory factory) &#123; return factory.getAnimal(); &#125; public static void main(String[] args) &#123; //调用不同Animal实现类的类变量作为参数传入 Factories.CreateAnimal(Dog.factory).eat(); Factories.CreateAnimal(Dog.factory).eat(); &#125;&#125;==============Dog eat meetCat eat fish 这种方式不同为每一个Animal实现类单独创建一个工厂实现类，而是以匿名内部类的方式实现工厂接口并作为相应动物类的静态变量，看起来更为优雅简单。]]></content>
@@ -82,8 +95,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>数组</tag>
         <tag>动态规划</tag>
+        <tag>数组</tag>
         <tag>分治算法</tag>
       </tags>
   </entry>
@@ -650,16 +663,16 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[字符流和字节流]]></title>
-    <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
-    <content type="text"><![CDATA[深入理解字符流编码 首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入 字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码 写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
+    <title><![CDATA[青蛙跳台阶]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
       <categories>
-        <category>JAVA</category>
+        <category>算法之美</category>
       </categories>
       <tags>
-        <tag>I/O</tag>
-        <tag>乱码</tag>
-        <tag>字符流/字节流</tag>
+        <tag>LeetCode</tag>
+        <tag>动态规划</tag>
+        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>
@@ -677,16 +690,16 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[青蛙跳台阶]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
+    <title><![CDATA[字符流和字节流]]></title>
+    <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
+    <content type="text"><![CDATA[深入理解字符流编码 首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入 字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码 写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
       <categories>
-        <category>算法之美</category>
+        <category>JAVA</category>
       </categories>
       <tags>
-        <tag>LeetCode</tag>
-        <tag>动态规划</tag>
-        <tag>斐波那契数列</tag>
+        <tag>I/O</tag>
+        <tag>乱码</tag>
+        <tag>字符流/字节流</tag>
       </tags>
   </entry>
   <entry>
