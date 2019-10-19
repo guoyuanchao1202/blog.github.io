@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种书，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。">
+<meta name="keywords" content="递归,数据结构,二叉查找树,AVL树">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构-树">
+<meta property="og:url" content="https://HoA-W.github.io/2019/10/18/数据结构-树/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种书，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/1.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/2.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/3.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/4.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/5.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/6.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/7.png">
+<meta property="og:updated_time" content="2019-10-19T02:00:46.891Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构-树">
+<meta name="twitter:description" content="前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种书，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。">
+<meta name="twitter:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/1.png">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/10/18/数据结构-树/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>数据结构-树 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/10/18/数据结构-树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">数据结构-树
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-18 22:27:47" itemprop="dateCreated datePublished" datetime="2019-10-18T22:27:47+08:00">2019-10-18</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-19 10:00:46" itemprop="dateModified" datetime="2019-10-19T10:00:46+08:00">2019-10-19</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/DataStructure/" itemprop="url" rel="index"><span itemprop="name">DataStructure</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种书，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。</p>
+<hr>
+<a id="more"></a>
+
+<p>对于树的基本知识就不做赘述，这里主要通过手写一个二叉查找树和AVL树并实现其一些必要功能来学习这两种数据结构。</p>
+<h1 id="二叉查找树"><a href="#二叉查找树" class="headerlink" title="二叉查找树"></a>二叉查找树</h1><h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>先上代码，然后再对每一个方法的实现进行介绍</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br></pre></td><td class="code"><pre><span class="line">public class BinarySearchTree&lt;T extends Comparable&lt;? super T&gt;&gt;&#123;</span><br><span class="line">    //私有嵌套类表示树节点</span><br><span class="line">    private static class BinaryNode&lt;T&gt; &#123;</span><br><span class="line">        T ele;</span><br><span class="line">        BinaryNode&lt;T&gt; left;</span><br><span class="line">        BinaryNode&lt;T&gt; right;</span><br><span class="line">        BinaryNode(T ele) &#123;</span><br><span class="line">            this(ele, null, null);</span><br><span class="line">        &#125;</span><br><span class="line">        BinaryNode(T ele, BinaryNode&lt;T&gt; left, BinaryNode&lt;T&gt; right) &#123;</span><br><span class="line">            this.ele = ele;</span><br><span class="line">            this.left = left;</span><br><span class="line">            this.right = right;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //BinarySearchTree成员属性，表示树的根节点</span><br><span class="line">    private BinaryNode&lt;T&gt; root;</span><br><span class="line"></span><br><span class="line">    //无参构造方法</span><br><span class="line">    public BinarySearchTree() &#123;</span><br><span class="line">        root = null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 判断树空</span><br><span class="line">     * @return 为空返回true，否则返回false</span><br><span class="line">     */</span><br><span class="line">    public boolean isEmpty() &#123;</span><br><span class="line">        return root == null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 判断树中是否含有指定元素</span><br><span class="line">     * @param ele 指定元素</span><br><span class="line">     * @return 包含返回true，否则返回false</span><br><span class="line">     */</span><br><span class="line">    public boolean contains(T ele) &#123;</span><br><span class="line">        return contains(ele, root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 获取树中节点的最小值</span><br><span class="line">     * @return 最小节点值</span><br><span class="line">     */</span><br><span class="line">    public T findMin() &#123;</span><br><span class="line">        if (isEmpty()) &#123;</span><br><span class="line">            throw new NullPointerException();</span><br><span class="line">        &#125;</span><br><span class="line">        return findMin(root).ele;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 获取树中最大节点的值</span><br><span class="line">     * @return 最大节点值</span><br><span class="line">     */</span><br><span class="line">    public T findMax() &#123;</span><br><span class="line">        if (isEmpty()) &#123;</span><br><span class="line">            throw new NullPointerException();</span><br><span class="line">        &#125;</span><br><span class="line">        return findMax(root).ele;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 向树种插入节点</span><br><span class="line">     * @param ele 插入元素的值</span><br><span class="line">     */</span><br><span class="line">    public void insert(T ele) &#123;</span><br><span class="line">        root = insert(ele, root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 删除指定节点</span><br><span class="line">     * @param ele 删除节点值</span><br><span class="line">     */</span><br><span class="line">    public void remove(T ele) &#123;</span><br><span class="line">        root = remove(ele, root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 先序遍历树并打印</span><br><span class="line">     */</span><br><span class="line">    public void infixPrintTree() &#123;</span><br><span class="line">        infixPrintTree(this.root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 中序遍历树并打印</span><br><span class="line">     */</span><br><span class="line">    public void InOrderPrintTree() &#123;</span><br><span class="line">        InOrderPrintTree(this.root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 后序遍历树并打印</span><br><span class="line">     */</span><br><span class="line">    public void SufixPrintTree() &#123;</span><br><span class="line">        SufixPrintTree(this.root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void SufixPrintTree(BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">        if (t != null) &#123;</span><br><span class="line">            SufixPrintTree(t.left);</span><br><span class="line">            SufixPrintTree(t.right);</span><br><span class="line">            System.out.println(t.ele);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void InOrderPrintTree(BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">        if (t != null) &#123;</span><br><span class="line">            System.out.println(t.ele);</span><br><span class="line">            InOrderPrintTree(t.left);</span><br><span class="line">            InOrderPrintTree(t.right);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void infixPrintTree(BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">        if (t != null) &#123;</span><br><span class="line">            infixPrintTree(t.left);</span><br><span class="line">            System.out.println(t.ele);</span><br><span class="line">            infixPrintTree(t.right);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private BinaryNode&lt;T&gt; remove(T ele, BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">        if (t == null) &#123;</span><br><span class="line">            return t;</span><br><span class="line">        &#125;</span><br><span class="line">        int res = ele.compareTo(t.ele);</span><br><span class="line">        if (res &lt; 0) &#123;</span><br><span class="line">            t.left = remove(ele, t.left);</span><br><span class="line">        &#125; else if (res &gt; 0) &#123;</span><br><span class="line">            t.right = remove(ele, t.right);</span><br><span class="line">        &#125; else if (t.left != null &amp;&amp; t.right != null) &#123;</span><br><span class="line">            t.ele = findMin(t.right).ele;</span><br><span class="line">            t.right = remove(t.ele, t.right);</span><br><span class="line">        &#125;else &#123;</span><br><span class="line">            t = (t.left != null) ? t.left : t.right;</span><br><span class="line">        &#125;</span><br><span class="line">        return t;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private BinaryNode&lt;T&gt; insert(T ele, BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">        if (t == null) &#123;</span><br><span class="line">            return new BinaryNode&lt;&gt;(ele, null, null);</span><br><span class="line">        &#125;</span><br><span class="line">        int res = ele.compareTo(t.ele);</span><br><span class="line">        if (res &lt; 0) &#123;</span><br><span class="line">            t.left = insert(ele, t.left);</span><br><span class="line">        &#125; else if (res &gt; 0) &#123;</span><br><span class="line">            t.right = insert(ele, t.right);</span><br><span class="line">        &#125;</span><br><span class="line">        else;</span><br><span class="line">        return t;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private BinaryNode&lt;T&gt; findMax(BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">        if (t.right == null) &#123;</span><br><span class="line">            return t;</span><br><span class="line">        &#125;</span><br><span class="line">        return findMax(t.right);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private BinaryNode&lt;T&gt; findMin(BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">       if (t.left == null) &#123;</span><br><span class="line">            return t;</span><br><span class="line">        &#125;</span><br><span class="line">        return findMin(t.left);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private boolean contains(T ele, BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">        if (t == null) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        int res = ele.compareTo(t.ele);</span><br><span class="line">        if (res &lt; 0) &#123;</span><br><span class="line">            return contains(ele, t.left);</span><br><span class="line">        &#125; else if (res &gt; 0) &#123;</span><br><span class="line">            return contains(ele, t.right);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="实现细节"><a href="#实现细节" class="headerlink" title="实现细节"></a>实现细节</h2><ol>
+<li><font color="blue"><b>节点类</b></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">private static class BinaryNode&lt;T&gt; &#123;</span><br><span class="line">	//节点值</span><br><span class="line">	T ele;</span><br><span class="line">	//指向该节点的左子树</span><br><span class="line">	BinaryNode&lt;T&gt; left;</span><br><span class="line">	//指向该节点的右子树</span><br><span class="line">	BinaryNode&lt;T&gt; right;</span><br><span class="line">	//无参构造方法</span><br><span class="line">	BinaryNode(T ele) &#123;</span><br><span class="line">		this(ele, null, null);</span><br><span class="line">	&#125;</span><br><span class="line">	BinaryNode(T ele, BinaryNode&lt;T&gt; left, BinaryNode&lt;T&gt; right) &#123;</span><br><span class="line">		this.ele = ele;</span><br><span class="line">		this.left = left;</span><br><span class="line">		this.right = right;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>就像前面的链表结构、哈希表结构，它们的每一个节点也都是一个类，这里定义了一个树节点类，使用了泛型。<br>节点类类有三个属性、一个无参构造方法和一个含餐构造方法。实现比较简单，就不多说</p>
+<ol start="2">
+<li><font color="blue"><b>contains(T ele)方法</b></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 判断树中是否含有指定元素</span><br><span class="line"> * @param ele 指定元素</span><br><span class="line"> * @return 包含返回true，否则返回false</span><br><span class="line"> */</span><br><span class="line">public boolean contains(T ele) &#123;</span><br><span class="line">	return contains(ele, root);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“=================================================”</span><br><span class="line"></span><br><span class="line">private boolean contains(T ele, BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">	if (t == null) &#123;</span><br><span class="line">		return false;</span><br><span class="line">	&#125;</span><br><span class="line">	int res = ele.compareTo(t.ele);</span><br><span class="line">	if (res &lt; 0) &#123;</span><br><span class="line">		return contains(ele, t.left);</span><br><span class="line">	&#125; else if (res &gt; 0) &#123;</span><br><span class="line">		return contains(ele, t.right);</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		return true;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>调用的是contains(T ele)的重载方法contains(T ele,BinaryNode<t> t)，将根节点root作为参数传递进去。<br>该方法使用递归查询</t></p>
+<ol>
+<li><p>将待查找值和当前节点值进行比较</p>
+<ol>
+<li>如果大于当前节点值，递归查询当前节点的右子树</li>
+<li>如果小于当前节点值，递归查询当前节点的左子树</li>
+<li>如果等于当前节点值，说明树中包含该节点，返回true</li>
+</ol>
+</li>
+<li><p>递归出口：当前节点为空时，说明树中不包含查找值，返回false</p>
+</li>
+<li><p><font color="blue"><b>findMax()和findMin()</b></font></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 获取树中节点的最小值</span><br><span class="line"> * @return 最小节点值</span><br><span class="line"> */</span><br><span class="line">public T findMin() &#123;</span><br><span class="line">	if (isEmpty()) &#123;</span><br><span class="line">		throw new NullPointerException();</span><br><span class="line">	&#125;</span><br><span class="line">	return findMin(root).ele;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“================================================”</span><br><span class="line"></span><br><span class="line">private BinaryNode&lt;T&gt; findMin(BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">   if (t.left == null) &#123;</span><br><span class="line">		return t;</span><br><span class="line">	&#125;</span><br><span class="line">	return findMin(t.left);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“================================================”</span><br><span class="line">“================================================”</span><br><span class="line">/**</span><br><span class="line"> * 获取树中最大节点的值</span><br><span class="line"> * @return 最大节点值</span><br><span class="line"> */</span><br><span class="line">public T findMax() &#123;</span><br><span class="line">	if (isEmpty()) &#123;</span><br><span class="line">		throw new NullPointerException();</span><br><span class="line">	&#125;</span><br><span class="line">	return findMax(root).ele;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“================================================”</span><br><span class="line"></span><br><span class="line">private BinaryNode&lt;T&gt; findMax(BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">	if (t.right == null) &#123;</span><br><span class="line">		return t;</span><br><span class="line">	&#125;</span><br><span class="line">	return findMax(t.right);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>分别获取树中节点最大值和最小值。思想很简单，对于二叉查找树的每一个节点，其左子树一定小于右子树。因此该树的最右叶子节点就是最大节点，同样的，最左叶子节点即为最小节点。</p>
+<ol start="4">
+<li><font color="blue"><b>insert(T ele)</b></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 向树种插入节点</span><br><span class="line"> * @param ele 插入元素的值</span><br><span class="line"> */</span><br><span class="line">public void insert(T ele) &#123;</span><br><span class="line">	root = insert(ele, root);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“================================================”</span><br><span class="line">private BinaryNode&lt;T&gt; insert(T ele, BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">	if (t == null) &#123;</span><br><span class="line">		return new BinaryNode&lt;&gt;(ele, null, null);</span><br><span class="line">	&#125;</span><br><span class="line">	int res = ele.compareTo(t.ele);</span><br><span class="line">	if (res &lt; 0) &#123;</span><br><span class="line">		t.left = insert(ele, t.left);</span><br><span class="line">	&#125; else if (res &gt; 0) &#123;</span><br><span class="line">		t.right = insert(ele, t.right);</span><br><span class="line">	&#125;</span><br><span class="line">	else;</span><br><span class="line">	return t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>向树中插入节点，要保证插入后仍是二叉查找树。使用递归实现比较简单。</p>
+<ol>
+<li><p>比较待插入值和当前节点值大小</p>
+<ol>
+<li>如果待插入值大于当前节点值，说明该值应该插入在当前节点的右子树中</li>
+<li>如果待插入值小于当前节点值，说明该值应该插入在当前节点的左子树中</li>
+<li>如果待插入值等于当前节点值，由二叉查找树的定义可知节点值不能重复，因此不做插入操作</li>
+</ol>
+</li>
+<li><p>递归出口，有两个递归出口</p>
+<ol>
+<li>找到合适的插入位置，插入后return</li>
+<li>待插入值等于当前节点值，递归结束。返回当前节点</li>
+</ol>
+</li>
+<li><p><font color="blue"><b>树的前中后序遍历</b></font></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 先序遍历树并打印</span><br><span class="line"> */</span><br><span class="line">public void infixPrintTree() &#123;</span><br><span class="line">	infixPrintTree(this.root);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 中序遍历树并打印</span><br><span class="line"> */</span><br><span class="line">public void InOrderPrintTree() &#123;</span><br><span class="line">	InOrderPrintTree(this.root);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 后序遍历树并打印</span><br><span class="line"> */</span><br><span class="line">public void SufixPrintTree() &#123;</span><br><span class="line">	SufixPrintTree(this.root);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“================================================”</span><br><span class="line">private void SufixPrintTree(BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">	if (t != null) &#123;</span><br><span class="line">		SufixPrintTree(t.left);</span><br><span class="line">		SufixPrintTree(t.right);</span><br><span class="line">		System.out.println(t.ele);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void InOrderPrintTree(BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">	if (t != null) &#123;</span><br><span class="line">		System.out.println(t.ele);</span><br><span class="line">		InOrderPrintTree(t.left);</span><br><span class="line">		InOrderPrintTree(t.right);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void infixPrintTree(BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">	if (t != null) &#123;</span><br><span class="line">		infixPrintTree(t.left);</span><br><span class="line">		System.out.println(t.ele);</span><br><span class="line">		infixPrintTree(t.right);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>思想较为简单，算是树的基础操作，不多说</p>
+<ol start="6">
+<li><font color="blue"><b>remove(T ele)</b></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 删除指定节点</span><br><span class="line"> * @param ele 删除节点值</span><br><span class="line"> */</span><br><span class="line">public void remove(T ele) &#123;</span><br><span class="line">	root = remove(ele, root);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“================================================”</span><br><span class="line"></span><br><span class="line">private BinaryNode&lt;T&gt; remove(T ele, BinaryNode&lt;T&gt; t) &#123;</span><br><span class="line">	if (t == null) &#123;</span><br><span class="line">		return t;</span><br><span class="line">	&#125;</span><br><span class="line">	int res = ele.compareTo(t.ele);</span><br><span class="line">	if (res &lt; 0) &#123;</span><br><span class="line">		t.left = remove(ele, t.left);</span><br><span class="line">	&#125; else if (res &gt; 0) &#123;</span><br><span class="line">		t.right = remove(ele, t.right);</span><br><span class="line">	&#125; else if (t.left != null &amp;&amp; t.right != null) &#123;</span><br><span class="line">		t.ele = findMin(t.right).ele;</span><br><span class="line">		t.right = remove(t.ele, t.right);</span><br><span class="line">	&#125;else &#123;</span><br><span class="line">		t = (t.left != null) ? t.left : t.right;</span><br><span class="line">	&#125;</span><br><span class="line">	return t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>删除操作是二叉查找树最困难的操作，对于以恶搞要删除的节点，需要考虑几种可能的情况<br>    1. 如果节点是一个叶子节点，那么可以直接删除<br>    2. 如果节点有一个子节点(左右都可以)，那么可以可以将该节点的父节点指向它的子节点来达到删除该节点的目的，如图<br>    <img src="/2019/10/18/数据结构-树/1.png" alt><br>    3. 比较复杂的是，待删除节点具有两个孩子节点，一般的策略是<font color="red">用待删除节点的右子树中最小的子节点代替该节点的数据并递归的删除那个最小的节点。</font>因为右子树中最小的节点不可能有左儿子，因此第二次remove时要容易。如图<br>    <img src="/2019/10/18/数据结构-树/2.png" alt></p>
+<h1 id="AVL树"><a href="#AVL树" class="headerlink" title="AVL树"></a>AVL树</h1><p>二叉查找树在大多数情况下能够提高我们的访问速度，但是对于下面这样已经退化为链表的二叉排序树，并不能提高我们的访问速度。因此在二叉查找树的基础上又引进了AVL树<br><img src="/2019/10/18/数据结构-树/3.png" alt><font color="red">对于AVL树结构，要求它的每一个节点的左右子树的高度最多相差1。</font></p>
+<h2 id="平衡调整策略"><a href="#平衡调整策略" class="headerlink" title="平衡调整策略"></a>平衡调整策略</h2><p>当执行插入操作时，我们需要更新通向根节点路径上的哪些节点的所有平衡信息。但是，插入一个节点可能会破坏AVL树的特性。如图<br><img src="/2019/10/18/数据结构-树/4.png" alt>破坏平衡的插入情况一共有4种，下面将对这四种情况进行分别说明</p>
+<ol>
+<li><font color="blue"><b>LL形调整</b></font><br><img src="/2019/10/18/数据结构-树/5.png" alt>如图所示</li>
+<li><font color="blue"><b>RR形调整</b></font><br>和LL形类似，可以推导一下</li>
+<li><font color="blue"><b>LR形调整</b></font><br><img src="/2019/10/18/数据结构-树/6.png" alt>如图所示</li>
+<li><font color="blue"><b>RL形调整</b></font><br>同样的，和LR形类似，可以推导一下</li>
+</ol>
+<p>以上就是四种破坏平衡的情况对应的调整策略，下面来看一下代码实现</p>
+<h2 id="代码实现-1"><a href="#代码实现-1" class="headerlink" title="代码实现"></a>代码实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public class AVLtree&lt;T extends Comparable&lt;? super T&gt;&gt;&#123;</span><br><span class="line">    private static final int ALLOW_IMBALANCE = 1;</span><br><span class="line">    private AvlNode&lt;T&gt; root;</span><br><span class="line"></span><br><span class="line">    public AVLtree() &#123;</span><br><span class="line">        root = null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //私有嵌套类，树节点类</span><br><span class="line">    private static class AvlNode&lt;T&gt; &#123;</span><br><span class="line">        T ele;</span><br><span class="line">        AvlNode&lt;T&gt; left;</span><br><span class="line">        AvlNode&lt;T&gt; right;</span><br><span class="line">        int height;</span><br><span class="line"></span><br><span class="line">        public AvlNode(T ele) &#123;</span><br><span class="line">            this(ele, null, null);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        private AvlNode(T ele, AvlNode&lt;T&gt; lt, AvlNode&lt;T&gt; rt) &#123;</span><br><span class="line">            this.ele = ele;</span><br><span class="line">            right = left;</span><br><span class="line">            left = lt;</span><br><span class="line">            height = 0;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 向AVL树中插入节点</span><br><span class="line">     * @param x 插入的节点值</span><br><span class="line">     */</span><br><span class="line">    public void insert(T x) &#123;</span><br><span class="line">        root=insert(x, root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 从AVL树中删除节点</span><br><span class="line">     * @param x 删除的节点值</span><br><span class="line">     */</span><br><span class="line">    public void remove(T x) &#123;</span><br><span class="line">        root = remove(x, root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private AvlNode&lt;T&gt; remove(T ele,AvlNode&lt;T&gt; t) &#123;</span><br><span class="line">        //如果当前节点为空，说明树中不存在要删除的节点值，直接返回</span><br><span class="line">        if (t == null)</span><br><span class="line">            return t;</span><br><span class="line">        //将当前节点值和删除值比较</span><br><span class="line">        int res = ele.compareTo(t.ele);</span><br><span class="line">        //删除值大于当前节点值，向节点的右子树查询</span><br><span class="line">        if (res &lt; 0) &#123;</span><br><span class="line">            t.left = remove(ele, t.left);</span><br><span class="line">        &#125;</span><br><span class="line">        //删除值小于当前节点值，向节点的左子树查询</span><br><span class="line">        else if (res &gt; 0) &#123;</span><br><span class="line">            t.right= remove(ele, t.right);</span><br><span class="line">        &#125;</span><br><span class="line">    //找到要删除的节点</span><br><span class="line">        //如果要删除的节点左右子树都不为空，</span><br><span class="line">        //那么就将该节点右子树中最小的值代替当前节点的值并递归删除右子树中最小的值</span><br><span class="line">        else if (t.left != null &amp;&amp; t.right != null) &#123;</span><br><span class="line">            t.ele = finMin(t.right).ele;</span><br><span class="line">            t.right = remove(t.ele, t.right);</span><br><span class="line">        &#125;</span><br><span class="line">        //如果要删除的节点左右子树有一个或两个不存在，直接删除</span><br><span class="line">        else</span><br><span class="line">            t = (t.left != null) ? t.left : t.right;</span><br><span class="line">        //每次删除后重新对AVL树进行调整</span><br><span class="line">        return balance(t);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private AvlNode&lt;T&gt; finMin(AvlNode&lt;T&gt; t) &#123;</span><br><span class="line">        if (t.left == null) &#123;</span><br><span class="line">            return t;</span><br><span class="line">        &#125;</span><br><span class="line">        return finMin(t.left);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 先序遍历AVL树</span><br><span class="line">     */</span><br><span class="line">    public void preOrder() &#123;</span><br><span class="line">        preOrder(this.root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 中序遍历AVL树</span><br><span class="line">     */</span><br><span class="line">    public void InOrder() &#123;</span><br><span class="line">        InOrder(this.root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void InOrder(AvlNode&lt;T&gt; t) &#123;</span><br><span class="line">        if (t != null) &#123;</span><br><span class="line">            InOrder(t.left);</span><br><span class="line">            System.out.println(t.ele);</span><br><span class="line">            InOrder(t.right);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void preOrder(AvlNode&lt;T&gt; t) &#123;</span><br><span class="line">        if (t != null) &#123;</span><br><span class="line">            System.out.println(t.ele);</span><br><span class="line">            preOrder(t.left);</span><br><span class="line">            preOrder(t.right);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //获取节点高度</span><br><span class="line">    private int height(AvlNode&lt;T&gt; t) &#123;</span><br><span class="line">        return t == null ? -1 : t.height;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private AvlNode&lt;T&gt; insert(T x, AvlNode&lt;T&gt; t) &#123;</span><br><span class="line">        if (t == null)</span><br><span class="line">            return new AvlNode&lt;T&gt;(x, null, null);</span><br><span class="line">        int CompareResult = x.compareTo(t.ele);</span><br><span class="line">        if (CompareResult &lt; 0 ) &#123;</span><br><span class="line">            t.left = insert(x, t.left);</span><br><span class="line">        &#125; else if (CompareResult &gt; 0) &#123;</span><br><span class="line">            t.right = insert(x, t.right);</span><br><span class="line">        &#125;</span><br><span class="line">        return balance(t);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private AvlNode&lt;T&gt; balance(AvlNode&lt;T&gt; t) &#123;</span><br><span class="line">        if (t == null) &#123;</span><br><span class="line">            return t;</span><br><span class="line">        &#125;</span><br><span class="line">        //如果节点左子树的高度高于右子树的高度</span><br><span class="line">        if (height(t.left) - height(t.right) &gt; ALLOW_IMBALANCE) &#123;</span><br><span class="line">            //当前节点t左子树的左子树高度大于左子树的右子树的高度</span><br><span class="line">            //属于LL形，需要一次单旋转</span><br><span class="line">            if (height(t.left.left) &gt;= height(t.left.right)) &#123;</span><br><span class="line">                //LL形调整</span><br><span class="line">                t=rotateWithLeftChild(t);</span><br><span class="line">            &#125;</span><br><span class="line">            //LR形，需要一次双旋转</span><br><span class="line">            else &#123;</span><br><span class="line">                t=doubleWithLeftChild(t);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        if (height(t.right) - height(t.left) &gt; ALLOW_IMBALANCE) &#123;</span><br><span class="line">            //RR形</span><br><span class="line">            if (height(t.right.right) &gt;= height(t.right.left)) &#123;</span><br><span class="line">                //RR形式调整</span><br><span class="line">                t=rotateWithRightChild(t);</span><br><span class="line">            &#125;</span><br><span class="line">            //RL形</span><br><span class="line">            else &#123;</span><br><span class="line">                t=doubleWithRightChild(t);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        t.height = Math.max(height(t.left), height(t.right)) + 1;</span><br><span class="line">        return t;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * RL调整</span><br><span class="line">     * @param k3 不平衡的节点</span><br><span class="line">     * @return 调整后的新节点</span><br><span class="line">     */</span><br><span class="line">    private AvlNode&lt;T&gt; doubleWithRightChild(AvlNode&lt;T&gt; k3) &#123;</span><br><span class="line">        AvlNode&lt;T&gt; k1 = k3.right;</span><br><span class="line">        AvlNode&lt;T&gt; k2 = k1.left;</span><br><span class="line">        k3.right = k2.left;</span><br><span class="line">        k1.left = k2.right;</span><br><span class="line">        k2.left = k3;</span><br><span class="line">        k2.right = k1;</span><br><span class="line">        k1.height = Math.max(height(k1.left), height(k1.right)) + 1;</span><br><span class="line">        k3.height = Math.max(height(k3.left), height(k3.right)) + 1;</span><br><span class="line">        k2.height = Math.max(height(k2.left), height(k2.right)) + 1;</span><br><span class="line">        return k2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * LR调整</span><br><span class="line">     * @param k3 不平衡的节点</span><br><span class="line">     * @return 调整后的新节点</span><br><span class="line">     */</span><br><span class="line">    private AvlNode&lt;T&gt; doubleWithLeftChild(AvlNode&lt;T&gt; k3) &#123;</span><br><span class="line">        AvlNode&lt;T&gt; k1 = k3.left;</span><br><span class="line">        AvlNode&lt;T&gt; k2 = k1.right;</span><br><span class="line">        k1.right = k2.left;</span><br><span class="line">        k3.left = k2.right;</span><br><span class="line">        k2.left = k1;</span><br><span class="line">        k2.right = k3;</span><br><span class="line">        k1.height = Math.max(height(k1.left), height(k1.right)) + 1;</span><br><span class="line">        k3.height = Math.max(height(k3.left), height(k3.right)) + 1;</span><br><span class="line">        k2.height = Math.max(height(k2.left), height(k2.right)) + 1;</span><br><span class="line">        return k2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * RR调整</span><br><span class="line">     * @param k2 不平衡的节点</span><br><span class="line">     * @return 调整后新的节点</span><br><span class="line">     */</span><br><span class="line">    private AvlNode&lt;T&gt; rotateWithRightChild(AvlNode&lt;T&gt; k2) &#123;</span><br><span class="line">        AvlNode&lt;T&gt; k1 = k2.right;</span><br><span class="line">        k2.right = k1.left;</span><br><span class="line">        k1.left = k2;</span><br><span class="line">        k2.height = Math.max(height(k2.left), height(k2.right)) + 1;</span><br><span class="line">        k1.height = Math.max(height(k1.left), height(k1.right)) + 1;</span><br><span class="line">        return k1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * LL调整</span><br><span class="line">     * @param k2 不平衡的节点</span><br><span class="line">     * @return 调整后新的节点</span><br><span class="line">     */</span><br><span class="line">    private AvlNode&lt;T&gt; rotateWithLeftChild(AvlNode&lt;T&gt; k2) &#123;</span><br><span class="line">        AvlNode&lt;T&gt; k1 = k2.left;</span><br><span class="line">        k2.left = k1.right;</span><br><span class="line">        k1.right = k2;</span><br><span class="line">        k2.height = Math.max(height(k2.left), height(k2.right)) + 1;</span><br><span class="line">        k1.height = Math.max(height(k1.left), height(k1.right)) + 1;</span><br><span class="line">        return k1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="实现细节-1"><a href="#实现细节-1" class="headerlink" title="实现细节"></a>实现细节</h2><ol>
+<li><font color="blue"><b>节点类</b></font><br>对于二叉查找树中的简单方法入isEmpty等这里就不实现了。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">//私有嵌套类，树节点类</span><br><span class="line">private static class AvlNode&lt;T&gt; &#123;</span><br><span class="line">	//节点值</span><br><span class="line">	T ele;</span><br><span class="line">	//指向节点左子树</span><br><span class="line">	AvlNode&lt;T&gt; left;</span><br><span class="line">	//指向节点右子树</span><br><span class="line">	AvlNode&lt;T&gt; right;</span><br><span class="line">	//记录节点的高度</span><br><span class="line">	int height;</span><br><span class="line">	</span><br><span class="line">	//空参数构造方法</span><br><span class="line">	public AvlNode(T ele) &#123;</span><br><span class="line">		this(ele, null, null);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	private AvlNode(T ele, AvlNode&lt;T&gt; lt, AvlNode&lt;T&gt; rt) &#123;</span><br><span class="line">		this.ele = ele;</span><br><span class="line">		right = left;</span><br><span class="line">		left = lt;</span><br><span class="line">		height = 0;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>由于AVL树要求节点的左右子树高度最多相差1，因此就需要<font color="red">每一个节点记录自身的高度，如果是叶子节点，那么高度为0，空节点高度为-1。</font></p>
+<ol start="2">
+<li><font color="blue"><b>height(AvlNode<t> t)</t></b></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//获取节点高度</span><br><span class="line">private int height(AvlNode&lt;T&gt; t) &#123;</span><br><span class="line">	return t == null ? -1 : t.height;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>在介绍插入删除操作之前，先介绍两个方法，这是其中一个。思想很简单，如果当前节点不为空，就返回节点的高度，如果为空，返回-1。</p>
+<ol start="3">
+<li><font color="blue"><b>balance(AvlNode<t> t)</t></b></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line">private AvlNode&lt;T&gt; balance(AvlNode&lt;T&gt; t) &#123;</span><br><span class="line">	if (t == null) &#123;</span><br><span class="line">		return t;</span><br><span class="line">	&#125;</span><br><span class="line">	//如果节点左子树的高度和右子树的高度相差超过1</span><br><span class="line">	if (height(t.left) - height(t.right) &gt; ALLOW_IMBALANCE) &#123;</span><br><span class="line">		//当前节点t左子树的左子树高度大于等于左子树的右子树的高度</span><br><span class="line">		//属于LL形，需要一次单旋转</span><br><span class="line">		if (height(t.left.left) &gt;= height(t.left.right)) &#123;</span><br><span class="line">			//LL形调整</span><br><span class="line">			t=rotateWithLeftChild(t);</span><br><span class="line">		&#125;</span><br><span class="line">		//LR形，需要一次双旋转</span><br><span class="line">		else &#123;</span><br><span class="line">			t=doubleWithLeftChild(t);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	//如果右子树的高度和左子树的高度相差超过1</span><br><span class="line">	if (height(t.right) - height(t.left) &gt; ALLOW_IMBALANCE) &#123;</span><br><span class="line">		//RR形</span><br><span class="line">		if (height(t.right.right) &gt;= height(t.right.left)) &#123;</span><br><span class="line">			//RR形式调整</span><br><span class="line">			t=rotateWithRightChild(t);</span><br><span class="line">		&#125;</span><br><span class="line">		//RL形</span><br><span class="line">		else &#123;</span><br><span class="line">			t=doubleWithRightChild(t);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	t.height = Math.max(height(t.left), height(t.right)) + 1;</span><br><span class="line">	return t;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“=================================================================”</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * RL调整</span><br><span class="line"> * @param k3 不平衡的节点</span><br><span class="line"> * @return 调整后的新节点</span><br><span class="line"> */</span><br><span class="line">private AvlNode&lt;T&gt; doubleWithRightChild(AvlNode&lt;T&gt; k3) &#123;</span><br><span class="line">	AvlNode&lt;T&gt; k1 = k3.right;</span><br><span class="line">	AvlNode&lt;T&gt; k2 = k1.left;</span><br><span class="line">	k3.right = k2.left;</span><br><span class="line">	k1.left = k2.right;</span><br><span class="line">	k2.left = k3;</span><br><span class="line">	k2.right = k1;</span><br><span class="line">	//先重新确定子树的高度，最后确定k2的高度，k2一定在最后确定</span><br><span class="line">	k1.height = Math.max(height(k1.left), height(k1.right)) + 1;</span><br><span class="line">	k3.height = Math.max(height(k3.left), height(k3.right)) + 1;</span><br><span class="line">	k2.height = Math.max(height(k2.left), height(k2.right)) + 1;</span><br><span class="line">	return k2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * LR调整</span><br><span class="line"> * @param k3 不平衡的节点</span><br><span class="line"> * @return 调整后的新节点</span><br><span class="line"> */</span><br><span class="line">private AvlNode&lt;T&gt; doubleWithLeftChild(AvlNode&lt;T&gt; k3) &#123;</span><br><span class="line">	AvlNode&lt;T&gt; k1 = k3.left;</span><br><span class="line">	AvlNode&lt;T&gt; k2 = k1.right;</span><br><span class="line">	k1.right = k2.left;</span><br><span class="line">	k3.left = k2.right;</span><br><span class="line">	k2.left = k1;</span><br><span class="line">	k2.right = k3;</span><br><span class="line">	//先重新确定子树的高度，最后确定k2的高度，k2一定在最后确定</span><br><span class="line">	k1.height = Math.max(height(k1.left), height(k1.right)) + 1;</span><br><span class="line">	k3.height = Math.max(height(k3.left), height(k3.right)) + 1;</span><br><span class="line">	k2.height = Math.max(height(k2.left), height(k2.right)) + 1;</span><br><span class="line">	return k2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * RR调整</span><br><span class="line"> * @param k2 不平衡的节点</span><br><span class="line"> * @return 调整后新的节点</span><br><span class="line"> */</span><br><span class="line">private AvlNode&lt;T&gt; rotateWithRightChild(AvlNode&lt;T&gt; k2) &#123;</span><br><span class="line">	AvlNode&lt;T&gt; k1 = k2.right;</span><br><span class="line">	k2.right = k1.left;</span><br><span class="line">	k1.left = k2;</span><br><span class="line">	//先确定子树k2的高度，后确定k1的高度</span><br><span class="line">	k2.height = Math.max(height(k2.left), height(k2.right)) + 1;</span><br><span class="line">	k1.height = Math.max(height(k1.left), height(k1.right)) + 1;</span><br><span class="line">	return k1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * LL调整</span><br><span class="line"> * @param k2 不平衡的节点</span><br><span class="line"> * @return 调整后新的节点</span><br><span class="line"> */</span><br><span class="line">private AvlNode&lt;T&gt; rotateWithLeftChild(AvlNode&lt;T&gt; k2) &#123;</span><br><span class="line">	AvlNode&lt;T&gt; k1 = k2.left;</span><br><span class="line">	k2.left = k1.right;</span><br><span class="line">	k1.right = k2;</span><br><span class="line">	//先确定子树k2的高度，后确定k1的高度</span><br><span class="line">	k2.height = Math.max(height(k2.left), height(k2.right)) + 1;</span><br><span class="line">	k1.height = Math.max(height(k1.left), height(k1.right)) + 1;</span><br><span class="line">	return k1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>以上balance()平衡方法和平衡被破坏后四种调整策略的代码是AVL树中的核心部分。<font color="red">对于LR调整和RL调整最后重新确定高度的时候，由于将k2作为根节点，所以一定要注意确定的顺序。先确定k2的左右子树高度，最后确定k2高度。</font>LL调整和RR调整同理，最后确定调整后根节点的高度。</p>
+<ol start="4">
+<li><font color="blue"><b>insert(T x)</b></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 向AVL树中插入节点</span><br><span class="line"> * @param x 插入的节点值</span><br><span class="line"> */</span><br><span class="line">public void insert(T x) &#123;</span><br><span class="line">	root=insert(x, root);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“=============================================”</span><br><span class="line"></span><br><span class="line">private AvlNode&lt;T&gt; insert(T x, AvlNode&lt;T&gt; t) &#123;</span><br><span class="line">	if (t == null)</span><br><span class="line">		return new AvlNode&lt;T&gt;(x, null, null);</span><br><span class="line">	int CompareResult = x.compareTo(t.ele);</span><br><span class="line">	if (CompareResult &lt; 0 ) &#123;</span><br><span class="line">		t.left = insert(x, t.left);</span><br><span class="line">	&#125; else if (CompareResult &gt; 0) &#123;</span><br><span class="line">		t.right = insert(x, t.right);</span><br><span class="line">	&#125;</span><br><span class="line">	return balance(t);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>对于AVL树的插入，和二叉查找树的插入过程一摸一样，只是每插入一个节点，要<font color="red">对插入节点到根节点路径上的所有节点进行平衡调整。</font></p>
+<ol start="5">
+<li><font color="blue"><b>remove(T x)</b></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 从AVL树中删除节点</span><br><span class="line"> * @param x 删除的节点值</span><br><span class="line"> */</span><br><span class="line">public void remove(T x) &#123;</span><br><span class="line">	root = remove(x, root);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&quot;==============================================================&quot;</span><br><span class="line"></span><br><span class="line">private AvlNode&lt;T&gt; remove(T ele,AvlNode&lt;T&gt; t) &#123;</span><br><span class="line">	//如果当前节点为空，说明树中不存在要删除的节点值，直接返回</span><br><span class="line">	if (t == null)</span><br><span class="line">		return t;</span><br><span class="line">	//将当前节点值和删除值比较</span><br><span class="line">	int res = ele.compareTo(t.ele);</span><br><span class="line">	//删除值大于当前节点值，向节点的右子树查询</span><br><span class="line">	if (res &lt; 0) &#123;</span><br><span class="line">		t.left = remove(ele, t.left);</span><br><span class="line">	&#125;</span><br><span class="line">	//删除值小于当前节点值，向节点的左子树查询</span><br><span class="line">	else if (res &gt; 0) &#123;</span><br><span class="line">		t.right= remove(ele, t.right);</span><br><span class="line">	&#125;</span><br><span class="line">	//找到要删除的节点</span><br><span class="line">	//如果要删除的节点左右子树都不为空，</span><br><span class="line">	//那么就将该节点右子树中最小的值代替当前节点的值并递归删除右子树中最小的值</span><br><span class="line">	else if (t.left != null &amp;&amp; t.right != null) &#123;</span><br><span class="line">		t.ele = finMin(t.right).ele;</span><br><span class="line">		t.right = remove(t.ele, t.right);</span><br><span class="line">	&#125;</span><br><span class="line">	//如果要删除的节点左右子树有一个或两个不存在，直接删除</span><br><span class="line">	else</span><br><span class="line">		t = (t.left != null) ? t.left : t.right;</span><br><span class="line">	//每次删除后重新对AVL树进行调整</span><br><span class="line">	</span><br><span class="line">	return balance(t);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“===========================================================”</span><br><span class="line"></span><br><span class="line">private AvlNode&lt;T&gt; finMin(AvlNode&lt;T&gt; t) &#123;</span><br><span class="line">	if (t.left == null) &#123;</span><br><span class="line">		return t;</span><br><span class="line">	&#125;</span><br><span class="line">	return finMin(t.left);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>对于删除节点，无疑更为麻烦。但是就像插入方法一样。我们<font color="red">使用二叉查找树的删除方法，最后不直接返回t，而是对删除节点到根节点上的每一个节点进行平衡调整后再返回，即返回balance(t)</font>，这是可行的！<br>为了证明可行，下面推导一种删除后需要LL调整的情形：<br><img src="/2019/10/18/数据结构-树/7.png" alt>对于需要RR调整和另外两种调整的情形类似。</p>
+<hr>
+二叉查找树和AVL树介绍告一段落，对于树要学的还有很多。另外可以发现，树相关的问题大多可以用递归来解决，因此能够理解并运用递归非常重要。
+
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/递归/" rel="tag"><i class="fa fa-tag"></i>递归</a>
+            
+              <a href="/tags/数据结构/" rel="tag"><i class="fa fa-tag"></i>数据结构</a>
+            
+              <a href="/tags/二叉查找树/" rel="tag"><i class="fa fa-tag"></i>二叉查找树</a>
+            
+              <a href="/tags/AVL树/" rel="tag"><i class="fa fa-tag"></i>AVL树</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/10/14/Java编程思想之内部类/" rel="next" title="Java编程思想之内部类">
+                  <i class="fa fa-chevron-left"></i> Java编程思想之内部类
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#二叉查找树"><span class="nav-number">1.</span> <span class="nav-text">二叉查找树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#代码实现"><span class="nav-number">1.1.</span> <span class="nav-text">代码实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现细节"><span class="nav-number">1.2.</span> <span class="nav-text">实现细节</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AVL树"><span class="nav-number">2.</span> <span class="nav-text">AVL树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#平衡调整策略"><span class="nav-number">2.1.</span> <span class="nav-text">平衡调整策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码实现-1"><span class="nav-number">2.2.</span> <span class="nav-text">代码实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现细节-1"><span class="nav-number">2.3.</span> <span class="nav-text">实现细节</span></a></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">65</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
