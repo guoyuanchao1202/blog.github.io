@@ -57,13 +57,13 @@
   };
 </script>
 
-  <meta name="description" content="前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种书，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。">
-<meta name="keywords" content="递归,数据结构,二叉查找树,AVL树">
+  <meta name="description" content="前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种树，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。">
+<meta name="keywords" content="读书笔记,递归,数据结构,二叉查找树,AVL树">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据结构-树">
 <meta property="og:url" content="https://HoA-W.github.io/2019/10/18/数据结构-树/index.html">
 <meta property="og:site_name" content="CommonGuy">
-<meta property="og:description" content="前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种书，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。">
+<meta property="og:description" content="前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种树，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/1.png">
 <meta property="og:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/2.png">
@@ -72,10 +72,10 @@
 <meta property="og:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/5.png">
 <meta property="og:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/6.png">
 <meta property="og:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/7.png">
-<meta property="og:updated_time" content="2019-10-19T02:00:46.891Z">
+<meta property="og:updated_time" content="2019-10-19T02:05:25.278Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据结构-树">
-<meta name="twitter:description" content="前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种书，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。">
+<meta name="twitter:description" content="前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种树，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。">
 <meta name="twitter:image" content="https://hoa-w.github.io/2019/10/18/数据结构-树/1.png">
   <link rel="canonical" href="https://HoA-W.github.io/2019/10/18/数据结构-树/">
 
@@ -306,7 +306,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-10-19 10:00:46" itemprop="dateModified" datetime="2019-10-19T10:00:46+08:00">2019-10-19</time>
+                <time title="修改时间：2019-10-19 10:05:25" itemprop="dateModified" datetime="2019-10-19T10:05:25+08:00">2019-10-19</time>
               </span>
             
           
@@ -335,7 +335,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种书，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。</p>
+        <p>前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种树，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。</p>
 <hr>
 <a id="more"></a>
 
@@ -445,7 +445,7 @@
 </ol>
 <p>对于删除节点，无疑更为麻烦。但是就像插入方法一样。我们<font color="red">使用二叉查找树的删除方法，最后不直接返回t，而是对删除节点到根节点上的每一个节点进行平衡调整后再返回，即返回balance(t)</font>，这是可行的！<br>为了证明可行，下面推导一种删除后需要LL调整的情形：<br><img src="/2019/10/18/数据结构-树/7.png" alt>对于需要RR调整和另外两种调整的情形类似。</p>
 <hr>
-二叉查找树和AVL树介绍告一段落，对于树要学的还有很多。另外可以发现，树相关的问题大多可以用递归来解决，因此能够理解并运用递归非常重要。
+二叉查找树和AVL树介绍告一段落，对于树要学的还有很多。另外可以发现，树相关的问题大多可以用递归来解决，因此能够理解并运用递归非常重要。(参考书籍：数据结构和算法分析(Java语言描述)》)
 
 
     </div>
@@ -493,6 +493,8 @@
             
           
           <div class="post-tags">
+            
+              <a href="/tags/读书笔记/" rel="tag"><i class="fa fa-tag"></i>读书笔记</a>
             
               <a href="/tags/递归/" rel="tag"><i class="fa fa-tag"></i>递归</a>
             
