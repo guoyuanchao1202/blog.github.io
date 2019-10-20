@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="运行时类型信息使得你可以在程序运行时发现和使用类型信息。在Java中，有两种方式让我们在运行时识别对象和类的信息。  传统的“RTTI”(运行时，识别一个对象的类型)它假定我们在编译时已经知道了所有的类型 反射机制它允许我们在运行时发现和使用类的信息">
+<meta name="keywords" content="Java基础,反射机制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java编程思想之浅谈反射机制">
+<meta property="og:url" content="https://HoA-W.github.io/2019/10/20/Java编程思想之浅谈反射机制/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="运行时类型信息使得你可以在程序运行时发现和使用类型信息。在Java中，有两种方式让我们在运行时识别对象和类的信息。  传统的“RTTI”(运行时，识别一个对象的类型)它假定我们在编译时已经知道了所有的类型 反射机制它允许我们在运行时发现和使用类的信息">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-10-20T08:27:38.809Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java编程思想之浅谈反射机制">
+<meta name="twitter:description" content="运行时类型信息使得你可以在程序运行时发现和使用类型信息。在Java中，有两种方式让我们在运行时识别对象和类的信息。  传统的“RTTI”(运行时，识别一个对象的类型)它假定我们在编译时已经知道了所有的类型 反射机制它允许我们在运行时发现和使用类的信息">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/10/20/Java编程思想之浅谈反射机制/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Java编程思想之浅谈反射机制 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/10/20/Java编程思想之浅谈反射机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Java编程思想之浅谈反射机制
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-20 11:00:54 / 修改时间：16:27:38" itemprop="dateCreated datePublished" datetime="2019-10-20T11:00:54+08:00">2019-10-20</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java编程思想/" itemprop="url" rel="index"><span itemprop="name">Java编程思想</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>运行时类型信息使得你可以在程序运行时发现和使用类型信息。在Java中，有两种方式让我们在运行时识别对象和类的信息。</p>
+<ol>
+<li>传统的“RTTI”(运行时，识别一个对象的类型)<br>它假定我们在编译时已经知道了所有的类型</li>
+<li>反射机制<br>它允许我们在运行时发现和使用类的信息<hr>
+<a id="more"></a>
+
+</li>
+</ol>
+<h1 id="RTTI"><a href="#RTTI" class="headerlink" title="RTTI"></a>RTTI</h1><p>运行时类型信息使得我们可以在程序运行时发现和使用类型信息。RTTI的含义：在运行时，识别一个对象的类型。</p>
+<h2 id="关于Class类对象"><a href="#关于Class类对象" class="headerlink" title="关于Class类对象"></a><font size="5">关于Class类对象</font></h2><p>Java中有一个特殊的对象–Class对象，该对象包含了与类有关的信息。事实上，Class对象就是用来创建类的所有“常规”对象的。Java中使用Class对象来执行RTTI。每当编写并且编译了一个新类，就会产生一个Class对象(被保存在同名的.class文件中)。<br>主要有三种RTTI形式</p>
+<ol>
+<li><b>传统的类型转换，由RTTI来确保类型转换的正确性，如果执行了一个错误的类型转换，就会抛出一个ClassCastException异常</b></li>
+<li><b>代表对象类型的Class对象，通过查询Class对象可以获取运行时所需的信息</b></li>
+<li><b>关键字instanceof，告诉我们对象是不是某个特定类型的实例</b></li>
+</ol>
+<p>但是无论是三种方法中的哪一种，<font color="red">在使用RTTI时都要求这个类型在编译时必须已知。也就是说，在编译时，编译器必须知道所有要通过RTTI来处理的类(类名)。</font><br>但是现在，假设运行期间你获取了一个不在你程序空间中的对象的引用，通过RTTI是没有办法知道这个对象到底是属于哪个类，因为编译器根本就不知道这个类的名字。<br>假设你从磁盘或者网络中获取了一串字节，并且被告知这是一个类(假设该类名为A)。那你要怎样使用这个类呢？正常情况下是没办法使用的，就比如你要产生这个类的对象，是做不到的。因为你的代码中根本就没有A a=new A()这样的代码，<br>那你说我提前在写一个A a=new A()，这样也不行，代码是通不过编译的，因为编译器检查这段代码发现程序空间中根本就没有A这个类，因为这个类是你运行时候从别的地方加载进来的，编译器根本就不知道会有A这个类，同样的你要调用类的字段方法统统都做不到。对于这种类似的情况，就要用到反射。</p>
+<h2 id="四种获取Class对象的方法"><a href="#四种获取Class对象的方法" class="headerlink" title="四种获取Class对象的方法"></a><font size="5">四种获取Class对象的方法</font></h2><p>既然说到Class类对象，就来谈一谈如何获取该对象吧</p>
+<ol>
+<li>Class.forName(String name)<br>通过Class类的静态方法获取，传递参数为<font color="blue"><b>类的全限定名(包名.类名)</b></font>。</li>
+<li>通过类字面常量.class获取<br>使用<font color="blue"><b>类名.class</b></font>来获取Class类对象，当使用这种方法时，<font color="red">不会引发类的初始化(通俗的说，类的静态代码块不会被执行)。</font></li>
+<li>通过类对象来获取<br>如果你已经有了一个对象，那么可以使用<font color="blue"><b>对象名.getClass()</b></font>来获取该对象的Class对象</li>
+<li>通过类加载器获取<br>如果有了一个类加载器对象classLoader，那么可以使用classLoader.loadclass(String name)方法获取指定名称的Class对象，参数类的全限定名<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//通过一个Class对象获取类加载器</span><br><span class="line">ClassLoader classLoader = son2Class.getClassLoader();</span><br><span class="line">//通过类加载器获取另一个类的Class对象</span><br><span class="line">Class&lt;?&gt; cl = classLoader.loadClass(&quot;想要获取哪个类的Class对象，就传递该类的全限定名&quot;);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h1 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h1><p><font color="blue">Class类和java.lang.reflect类库一起对反射机制进行了支持</font>，该类库包含Field、Method以及Constructor(这些类都实现了Member接口)。这些类型的对象是由JVM在运行时创建的，用来表示未知类里对应的成员。<br>这样你就可以用Constructor创建对象(而不必使用对象名)，用get()和set()方法读写与Field对象相关联的字段，使用invoke()方法调用与Method对象相关联的方法……这样以来，未知对象的类信息就完全确定了，即使在编译时根本不知道这个类。<br>或者在运行期间从网路中获取了一个类，可以使用反射来创建该类的对象，调用对象的方法，即使根本不知道类的名字，没有也不可能在代码中使用new，来创建对象。</p>
+<p>当<font color="red">通过反射与一个未知类型的对象打交道时，JVM只是简单地检查这个对象，看他属于哪一个特定的类(就像传统的RTTI那样)。在用它做其他事情之前必须先加载那个类的Class对象(加载类的.class文件)，因此这个类的.class文件对于JVM来说必须是可以获得的(要么在本地机器，要么从网络中获取)。</font><br>所以RTTI与反射之间真正的区别只在于</p>
+<ul>
+<li><b>对于RTTI，编译器在编译时打开和检查.class文件。(我们知道类的名字，在代码中使用普通的方式创建对象，调用对象的方法)</b></li>
+<li><b>对于反射机制，.class文件在编译时是不可获取的，是在运行期间(程序运行到代码的某个部分)获取到的。所以在运行时打开和检查.class文件。</b></li>
+</ul>
+<p>总结一下Java反射机制<br><font color="red">在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法，对于任意一个对象，都能够调用它任意的方法。这种动态获取类的内容以及动态调用对象的方法称为反射机制。</font></p>
+<h1 id="Java反射API"><a href="#Java反射API" class="headerlink" title="Java反射API"></a>Java反射API</h1><h2 id="Class对象相关方法"><a href="#Class对象相关方法" class="headerlink" title="Class对象相关方法"></a><font size="5">Class对象相关方法</font></h2><p>Class对象的方法有很多，这里只介绍获取类的字段、方法、构造器三类</p>
+<h3 id="获取字段"><a href="#获取字段" class="headerlink" title="获取字段"></a><font size="5">获取字段</font></h3><ul>
+<li><p><font color="blue"><b>getField(String name)</b></font><br>获取指定名称的字段，只能是public的字段</p>
+</li>
+<li><p><font color="blue"><b>getFields()</b></font><br>获取所有的public修饰的字段，包括从父类继承得到的public字段和接口定义的常量。前面说过字段是不存在多态的，让我们来测试一下下面这种情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">//子类中有字段value，父类中也有字段value，并且接口中也有字段value，那么子类的Class对象到底能获取几个字段呢？</span><br><span class="line"></span><br><span class="line">class Father&#123;</span><br><span class="line">    public int value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Son extends Father implements Inter &#123;</span><br><span class="line">    public int value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface Inter&#123;</span><br><span class="line">    int value = 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class getFieldTest &#123;</span><br><span class="line">    public static void main(String[] args) throws Exception&#123;</span><br><span class="line">        Class&lt;?&gt; cl = Class.forName(&quot;fourteen.reflectTest.Son&quot;);</span><br><span class="line">        Field[] fields = cl.getFields();</span><br><span class="line">        for (Field field : fields) &#123;</span><br><span class="line">            System.out.println(field);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“============================”</span><br><span class="line">Output：</span><br><span class="line">public int Son.value</span><br><span class="line">public static final int Inter.value</span><br><span class="line">public int Father.value</span><br><span class="line"></span><br><span class="line">通过测试我们发现，子类中包含了从接口和父类继承的同名字段，</span><br><span class="line">并且接口中字段默认为常量，并不会发生多态行为</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><font color="blue"><b>getDeclaredField(String name)</b></font><br>获取指定字段，只能是本类定义的字段</p>
+</li>
+<li><p><font color="blue"><b>getDeclaredFields()</b></font><br>获取类自身定义的所有权限的字段，但是不会获取父类或者接口的任何字段。</p>
+</li>
+</ul>
+<h3 id="获取方法"><a href="#获取方法" class="headerlink" title="获取方法"></a><font size="5">获取方法</font></h3><ul>
+<li><p><font color="blue"><b>getMethod(String name,Class<t>…args)</t></b></font><br>获取指定名称方法的指定重载形式，只能获取public修饰的方法<br>参数</p>
+<ul>
+<li>String name方法名称</li>
+<li>Class<t>…args方法参数的Class对象(因为方法的重载，所以仅凭方法名无法确定一个方法)</t></li>
+</ul>
+</li>
+<li><p><font color="blue"><b>getMethods()</b></font><br>获取所有public修饰的方法，包括从父类继承的方法。如果发生重写，那么只获取子类的方法。如果发生重载那么父类和子类的方法都会被获取</p>
+</li>
+<li><p><font color="blue"><b>getDeclaredMethod(String name,Class<t>…args)</t></b></font><br>获取指定名称方法的指定重载形式，能获取本类定义的任何权限的方法，无法获取任何父类或接口的方法</p>
+</li>
+<li><p><font color="blue"><b>getDeclaredMethods()</b></font><br>获取本类定义的所有方法，无法获取父类继承的方法。</p>
+</li>
+</ul>
+<h3 id="获取构造器"><a href="#获取构造器" class="headerlink" title="获取构造器"></a><font size="5">获取构造器</font></h3><ul>
+<li><p><font color="blue"><b>getConstructor(Class<t>…args)</t></b></font><br>获取指定重载形式的public修饰的构造器，因为构造器和类同名因此无需name参数<br>参数</p>
+<ul>
+<li>Class<t>…args方法参数的Class对象(因为方法的重载，所以仅凭方法名无法确定一个方法)</t></li>
+</ul>
+</li>
+<li><p><font color="blue"><b>getConstructors()</b></font><br>获取所有public修饰的构造器。不会获取父类构造器</p>
+</li>
+<li><p><font color="blue"><b>getDeclaredConstructor(Class<t>…args)</t></b></font><br>获取指定重载形式的构造器，能够类任何权限的构造器。</p>
+</li>
+<li><p><font color="blue"><b>getDeclaredConstructor()</b></font><br>获取类所有权限的构造器</p>
+</li>
+</ul>
+<h2 id="reflect类库对象方法"><a href="#reflect类库对象方法" class="headerlink" title="reflect类库对象方法"></a><font size="5">reflect类库对象方法</font></h2><p>前面的Class对象的三类方法主要是获取reflect类库的三个类对象，分别是Field对象，Method对象以及Constructor类对象</p>
+<h3 id="Field对象方法"><a href="#Field对象方法" class="headerlink" title="Field对象方法"></a><font size="5">Field对象方法</font></h3><ul>
+<li><font color="blue"><b>get()</b></font><br>获取字段的值</li>
+<li><font color="blue"><b>set()</b></font><br>设置字段的值</li>
+</ul>
+<h3 id="Method对象方法"><a href="#Method对象方法" class="headerlink" title="Method对象方法"></a><font size="5">Method对象方法</font></h3><ul>
+<li><font color="blue"><b>Object invoke(Object obj，Object…args)</b></font><br>参数：<ul>
+<li>Object obj:方法所属的类对象</li>
+<li>Object…args:方法所需要的参数<br>返回值：方法如果不为void，那么返回方法执行的结果<br>传入指定参数，执行获取的方法。</li>
+</ul>
+</li>
+</ul>
+<h3 id="Constructor对象方法"><a href="#Constructor对象方法" class="headerlink" title="Constructor对象方法"></a><font size="5">Constructor对象方法</font></h3><ul>
+<li><font color="blue"><b>T newInstance(Object…args)</b></font><br>参数：<ul>
+<li>构造方法需要的参数<br>返回值：执行构造方法创建出来的对象</li>
+</ul>
+</li>
+</ul>
+<hr>
+对于一些getName()类似的方法没有介绍，但是查看API文档可以很轻易地学习到。另外，如果想要对获取到的私有的(或者是本来权限不够无法操作的)字段、方法或者构造器进行操作，要先调用setAccessible(true)方法。
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Java基础/" rel="tag"><i class="fa fa-tag"></i>Java基础</a>
+            
+              <a href="/tags/反射机制/" rel="tag"><i class="fa fa-tag"></i>反射机制</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/10/18/数据结构-树/" rel="next" title="数据结构-树">
+                  <i class="fa fa-chevron-left"></i> 数据结构-树
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#RTTI"><span class="nav-number">1.</span> <span class="nav-text">RTTI</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于Class类对象"><span class="nav-number">1.1.</span> <span class="nav-text">关于Class类对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四种获取Class对象的方法"><span class="nav-number">1.2.</span> <span class="nav-text">四种获取Class对象的方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#反射"><span class="nav-number">2.</span> <span class="nav-text">反射</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java反射API"><span class="nav-number">3.</span> <span class="nav-text">Java反射API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Class对象相关方法"><span class="nav-number">3.1.</span> <span class="nav-text">Class对象相关方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#获取字段"><span class="nav-number">3.1.1.</span> <span class="nav-text">获取字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取方法"><span class="nav-number">3.1.2.</span> <span class="nav-text">获取方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取构造器"><span class="nav-number">3.1.3.</span> <span class="nav-text">获取构造器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reflect类库对象方法"><span class="nav-number">3.2.</span> <span class="nav-text">reflect类库对象方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Field对象方法"><span class="nav-number">3.2.1.</span> <span class="nav-text">Field对象方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method对象方法"><span class="nav-number">3.2.2.</span> <span class="nav-text">Method对象方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Constructor对象方法"><span class="nav-number">3.2.3.</span> <span class="nav-text">Constructor对象方法</span></a></li></ol></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">66</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
