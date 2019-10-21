@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[回文数]]></title>
+    <url>%2F2019%2F10%2F21%2F%E5%9B%9E%E6%96%87%E6%95%B0%2F</url>
+    <content type="text"><![CDATA[LeetCode第九题难度：简单题目：判断一个整数是否是回文数。回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。 123456789示例一：输入: 10输出: false解释: 从右向左读, 为 01 。因此它不是一个回文数。示例二：输入: -121输出: false解释: 从左向右读, 为 -121 。 从右向左读, 为 121- 。因此它不是一个回文数。 思想分析这题思想很简单，一般的做法就是简单地将数字逆着算一遍然后比较是否相等。但这不是最优的解法，否则就没必要记录这一题了。其实，我们在将数字逆置到一半的时候就可以得到结论，并不需要完全逆置。另外，示例已经提示的很清楚，对于负数和10的倍数可以直接返回false，但是0要返回true。 代码实现1234567891011public boolean isPalindrome(int x) &#123; if(x&lt;0||x!=0&amp;&amp;x%10==0)&#123; return false; &#125; int res=0; while(x&gt;res)&#123; res=(res*10+x%10); x/=10; &#125; return x==res/10||x==res;&#125; 好的思想总是让人眼前一亮，忍不住要记录下来。]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[无重复字符的最长子串]]></title>
     <url>%2F2019%2F10%2F21%2F%E6%97%A0%E9%87%8D%E5%A4%8D%E5%AD%97%E7%AC%A6%E7%9A%84%E6%9C%80%E9%95%BF%E5%AD%90%E4%B8%B2%2F</url>
     <content type="text"><![CDATA[LeetCode第三题难度：中等题目：给定一个字符串，请你找出其中不含有重复字符的最长子串的长度。 示例12345678910示例一：输入: &quot;abcabcbb&quot;输出: 3 解释: 因为无重复字符的最长子串是 &quot;abc&quot;，所以其长度为 3。示例二：输入: &quot;pwwkew&quot;输出: 3解释: 因为无重复字符的最长子串是 &quot;wke&quot;，所以其长度为 3。 请注意，你的答案必须是 子串 的长度，&quot;pwke&quot; 是一个子序列，不是子串。 算法思想 定义一个HashMap&lt;K,V&gt;，其中key为字符，Value为字符的位置i+1； 定义不重复子串的开始位置为start，结束位置为end，长度为ans，并且都初始化为0 遍历字符串(end++)，随着end往后移动的过程中 如果[start,end]区间内出现重复字符，更新start，将start移动到重复字符的后一个位置 更新ans，将字符加入到HashMap中。 在整个过程中以[start,end]为边界的窗口在向后移动，最大子串的长度即为移动过程中窗口的最大长度 代码实现1234567891011121314151617public int lengthOfLongestSubstring(String s) &#123; //记录子串的最大长度 int ans=0; int length=s.length(); Map&lt;Character,Integer&gt; map=new HashMap&lt;&gt;(); for(int start=0,end=0;end&lt;length;end++)&#123; char ch=s.charAt(end); //当[start,end]区间出现重复字符， //将start移到重复字符后一个位置 if(map.containsKey(ch))&#123; start=Math.max(map.get(ch),start); &#125; ans=Math.max(ans,end-start+1); map.put(ch,end+1); &#125; return ans;&#125;]]></content>
@@ -662,8 +673,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>BOM</tag>
         <tag>前端</tag>
+        <tag>BOM</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
@@ -699,8 +710,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>前端</tag>
         <tag>HTML5</tag>
+        <tag>前端</tag>
       </tags>
   </entry>
   <entry>
