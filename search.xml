@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[最长公共前缀]]></title>
+    <url>%2F2019%2F10%2F21%2F%E6%9C%80%E9%95%BF%E5%85%AC%E5%85%B1%E5%89%8D%E7%BC%80%2F</url>
+    <content type="text"><![CDATA[LeetCode第十四题难度：简单题目：编写一个函数来查找字符串数组中的最长公共前缀。如果不存在公共前缀，返回空字符串 “”。(只包含小写字母) 123456789示例 1:输入: [&quot;flower&quot;,&quot;flow&quot;,&quot;flight&quot;]输出: &quot;fl&quot;示例 2:输入: [&quot;dog&quot;,&quot;racecar&quot;,&quot;car&quot;]输出: &quot;&quot;解释: 输入不存在公共前缀。 思想分析首先判断边界条件，根据题意，当数组长度为0时，返回空串””。如果数组中存在一个””，那么也返回空串。解决了边界问题后，来看着这个题。解决方法有很多，介绍一种简单地，使用indexOf()方法来解决。 先选定数组的一个元素作为基准(这里选的是arr[0])， 依次遍历数组剩下的元素，判断该基准是否是其他元素的前缀 如果不是，基准长度-1，继续判断，直到基准为空(返回”“)或是当前元素前缀为止。 重复2，3步，遍历数组所有元素。 代码实现123456789101112131415161718192021public String longestCommonPrefix(String[] strs) &#123; //注意边界条件，如果数组长度为0，直接返回 if(strs.length==0)&#123; return &quot;&quot;; &#125; String prefix=strs[0]; for(int i=1;i&lt;strs.length;i++)&#123; //如果有任意元素为”“，直接返回 if(strs[i].equals(&quot;&quot;))&#123; return &quot;&quot;; &#125; while(strs[i].indexOf(prefix)!=0)&#123; prefix=prefix.substring(0,prefix.length()-1); if(prefix.equals(&quot;&quot;))&#123; return &quot;&quot;; &#125; &#125; &#125; return prefix;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>字符串</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[回文数]]></title>
     <url>%2F2019%2F10%2F21%2F%E5%9B%9E%E6%96%87%E6%95%B0%2F</url>
     <content type="text"><![CDATA[LeetCode第九题难度：简单题目：判断一个整数是否是回文数。回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。 123456789示例一：输入: 10输出: false解释: 从右向左读, 为 01 。因此它不是一个回文数。示例二：输入: -121输出: false解释: 从左向右读, 为 -121 。 从右向左读, 为 121- 。因此它不是一个回文数。 思想分析这题思想很简单，一般的做法就是简单地将数字逆着算一遍然后比较是否相等。但这不是最优的解法，否则就没必要记录这一题了。其实，我们在将数字逆置到一半的时候就可以得到结论，并不需要完全逆置。另外，示例已经提示的很清楚，对于负数和10的倍数可以直接返回false，但是0要返回true。 代码实现1234567891011public boolean isPalindrome(int x) &#123; if(x&lt;0||x!=0&amp;&amp;x%10==0)&#123; return false; &#125; int res=0; while(x&gt;res)&#123; res=(res*10+x%10); x/=10; &#125; return x==res/10||x==res;&#125; 好的思想总是让人眼前一亮，忍不住要记录下来。]]></content>
@@ -673,8 +685,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>前端</tag>
         <tag>BOM</tag>
+        <tag>前端</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
@@ -710,8 +722,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>HTML5</tag>
         <tag>前端</tag>
+        <tag>HTML5</tag>
       </tags>
   </entry>
   <entry>
@@ -740,6 +752,19 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[青蛙跳台阶]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>动态规划</tag>
+        <tag>斐波那契数列</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[二叉树镜像对称]]></title>
     <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
     <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
@@ -751,19 +776,6 @@
         <tag>递归</tag>
         <tag>迭代法</tag>
         <tag>二叉树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[青蛙跳台阶]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
-      <categories>
-        <category>算法之美</category>
-      </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>动态规划</tag>
-        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>
