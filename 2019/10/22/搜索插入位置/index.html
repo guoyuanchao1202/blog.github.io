@@ -57,17 +57,19 @@
   };
 </script>
 
-  <meta name="description" content="欲买桂花同载酒，终不似，少年游...">
-<meta property="og:type" content="website">
-<meta property="og:title" content="CommonGuy">
-<meta property="og:url" content="https://HoA-W.github.io/tags/希尔排序/index.html">
+  <meta name="description" content="LeetCode第35题难度：简单题目：给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。(你可以假设数组中无重复元素)">
+<meta name="keywords" content="数组,LeetCode,二分查找">
+<meta property="og:type" content="article">
+<meta property="og:title" content="搜索插入位置">
+<meta property="og:url" content="https://HoA-W.github.io/2019/10/22/搜索插入位置/index.html">
 <meta property="og:site_name" content="CommonGuy">
-<meta property="og:description" content="欲买桂花同载酒，终不似，少年游...">
+<meta property="og:description" content="LeetCode第35题难度：简单题目：给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。(你可以假设数组中无重复元素)">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-10-22T15:09:21.469Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CommonGuy">
-<meta name="twitter:description" content="欲买桂花同载酒，终不似，少年游...">
-  <link rel="canonical" href="https://HoA-W.github.io/tags/希尔排序/">
+<meta name="twitter:title" content="搜索插入位置">
+<meta name="twitter:description" content="LeetCode第35题难度：简单题目：给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。(你可以假设数组中无重复元素)">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/10/22/搜索插入位置/">
 
 
 <script id="page-configurations">
@@ -75,13 +77,13 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: false,
+    isPost: true,
     isPage: false,
     isArchive: false
   };
 </script>
 
-  <title>标签: 希尔排序 | CommonGuy</title>
+  <title>搜索插入位置 | CommonGuy</title>
   
 
 
@@ -213,27 +215,6 @@
 
     
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
 </nav>
   <div class="site-search">
     <div class="popup search-popup">
@@ -272,60 +253,193 @@
           <div id="content" class="content">
             
 
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
   
   
   
-  <div class="post-block tag">
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1 class="collection-header">希尔排序<small>标签</small>
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/10/22/搜索插入位置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">搜索插入位置
+
+          
         </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-22 10:56:01 / 修改时间：23:09:21" itemprop="dateCreated datePublished" datetime="2019-10-22T10:56:01+08:00">2019-10-22</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法之美/" itemprop="url" rel="index"><span itemprop="name">算法之美</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>LeetCode第35题<br>难度：简单<br>题目：给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。(你可以假设数组中无重复元素)</p>
+<hr>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">示例 1:</span><br><span class="line">输入: [1,3,5,6], 5</span><br><span class="line">输出: 2</span><br><span class="line"></span><br><span class="line">示例 2:</span><br><span class="line">输入: [1,3,5,6], 2</span><br><span class="line">输出: 1</span><br><span class="line"></span><br><span class="line">示例 3:</span><br><span class="line">输入: [1,3,5,6], 7</span><br><span class="line">输出: 4</span><br><span class="line"></span><br><span class="line">示例 4:</span><br><span class="line">输入: [1,3,5,6], 0</span><br><span class="line">输出: 0</span><br></pre></td></tr></table></figure>
+
+<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>很明显，这是一道二分查找的题目，对于二分查找，思想比较简单，但是实现起来却并不是那么容易，要特别注意边界条件。</p>
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public int searchInsert(int[] nums, int target) &#123;</span><br><span class="line">	return BinarySearch(nums,0,nums.length-1,target);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public int BinarySearch(int[] nums,int left,int right,int target)&#123;</span><br><span class="line">	if(left&gt;right)&#123;</span><br><span class="line">		return left;</span><br><span class="line">	&#125;</span><br><span class="line">	else&#123;</span><br><span class="line">		int mid=(right+left)/2;</span><br><span class="line">		if(nums[mid]&lt;target)&#123;</span><br><span class="line">			return BinarySearch(nums,mid+1,right,target);</span><br><span class="line">		&#125;</span><br><span class="line">		else if(nums[mid]&gt;target)&#123;</span><br><span class="line">			return BinarySearch(nums,left,mid-1,target);</span><br><span class="line">		&#125;</span><br><span class="line">		else</span><br><span class="line">			return mid;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>递归出口<br>当left&gt;right时说明数组已经遍历完，没有找到目标值，此时应该将目标值插入合适的位置。通过代码可以发现，<font color="red">left指向的元素是第一个大于目标值的元素，因此目标值应该插入到left下标位置。</font></li>
+<li>递归过程<br>在递归过程中，需要不断地逼近递归出口。这样mid+1和mid-1就很好理解了。<hr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
       </div>
+
+  </div>
+</div>
 
       
 
-  
-  
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/数组/" rel="tag"><i class="fa fa-tag"></i>数组</a>
+            
+              <a href="/tags/LeetCode/" rel="tag"><i class="fa fa-tag"></i>LeetCode</a>
+            
+              <a href="/tags/二分查找/" rel="tag"><i class="fa fa-tag"></i>二分查找</a>
+            
+          </div>
+        
 
-  
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/10/21/最长公共前缀/" rel="next" title="最长公共前缀">
+                  <i class="fa fa-chevron-left"></i> 最长公共前缀
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
     
-    <div class="collection-year">
-      <h1 class="collection-header">2019</h1>
-    </div>
-  
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/2019/09/21/排序算法之希尔排序/" itemprop="url">
-            <span itemprop="name">排序算法之希尔排序</span>
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-09-21T11:04:17+08:00"
-              content="2019-09-21">
-          09-21
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    </div>
   </div>
   
   
   
+  </article>
 
-  
-
+  </div>
 
 
           </div>
@@ -344,6 +458,11 @@
 
   <aside class="sidebar">
     <div class="sidebar-inner">
+        
+        
+        
+        
+      
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
@@ -356,6 +475,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#解题思路"><span class="nav-number">1.</span> <span class="nav-text">解题思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码实现"><span class="nav-number">2.</span> <span class="nav-text">代码实现</span></a></li></ol></div>
+        
       </div>
       <!--/noindex-->
 
