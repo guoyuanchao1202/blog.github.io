@@ -4,11 +4,11 @@
   
     
     <entry>
-      <title>相同的树</title>
-      <link href="/2019/10/23/%E7%9B%B8%E5%90%8C%E7%9A%84%E6%A0%91/"/>
-      <url>/2019/10/23/%E7%9B%B8%E5%90%8C%E7%9A%84%E6%A0%91/</url>
+      <title>相同的树和镜像树</title>
+      <link href="/2019/10/23/%E7%9B%B8%E5%90%8C%E7%9A%84%E6%A0%91%E5%92%8C%E9%95%9C%E5%83%8F%E6%A0%91/"/>
+      <url>/2019/10/23/%E7%9B%B8%E5%90%8C%E7%9A%84%E6%A0%91%E5%92%8C%E9%95%9C%E5%83%8F%E6%A0%91/</url>
       
-        <content type="html"><![CDATA[<p><b>LeetCode第一百题</b><br>难度：<font color="green">简单</font><br>题目：给定两个二叉树，编写一个函数来检验它们是否相同，如果两个树在结构上相同，并且节点具有相同的值，则认为它们是相同的。</p><hr><a id="more"></a><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">示例 1:</span><br><span class="line">输入:      1         1</span><br><span class="line">          / \       / \</span><br><span class="line">         2   3     2   3</span><br><span class="line"></span><br><span class="line">        [1,2,3],   [1,2,3]</span><br><span class="line"></span><br><span class="line">输出: true</span><br><span class="line"></span><br><span class="line">示例 2:</span><br><span class="line">输入:     1          1</span><br><span class="line">          /           \</span><br><span class="line">         2             2</span><br><span class="line"></span><br><span class="line">        [1,2],     [1,null,2]</span><br><span class="line"></span><br><span class="line">输出: false</span><br></pre></td></tr></table></figure><h1 id="思想分析"><a href="#思想分析" class="headerlink" title="思想分析"></a>思想分析</h1><p>对于树的问题，尤其是二叉树，几乎都可以用递归进行解决(换个角度也是锻炼了我们的递归能力)。对于递归，很重要的一方面就是要找到递归出口，否则容易栈溢出。<br>本题中，对于两个树的节点，有以下几种情况</p><ol><li>都为空，说明当前分支遍历结束并且相等，返回true</li><li>只有一个为空，那说明两棵树必定不相等，返回false</li><li>都不为空但是值不相等，同上，返回false</li><li>都不为空且值相等，说明到当前为止两树相等，继续往下遍历比较。<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public boolean isSameTree(TreeNode p, TreeNode q) &#123;</span><br><span class="line">if(p==null&amp;&amp;q==null)&#123;</span><br><span class="line">return true;</span><br><span class="line">&#125;</span><br><span class="line">else if(p==null||q==null)&#123;</span><br><span class="line">return false;</span><br><span class="line">&#125;</span><br><span class="line">else if(p.val!=q.val)&#123;</span><br><span class="line">return false;</span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">return isSameTree(p.right,q.right)&amp;&amp;isSameTree(p.left,q.left);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li></ol><p>对于递归问题，尤其是树的递归，可以将通过个例来推导(例如将两层二叉树带入方法进行测试)，由于递归的性质，如果层数比较小的各种个例能够满足，那么递归应该没有问题。</p><hr>]]></content>
+        <content type="html"><![CDATA[<p><b>LeetCode第一百题/一百零一题</b><br>难度：<font color="green">简单</font><br>题目(一百)：给定两个二叉树，编写一个函数来检验它们是否相同，如果两个树在结构上相同，并且节点具有相同的值，则认为它们是相同的。</p><hr><a id="more"></a><h1 id="相同的树"><a href="#相同的树" class="headerlink" title="相同的树"></a>相同的树</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">示例 1:</span><br><span class="line">输入:      1         1</span><br><span class="line">          / \       / \</span><br><span class="line">         2   3     2   3</span><br><span class="line"></span><br><span class="line">        [1,2,3],   [1,2,3]</span><br><span class="line"></span><br><span class="line">输出: true</span><br><span class="line"></span><br><span class="line">示例 2:</span><br><span class="line">输入:     1          1</span><br><span class="line">          /           \</span><br><span class="line">         2             2</span><br><span class="line"></span><br><span class="line">        [1,2],     [1,null,2]</span><br><span class="line"></span><br><span class="line">输出: false</span><br></pre></td></tr></table></figure><h2 id="思想分析"><a href="#思想分析" class="headerlink" title="思想分析"></a><font size="5">思想分析</font></h2><p>对于树的问题，尤其是二叉树，几乎都可以用递归进行解决(换个角度也是锻炼了我们的递归能力)。对于递归，很重要的一方面就是要找到递归出口，否则容易栈溢出。<br>本题中，对于两个树的节点，有以下几种情况</p><ol><li>都为空，说明当前分支遍历结束并且相等，返回true</li><li>只有一个为空，那说明两棵树必定不相等，返回false</li><li>都不为空但是值不相等，同上，返回false</li><li>都不为空且值相等，说明到当前为止两树相等，继续往下遍历比较。<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a><font size="5">代码实现</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public boolean isSameTree(TreeNode p, TreeNode q) &#123;</span><br><span class="line">if(p==null&amp;&amp;q==null)&#123;</span><br><span class="line">return true;</span><br><span class="line">&#125;</span><br><span class="line">else if(p==null||q==null)&#123;</span><br><span class="line">return false;</span><br><span class="line">&#125;</span><br><span class="line">else if(p.val!=q.val)&#123;</span><br><span class="line">return false;</span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">return isSameTree(p.right,q.right)&amp;&amp;isSameTree(p.left,q.left);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li></ol><hr><hr><h1 id="镜像树"><a href="#镜像树" class="headerlink" title="镜像树"></a>镜像树</h1><p><b>题目(一百零一)：给定一个二叉树，检查它是否是镜像对称的</b></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">例如，二叉树 [1,2,2,3,4,4,3] 是对称的。</span><br><span class="line"></span><br><span class="line">    1</span><br><span class="line">   / \</span><br><span class="line">  2   2</span><br><span class="line"> / \ / \</span><br><span class="line">3  4 4  3</span><br><span class="line"></span><br><span class="line">但是下面这个 [1,2,2,null,3,null,3] 则不是镜像对称的:</span><br><span class="line">    1</span><br><span class="line">   / \</span><br><span class="line">  2   2</span><br><span class="line">   \   \</span><br><span class="line">   3    3</span><br></pre></td></tr></table></figure><h2 id="思想分析-1"><a href="#思想分析-1" class="headerlink" title="思想分析"></a><font size="5">思想分析</font></h2><p>可以使用递归和迭代两种方法，如果使用递归，那么和上面的思路一摸一样，只不过细节稍微有改动。</p><h2 id="代码实现-1"><a href="#代码实现-1" class="headerlink" title="代码实现"></a><font size="5">代码实现</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public boolean isSymmetric(TreeNode root) &#123;</span><br><span class="line">//边界条件</span><br><span class="line">if(root==null)&#123;</span><br><span class="line">return true;</span><br><span class="line">&#125;</span><br><span class="line">return Judge(root.left,root.right);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public boolean Judge(TreeNode p,TreeNode q)&#123;</span><br><span class="line">if(p==null&amp;&amp;q==null)&#123;</span><br><span class="line">return true;</span><br><span class="line">&#125;</span><br><span class="line">else if(p==null||q==null)&#123;</span><br><span class="line">return false;</span><br><span class="line">&#125;</span><br><span class="line">else if(p.val!=q.val)&#123;</span><br><span class="line">return false;</span><br><span class="line">&#125;</span><br><span class="line">else&#123;</span><br><span class="line">return Judge(p.left,q.right)&amp;&amp;Judge(p.right,q.left);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>对于递归问题，尤其是树的递归，可以将通过个例来推导(例如将两层二叉树带入方法进行测试)，由于递归的性质，如果层数比较小的各种个例能够满足，那么递归应该没有问题。</p><hr>]]></content>
       
       
       <categories>
@@ -25,6 +25,8 @@
             <tag> 递归 </tag>
             
             <tag> 二叉树 </tag>
+            
+            <tag> 镜像树 </tag>
             
         </tags>
       
@@ -51,9 +53,9 @@
             
             <tag> LeetCode </tag>
             
-            <tag> 斐波那契数列 </tag>
-            
             <tag> 递归 </tag>
+            
+            <tag> 斐波那契数列 </tag>
             
         </tags>
       
@@ -136,11 +138,11 @@
       
         <tags>
             
-            <tag> 数组 </tag>
-            
             <tag> LeetCode </tag>
             
             <tag> 递归 </tag>
+            
+            <tag> 数组 </tag>
             
             <tag> 二分查找 </tag>
             
@@ -1689,9 +1691,9 @@
       
         <tags>
             
-            <tag> 前端 </tag>
-            
             <tag> BOM </tag>
+            
+            <tag> 前端 </tag>
             
             <tag> JavaScript </tag>
             
@@ -1810,35 +1812,6 @@
     
     
     <entry>
-      <title>字符流和字节流</title>
-      <link href="/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/"/>
-      <url>/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/</url>
-      
-        <content type="html"><![CDATA[<p><a href="http://www.itcast.cn/news/20181219/14592257466.shtml" target="_blank" rel="noopener">深入理解字符流编码</a></p><p><strong>首先要理解字符流输入的原理：</strong><br>字符流输入其实底层也是字节流输入</p><p>字符–&gt;计算机二进制数字（字节）：编码<br>字节(计算机二进制数字)–&gt;字符：解码</p><a id="more"></a><h2 id="写入时："><a href="#写入时：" class="headerlink" title="写入时："></a>写入时：</h2><pre><code>1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中</code></pre><h2 id="读取时："><a href="#读取时：" class="headerlink" title="读取时："></a>读取时：</h2><pre><code>使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序</code></pre><h2 id="图片不能用字符流的原因"><a href="#图片不能用字符流的原因" class="headerlink" title="图片不能用字符流的原因"></a>图片不能用字符流的原因</h2><pre><code>因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符，在写入的时候，会将未知字符丢掉，所以图片拷贝不成功因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节**举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1....使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1....但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符；例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)；在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1....这样拷贝自然就失败了</code></pre><h2 id="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"><a href="#关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接" class="headerlink" title="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"></a>关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接</h2><pre><code>**最后**：字符流因为解码编码等原因，比字节流慢很多字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输图片等视频音频文件要用字节流</code></pre>]]></content>
-      
-      
-      <categories>
-          
-          <category> JAVA </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> I/O </tag>
-            
-            <tag> 乱码 </tag>
-            
-            <tag> 字符流/字节流 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>二叉树镜像对称</title>
       <link href="/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/"/>
       <url>/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/</url>
@@ -1862,6 +1835,35 @@
             <tag> 迭代法 </tag>
             
             <tag> 二叉树 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>字符流和字节流</title>
+      <link href="/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/"/>
+      <url>/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/</url>
+      
+        <content type="html"><![CDATA[<p><a href="http://www.itcast.cn/news/20181219/14592257466.shtml" target="_blank" rel="noopener">深入理解字符流编码</a></p><p><strong>首先要理解字符流输入的原理：</strong><br>字符流输入其实底层也是字节流输入</p><p>字符–&gt;计算机二进制数字（字节）：编码<br>字节(计算机二进制数字)–&gt;字符：解码</p><a id="more"></a><h2 id="写入时："><a href="#写入时：" class="headerlink" title="写入时："></a>写入时：</h2><pre><code>1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中</code></pre><h2 id="读取时："><a href="#读取时：" class="headerlink" title="读取时："></a>读取时：</h2><pre><code>使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序</code></pre><h2 id="图片不能用字符流的原因"><a href="#图片不能用字符流的原因" class="headerlink" title="图片不能用字符流的原因"></a>图片不能用字符流的原因</h2><pre><code>因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符，在写入的时候，会将未知字符丢掉，所以图片拷贝不成功因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节**举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1....使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1....但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符；例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)；在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1....这样拷贝自然就失败了</code></pre><h2 id="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"><a href="#关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接" class="headerlink" title="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"></a>关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接</h2><pre><code>**最后**：字符流因为解码编码等原因，比字节流慢很多字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输图片等视频音频文件要用字节流</code></pre>]]></content>
+      
+      
+      <categories>
+          
+          <category> JAVA </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> I/O </tag>
+            
+            <tag> 乱码 </tag>
+            
+            <tag> 字符流/字节流 </tag>
             
         </tags>
       
