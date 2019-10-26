@@ -1,9 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[买股票的最佳时机]]></title>
+    <url>%2F2019%2F10%2F26%2F%E4%B9%B0%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E4%BD%B3%E6%97%B6%E6%9C%BA%2F</url>
+    <content type="text"><![CDATA[LeetCode第一百二十一、二十二题难度：简单 第一百二十一题题目：给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。如果你最多只允许完成一笔交易（即买入和卖出一支股票），设计一个算法来计算你所能获取的最大利润。注意你不能在买入股票前卖出股票。 1234567891011示例 1:输入: [7,1,5,3,6,4]输出: 5解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。 注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格。示例 2:输入: [7,6,4,3,1]输出: 0解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。 思想分析这道题用到了动态规划的思想，维护两个变量 当前元素前的最小元素值minprice 当前利润res 当遍历到当前节点时，判断当前元素值和minprice的差值是否大于当前利润，如果大于，更新利润。 代码实现12345678910111213141516171819 public int maxProfit(int[] prices) &#123; //首先考虑边界情况，当数组长度为0时 if(prices.length==0)&#123; return 0; &#125; //假设初始最小值是prices[0] int minprice=prices[0]; //初始利润为0 int res=0; for(int i=1;i&lt;prices.length;i++)&#123;//如果当前元素值小于最小值，更新最小值 if(minprice&gt;prices[i]) minprice=prices[i];//更新利润 else if(res&lt;prices[i]-minprice) res=prices[i]-minprice; &#125; return res; &#125; 第一百二十一题题目：给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。 12345678910111213示例 1:输入: [7,1,5,3,6,4]输出: 7解释: 在第 2 天（股票价格 = 1）的时候买入，在第 3 天（股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。 随后，在第 4 天（股票价格 = 3）的时候买入，在第 5 天（股票价格 = 6）的时候卖出, 这笔交易所能获得利润 = 6-3 = 3 。示例 2:输入: [1,2,3,4,5]输出: 4解释: 在第 1 天（股票价格 = 1）的时候买入，在第 5 天 （股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。 注意你不能在第 1 天和第 2 天接连购买股票，之后再将它们卖出。 因为这样属于同时参与了多笔交易，你必须在再次购买前出售掉之前的股票。 思想分析这道题和前一道题不同，它可以多次买卖一只股票，要求所得利润的总和最大。这时候，我们应该想到使用贪心算法。对于这道题，今天买，不管之后是否会赚的更多，只要明天能赚我就卖，这就是贪心。 代码实现12345678910111213public int maxProfit(int[] prices) &#123; int res = 0; //记录差值 int Dvalue = 0; for(int i = 0; i &lt; prices.length - 1; i++)&#123; Dvalue = prices[i+1] - prices[i]; if (Dvalue &gt; 0)&#123; res += Dvalue; &#125; &#125; return res;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>动态规划</tag>
+        <tag>贪心算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[杨辉三角问题]]></title>
+    <url>%2F2019%2F10%2F26%2F%E6%9D%A8%E8%BE%89%E4%B8%89%E8%A7%92%E9%97%AE%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[LeetCode第一百一十八、一十九题难度：简单 如图所示 12345678910示例:输入: 5输出:[ [1], [1,1], [1,2,1], [1,3,3,1], [1,4,6,4,1]] 第一百一十八题题目(第一百一十八)：给定一个非负整数 numRows，生成杨辉三角的前 numRows 行。 思想分析对于杨辉三角 每一行的第一个元素和最后一个元素为1 剩下的每一个元素都是它上一行正对元素及其前一个元素之和，即有(i,j)=(i-1,j-1)+(i-1,j)。 代码实现123456789101112131415161718192021public List&lt;List&lt;Integer&gt;&gt; generate(int numRows) &#123; List&lt;List&lt;Integer&gt;&gt; res=new ArrayList&lt;&gt;(numRows); //先将数组里的空引用初始化 for(int i=0;i&lt;numRows;i++)&#123; res.add(new ArrayList&lt;Integer&gt;()); &#125; for(int i=0;i&lt;numRows;i++)&#123; for(int j=0;j&lt;=i;j++)&#123; if(j==0||j==i) res.get(i).add(1); //(i,j)=(i-1,j-1)+(i-1,j); else res.get(i).add(res.get(i-1).get(j-1)+res.get(i-1).get(j)); &#125; &#125; return res;&#125; 第一百一十九题题目：给定一个非负索引 k，其中 k ≤ 33，返回杨辉三角的第 k 行(行数从0开始) 123示例:输入: 3输出: [1,3,3,1] 思想分析将每一行元素保存到集合中，求下一行元素时，利用集合中已有的元素求得当前行元素值，并存入集合中，覆盖上一行的元素。 代码实现123456789101112public List&lt;Integer&gt; getRow(int rowIndex) &#123; List&lt;Integer&gt; cur = new ArrayList&lt;&gt;(); cur.add(1); for (int i = 0; i &lt; rowIndex; i++) &#123; for (int j = i; j &gt; 0; j--) &#123; cur.set(j, cur.get(j - 1) + cur.get(j)); &#125; cur.add(1); &#125; return cur;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>杨辉三角</tag>
+        <tag>迭代</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[路径总和]]></title>
+    <url>%2F2019%2F10%2F25%2F%E8%B7%AF%E5%BE%84%E6%80%BB%E5%92%8C%2F</url>
+    <content type="text"><![CDATA[LeetCode第一百一十二题难度：简单题目：给定一个二叉树和一个目标和，判断该树中是否存在根节点到叶子节点的路径，这条路径上所有节点值相加等于目标和。 1234567891011示例: 给定如下二叉树，以及目标和 sum = 22， 5 / \ 4 8 / / \ 11 13 4 / \ \ 7 2 1返回 true, 因为存在目标和为 22 的根节点到叶子节点的路径 5-&gt;4-&gt;11-&gt;2。 思想分析这道题思想比较简单，但是有两个点容易出错 目标和是根节点到叶子节点的路径和，一定是叶子节点。在递归的过程中如果到当前节点时路径和为sum，一定要判断当前节点是不是叶子节点 不能提前截断，如果遍历到当前节点时，路径和等于目标和，但是当前节点不是叶子节点，不要急着返回false，继续往下遍历。举个例子1234567891011对于这样一颗二叉树，目标和为-1 1 / \ -2 8 / / \ 1 13 4 / \ \ -1 2 1 当遍历到-2节点时，当前路径和为1-2=-1=sum，但是很明显，-2节点不是叶子节点，因此不能直接返回true但是也不能为了节省时间，直接返回false，因为从上面可以看到，继续往下遍历时，最终的路径和为1-2+1-1=-1=sum，仍然等于sum，因此返回true 代码实现123456789101112public boolean hasPathSum(TreeNode root, int sum) &#123; if(root==null) return false; sum-=root.val; if(sum==0&amp;&amp;root.left==null&amp;&amp;root.right==null) return true; //这里一定不能为了节省时间直接返回false // if(sum==0) // return false; return hasPathSum(root.left,sum)||hasPathSum(root.right,sum); &#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>递归</tag>
+        <tag>二叉树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[二叉树的最小深度]]></title>
+    <url>%2F2019%2F10%2F25%2F%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E5%B0%8F%E6%B7%B1%E5%BA%A6%2F</url>
+    <content type="text"><![CDATA[LeetCode第一百一十一题难度：简单题目：给定一个二叉树，找出其最小深度。最小深度是从根节点到最近叶子节点的最短路径上的节点数量。(叶子节点是指没有子节点的节点) 12345678910示例给定二叉树 [3,9,20,null,null,15,7], 3 / \ 9 20 / \ 15 7返回它的最小深度 2. 思想分析前面做过了二叉树的最大深度题，这个会稍微难一点，对于当前节点，有三种情况 当前节点为空此时返回0 当前节点左右子树都不为空此时说明当前节点是叶子节点，返回1 当前节点左子树或右子树有一个为空此时，当前节点的最小深度就是它不为空的子树的最小深度！！这点很重要 当前节点左右子树都不为空当前节点的最小深度为它左右子树中较小的深度 代码实现有两种解法，一种是递归，一种类似于队列 递归解法12345678910111213141516public int minDepth(TreeNode root) &#123; //如果为空，返回0 if(root == null) return 0; //1.左孩子和有孩子都为空的情况，说明到达了叶子节点，直接返回1即可 if(root.left == null &amp;&amp; root.right == null) return 1; //2.如果左孩子和由孩子其中一个为空，那么需要返回比较大的那个孩子的深度 int m1 = minDepth(root.left); int m2 = minDepth(root.right); //这里其中一个节点为空，说明m1和m2有一个必然为0，所以可以返回m1 + m2 + 1; if(root.left == null || root.right == null) return m1 + m2 + 1; //3.最后一种情况，也就是左右孩子都不为空，返回最小深度+1即可 return Math.min(m1,m2) + 1;&#125; 递归的程序比较容易理解，最后测试时间1ms，内存消耗不太理想，为37.7M 队列解法将树节点和它的深度封装成一个类，当遇到叶子节点时，直接返回深度即可 12345678910111213141516171819202122232425262728293031323334353637//将树节点和它的深度封装成一个类class Node&#123; TreeNode t; int deepth; Node(TreeNode t,int deepth)&#123; this.t=t; this.deepth=deepth; &#125;&#125;public int minDepth(TreeNode root) &#123; if(root == null) return 0; int deepth=1; //使用List集合模仿队列 List&lt;Node&gt; list=new ArrayList(); list.add(new Node(root,1)); while(!list.isEmpty())&#123; Node DeepthNode=list.remove(0); TreeNode temp=DeepthNode.t; //如果当前节点为树节点，直接返回深度即可 if(temp.left==null&amp;&amp;temp.right==null)&#123; return DeepthNode.deepth; &#125; //如果当前节点含有子节点，将子节点和当前节点深度+1封装后加入集合中。 if(temp.left!=null)&#123; list.add(new Node(temp.left,DeepthNode.deepth+1)); &#125; if(temp.right!=null)&#123; list.add(new Node(temp.right,DeepthNode.deepth+1)); &#125; &#125; throw new RuntimeException();&#125; 这种方法算是宽度优先算法，按照层次遍历的方式，遍历每个节点并记录节点的深度，直到找到叶子节点为止。]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>递归</tag>
+        <tag>二叉树</tag>
+        <tag>队列</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[判断平衡二叉树]]></title>
     <url>%2F2019%2F10%2F24%2F%E5%88%A4%E6%96%AD%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%2F</url>
-    <content type="text"><![CDATA[LeetCode第110题难度：简单题目：给定一个二叉树，判断它是否是高度平衡的二叉树。本题中，一棵高度平衡二叉树定义为：一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过1。 123456789101112131415161718192021示例 1:给定二叉树 [3,9,20,null,null,15,7] 3 / \ 9 20 / \ 15 7返回 true 。示例 2:给定二叉树 [1,2,2,3,3,null,null,4,4] 1 / \ 2 2 / \ 3 3 / \ 4 4返回 false 。 思想分析这个题，和前面求二叉树最大深度有些相似，求出节点的左右子树高度，判断相差是否超过1，如果超过1，将标记设置为false。否则计算当前节点的深度，继续递归。 代码实现12345678910111213141516171819202122public class BalancedBinaryTree &#123; boolean res = true; public boolean isBalanced(TreeNode root) &#123; helper(root); return res; &#125; private int helper(TreeNode root) &#123; if (root == null) return 0; //左子树的高度 int left = helper(root.left) + 1; //右子树的高度 int right = helper(root.right) + 1; //在这里将res设置为false if (Math.abs(right - left) &gt; 1) res = false; //当前节点的高度 return Math.max(left, right); &#125;&#125; 还有一种实现方法较为巧妙，也贴一下吧 12345678910111213141516171819202122public boolean isBalanced(TreeNode root) &#123; return downToTop(root)!=-1;&#125;public int downToTop(TreeNode t)&#123; if(t==null) return 0; //求左子树的高度 int left=downToTop(t.left); //如果高度为-1，直接截断返回-1 if(left==-1) return -1; //求右子树的高度 int right=downToTop(t.right); //如果高度为-1，直接截断返回-1 if(right==-1) return -1; //这里很是巧妙，如果左右子树高度相差超过2，说明该树已经不平衡了 //将当前节点高度设为-1，否则说明当前节点仍然是平衡的，那就将当前节点 //高度设为正常高度。 return Math.abs(left-right)&lt;2?Math.max(left,right)+1:-1;&#125; 这个解法仔细想了想感觉很巧妙，很让人佩服。]]></content>
+    <content type="text"><![CDATA[LeetCode第一百一十题难度：简单题目：给定一个二叉树，判断它是否是高度平衡的二叉树。本题中，一棵高度平衡二叉树定义为：一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过1。 123456789101112131415161718192021示例 1:给定二叉树 [3,9,20,null,null,15,7] 3 / \ 9 20 / \ 15 7返回 true 。示例 2:给定二叉树 [1,2,2,3,3,null,null,4,4] 1 / \ 2 2 / \ 3 3 / \ 4 4返回 false 。 思想分析这个题，和前面求二叉树最大深度有些相似，求出节点的左右子树高度，判断相差是否超过1，如果超过1，将标记设置为false。否则计算当前节点的深度，继续递归。 代码实现12345678910111213141516171819202122public class BalancedBinaryTree &#123; boolean res = true; public boolean isBalanced(TreeNode root) &#123; helper(root); return res; &#125; private int helper(TreeNode root) &#123; if (root == null) return 0; //左子树的高度 int left = helper(root.left) + 1; //右子树的高度 int right = helper(root.right) + 1; //在这里将res设置为false if (Math.abs(right - left) &gt; 1) res = false; //当前节点的高度 return Math.max(left, right); &#125;&#125; 还有一种实现方法较为巧妙，也贴一下吧 12345678910111213141516171819202122public boolean isBalanced(TreeNode root) &#123; return downToTop(root)!=-1;&#125;public int downToTop(TreeNode t)&#123; if(t==null) return 0; //求左子树的高度 int left=downToTop(t.left); //如果高度为-1，直接截断返回-1 if(left==-1) return -1; //求右子树的高度 int right=downToTop(t.right); //如果高度为-1，直接截断返回-1 if(right==-1) return -1; //这里很是巧妙，如果左右子树高度相差超过2，说明该树已经不平衡了 //将当前节点高度设为-1，否则说明当前节点仍然是平衡的，那就将当前节点 //高度设为正常高度。 return Math.abs(left-right)&lt;2?Math.max(left,right)+1:-1;&#125; 这个解法仔细想了想感觉很巧妙，很让人佩服。]]></content>
       <categories>
         <category>算法之美</category>
       </categories>
@@ -21,9 +74,9 @@
         <category>算法之美</category>
       </categories>
       <tags>
+        <tag>数组</tag>
         <tag>LeetCode</tag>
         <tag>递归</tag>
-        <tag>数组</tag>
         <tag>二分查找</tag>
         <tag>AVL树</tag>
       </tags>
@@ -103,9 +156,9 @@
         <category>算法之美</category>
       </categories>
       <tags>
+        <tag>数组</tag>
         <tag>LeetCode</tag>
         <tag>递归</tag>
-        <tag>数组</tag>
         <tag>二分查找</tag>
       </tags>
   </entry>
@@ -601,8 +654,8 @@
       </categories>
       <tags>
         <tag>数组</tag>
-        <tag>数据结构</tag>
         <tag>队列</tag>
+        <tag>数据结构</tag>
       </tags>
   </entry>
   <entry>
@@ -794,8 +847,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>BOM</tag>
         <tag>前端</tag>
+        <tag>BOM</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
@@ -848,20 +901,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[二叉树镜像对称]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
-      <categories>
-        <category>算法之美</category>
-      </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>递归</tag>
-        <tag>迭代法</tag>
-        <tag>二叉树</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[字符流和字节流]]></title>
     <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
     <content type="text"><![CDATA[深入理解字符流编码 首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入 字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码 写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
@@ -885,6 +924,20 @@
         <tag>LeetCode</tag>
         <tag>动态规划</tag>
         <tag>斐波那契数列</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[二叉树镜像对称]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>递归</tag>
+        <tag>迭代法</tag>
+        <tag>二叉树</tag>
       </tags>
   </entry>
   <entry>
