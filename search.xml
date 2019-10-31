@@ -1,15 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[求众数]]></title>
-    <url>%2F2019%2F10%2F29%2F%E6%B1%82%E4%BC%97%E6%95%B0%2F</url>
-    <content type="text"><![CDATA[LeetCode第一百六十九·题难度：简单题目：给定一个大小为 n 的数组，找到其中的众数。众数是指在数组中出现次数大于 ⌊n/2⌋的元素(假设数组是非空的，并且给定的数组总是存在众数)。 12345678示例 1:输入: [3,2,3]输出: 3示例 2:输入: [2,2,1,1,1,2,2]输出: 2 思想分析有三种思路 结合哈希表来实现，以元素的值为键，以元素出现的次数为值。 先将数组排序，由于众数的定义，排序过后nums[nums.length-1]即为众数 使用Boyer-Moore投票算法。该算法是这样的：将众数设置为1，非众数设置为-1。因为众数的性质，可以得到将数组所有元素相加最后得到的值一定是大于0的。 我们维护两个变量，count(计数器)和res(众数) 遍历数组，当count为0时，将当前元素设置为众数 如果出现众数，那么计数器+1，如果出现非众数，计数器-1 如果计数器值小于0，那么将计数器清零，将下一个元素重新设置为众数。 当遍历完数组后，最后的res一定是众数。 代码实现1234567891011//使用Boyer-Moore投票算法来实现public int majorityElement(int[] nums) &#123; int res=0; int count=0; for(int num:nums)&#123; if(count==0) res=num; count+=(res==num?1:-1); &#125; return res;&#125; 这个算法比较巧妙，需要好好体会。]]></content>
+    <title><![CDATA[位1的个数]]></title>
+    <url>%2F2019%2F10%2F31%2F%E4%BD%8D1%E7%9A%84%E4%B8%AA%E6%95%B0%2F</url>
+    <content type="text"><![CDATA[LeetCode第一百九十一题难度：简单题目：编写一个函数，输入是一个无符号整数，返回其二进制表达式中数字位数为 ‘1’ 的个数（也被称为汉明重量）。 123456789101112131415示例 1：输入：00000000000000000000000000001011输出：3解释：输入的二进制串 00000000000000000000000000001011 中，共有三位为 &apos;1&apos;。示例 2：输入：00000000000000000000000010000000输出：1解释：输入的二进制串 00000000000000000000000010000000 中，共有一位为 &apos;1&apos;。示例 3：输入：11111111111111111111111111111101输出：31解释：输入的二进制串 11111111111111111111111111111101 中，共有 31 位为 &apos;1&apos;。 思想分析这道题有两种方法来解决 使用lowbit()公式:x&amp;-x，返回x的最后一个1 使用一个标记mark=1，通过对mark进行移位，并判断mark&amp;x是否为0。 代码实现1234567891011121314151617181920212223//lowbit公式public int hammingWeight(int n) &#123; int res=0; while(n!=0)&#123; res++; n-=(n&amp;-n); &#125; return res;&#125;”=========================“移位public int hammingWeight(int n) &#123; int res=0; int mark=1; for(int i=0;i&lt;32;i++)&#123; if((n&amp;mark)!=0)&#123; res++; &#125; mark&lt;&lt;=1; &#125; return res;&#125;]]></content>
       <categories>
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>数组</tag>
         <tag>LeetCode</tag>
+        <tag>二进制</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[旋转数组]]></title>
+    <url>%2F2019%2F10%2F29%2F%E6%97%8B%E8%BD%AC%E6%95%B0%E7%BB%84%2F</url>
+    <content type="text"><![CDATA[LeetCode第一百八十九题难度：简单题目：给定一个数组，将数组中的元素向右移动 k 个位置，其中 k 是非负数。 1234567891011121314示例 1:输入: [1,2,3,4,5,6,7] 和 k = 3输出: [5,6,7,1,2,3,4]解释:向右旋转 1 步: [7,1,2,3,4,5,6]向右旋转 2 步: [6,7,1,2,3,4,5]向右旋转 3 步: [5,6,7,1,2,3,4]示例 2:输入: [-1,-100,3,99] 和 k = 2输出: [3,99,-1,-100]解释: 向右旋转 1 步: [99,-1,-100,3]向右旋转 2 步: [3,99,-1,-100] 算法思想解决方法有很多，这里提供三种 暴力法 我们可以用一个额外的数组来将每个元素放到正确的位置上，也就是原本数组里下标为 ii 的我们把它放到 (i+k)%数组长度(i+k)%数组长度 的位置。然后把新的数组拷贝到原数组中。 当我们旋转数组 k 次， k%nk%n 个尾部元素会被移动到头部，剩下的元素会被向后移动。在这个方法中，我们首先将所有元素反转。然后反转前 k 个元素，再反转后面 n-kn−k 个元素，就能得到想要的结果。 代码实现12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849//暴力法public void rotate(int[] nums, int k) &#123; for(int i=0;i&lt;k;i++)&#123; int temp=nums[nums.length-1]; for(int j=nums.length-1;j&gt;0;j--)&#123; nums[j]=nums[j-1]; &#125; nums[0]=temp; &#125;&#125;时间复杂度：O(n*k)，每个元素被移动1步，k次空间复杂度：O(1)“=================================”//额外数组public void rotate(int[] nums, int k) &#123; int[] temp=new int[nums.length]; for(int i=0;i&lt;nums.length;i++)&#123; temp[i]=nums[(nums.length-k+i)%nums.length]; &#125; for(int i=0;i&lt;nums.length;i++)&#123; nums[i]=temp[i]; &#125; System.out.println(Arrays.toString(nums));&#125;时间复杂度：O(n)，每个元素被移动1步，k次空间复杂度：O(n)“=================================”//反转public void rotate(int[] nums, int k) &#123; k%=nums.length; reverse(nums,0,nums.length-1); reverse(nums,0,k-1); reverse(nums,k,nums.length-1);&#125;public static void reverse(int[] nums,int start,int end)&#123; while(start&lt;end)&#123; nums[start]+=nums[end]; nums[end]=nums[start]-nums[end]; nums[start]=nums[start]-nums[end]; start++; end--; &#125;&#125;时间复杂度：O(n)空间复杂度：O(1)]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>数组</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[阶乘后的零]]></title>
+    <url>%2F2019%2F10%2F29%2F%E9%98%B6%E4%B9%98%E5%90%8E%E7%9A%84%E9%9B%B6%2F</url>
+    <content type="text"><![CDATA[LeetCode第一百七十二题难度：简单题目：给定一个整数 n，返回 n! 结果尾数中零的数量。 123456789示例 1:输入: 3输出: 0解释: 3! = 6, 尾数中没有零。示例 2:输入: 5输出: 1解释: 5! = 120, 尾数中有 1 个零. 思想分析这个题涉及到了数学数论方面的知识，具体的原理没弄明白。但是可以记录一种简单思路。 首先，只有因数中有2 *5，最后相乘的结果末尾才有0。 其次，在1* 2* 3…n的阶乘中，2的个数肯定比5多。 因此，我们只需要找到1~n中有多少个因子5即可。 重点就在于求1~n中所有的数有多少个因子5。 假设n=10，那么1~ 10中有10/5=2个因子5 假设n=25，那么1~25中有25/5=5，5/5=1；即有6个 假设n=37，那么1~37中有37/5=7，7/5=1，即有8个 假设n=125，那么1~125中有125/5=25，25/5=5，5/5=1，一共31个 ……以此类推，N!中5的个数count=N/5+N/25+N/125…… 代码实现12345678public int trailingZeroes(int n) &#123; int count=0; while(n&gt;0)&#123; count+=n/5; n/=5; &#125; return count;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>数学数论</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[求众数]]></title>
+    <url>%2F2019%2F10%2F29%2F%E6%B1%82%E4%BC%97%E6%95%B0%2F</url>
+    <content type="text"><![CDATA[LeetCode第一百六十九题难度：简单题目：给定一个大小为 n 的数组，找到其中的众数。众数是指在数组中出现次数大于 ⌊n/2⌋的元素(假设数组是非空的，并且给定的数组总是存在众数)。 12345678示例 1:输入: [3,2,3]输出: 3示例 2:输入: [2,2,1,1,1,2,2]输出: 2 思想分析有三种思路 结合哈希表来实现，以元素的值为键，以元素出现的次数为值。 先将数组排序，由于众数的定义，排序过后nums[nums.length-1]即为众数 使用Boyer-Moore投票算法。该算法是这样的：将众数设置为1，非众数设置为-1。因为众数的性质，可以得到将数组所有元素相加最后得到的值一定是大于0的。 我们维护两个变量，count(计数器)和res(众数) 遍历数组，当count为0时，将当前元素设置为众数 如果出现众数，那么计数器+1，如果出现非众数，计数器-1 如果计数器值小于0，那么将计数器清零，将下一个元素重新设置为众数。 当遍历完数组后，最后的res一定是众数。 代码实现1234567891011//使用Boyer-Moore投票算法来实现public int majorityElement(int[] nums) &#123; int res=0; int count=0; for(int num:nums)&#123; if(count==0) res=num; count+=(res==num?1:-1); &#125; return res;&#125; 这个算法比较巧妙，需要好好体会。]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>数组</tag>
         <tag>Boyer-Moore投票算法</tag>
       </tags>
   </entry>
@@ -112,9 +148,9 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>数组</tag>
         <tag>LeetCode</tag>
         <tag>递归</tag>
+        <tag>数组</tag>
         <tag>二分查找</tag>
         <tag>AVL树</tag>
       </tags>
@@ -156,8 +192,8 @@
       </categories>
       <tags>
         <tag>LeetCode</tag>
-        <tag>斐波那契数列</tag>
         <tag>递归</tag>
+        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>
@@ -194,9 +230,9 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>数组</tag>
         <tag>LeetCode</tag>
         <tag>递归</tag>
+        <tag>数组</tag>
         <tag>二分查找</tag>
       </tags>
   </entry>
@@ -371,8 +407,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>数组</tag>
         <tag>动态规划</tag>
+        <tag>数组</tag>
         <tag>分治算法</tag>
       </tags>
   </entry>
@@ -474,8 +510,8 @@
         <category>JVM虚拟机</category>
       </categories>
       <tags>
-        <tag>泛型</tag>
         <tag>Java基础</tag>
+        <tag>泛型</tag>
       </tags>
   </entry>
   <entry>
@@ -885,8 +921,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>前端</tag>
         <tag>BOM</tag>
+        <tag>前端</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
@@ -939,19 +975,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[青蛙跳台阶]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
-      <categories>
-        <category>算法之美</category>
-      </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>动态规划</tag>
-        <tag>斐波那契数列</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[二叉树镜像对称]]></title>
     <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
     <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
@@ -976,6 +999,19 @@
         <tag>I/O</tag>
         <tag>乱码</tag>
         <tag>字符流/字节流</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[青蛙跳台阶]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>动态规划</tag>
+        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>
