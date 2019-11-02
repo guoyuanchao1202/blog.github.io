@@ -4,6 +4,91 @@
   
     
     <entry>
+      <title>计数质数</title>
+      <link href="/2019/11/02/%E8%AE%A1%E6%95%B0%E8%B4%A8%E6%95%B0/"/>
+      <url>/2019/11/02/%E8%AE%A1%E6%95%B0%E8%B4%A8%E6%95%B0/</url>
+      
+        <content type="html"><![CDATA[<p><b>LeetCode第二百零四题</b><br>难度：<font color="green">简单</font><br>题目：统计所有小于非负整数 n 的质数的数量。</p><hr><a id="more"></a><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">示例:</span><br><span class="line">输入: 10</span><br><span class="line">输出: 4</span><br><span class="line">解释: 小于 10 的质数一共有 4 个, 它们是 2, 3, 5, 7 。</span><br></pre></td></tr></table></figure><h1 id="思想分析"><a href="#思想分析" class="headerlink" title="思想分析"></a>思想分析</h1><p>首先，对于质数，我们首先想到的应该是大于1的数，最小的指数为2。对于这个题，我一开始想到的是优化的暴力解法，最后虽然通过了测试，但是速度感人，因此翻了评论区才发现有更好的思路，那就是厄拉多塞筛法。<br>当我们遍历到一个数i(1&lt;i&lt;n)时，有这样一个隐藏条件，所有n以内的i的倍数都不是质数！！例如i=2，那么4、6、8、10……都不是指数，都可以排除。很巧妙吧，这就是厄拉多塞筛法的原理了。如图所示<br><img src="/2019/11/02/计数质数/%E5%9F%83%E5%BC%8F%E7%AD%9B%E6%B3%95.gif" alt>(图源LeetCode题解区)</p><h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">//优化的暴力解法</span><br><span class="line">public int countPrimes(int n) &#123;</span><br><span class="line">    if(n&lt;=2)</span><br><span class="line">        return 0;</span><br><span class="line">    int res=1;</span><br><span class="line">    //从奇数3开始遍历，偶数肯定不是质数，因此每次+2</span><br><span class="line">    for(int i=3;i&lt;n;i+=2)&#123;</span><br><span class="line">        if(isPrime(i))</span><br><span class="line">            res++;</span><br><span class="line">    &#125;</span><br><span class="line">    return res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public boolean isPrime(int n)&#123;</span><br><span class="line">    if(n==3)</span><br><span class="line">        return true;</span><br><span class="line">//同样的道理，并且只遍历到sqrt(n)为止</span><br><span class="line">    for(int i=3;i*i&lt;=n;i+=2)&#123;</span><br><span class="line">        if(n%i==0)</span><br><span class="line">            return false;</span><br><span class="line">&#125;</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">”=====================================“</span><br><span class="line">//厄拉多塞筛法</span><br><span class="line">public int countPrimes(int n) &#123;</span><br><span class="line">    boolean[] res=new boolean[n];</span><br><span class="line">    int count=0;</span><br><span class="line">    for(int i=2;i&lt;n;i++)&#123;</span><br><span class="line">        if(!res[i])&#123;</span><br><span class="line">            count++;</span><br><span class="line">            for(int j=i+i;j&lt;n;j+=i)&#123;</span><br><span class="line">                res[j]=true;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return count;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>厄拉多塞筛法是求质数个数很实用高效的算法</p><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法之美 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> LeetCode </tag>
+            
+            <tag> 质数 </tag>
+            
+            <tag> 厄拉多塞筛法 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>移除链表元素</title>
+      <link href="/2019/11/02/%E7%A7%BB%E9%99%A4%E9%93%BE%E8%A1%A8%E5%85%83%E7%B4%A0/"/>
+      <url>/2019/11/02/%E7%A7%BB%E9%99%A4%E9%93%BE%E8%A1%A8%E5%85%83%E7%B4%A0/</url>
+      
+        <content type="html"><![CDATA[<p><b>LeetCode第二百零三题</b><br>难度：<font color="green">简单</font><br>题目：删除链表中等于给定值 val 的所有节点。</p><hr><a id="more"></a><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">示例:</span><br><span class="line">输入: 1-&gt;2-&gt;6-&gt;3-&gt;4-&gt;5-&gt;6, val = 6</span><br><span class="line">输出: 1-&gt;2-&gt;3-&gt;4-&gt;5</span><br></pre></td></tr></table></figure><h1 id="思想分析"><a href="#思想分析" class="headerlink" title="思想分析"></a>思想分析</h1><p>这道题看上去很简单，但是做起来却并不是那么简单。其中有一些细节是处理链表问题经常容易犯错的，因此才把这个题记录下来。</p><ol><li>首先，对于链表问题，要保证不能有空指针异常</li><li>对于本题，要保证移动指针p始终在遍历的节点的前一个位置</li></ol><h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public ListNode removeElements(ListNode head, int val) &#123;</span><br><span class="line">    //要使用while循环来保证head节点指向第一个值不为val的节点</span><br><span class="line">    //不能使用if！！！</span><br><span class="line">    while(head!=null&amp;&amp;head.val==val)</span><br><span class="line">    head=head.next;</span><br><span class="line">    ListNode p=head;</span><br><span class="line">    //先判断p!=null再判断p.next!=null</span><br><span class="line">    while(p!=null&amp;&amp;p.next!=null)&#123;</span><br><span class="line">    if(p.next.val==val)&#123;</span><br><span class="line">    p.next=p.next.next;</span><br><span class="line">    &#125;</span><br><span class="line">    else&#123;</span><br><span class="line">    p=p.next;</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return head;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>对于链表的题，如果思路比较简单，那么一定要注意细节问题不能出错。</p><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法之美 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> LeetCode </tag>
+            
+            <tag> 链表 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>快乐数</title>
+      <link href="/2019/11/01/%E5%BF%AB%E4%B9%90%E6%95%B0/"/>
+      <url>/2019/11/01/%E5%BF%AB%E4%B9%90%E6%95%B0/</url>
+      
+        <content type="html"><![CDATA[<p><b>LeetCode第二百零二题</b><br>难度：<font color="green">简单</font><br>题目：编写一个算法来判断一个数是不是“快乐数”。一个“快乐数”定义为：对于一个正整数，每一次将该数替换为它每个位置上的数字的平方和，然后重复这个过程直到这个数变为 1，也可能是无限循环但始终变不到 1。如果可以变为 1，那么这个数就是快乐数。</p><hr><a id="more"></a><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">示例: </span><br><span class="line">输入: 19</span><br><span class="line">输出: true</span><br><span class="line">解释: </span><br><span class="line">1*1 + 9*9 = 82</span><br><span class="line">8*8 + 2*2 = 68</span><br><span class="line">6*6 + 8*8 = 100</span><br><span class="line">1*1 + 0*0 + 0*0 = 1</span><br></pre></td></tr></table></figure><h1 id="思想分析"><a href="#思想分析" class="headerlink" title="思想分析"></a>思想分析</h1><p>通过题意可以发现</p><ol><li>如果一个数是快乐数，那么经过若干次计算后最终会收敛为1。</li><li>如果一个数不是快乐数，那么经过若干次计算后会变回最开始的数</li></ol><h2 id="快慢指针法"><a href="#快慢指针法" class="headerlink" title="快慢指针法"></a><font size="5">快慢指针法</font></h2><p>通过分析，可以发现这个题和判断链表是否有环较为类似，可以使用</p><ol><li>设置一个fast变量和一个slow变量，初始值相等</li><li>fast每次循环计算两次，slow每次循环计算一次</li><li>当fast==slow时退出循环</li><li>如果fast==1，那么是快乐数，否则不是快乐数。</li></ol><h2 id="递归实现"><a href="#递归实现" class="headerlink" title="递归实现"></a><font size="5">递归实现</font></h2><p>对于递归，我们首先要判断递归出口，对于10以内的数字，只有1和7是快乐数，其它的都不是快乐数，因此我们可以得到递归出口</p><ol><li>如果n==1||n==7，返回true</li><li>否则如果n&lt;10，返回false</li><li>否则继续递归</li></ol><h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><p>下面将介绍两种实现思路</p><h2 id="快慢指针法-1"><a href="#快慢指针法-1" class="headerlink" title="快慢指针法"></a><font size="5">快慢指针法</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public boolean isHappy(int n) &#123;</span><br><span class="line">    int res=0;</span><br><span class="line">    while(n&gt;10)&#123;</span><br><span class="line">    int temp=n%10;</span><br><span class="line">    res+=temp*temp;</span><br><span class="line">    n/=10;</span><br><span class="line">    &#125;</span><br><span class="line">    if(res==0&amp;&amp;(n==10||n==1))&#123;</span><br><span class="line">    return true;</span><br><span class="line">    &#125;</span><br><span class="line">    else&#123;</span><br><span class="line">    res+=n*n;</span><br><span class="line">    return isHappy(res);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="递归实现-1"><a href="#递归实现-1" class="headerlink" title="递归实现"></a><font size="5">递归实现</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public boolean isHappy(int n) &#123;</span><br><span class="line">    if(n==1||n==7)</span><br><span class="line">    return true;</span><br><span class="line">    if(n&lt;10)</span><br><span class="line">    return false;</span><br><span class="line">    int res=0;</span><br><span class="line">    while(n&gt;0)&#123;</span><br><span class="line">    int temp=n%10;</span><br><span class="line">    res+=temp*temp;</span><br><span class="line">    n/=10;</span><br><span class="line">    &#125;</span><br><span class="line">    return isHappy(res);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>了解了规律，遇到这样的题就会迎刃而解。</p><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法之美 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
+            
+            <tag> 快慢指针法 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Java并发之先行发生原则</title>
       <link href="/2019/11/01/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E5%85%88%E8%A1%8C%E5%8F%91%E7%94%9F%E5%8E%9F%E5%88%99/"/>
       <url>/2019/11/01/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E5%85%88%E8%A1%8C%E5%8F%91%E7%94%9F%E5%8E%9F%E5%88%99/</url>
@@ -126,9 +211,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 数组 </tag>
+            
+            <tag> LeetCode </tag>
             
         </tags>
       
@@ -180,9 +265,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 数组 </tag>
+            
+            <tag> LeetCode </tag>
             
             <tag> Boyer-Moore投票算法 </tag>
             
@@ -412,11 +497,11 @@
       
         <tags>
             
+            <tag> 数组 </tag>
+            
             <tag> LeetCode </tag>
             
             <tag> 递归 </tag>
-            
-            <tag> 数组 </tag>
             
             <tag> 二分查找 </tag>
             
@@ -509,9 +594,9 @@
             
             <tag> LeetCode </tag>
             
-            <tag> 递归 </tag>
-            
             <tag> 斐波那契数列 </tag>
+            
+            <tag> 递归 </tag>
             
         </tags>
       
@@ -594,11 +679,11 @@
       
         <tags>
             
+            <tag> 数组 </tag>
+            
             <tag> LeetCode </tag>
             
             <tag> 递归 </tag>
-            
-            <tag> 数组 </tag>
             
             <tag> 二分查找 </tag>
             
@@ -1629,6 +1714,8 @@
             
             <tag> 集合 </tag>
             
+            <tag> 快慢指针法 </tag>
+            
         </tags>
       
     </entry>
@@ -2230,9 +2317,9 @@
       
         <tags>
             
-            <tag> HTML5 </tag>
-            
             <tag> 前端 </tag>
+            
+            <tag> HTML5 </tag>
             
         </tags>
       
@@ -2268,6 +2355,35 @@
     
     
     <entry>
+      <title>字符流和字节流</title>
+      <link href="/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/"/>
+      <url>/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/</url>
+      
+        <content type="html"><![CDATA[<p><a href="http://www.itcast.cn/news/20181219/14592257466.shtml" target="_blank" rel="noopener">深入理解字符流编码</a></p><p><strong>首先要理解字符流输入的原理：</strong><br>字符流输入其实底层也是字节流输入</p><p>字符–&gt;计算机二进制数字（字节）：编码<br>字节(计算机二进制数字)–&gt;字符：解码</p><a id="more"></a><h2 id="写入时："><a href="#写入时：" class="headerlink" title="写入时："></a>写入时：</h2><pre><code>1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中</code></pre><h2 id="读取时："><a href="#读取时：" class="headerlink" title="读取时："></a>读取时：</h2><pre><code>使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序</code></pre><h2 id="图片不能用字符流的原因"><a href="#图片不能用字符流的原因" class="headerlink" title="图片不能用字符流的原因"></a>图片不能用字符流的原因</h2><pre><code>因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符，在写入的时候，会将未知字符丢掉，所以图片拷贝不成功因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节**举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1....使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1....但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符；例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)；在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1....这样拷贝自然就失败了</code></pre><h2 id="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"><a href="#关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接" class="headerlink" title="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"></a>关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接</h2><pre><code>**最后**：字符流因为解码编码等原因，比字节流慢很多字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输图片等视频音频文件要用字节流</code></pre>]]></content>
+      
+      
+      <categories>
+          
+          <category> JAVA </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> I/O </tag>
+            
+            <tag> 乱码 </tag>
+            
+            <tag> 字符流/字节流 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>二叉树镜像对称</title>
       <link href="/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/"/>
       <url>/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/</url>
@@ -2291,35 +2407,6 @@
             <tag> 迭代法 </tag>
             
             <tag> 二叉树 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>字符流和字节流</title>
-      <link href="/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/"/>
-      <url>/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/</url>
-      
-        <content type="html"><![CDATA[<p><a href="http://www.itcast.cn/news/20181219/14592257466.shtml" target="_blank" rel="noopener">深入理解字符流编码</a></p><p><strong>首先要理解字符流输入的原理：</strong><br>字符流输入其实底层也是字节流输入</p><p>字符–&gt;计算机二进制数字（字节）：编码<br>字节(计算机二进制数字)–&gt;字符：解码</p><a id="more"></a><h2 id="写入时："><a href="#写入时：" class="headerlink" title="写入时："></a>写入时：</h2><pre><code>1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中</code></pre><h2 id="读取时："><a href="#读取时：" class="headerlink" title="读取时："></a>读取时：</h2><pre><code>使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序</code></pre><h2 id="图片不能用字符流的原因"><a href="#图片不能用字符流的原因" class="headerlink" title="图片不能用字符流的原因"></a>图片不能用字符流的原因</h2><pre><code>因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符，在写入的时候，会将未知字符丢掉，所以图片拷贝不成功因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节**举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1....使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1....但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符；例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)；在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1....这样拷贝自然就失败了</code></pre><h2 id="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"><a href="#关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接" class="headerlink" title="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"></a>关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接</h2><pre><code>**最后**：字符流因为解码编码等原因，比字节流慢很多字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输图片等视频音频文件要用字节流</code></pre>]]></content>
-      
-      
-      <categories>
-          
-          <category> JAVA </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> I/O </tag>
-            
-            <tag> 乱码 </tag>
-            
-            <tag> 字符流/字节流 </tag>
             
         </tags>
       
