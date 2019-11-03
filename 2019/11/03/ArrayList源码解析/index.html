@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="在Java中，ArrayList集合我们用的非常多，但是对于ArrayList的底层实现，我一直不太了解。最近学习多线程的时候看到了线程安全集合，所以准备先回头把普通集合弄弄清除，再去看线程安全集合的底层实现会比较好一些。(本文基于JDK1.8源码进行分析)">
+<meta name="keywords" content="源码,ArrayList集合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ArrayList源码解析">
+<meta property="og:url" content="https://HoA-W.github.io/2019/11/03/ArrayList源码解析/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="在Java中，ArrayList集合我们用的非常多，但是对于ArrayList的底层实现，我一直不太了解。最近学习多线程的时候看到了线程安全集合，所以准备先回头把普通集合弄弄清除，再去看线程安全集合的底层实现会比较好一些。(本文基于JDK1.8源码进行分析)">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://hoa-w.github.io/2019/11/03/ArrayList源码解析/1.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/11/03/ArrayList源码解析/2.gif">
+<meta property="og:updated_time" content="2019-11-03T07:17:52.058Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ArrayList源码解析">
+<meta name="twitter:description" content="在Java中，ArrayList集合我们用的非常多，但是对于ArrayList的底层实现，我一直不太了解。最近学习多线程的时候看到了线程安全集合，所以准备先回头把普通集合弄弄清除，再去看线程安全集合的底层实现会比较好一些。(本文基于JDK1.8源码进行分析)">
+<meta name="twitter:image" content="https://hoa-w.github.io/2019/11/03/ArrayList源码解析/1.png">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/11/03/ArrayList源码解析/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>ArrayList源码解析 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/11/03/ArrayList源码解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">ArrayList源码解析
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-03 09:13:52 / 修改时间：15:17:52" itemprop="dateCreated datePublished" datetime="2019-11-03T09:13:52+08:00">2019-11-03</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JDK源码/" itemprop="url" rel="index"><span itemprop="name">JDK源码</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在Java中，ArrayList集合我们用的非常多，但是对于ArrayList的底层实现，我一直不太了解。最近学习多线程的时候看到了线程安全集合，所以准备先回头把普通集合弄弄清除，再去看线程安全集合的底层实现会比较好一些。(本文基于JDK1.8源码进行分析)</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h1><p>ArrayList集合整体架构比较简单，底层就是一个数组结构，如图所示<br><img src="/2019/11/03/ArrayList源码解析/1.png" alt>图中是一个长度为10的数组，展示了ArrayList底层存储数据的原理</p>
+<h2 id="源码中一些字段"><a href="#源码中一些字段" class="headerlink" title="源码中一些字段"></a><font size="5">源码中一些字段</font></h2><p>在学习ArrayList底层实现之前，我们先来认识一下源码中的一些字段，这在之后的方法中会用到</p>
+<ol>
+<li><font color="red">private static final int DEFAULT_CAPACITY = 10;</font><br>默认初始容量为10，如果使用无参构造方法创建集合对象，那么第一次扩容时数组大小扩容为10</li>
+<li><font color="red">private static final Object[] EMPTY_ELEMENTDATA = {};</font><br>默认空实例赋值，后面再扩容时会详细介绍</li>
+<li><font color="red">private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};</font><br>含有默认值的空实例赋值，同样的，在扩容时介绍</li>
+<li><font color="red">transient Object[] elementData;</font><br>实际存放数据的数组</li>
+<li><font color="red">private int size;</font><br>集合中元素的个数</li>
+<li><font color="red">private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;</font><br>集合扩容的最大容量</li>
+<li><font color="red">protected transient int modCount = 0;</font><br>从abstractList继承得到，集合的版本号，后面迭代时会详细介绍</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">//从源码中Copy的代码，注释为自己添加</span><br><span class="line">private static final long serialVersionUID = 8683452581122892189L;</span><br><span class="line">/**</span><br><span class="line"> * 默认初始容量</span><br><span class="line"> */</span><br><span class="line">private static final int DEFAULT_CAPACITY = 10;</span><br><span class="line">/**</span><br><span class="line"> * 默认空实例赋值</span><br><span class="line"> */</span><br><span class="line">private static final Object[] EMPTY_ELEMENTDATA = &#123;&#125;;</span><br><span class="line">/**</span><br><span class="line"> * 含有默认值的空实例</span><br><span class="line"> */</span><br><span class="line">private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = &#123;&#125;;</span><br><span class="line">/**</span><br><span class="line"> * 存放实际元素的Object数组</span><br><span class="line"> */</span><br><span class="line">transient Object[] elementData; // non-private to simplify nested class access</span><br><span class="line">/**</span><br><span class="line"> * 集合中元素的个数</span><br><span class="line"> * @serial</span><br><span class="line"> */</span><br><span class="line">private int size;</span><br></pre></td></tr></table></figure>
+
+<h2 id="类注释"><a href="#类注释" class="headerlink" title="类注释"></a><font size="5">类注释</font></h2><p>我们来看一下类注释都说了些什么</p>
+<ul>
+<li>允许put null值，会自动扩容</li>
+<li>size、isEmpty、get、set、add等方法时间复杂度都是O(1)</li>
+<li>是非线程安全的，多线程情况下，推荐使用线程安全类：Collections#synchronizedList</li>
+<li>增强for循环，或者使用迭代器迭代过程中，如果数组大小被改变，会快速失败抛出异常</li>
+</ul>
+<h1 id="源码解析"><a href="#源码解析" class="headerlink" title="源码解析"></a>源码解析</h1><p>介绍了一些基础内容，下面就从源码开始，分别对初始化、扩容、迭代器等进行解析</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a><font size="5">初始化</font></h2><p>ArrayList提供了三种初始化方法</p>
+<ol>
+<li>无参直接初始化</li>
+<li>指定大小初始化</li>
+<li>指定初始数据初始化</li>
+</ol>
+<p>源码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 指定大小初始化</span><br><span class="line"> * @param  指定数组大小</span><br><span class="line"> * @throws IllegalArgumentException if the specified initial capacity</span><br><span class="line"> *         is negative</span><br><span class="line"> */</span><br><span class="line">public ArrayList(int initialCapacity) &#123;</span><br><span class="line">    //如果参数&gt;0，那么new一个指定大小的Object数组</span><br><span class="line">    if (initialCapacity &gt; 0) &#123;</span><br><span class="line">        this.elementData = new Object[initialCapacity];</span><br><span class="line">    &#125;</span><br><span class="line">    //如果参数等于0，那么elementData数组等于前面的默认空实例数组EMPTY_ELEMENTDATA</span><br><span class="line">    else if (initialCapacity == 0) &#123;</span><br><span class="line">        this.elementData = EMPTY_ELEMENTDATA;</span><br><span class="line">    &#125;</span><br><span class="line">    //如果小于0则抛出异常</span><br><span class="line">    else &#123;</span><br><span class="line">        throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</span><br><span class="line">                                           initialCapacity);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“==============================”</span><br><span class="line">/**</span><br><span class="line"> * 无参数直接初始化</span><br><span class="line"> */</span><br><span class="line">public ArrayList() &#123;</span><br><span class="line">    this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“==============================”</span><br><span class="line">/**</span><br><span class="line"> * 指定初始数据初始化</span><br><span class="line"> * @param c the collection whose elements are to be placed into this list</span><br><span class="line"> * @throws NullPointerException if the specified collection is null</span><br><span class="line"> */</span><br><span class="line">public ArrayList(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    elementData = c.toArray();</span><br><span class="line">    //如果给定的集合(c)数据有值</span><br><span class="line">    if ((size = elementData.length) != 0) &#123;</span><br><span class="line">        //如果集合元素类型不是Object类型，我们会转换成Object类型</span><br><span class="line">        if (elementData.getClass() != Object[].class)</span><br><span class="line">            elementData = Arrays.copyOf(elementData, size, Object[].class);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        //如果给定集合(c)无值，默认空数组</span><br><span class="line">        this.elementData = EMPTY_ELEMENTDATA;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于上面三个构造方法，补充两点</p>
+<ol>
+<li><p>集合存储数据的数组elementData指向有四种种情况(后面扩容和这个相关)</p>
+<ul>
+<li>使用无参初始化，将数组elementData指向DEFAULTCAPACITY_EMPTY_ELEMENTDATA空数组</li>
+<li>使用指定大小初始化并且指定大小为0，将数组elementData指向EMPTY_ELEMENTDATA空数组</li>
+<li>使用指定大小初始化但参数不为0或者是使用指定数据初始化，将数组elementData指向一个新的数组</li>
+</ul>
+</li>
+<li><p>ArrayList使用无参初始化时，默认大小是空数组，并不是10，10是在第一次扩容时的数组大小 </p>
+</li>
+</ol>
+<h2 id="添加和扩容实现"><a href="#添加和扩容实现" class="headerlink" title="添加和扩容实现"></a><font size="5">添加和扩容实现</font></h2><p>在向集合中添加元素时，主要分成两步</p>
+<ol>
+<li>判断是否需要扩容，如果需要就执行扩容操作</li>
+<li>直接赋值</li>
+</ol>
+<p>我们来看一下添加方法代码和扩容代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">//添加方法add()</span><br><span class="line">public boolean add(E e) &#123;</span><br><span class="line">    //确保数组大小是否足够，不够进行扩容，size为当前数组中元素的个数</span><br><span class="line">    ensureCapacityInternal(size + 1); </span><br><span class="line">    //直接赋值，线程不安全</span><br><span class="line">    elementData[size++] = e;</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">”====================================“</span><br><span class="line">计算期望值</span><br><span class="line"></span><br><span class="line">//add()方法中调用此方法</span><br><span class="line">private void ensureCapacityInternal(int minCapacity) &#123;</span><br><span class="line">    ensureExplicitCapacity(calculateCapacity(elementData, minCapacity));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static int calculateCapacity(Object[] elementData, int minCapacity) &#123;</span><br><span class="line">    //如果elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA，</span><br><span class="line">    //说明使用的是无参初始化，那么第一次初始化直接扩容为10</span><br><span class="line">    if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) &#123;</span><br><span class="line">        return Math.max(DEFAULT_CAPACITY, minCapacity);</span><br><span class="line">    &#125;</span><br><span class="line">    //如果使用的是指定大小初始化或指定数值初始化，那么普通扩容</span><br><span class="line">    return minCapacity;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void ensureExplicitCapacity(int minCapacity) &#123;</span><br><span class="line">    //后面迭代器会说到</span><br><span class="line">    modCount++;</span><br><span class="line"></span><br><span class="line">    //如果需要的大小超过了当前数组的长度，那么就进行扩容</span><br><span class="line">    //如果没超过说明就不进行扩容</span><br><span class="line">    if (minCapacity - elementData.length &gt; 0)</span><br><span class="line">        grow(minCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">”====================================“</span><br><span class="line">扩容逻辑代码，将计算后的期望容量传递到grow方法中</span><br><span class="line"></span><br><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">    // 记录当前数组长度</span><br><span class="line">    int oldCapacity = elementData.length;</span><br><span class="line">    //进行1.5倍扩容</span><br><span class="line">    int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);</span><br><span class="line">    //如果扩容后还是小于期望值(使用addAll方法时有可能扩容一次后的容量仍不满足要求)</span><br><span class="line">    那么就令新的值等于期望值</span><br><span class="line">    if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">        newCapacity = minCapacity;</span><br><span class="line">    //如果扩容后的值&gt;JVM所能分配的数组最大值</span><br><span class="line">    //那么就用int能表示的最大值或者JVM所能分配的数组最大值进行扩容</span><br><span class="line">    //具体采用那个值视期望值而定</span><br><span class="line">    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">        newCapacity = hugeCapacity(minCapacity);</span><br><span class="line">    //通过复制进行扩容</span><br><span class="line">    elementData = Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static int hugeCapacity(int minCapacity) &#123;</span><br><span class="line">    if (minCapacity &lt; 0) // overflow</span><br><span class="line">        throw new OutOfMemoryError();</span><br><span class="line">    return (minCapacity &gt; MAX_ARRAY_SIZE) ?</span><br><span class="line">        Integer.MAX_VALUE :</span><br><span class="line">        MAX_ARRAY_SIZE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于扩容方法，进行以下总结</p>
+<ol>
+<li>当添加元素时，我们需要<font color="blue">首先确保数组的大小能够容纳新的元素</font>，因此我们期望值是minCapacity=size+1</li>
+<li><font color="red">计算期望值的时候，我们需要根据当初构造对象使用的初始化方法来决定</font><ol>
+<li>如果当初使用的是无参初始化方法，那么我们直接令期望值为max(10,minCapacity)，这也就意味着我们在第一次添加元素的时候直接将集合扩容为10。</li>
+<li>如果使用的其他的初始化方法，那么期望值为minCapacity，这也就意味着，我们第一次添加元素时仅仅将集合扩容为1；</li>
+</ol>
+</li>
+<li>当计算完期望值minCapacity后，我们需要根据期望值和当前数组大小来判断是否需要扩容<ol>
+<li>如果minCapacity&lt;elementData.length，说明数组还够用。因此不需要扩容</li>
+<li>如果minCapacity&gt;elementData.length，说明数组不够用了，需要对数组进行扩容</li>
+</ol>
+</li>
+<li>扩容时，<font color="blue">采用的扩容规则并不是翻倍，而是1.5倍速增长</font>，即扩容后的大小newCapacity是原来大小的1.5倍。当得到扩容后大小newCapacity后，我们还不能直接对其进行扩容，因为这时候仍然存在一些问题<ol>
+<li>如果扩容后的大小newCapacity&lt;期望值minCapacity。这是完全有可能的：例如当前集合容量为10，集合中元素个数为10，这时候如果使用addAll()方法向集合中添加10个元素，那么就需要进行扩容。扩容后的newCapacity为15，但是我们期望值minCapacity=size+10=20，此时扩容一次后的大小仍然不够。<br>此时采取的策略是不再进行下一次扩容(因为下一次扩容可能仍不够，反复扩容影响性能)，直接令扩容后的大小newCapacity==期望值minCapacity</li>
+<li>如果扩容后的大小newCapacity超过了JVM能分配的最大值MAX_ARRAY_SIZE(Integer.MAX_VALUE-8)，此时就不能进行扩容要对newCapacity进行调整。调整的策略就是通过期望值minCapacity<ul>
+<li>minCapacity &gt; MAX_ARRAY_SIZE，令newCapacity=Integer.MAX_VALUE</li>
+<li>minCapacity &lt; MAX_ARRAY_SIZE，令newCapacity=MAX_ARRAY_SIZE</li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+<p>这样添加和扩容的方法就介绍完毕了。通过分析，我们可以发现，<b><font color="red">源码在扩容的时候，有数组大小溢出的意识，即无论如何数组大小不能小于0，不能大于Integer.MAX_VALUE。</font></b>这点值得我们学习！</p>
+<h2 id="扩容的本质"><a href="#扩容的本质" class="headerlink" title="扩容的本质"></a><font size="5">扩容的本质</font></h2><p>扩容是通过Arrays.copyOf(elementData, newCapacity);这一行代码实现的。这一行代码的<font color="red"><b>本质是数组之间的拷贝，扩容会新建一个容量为newCapacity的新数组，然后将老数组的数据拷贝过去，我们通过System.arraycopy方法进行拷贝</b></font></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">System.arraycopy源码</span><br><span class="line">    /**</span><br><span class="line">    * @param src      被拷贝的数组.</span><br><span class="line">    * @param srcPos   从数组哪里开始.</span><br><span class="line">    * @param dest     目标数组.</span><br><span class="line">    * @param destPos  从目标数组那个索引开始拷贝.</span><br><span class="line">    * @param length   拷贝的长度.</span><br><span class="line">    */</span><br><span class="line">  public static native void arraycopy(</span><br><span class="line">                            Object src,  int  srcPos,</span><br><span class="line">                            Object dest, int destPos,</span><br><span class="line">                            int length);</span><br><span class="line">这是一个本地方法</span><br><span class="line"></span><br><span class="line">“=====================”</span><br><span class="line">System.arraycopy(</span><br><span class="line">            elementData, 0, </span><br><span class="line">            newelementData, 0,</span><br><span class="line">            Math.min(elementData.length, newCapacity));</span><br><span class="line">最终调用这行代码返回newelementData数组</span><br></pre></td></tr></table></figure>
+
+<h2 id="删除"><a href="#删除" class="headerlink" title="删除"></a><font size="5">删除</font></h2><p>ArrayList删除元素有很多种方式，根据索引删除、根据值删除、批量删除等，原理都比较类似，我们这里以根据值删除为例进行说明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 根据值删除元素</span><br><span class="line"> * @param 要删除的值</span><br><span class="line"> * @return 删除成功返回true，否则返回false</span><br><span class="line"> */</span><br><span class="line">public boolean remove(Object o) &#123;</span><br><span class="line">    //如果要删除的值是null，找到第一个值是null的删除并返回true</span><br><span class="line">    if (o == null) &#123;</span><br><span class="line">        for (int index = 0; index &lt; size; index++)</span><br><span class="line">            if (elementData[index] == null) &#123;</span><br><span class="line">                fastRemove(index);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125; </span><br><span class="line">    //如果要删除的值不为null，使用equals比较，</span><br><span class="line">    //找到第一个和要删除的值相等的删除</span><br><span class="line">    else &#123;</span><br><span class="line">        for (int index = 0; index &lt; size; index++)</span><br><span class="line">            if (o.equals(elementData[index])) &#123;</span><br><span class="line">                fastRemove(index);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//删除逻辑代码</span><br><span class="line">private void fastRemove(int index) &#123;</span><br><span class="line">    modCount++;</span><br><span class="line">    //表示删除index位置元素后，需要从index后移动多少个元素到前面去</span><br><span class="line">    //-1是因为size是从1开始算起，而index是从0开始算起</span><br><span class="line">    int numMoved = size - index - 1;</span><br><span class="line">    if (numMoved &gt; 0)</span><br><span class="line">        //从index+1位置开始拷贝，拷贝的起始位置为index，长度为numMoved</span><br><span class="line">        System.arraycopy(elementData, index+1, elementData, index,</span><br><span class="line">                         numMoved);</span><br><span class="line">    elementData[--size] = null; // clear to let GC do its work</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从源码可以看出，删除方法中也使用的是System.arraycopy的方法进行实现，某一个元素删除后，会将后面的元素往前移动。如图所示<br><img src="/2019/11/03/ArrayList源码解析/2.gif" alt></p>
+<h2 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a><font size="5">迭代器</font></h2><p>如果要自己实现迭代器，实现java.util.Iterator接口就可，ArrayList中用一个私有内部类实现了Iterator接口。关于Iterator接口和Iterable接口会在下一篇博客中介绍<br>在ArrayList的私有内部类中，有以下几个重要的参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//迭代过程中，下一个元素的位置，初始值为0</span><br><span class="line">int cursor;    </span><br><span class="line">//添加元素时：表示上一次迭代过程中索引的位置；</span><br><span class="line">//删除元素时：为-1</span><br><span class="line">int lastRet = -1; </span><br><span class="line">//表示迭代过程中，期望的版本号，modCount表示实际的版本号</span><br><span class="line">int expectedModCount = modCount;</span><br></pre></td></tr></table></figure>
+
+<p>迭代器一般来说有三个方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hashNext()：判断是否有值进行迭代</span><br><span class="line">next()：如果有，那么获取迭代的值</span><br><span class="line">remove()：删除当前迭代的值</span><br></pre></td></tr></table></figure>
+
+<p>下面来看以下ArrayList中三个方法的源码</p>
+<ol>
+<li><p><b>hashNext()</b></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public boolean hasNext() &#123;</span><br><span class="line">    //cursor表示下一个元素的位置</span><br><span class="line">    return cursor != size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><b>next()</b></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public E next() &#123;</span><br><span class="line">    //迭代过程中，判断版本号是否被修改，</span><br><span class="line">    //如果修改抛出ConcurrentModificationException异常</span><br><span class="line">    checkForComodification();</span><br><span class="line">    //本次迭代过程中元素的索引位置</span><br><span class="line">    int i = cursor;</span><br><span class="line">    if (i &gt;= size)</span><br><span class="line">        throw new NoSuchElementException();</span><br><span class="line">    Object[] elementData = ArrayList.this.elementData;</span><br><span class="line">    if (i &gt;= elementData.length)</span><br><span class="line">        throw new ConcurrentModificationException();</span><br><span class="line">    //下一次迭代时元素的位置</span><br><span class="line">    cursor = i + 1;</span><br><span class="line">    //返回当前元素</span><br><span class="line">    return (E) elementData[lastRet = i];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“=================================”</span><br><span class="line">检查版本号方法</span><br><span class="line">final void checkForComodification() &#123;</span><br><span class="line">    if (modCount != expectedModCount)</span><br><span class="line">        throw new ConcurrentModificationException();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><b>remove()</b></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public void remove() &#123;</span><br><span class="line">    //不能重复删除</span><br><span class="line">    if (lastRet &lt; 0)</span><br><span class="line">        throw new IllegalStateException();</span><br><span class="line">    //检查版本号</span><br><span class="line">    checkForComodification();</span><br><span class="line"></span><br><span class="line">    try &#123;</span><br><span class="line">        ArrayList.this.remove(lastRet);</span><br><span class="line">        //将cursor后移到上次迭代的位置</span><br><span class="line">        cursor = lastRet;</span><br><span class="line">        //-1表示元素已经删除，防止重复删除同一个元素</span><br><span class="line">        lastRet = -1;</span><br><span class="line">        //由于删除元素时modCount已经发生了变化</span><br><span class="line">        //所以要重新赋值给expectedModCount使得两者版本号一致</span><br><span class="line">        expectedModCount = modCount;</span><br><span class="line">    &#125; catch (IndexOutOfBoundsException ex) &#123;</span><br><span class="line">        throw new ConcurrentModificationException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p><b>在next()方法的源码中的这一行代码，为什么不直接操作外部类的elementData而要重新创建一个引用呢？</b></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Object[] elementData = ArrayList.this.elementData;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>这部分操作和String源码中replace()方法的很类似，一个是类变量，一个是局部变量，当操作类变量时每一次操作都会有一次getField操作，如果使用局部变量，那么仅仅在赋值的时候有一次getField操作，这样性能会好一些。</li>
+</ul>
+<h2 id="Fail-Fast策略"><a href="#Fail-Fast策略" class="headerlink" title="Fail-Fast策略"></a><font size="5">Fail-Fast策略</font></h2><p>ArrayList不是线程安全的，因此<font color="blue">如果在使用迭代器的过程中如果有其他线程对集合进行了修改，那么就抛出ConcurrentModificationException异常，这就是Fail-Fast策略。</font><br>这一策略在源码中就是通过版本号modCount实现的。每一次对ArrayList结构的修改(长度的变化、增加删除元素)都会增加这个值，在迭代器初始化过程中都会将这个值赋值给expectedModCount。在迭代过程中，如果expectedModCount和modCount不相等，说明ArrayList结构发生了变化，就抛出异常。</p>
+<h2 id="线程安全"><a href="#线程安全" class="headerlink" title="线程安全"></a><font size="5">线程安全</font></h2><p>只有当ArrayList作为共享变量时，才会有线程安全问题，如果只是作为局部变量，那么就不存在线程安全问题。ArrayList线程安全问题的本质，是因为ArrayList自身的elementData、size、modCount在进行各种操作时没有加锁而且都不是volatile的。类注释中推荐我们使用Collections.synchronizedList来保证线程安全，该类是通过在每个方法上加锁来实现，性能较低。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这篇文章主要介绍了初始化，添加删除，迭代器等源码的实现，不难发现ArrayList的底层是一个数组，所谓子自动扩容是通过数组的拷贝来实现，ArrayList的各个API都是对数组操作进行封装。<br>很大一部分参考<a href="https://www.imooc.com/read/47" target="_blank" rel="noopener">慕课网文贺老师专栏</a>。十分感谢</p>
+<hr>
+
+
+
+
+
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/源码/" rel="tag"><i class="fa fa-tag"></i>源码</a>
+            
+              <a href="/tags/ArrayList集合/" rel="tag"><i class="fa fa-tag"></i>ArrayList集合</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/11/02/详解synchronized关键字/" rel="next" title="详解synchronized关键字">
+                  <i class="fa fa-chevron-left"></i> 详解synchronized关键字
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#整体架构"><span class="nav-number">1.</span> <span class="nav-text">整体架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#源码中一些字段"><span class="nav-number">1.1.</span> <span class="nav-text">源码中一些字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类注释"><span class="nav-number">1.2.</span> <span class="nav-text">类注释</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#源码解析"><span class="nav-number">2.</span> <span class="nav-text">源码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">2.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加和扩容实现"><span class="nav-number">2.2.</span> <span class="nav-text">添加和扩容实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩容的本质"><span class="nav-number">2.3.</span> <span class="nav-text">扩容的本质</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除"><span class="nav-number">2.4.</span> <span class="nav-text">删除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迭代器"><span class="nav-number">2.5.</span> <span class="nav-text">迭代器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fail-Fast策略"><span class="nav-number">2.6.</span> <span class="nav-text">Fail-Fast策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程安全"><span class="nav-number">2.7.</span> <span class="nav-text">线程安全</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">91</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">85</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
