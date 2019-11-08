@@ -1,6 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[4的幂]]></title>
+    <url>%2F2019%2F11%2F08%2F4%E7%9A%84%E5%B9%82%2F</url>
+    <content type="text"><![CDATA[LeetCode第三百四十二题难度：简单题目：给定一个整数 (32 位有符号整数)，请编写一个函数来判断它是否是 4 的幂次方。(不使用递归和迭代) 1234567示例 1:输入: 16输出: true示例 2:输入: 5输出: false 思想分析这道题和前面判断2的幂很相似，因为4也是2的幂，即4的幂一定是2的幂。通过观察4的幂次方数的二进制我们可以发现以下规律 4的幂次方数和2的幂次方数一样，二进制中只有一个1 4的幂次方数和0x55555555做&amp;运算还是他本身，和0xaaaaaaaa做&amp;运算为0。 有了这两条规律，那么解法就显而易见了 代码实现//解法一：和0xaaaaaaaa做&amp;运算，借助库方法实现 public boolean isPowerOfFour(int num) { return ((num&amp;0xaaaaaaaa)==0)&amp;&amp;Integer.bitCount(num)==1; } //解法二：不借助库方法，和0x55555555做&amp;运算。 //该方法需先确保num是2的幂次方，即保证转换为二进制只有一个1 public boolean isPowerOfFour(int num) { if(num&lt;=0) return false; if((num&amp;num-1)!=0) return false; if((num&amp;0x55555555)==num) return true; return false; }目前为止已经遇到了2、3、4次幂的问题，可以拿来对比以下它们的共同点和不同点。]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>位运算</tag>
+        <tag>LeetCode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[猜数字游戏]]></title>
+    <url>%2F2019%2F11%2F08%2F%E7%8C%9C%E6%95%B0%E5%AD%97%E6%B8%B8%E6%88%8F%2F</url>
+    <content type="text"><![CDATA[LeetCode第二百九十九题难度：简单题目：你正在和你的朋友玩 猜数字（Bulls and Cows）游戏：你写下一个数字让你的朋友猜。每次他猜测后，你给他一个提示，告诉他有多少位数字和确切位置都猜对了（称为“Bulls”, 公牛），有多少位数字猜对了但是位置不对（称为“Cows”, 奶牛）。你的朋友将会根据提示继续猜，直到猜出秘密数字。请写出一个根据秘密数字和朋友的猜测数返回提示的函数，用 A 表示公牛，用 B 表示奶牛。请注意秘密数字和朋友的猜测数都可能含有重复数字。 1234567891011示例 1:输入: secret = &quot;1807&quot;, guess = &quot;7810&quot;输出: &quot;1A3B&quot;解释: 1 公牛和 3 奶牛。公牛是 8，奶牛是 0, 1 和 7。示例 2:输入: secret = &quot;1123&quot;, guess = &quot;0111&quot;输出: &quot;1A1B&quot;解释: 朋友猜测数中的第一个 1 是公牛，第二个或第三个 1 可被视为奶牛。说明: 你可以假设秘密数字和朋友的猜测数都只包含数字，并且它们的长度永远相等。 思想分析这道题可以使用由于题目确定了仅包括数字，那么可以用一个长度为10的数组来模拟哈希表。 同时遍历两字符串 如果相同位置字符相同，则公牛+1 如果不同，则secret中字符对应位置值+1，guess字符对应位置值-1。 最后统计哈希数组中大于0的个数sum 用secret字符串长度减去sum和公牛数就是母牛数 代码实现12345678910111213141516171819202122232425262728//在实现的过程中最好将字符串转换为字符数字，对字符数组进行操作//避免频繁使用charAt()方法public String getHint(String secret, String guess) &#123; int[] bucket = new int[10]; int bull = 0; int cow = 0; int len=secret.length(); char[] ss=secret.toCharArray(); char[] gg=guess.toCharArray(); for(int i=0;i&lt;len;i++)&#123; //如果相等，说明是公牛 if(ss[i]== gg[i])&#123; bull++; continue; &#125; bucket[ss[i] - &apos;0&apos;] += 1; bucket[gg[i] - &apos;0&apos;] -= 1; &#125; //计算bucket中正值的个数 for(int i=0;i&lt;10;i++)&#123; if(bucket[i] &gt; 0) cow+= bucket[i]; &#125; cow = len - cow - bull; return bull + &quot;A&quot; + cow + &quot;B&quot;;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>字符串</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[3的幂]]></title>
+    <url>%2F2019%2F11%2F08%2F3%E7%9A%84%E5%B9%82%2F</url>
+    <content type="text"><![CDATA[LeetCode第三百二十六题难度：简单题目：给定一个整数，写一个函数来判断它是否是 3 的幂次方。 123456789101112示例 1:输入: 27输出: true示例 2:输入: 0输出: false示例 3:输入: 9输出: true 思想分析和前面2的幂次方不同，3的幂次方在二进制位上没有明显的规律，仅有一点是二进制位中最后一位总是1。所以我们只能使用普通的取模加除法来解决问题。 代码实现12345678public boolean isPowerOfThree(int n) &#123; if(n&lt;1) return false; while(n%3==0)&#123; n/=3; &#125; return n==1;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Nim游戏]]></title>
+    <url>%2F2019%2F11%2F08%2FNim%E6%B8%B8%E6%88%8F%2F</url>
+    <content type="text"><![CDATA[LeetCode第二百九十二题难度：简单题目：你和你的朋友，两个人一起玩 Nim 游戏：桌子上有一堆石头，每次你们轮流拿掉 1 - 3 块石头。 拿掉最后一块石头的人就是获胜者。你作为先手 12345示例:输入: 4输出: false 解释: 如果堆中有 4 块石头，那么你永远不会赢得比赛； 因为无论你拿走 1 块、2 块 还是 3 块石头，最后一块石头总是会被你的朋友拿走。 思想分析这道题和小时候玩儿过的游戏很类似，如果石头的数目大于4，那么谁先拿谁就赢，因为谁先拿谁就能使得剩下的石头数为4的倍数，这样以来无论对面怎么拿，自己都能使得石头数保持为4的倍数。 代码实现12345public boolean canWinNim(int n) &#123; //(n-1)&amp;3和n%3的效果类似，但是比取模运算速度快 //仅当n为2的幂次方成立 return (n&amp;3)!=0;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>脑筋急转弯</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[移动零]]></title>
+    <url>%2F2019%2F11%2F08%2F%E7%A7%BB%E5%8A%A8%E9%9B%B6%2F</url>
+    <content type="text"><![CDATA[LeetCode第二百八十三题难度：简单题目：给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。 1234567示例:输入: [0,1,0,3,12]输出: [1,3,12,0,0]说明:必须在原数组上操作，不能拷贝额外的数组。尽量减少操作次数。 思想分析题目额外要求了必须在原数组上操作并且减少操作次数，我们可以使用一下方法解决 新建一个int型变量count，记录0的个数 从前往后遍历数组，如果当前元素为0，那么count++ 如果当前元素不为0，那么将当前元素向前移动count个单位(和i-count下标元素交换位置即可) 代码实现1234567891011public void moveZeroes(int[] nums) &#123; int count=0; for(int i=0;i&lt;nums.length;i++)&#123; if(count&gt;0&amp;&amp;nums[i]!=0)&#123; nums[i-count]=nums[i]; nums[i]=0; &#125; else if(nums[i]==0) count++; &#125; &#125; 对于数组这种数据结构，要能够熟练地掌握其各种操作。]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>数组</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[缺失数字]]></title>
+    <url>%2F2019%2F11%2F08%2F%E7%BC%BA%E5%A4%B1%E6%95%B0%E5%AD%97%2F</url>
+    <content type="text"><![CDATA[LeetCode第二百六十八题难度：简单题目：给定一个包含 0, 1, 2, …, n 中 n 个数的序列，找出 0 .. n 中没有出现在序列中的那个数。(线性时间复杂度和常数空间复杂度) 1234567示例 1:输入: [3,0,1]输出: 2示例 2:输入: [9,6,4,2,3,5,7,0,1]输出: 8 思想分析提供两种解法 创建一个和参数数组一样大的新数组，对于参数数组中出现的每一个元素，新数组的相应下表设为true。最后遍历新数组，为false的元素下标即为缺失的数字，如果都为true，那么缺失的数字为n。 使用高斯公式计算n个数字之和，减去数组中的每一个元素，最后的值即为缺失数字。 使用异或运算解决问题，我们直到对一个数字亦或2次后得到的仍然是原数字，那么我们在遍历的过程中对每一个数组下标和数组元素进行异或运算 代码实现12345678910111213141516171819202122232425262728293031323334//使用额外数组实现public int missingNumber(int[] nums) &#123; int len=nums.length; boolean[] temp=new boolean[len]; for(int i=0;i&lt;len;i++)&#123; if(nums[i]!=len) temp[nums[i]]=true; &#125; for(int i=0;i&lt;len;i++) if(!temp[i]) return i; return len;&#125;“=======================”//使用高斯公式实现public int missingNumber(int[] nums) &#123; int len=nums.length; //计算和 int res=len*(len+1)/2; for(int i=0;i&lt;len;i++) res-=nums[i]; return res;&#125;“=======================”//位运算public int missingNumber(int[] nums) &#123; int missing = nums.length; for (int i = 0; i &lt; nums.length; i++) &#123; missing ^= i ^ nums[i]; &#125; return missing;&#125; 这是一道类似于脑筋急转弯的题目，很有意思。第二种和第三种方法比较巧妙，尤其是第三种。]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>位运算</tag>
+        <tag>LeetCode</tag>
+        <tag>数组</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[各位相加]]></title>
+    <url>%2F2019%2F11%2F08%2F%E5%90%84%E4%BD%8D%E7%9B%B8%E5%8A%A0%2F</url>
+    <content type="text"><![CDATA[LeetCode第二百五十八题难度：简单题目：给定一个非负整数 num，反复将各个位上的数字相加，直到结果为一位数。(不使用递归和循环，O(1)时间复杂度完成) 1234示例:输入: 38输出: 2 解释: 各位相加的过程为：3 + 8 = 11, 1 + 1 = 2。 由于 2 是一位数，所以返回 2。 思想分析对于这个题目，如果没有后面的时间复杂度要求，是非常简单的。但是由于题目的要求，我们只能另想办法解决问题。 对于一个数字n=875；我们可以写成875=81010+7*10+5的形式。那么8的权重为100，7的权重为10，5的权重为1 现在我们要将个位相加，也就是将各个位的权重都看作1。 因此875=81010+710+5=8(1010-1)+7(10-1)+5(1-1)=899+799 由上我们可以得到：875-899-79=8+7+5 同样的对于8+7+5=20也有：20-2*9=2 即875%9=2 代码实现123456public int addDigits(int num) &#123; //如果num是9的倍数，那么最后和为9 if(num&gt;0&amp;&amp;num%9==0) return 9; return num%9;&#125; 对于这类数字问题，了解了思路之后往往会很简单。]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>位运算</tag>
+        <tag>LeetCode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[二叉树的所有路径]]></title>
+    <url>%2F2019%2F11%2F08%2F%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%89%80%E6%9C%89%E8%B7%AF%E5%BE%84%2F</url>
+    <content type="text"><![CDATA[LeetCode第二百五十七题难度：简单题目：给定一个二叉树，返回所有从根节点到叶子节点的路径。 1234567891011示例:输入: 1 / \2 3 \ 5输出: [&quot;1-&gt;2-&gt;5&quot;, &quot;1-&gt;3&quot;]解释: 所有根节点到叶子节点的路径为: 1-&gt;2-&gt;5, 1-&gt;3 思想分析这道题的示例代码中，输出已经给了我们提示，可以使用一个集合来存储所有的路径。我们递归遍历链表 如果当前节点为空，什么都不做 将当前节点添加到当前路径中，如果当前节点为叶子节点，那么将当前路径添加到集合中 否则，递归遍历当前节点的左右子树 代码实现123456789101112131415161718public List&lt;String&gt; binaryTreePaths(TreeNode root) &#123; List&lt;String&gt; res=new ArrayList&lt;&gt;(30); getPaths(root,&quot;&quot;,res); return res;&#125;public void getPaths(TreeNode root,String path,List&lt;String&gt; res)&#123; if(root!=null)&#123; path+=root.val; if(root.left==null&amp;&amp;root.right==null) res.add(path); else&#123; path+=&quot;-&gt;&quot;; getPaths(root.left,path,res); getPaths(root.right,path,res); &#125; &#125;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>递归</tag>
+        <tag>二叉树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[有效的字母异位词]]></title>
+    <url>%2F2019%2F11%2F08%2F%E6%9C%89%E6%95%88%E7%9A%84%E5%AD%97%E6%AF%8D%E5%BC%82%E4%BD%8D%E8%AF%8D%2F</url>
+    <content type="text"><![CDATA[LeetCode第二百四十二题难度：简单题目：给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词。(假设只包含小写字符) 1234567示例 1:输入: s = &quot;anagram&quot;, t = &quot;nagaram&quot;输出: true示例 2:输入: s = &quot;rat&quot;, t = &quot;car&quot;输出: false 算法思想这道题可以使用两种方法来解决 排序思想，通过题意可知，排完序之后两字符串如果相等，那么返回true；否则返回true 哈希表思想，使用一个数组模拟哈希表，如果对于s上的字符，数组相应位置+1，对于t上的字符，数组相应位置-1；最后如果数组元素都为0，那么返回true 代码实现12345678910111213141516171819由于排序可以使用类库方法，这里就不做演示//哈希表思想public boolean isAnagram(String s, String t) &#123; if(s.length()!=t.length()) return false; int[] complate=new int[26]; char[] ss=s.toCharArray(); char[] tt=t.toCharArray(); int len=ss.length; for(int i=0;i&lt;len;i++)&#123; complate[ss[i]-&apos;a&apos;]++; complate[tt[i]-&apos;a&apos;]--; &#125; for(int c:complate) if(c!=0) return false; return true;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>哈希表</tag>
+        <tag>字符串</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[删除当前节点]]></title>
+    <url>%2F2019%2F11%2F08%2F%E5%88%A0%E9%99%A4%E5%BD%93%E5%89%8D%E8%8A%82%E7%82%B9%2F</url>
+    <content type="text"><![CDATA[LeetCode第二百三十七题难度：简单题目：请编写一个函数，使其可以删除某个链表中给定的（非末尾）节点，你将只被给定要求被删除的节点。 123456789示例 1:输入: head = [4,5,1,9], node = 5输出: [4,1,9]解释: 给定你链表中值为 5 的第二个节点，那么在调用了你的函数之后，该链表应变为 4 -&gt; 1 -&gt; 9.示例 2:输入: head = [4,5,1,9], node = 1输出: [4,5,9]解释: 给定你链表中值为 1 的第三个节点，那么在调用了你的函数之后，该链表应变为 4 -&gt; 5 -&gt; 9. 思想分析要删除一个单链表的节点，我们一般的思路就是找到要删除的节点的前一个节点，利用前一个节点对当前节点进行删除。但是在这道题中，给出当前节点，要求删除当前节点。 代码实现123456public void deleteNode(ListNode node) &#123; //将后一个节点的值赋值给当前节点 node.val=node.next.val; //删除后一个节点 node.next=node.next.next;&#125; 方法比较巧妙，但是通过代码可以发小，该实现无法删除最后一个节点。]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>链表</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[AVL树的公共祖先]]></title>
+    <url>%2F2019%2F11%2F08%2FAVL%E6%A0%91%E7%9A%84%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88%2F</url>
+    <content type="text"><![CDATA[LeetCode第二百三十五题难度：简单题目：给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。 12345678示例 1:输入: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8输出: 6 解释: 节点 2 和节点 8 的最近公共祖先是 6。示例 2:输入: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4输出: 2解释: 节点 2 和节点 4 的最近公共祖先是 2, 因为根据定义最近公共祖先节点可以为节点本身。 思想分析又是一道递归题目，我们来分析一下流程 对于当前节点，判断p、q和当前节点值的大小 如果p和q都大于当前节点值，那么递归进入当前节点右子树 如果p和q都小于当前节点值，那么递归进入当前节点左子树 否则，当前节点就是p和q的公共祖先 代码实现12345678910public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) &#123; int pval=p.val; int qval=q.val; int rval=root.val; if(pval&gt;rval&amp;&amp;qval&gt;rval) return lowestCommonAncestor(root.right,p,q); if(pval&lt;rval&amp;&amp;qval&lt;rval) return lowestCommonAncestor(root.left,p,q); return root;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>AVL树</tag>
+        <tag>递归</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[回文链表]]></title>
+    <url>%2F2019%2F11%2F08%2F%E5%9B%9E%E6%96%87%E9%93%BE%E8%A1%A8%2F</url>
+    <content type="text"><![CDATA[LeetCode第二百三十四题难度：简单题目：请判断一个链表是否为回文链表。(O(n)时间复杂度和O(1)空间复杂度) 1234567示例 1:输入: 1-&gt;2输出: false示例 2:输入: 1-&gt;2-&gt;2-&gt;1输出: true 思想分析判断一个链表是否为回文链表很简单，但是要实现复杂度要求并且以较好的方式来实现，就要用到快慢指针法 利用快慢指针，找到链表的中间节点 反转链表的前半部分 从链表头和链表中间节点开始往后遍历链表 代码实现12345678910111213141516171819202122232425262728293031public boolean isPalindrome(ListNode head) &#123; if(head==null||head.next==null) return true; //快慢指针法使slow指向链表的(n+1)/2位置的节点 ListNode slow=head; ListNode fast=head; while(fast!=null&amp;&amp;fast.next!=null)&#123; slow=slow.next; fast=fast.next.next; &#125; //反转前半部分链表 ListNode Pre=head; ListNode Next=head.next; while(Next!=slow)&#123; head.next=Next.next; Next.next=Pre; Pre=Next; Next=head.next; &#125; //如果链表个数为奇数，去掉中间节点 if(fast!=null) slow=slow.next; //比较 while(slow!=null)&#123; if(Pre.val!=slow.val) return false; Pre=Pre.next; slow=slow.next; &#125; return true;&#125; 可以发现，在解决链表问题时，快慢指针往往能够出其不意。]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>链表</tag>
+        <tag>快慢指针</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[2的幂]]></title>
+    <url>%2F2019%2F11%2F08%2F2%E7%9A%84%E5%B9%82%2F</url>
+    <content type="text"><![CDATA[LeetCode第二百三十一题难度：简单题目：给定一个整数，编写一个函数来判断它是否是 2 的幂次方 12345678910111213示例 1:输入: 1输出: true解释: 20 = 1示例 2:输入: 16输出: true解释: 24 = 16示例 3:输入: 218输出: false 思路分析这道题，如果一上来就用普通的暴力遍历那就太简单了，我们可以通过2幂次方数的特点结合位运算来解决。首先，2的幂次方的数用二进制表示时只有一个1，其余都是0。并且有n&amp;(n-1)==0恒存在。知道了这点，这道题就更简单了 代码实现123456789public boolean isPowerOfTwo(int n) &#123; if(n&lt;=0) return false; if((n&amp;(n-1))==0) return true; return false; //一行代码解决 //return n&gt;0&amp;&amp;(n&amp;(n-1))==0;&#125; 深入理解二进制补码存储方式是很重要的，很多问题能够通过位运算得以大大简化。]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>位运算</tag>
+        <tag>LeetCode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[反转二叉树]]></title>
+    <url>%2F2019%2F11%2F08%2F%E5%8F%8D%E8%BD%AC%E4%BA%8C%E5%8F%89%E6%A0%91%2F</url>
+    <content type="text"><![CDATA[LeetCode第二百二十六题难度：简单题目：翻转一棵二叉树 123456789101112131415示例：输入： 4 / \ 2 7 / \ / \1 3 6 9输出： 4 / \ 7 2 / \ / \9 6 3 1 思想分析又是一道典型的递归解决的二叉树问题，而对于能使用递归解决的二叉树问题，通常也能够使用迭代来解决。递归思路： 递归出口：当前节点为null，返回null 遍历二叉树(我将使用先序遍历的方式) 遍历到二叉树的每一个节点，交换该节点的左右子树 递归遍历当前节点的左右子树 返回当前节点 迭代思路： 创建一个队列，将头节点入栈 如果队列不为空，取出队头节点，交换该节点的左右子树 如果该节点有左右子树，将其左右子树分别入栈 代码实现123456789101112131415161718192021222324252627282930313233//递归代码(先序遍历)public TreeNode invertTree(TreeNode root) &#123; //递归出口 if (root == null) &#123; return null; &#125; //交换节点左右子树 TreeNode temp=root.left; root.left=root.right; root.right=temp; //递归遍历当前节点左右子树 invertTree(root.right); invertTree(root.left); //返回当前节点 return root;&#125;“====================================”//迭代代码：public TreeNode invertTree(TreeNode root) &#123; if (root == null) return null; Queue&lt;TreeNode&gt; queue = new LinkedList&lt;TreeNode&gt;(); queue.add(root); while (!queue.isEmpty()) &#123; TreeNode current = queue.poll(); TreeNode temp = current.left; current.left = current.right; current.right = temp; if (current.left != null) queue.add(current.left); if (current.right != null) queue.add(current.right); &#125; return root;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>递归</tag>
+        <tag>二叉树</tag>
+        <tag>迭代</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[LinkedHashMap源码解析]]></title>
+    <url>%2F2019%2F11%2F06%2FLinkedHashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%2F</url>
+    <content type="text"><![CDATA[了解了HashMap之后，我们就会发现，插入HashMap中的元素是不保证顺序的，因为元素在数组中是通过映射找到具体位置的，所以不保证取出元素的顺序和插入时的相等。那如果有这方面的要求，就要用到LinkedHashMap集合了。接下来就介绍一下JDK1.8下的LinkedHashMap集合。 LinkedHashMap新增属性LinkedHashMap集合能够维护插入顺序，继承自HashMap，所以它拥有HashMap的所有特性。在此基础上，还增加了两大特性 按照插入顺序进行访问； 实现了访问量最少最先删除的功能，其目的是把很久没有访问的key自动删除 12345678910111213141516//链表头transient LinkedHashMap.Entry&lt;K,V&gt; head;//链表尾transient LinkedHashMap.Entry&lt;K,V&gt; tail;//控制两种访问模式，默认false//true：按照访问顺序，把经常访问的key放到队尾//false：按照插入顺序提供访问final boolean accessOrder;//继承HashMap的内部类Node，为每个节点增加了before和after属性static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123; Entry&lt;K,V&gt; before, after; Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123; super(hash, key, value, next); &#125;&#125; 按照顺序访问LinkedHashMap通过新节点的head和tail指针，将各个节点都连接起来，形成一个链表，从而达到保证顺序的目的 按照插入顺序新增HashMap初始化时，默认accessOrder为false，就是会按照插入顺序提供访问，插入方法是使用父类的put方法，但是重写了父类put方法中的newNode/newTreeNode方法和afterNodeAccess方法。 newNode/newTreeNode方法。控制新增节点追加到链表尾部，这样每次新节点都追加到尾部，就可以保证插入顺序了，我们以newNode源码为例123456789101112131415161718Node&lt;K,V&gt; newNode(int hash, K key, V value, Node&lt;K,V&gt; e) &#123; LinkedHashMap.Entry&lt;K,V&gt; p = new LinkedHashMap.Entry&lt;K,V&gt;(hash, key, value, e); linkNodeLast(p); return p;&#125;”================================“private void linkNodeLast(LinkedHashMap.Entry&lt;K,V&gt; p) &#123; LinkedHashMap.Entry&lt;K,V&gt; last = tail; tail = p; if (last == null) head = p; else &#123; p.before = last; last.after = p; &#125;&#125; 从源码可以发现，LinkedHashMap通过新增头节点、尾节点，给每个节点增加before、after属性，在每次新增时，就已经维护了按照插入顺序的链表。 按照插入顺序访问LinkedHashMap只提供了单向访问，即按照插入顺序从头到尾进行访问，无法像LinkedList一样进行双向访问。我们主要通过迭代器进行访问，迭代器在初始化时默认从头节点开始，在迭代的过程中不断访问当前节点的after节点即可。Map对key、value和entry节点都提供了迭代的方法，假设我们现在对entry进行迭代，就可以使用LinkedHashMap.entrySet().iterator()来返回迭代器LinkedHashIterator，通过调用迭代器的nextNode方法就可以得到下一个节点。 123456789101112131415161718192021222324252627282930313233//获取entrySetpublic Set&lt;Map.Entry&lt;K,V&gt;&gt; entrySet() &#123; Set&lt;Map.Entry&lt;K,V&gt;&gt; es; return (es = entrySet) == null ? (entrySet = new LinkedEntrySet()) : es;&#125;”=====================================“//通过entrySet的iterator方法获取迭代器public final Iterator&lt;Map.Entry&lt;K,V&gt;&gt; iterator() &#123; return new LinkedEntryIterator();&#125;”=====================================“//LinkedEntryIterator迭代器类，继承自LinkedHashIterator final class LinkedEntryIterator extends LinkedHashIterator implements Iterator&lt;Map.Entry&lt;K,V&gt;&gt; &#123; public final Map.Entry&lt;K,V&gt; next() &#123; return nextNode(); &#125;&#125;”=====================================“//最终逻辑方法nextNode()返回节点final LinkedHashMap.Entry&lt;K,V&gt; nextNode() &#123; LinkedHashMap.Entry&lt;K,V&gt; e = next; //判断版本号，快速失败策略 if (modCount != expectedModCount) throw new ConcurrentModificationException(); if (e == null) throw new NoSuchElementException(); //返回当前接待你，next执行下一个节点 current = e; next = e.after; return e;&#125; 虽然迭代器next方法调用过程比较复杂，但是我们可以发现其逻辑代码却很简单，只是通过节点的after指针不断的访问下一个节点而已。 访问最少删除策略这种策略也叫做LRU(Least recently used)，大概意思就是经常访问的元素会被追加到队尾，这样不经常访问的数据自然就靠近队头，然后我们可以通过设置删除策略，比如当Map元素个数大于多少时把头节点删除。 元素被转移到队尾我们来看一下LinkedHashMap的get()方法源码 123456789101112131415161718192021222324252627282930313233343536public V get(Object key) &#123; Node&lt;K,V&gt; e; if ((e = getNode(hash(key), key)) == null) return null; if (accessOrder) afterNodeAccess(e); return e.value;&#125;”========================“void afterNodeAccess(Node&lt;K,V&gt; e) &#123; // move node to last LinkedHashMap.Entry&lt;K,V&gt; last; if (accessOrder &amp;&amp; (last = tail) != e) &#123; LinkedHashMap.Entry&lt;K,V&gt; p = (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after; p.after = null; if (b == null) head = a; else b.after = a; if (a != null) a.before = b; else last = b; if (last == null) head = p; else &#123; p.before = last; last.after = p; &#125; tail = p; ++modCount; &#125;&#125; 通过源码可以发现，LinkedHashMap重写了父类HashMap的get()方法，通过afterNodeAccess()方法将当前访问节点移到队尾。 删除策略前面说过，LinkedHashMap可以设置在当插入元素超过一定数量时候删除队头元素。这是怎么实现的呢？首先LinkedHashMap并没有实现自己的put方法，调用的是HashMap的put方法。重写了HashMap的put方法中的afterNodeInsertion(evict)方法在每次添加元素后如果元素个数超过设置的阈值则会调用该方法删除链表头元素。 12345678910111213141516171819/** * 删除策略方法 * @param evict：HashMap的put方法中传递true值 */void afterNodeInsertion(boolean evict) &#123; LinkedHashMap.Entry&lt;K,V&gt; first; if (evict &amp;&amp; (first = head) != null &amp;&amp; removeEldestEntry(first)) &#123; K key = first.key; //调用HashMap的removeNode方法删除节点 removeNode(hash(key), key, null, false, true); &#125;&#125;&quot;=======================================&quot;//该方法用于设置阈值，当元素超过阈值时删除链表头元素//可通过继承LinkedHashMap类重写该方法修改阈值protected boolean removeEldestEntry(Map.Entry&lt;K,V&gt; eldest) &#123; return false;&#125; 上面代码中最终的删除方法调用的仍然是HashMap的删除方法，LinkedHashMap并没有重写该方法。但是重写了removeNode()方法中的afterNodeRemoval方法，使得在删除节点后调整链表。 1234567891011121314//删除节点后调整链表void afterNodeRemoval(Node&lt;K,V&gt; e) &#123; // unlink LinkedHashMap.Entry&lt;K,V&gt; p = (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after; p.before = p.after = null; if (b == null) head = a; else b.after = a; if (a == null) tail = b; else a.before = b;&#125; 总结通过查看源码不难发现，LinkedHashMap继承自HashMap，主要重写了HashMap的Node类，实现了自己的Entry内部类(其实就是为每个节点增加了一个before和after指针)。LinkedHashMap的大多方法调用的仍是父类的方法。主要重写了四个方法，分别是 newNode/newTreeNode方法：用于在添加元素时维护一个链表 afterNodeRemoval方法，用于在删除节点时维护链表 afterNodeInsertion方法，在LRU模式下，设置元素阈值，当元素个数超过阈值时删除链表头元素 afterNodeAccess方法，设置LRU模式，将最少访问的节点放在链表头部 LinkedHashMap通过在HashMap的基础上增加一个双向链表来实现相应的功能，不得不说还是比较巧妙的。]]></content>
+      <categories>
+        <category>JDK源码</category>
+      </categories>
+      <tags>
+        <tag>源码</tag>
+        <tag>LinkedHashMap集合</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[用队列实现栈]]></title>
     <url>%2F2019%2F11%2F05%2F%E7%94%A8%E9%98%9F%E5%88%97%E5%AE%9E%E7%8E%B0%E6%A0%88%2F</url>
     <content type="text"><![CDATA[LeetCode第二百二十五题难度：简单题目：使用队列实现栈的下列操作： push(x) – 元素 x 入栈 pop() – 移除栈顶元素 top() – 获取栈顶元素 empty() – 返回栈是否为空 思想分析我们知道队列具有FIFO，即先进先出的特点；而栈具有FILO-先进后出的特点。要想用队列实现栈的功能，有两种不同的思路。 使用两个队列，其中一个队列作为转换。 使用一个队列，再插入时做一些特殊操作。 代码实现前面介绍的比较简单，下面演示一下一个队列的实现，逻辑比较简单。 12345678910111213141516171819202122232425class MyStack &#123; private Queue&lt;Integer&gt; q=new LinkedList&lt;&gt;(); public MyStack() &#123; &#125; public void push(int x) &#123; q.add(x); for(int i=0;i&lt;q.size()-1;i++) //这个是插入的核心逻辑 q.add(q.poll()); &#125; public int pop() &#123; return q.poll(); &#125; public int top() &#123; return q.peek(); &#125; public boolean empty() &#123; return q.isEmpty(); &#125;&#125; 从代码可以看出，我们在每次插入时花费O(n)的时间复杂度，将队列中元素变成栈的顺序，而在其他操作时可以直接当作栈来处理，因此时间复杂度为O(1)。]]></content>
@@ -43,7 +229,7 @@
   <entry>
     <title><![CDATA[HashMap源码解析]]></title>
     <url>%2F2019%2F11%2F04%2FHashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%2F</url>
-    <content type="text"><![CDATA[介绍完了List集合，接下来就介绍一下Map集合中最常用的的HashMap集合，本文还是基于JDK1.8来介绍HashMap集合，由于HashMap集合比较复杂，这里只介绍一部分内容，对于红黑树部分跳过，本文基于JDK1.8版本。 整体架构在JDK1.8中，对HashMap进行了调整，1.8及其以后的数据结构主要是数组+链表+红黑树。其中当链表长度大于等于8并且数组长度大于等于64时，链表会转化为红黑树；当红黑树大小小于等于6时，红黑树会转化成链表，整体的数据结构如下图：左边竖着的就是HashMap的数组结构，数组的元素有三种情况 单个Node节点(存放键值对数据) 一个链表 一个红黑树 类注释从HashMap的类注释中，我们可以得知： HashMap允许存储null值 loadfactor(负载因子)默认为0.75，这时均衡了时间和空间损耗算出来的值。如果较高虽然节省了空间，但是增加了查找成本(hash冲突增加，链表长度边长) 扩容条件：当HashMap中元素的个数(size)&gt;=数组大小(Capacity)*负载因子(loadfactor)时，就要进行扩容。 如果有很多数据需要存储到HashMap中，建议HashMap一开始就设置成足够的大小，这样可以防止在使用过程中不断扩容。影响性能。 HashMap是非线程安全的，我们可以自己在外部加锁，或者使用Collections.synchronizedMap。该类和前面List集合一样，通过在每个方法上加锁来达到线程安全的目的。 HashMap是快速失败的，即在迭代过程中如果结构发生了变化，就会抛出异常。 类属性在介绍HashMap的方法之前，先了解一下HashMap的一些成员属性。 1234567891011121314151617181920212223242526272829303132数组初始容量为16static final int DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4;//数组能扩容的最大容量static final int MAXIMUM_CAPACITY = 1 &lt;&lt; 30;//默认负载因子为0.75static final float DEFAULT_LOAD_FACTOR = 0.75f;//当链表长度大于等于时，链表转化为红黑树static final int TREEIFY_THRESHOLD = 8;//当红黑树大小小于等于6时，红黑树转换为链表static final int UNTREEIFY_THRESHOLD = 6;//当数组大小大于64时，链表才会转换为红黑树static final int MIN_TREEIFY_CAPACITY = 64;//存放数据的数组transient Node&lt;K,V&gt;[] table;//HashMap元素的个数transient int size;//记录HashMap版本，用于快速失败transient int modCount;//扩容的门槛//如果初始化时给定数组大小，那么通过tableSizeFor计算，//数组大小永远接近于2的幂次方，如果给定19，那么实际上初始化大小为32。//如果是通过resize()方法进行扩容，那么threshold=数组大小*0.75int threshold; 构造方法后面讲到的扩容和初始化方式有关，因此这里先介绍一下构造方法 123456789101112131415161718192021222324252627282930313233343536373839404142/** * 指定数组大小和负载因子构造方法 * @param 指定数组大小 * @param 指定负载因子 */public HashMap(int initialCapacity, float loadFactor) &#123; //如果参数小于0，抛出异常 if (initialCapacity &lt; 0) throw new IllegalArgumentException(&quot;Illegal initial capacity: &quot; + initialCapacity); //如果指定容量大于HashMap能扩容的最大值，就令其为最大值 if (initialCapacity &gt; MAXIMUM_CAPACITY) initialCapacity = MAXIMUM_CAPACITY; //如果负载因子为空或小于0，抛出异常 if (loadFactor &lt;= 0 || Float.isNaN(loadFactor)) throw new IllegalArgumentException(&quot;Illegal load factor: &quot; + loadFactor); //前面讲过，使用tableSizeFor方法使得数组大小一直是一个接近2的幂次方的数 //关于tableSizeFor()方法一会儿介绍 this.loadFactor = loadFactor; this.threshold = tableSizeFor(initialCapacity);&#125;“==============================”/** * 空参构造方法 * 则负载因子为0.75 * 初始容量为0 */public HashMap() &#123; this.loadFactor = DEFAULT_LOAD_FACTOR;&#125;“==============================”/** * 一个参数构造方法 * 负载因子默认0.75 * @param 指定数组初始容量 */public HashMap(int initialCapacity) &#123; this(initialCapacity, DEFAULT_LOAD_FACTOR);&#125; 初始化方法源码下面我们首先来介绍一些HashMap中一些和初始化相关的方法源码。 hash()123456789/** * 求键值对中键的哈希码 * @param key * @return */static final int hash(Object key) &#123; int h; return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);&#125; 该hash()方法将Key的哈希值高16位和低16位做异或运算。后面介绍这样做的好处 tableSizeFor(int cap)前面介绍过，HashMap会使数组大小尽量维持在2的幂次方，那么当使用指定大小初始化时，如果指定的初始大小不是2的幂次方，就会调用此方法，将数组大小变为接近指定参数的2的幂次方。例如指定大小为19，那么数组实际大小为32。 123456789static final int tableSizeFor(int cap) &#123; int n = cap - 1; n |= n &gt;&gt;&gt; 1; n |= n &gt;&gt;&gt; 2; n |= n &gt;&gt;&gt; 4; n |= n &gt;&gt;&gt; 8; n |= n &gt;&gt;&gt; 16; return (n &lt; 0) ? 1 : (n &gt;= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;&#125; 这个算法的思路很厉害，我们来分析一下：首先，这个方法是在指定大小初始化方法中被调用的。通过查看这两个构造方法可以保证传递进来的参数0&lt;=cap&lt;=MAXIMUM_CAPACITY。 当cap=0时，n=-1，那么经过5行移位和或运算之后n的仍为-1。我们再看最后一行返回代码，当n&lt;0时返回1(2的0次方) 当cap=1时，n=0，那么经过一系列操作之后n仍为0。同样的我们看最后一行返回语句，此时返回n+1=1(2的0次方) 当cap=2的幂次方(二进制表示就是只有一个1其余全是0，如1000)，那么最后运算得到的返回值仍为cap。 如果cap是其他值，那么经过移位运算和或运算之后得到的值一定是…1111(2的n次幂-1)，最后如果没有超出范围则返回2的n次幂。并且返回值是比cap大的最近的2的幂次方。 那么int n=cap-1有什么用呢？当cap=2的幂次方时，如果不采取这一步操作，最后得到的值就是2*cap，而不是cap。 hash()方法能够得到键值对的hash值，而tableSizeFor()方法在使用指定大小构造方法时能够将数组的大小指定为2的幂次方。 扩容方法前面说过，当哈希表中元素个数大于扩容门槛时，会对数组进行扩容。下面就来具体介绍一下扩容方法。 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101final Node&lt;K,V&gt;[] resize() &#123; //记录扩容前数组 Node&lt;K,V&gt;[] oldTab = table; //记录扩容前数组长度 int oldCap = (oldTab == null) ? 0 : oldTab.length; //记录扩容前数组的扩容门槛threshold int oldThr = threshold; //初始化新数组的大小和扩容门槛 int newCap, newThr = 0; //如果扩容前数组不为空 if (oldCap &gt; 0) &#123; //如果上一次已经将数组扩容为最大长度 //那么就将扩容门槛threshold调整为最大值 //此时并不进行扩容 if (oldCap &gt;= MAXIMUM_CAPACITY) &#123; threshold = Integer.MAX_VALUE; return oldTab; &#125; //先将新数组容量设置为老数组的二倍 //如果没有超过最大容量并且老数组大小大于初始容量 //则将新的扩容门槛也变为老数组扩容门槛的二倍 else if ((newCap = oldCap &lt;&lt; 1) &lt; MAXIMUM_CAPACITY &amp;&amp; oldCap &gt;= DEFAULT_INITIAL_CAPACITY) newThr = oldThr &lt;&lt; 1; // double threshold &#125; //如果扩容前数组为空，但是扩容前数组的扩容门槛大于0，即创建对象时使用的带参构造方法 else if (oldThr &gt; 0) //将前面tableSizeFor()方法得到的数赋值给新数组大小 newCap = oldThr; //扩容前数组为空并且扩容门槛为0，即创建对象时使用的无参数初始化 else &#123; newCap = DEFAULT_INITIAL_CAPACITY; newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY); &#125; //进入次if语句有两种可能 //1. 进入if(oldCap&gt;0)分支但是不满足里面两个if条件 //2. 进入了else if (oldThr &gt; 0)分支 //第一种情况说明此时是扩容，并且创建对象时使用的带参构造方法并且指定数组的大小小于16 //第二种情况说明此时是初始化，并且创建对象时使用的带参构造方法 if (newThr == 0) &#123; float ft = (float)newCap * loadFactor; newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (float)MAXIMUM_CAPACITY ? (int)ft : Integer.MAX_VALUE); &#125; //创建新数组，修改扩容门槛threshold threshold = newThr; @SuppressWarnings(&#123;&quot;rawtypes&quot;,&quot;unchecked&quot;&#125;) Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])new Node[newCap]; table = newTab; //将数据拷贝到新数组中 if (oldTab != null) &#123; for (int j = 0; j &lt; oldCap; ++j) &#123; Node&lt;K,V&gt; e; if ((e = oldTab[j]) != null) &#123; oldTab[j] = null; if (e.next == null) newTab[e.hash &amp; (newCap - 1)] = e; else if (e instanceof TreeNode) ((TreeNode&lt;K,V&gt;)e).split(this, newTab, j, oldCap); else &#123; // preserve order Node&lt;K,V&gt; loHead = null, loTail = null; Node&lt;K,V&gt; hiHead = null, hiTail = null; Node&lt;K,V&gt; next; do &#123; next = e.next; if ((e.hash &amp; oldCap) == 0) &#123; if (loTail == null) loHead = e; else loTail.next = e; loTail = e; &#125; else &#123; if (hiTail == null) hiHead = e; else hiTail.next = e; hiTail = e; &#125; &#125; while ((e = next) != null); if (loTail != null) &#123; loTail.next = null; newTab[j] = loHead; &#125; if (hiTail != null) &#123; hiTail.next = null; newTab[j + oldCap] = hiHead; &#125; &#125; &#125; &#125; &#125; return newTab;&#125; 添加方法向哈希表中新增一个键值对，大概步骤如下 数组有无初始化，如果没有则先初始化 通过hash()方法计算得到的key的hash能够直接找到值，跳转到6，否则跳转到3 如果哈希冲突，有两种解决方案：链表或红黑树 如果是链表，递归循环，将新元素添加到队尾 如果是红黑树，调用红黑树的新增方法 通过2、4、5将新元素追加成功，再根据onlyAbsent()方法判断是否需要覆盖 判断是否需要扩容，结束 我们来看一下源码实现 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788public V put(K key, V value) &#123; return putVal(hash(key), key, value, false, true);&#125;”===================================“/** * Implements Map.put and related methods. * * @param 键的哈希值 * @param 键值对中键的值 * @param 键值对中值的值 * @param 如果是true，那么如果key有重复，不进行覆盖。默认为false * @param evict if false, the table is in creation mode. * @return previous value, or null if none */final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) &#123; //哈希表的底层结构之一：数组 Node&lt;K,V&gt;[] tab; //下标为i位置的Node值 Node&lt;K,V&gt; p; //数组长度 int n,i; //如果数组为空，那么先初始化数组 if ((tab = table) == null || (n = tab.length) == 0) n = (tab = resize()).length; //如果数组中要插入的位置为空，那么直接插入 if ((p = tab[i = (n - 1) &amp; hash]) == null) tab[i] = newNode(hash, key, value, null); //如果要插入的位置有值，即出现哈希冲突。 else &#123; //当前节点的临时变量 Node&lt;K,V&gt; e; K k; //如果要插入的节点的key和要插入位置的节点的key他们 //的hash和值都相等，直接将当前下标位置的Node赋值给e if (p.hash == hash &amp;&amp; ((k = p.key) == key || (key != null &amp;&amp; key.equals(k)))) e = p; //否则，判断如果是红黑树结构，使用红黑树的方式新增 else if (p instanceof TreeNode) e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value); //如果是链表，将新节点放到链表尾端 else &#123; //自旋 for (int binCount = 0; ; ++binCount) &#123; //表示从头开始，遍历链表。p.next==null表明p是链表的尾节点 if ((e = p.next) == null) &#123; //把新节点放到链表的尾部 p.next = newNode(hash, key, value, null); //如果链表的长度大于8，链表转为红黑树 if (binCount &gt;= TREEIFY_THRESHOLD - 1) // -1 for 1st treeifyBin(tab, hash); break; &#125; //链表遍历的过程中，发现有元素和新增元素相等，结束循环 if (e.hash == hash &amp;&amp; ((k = e.key) == key || (key != null &amp;&amp; key.equals(k)))) break; //将p向后移 p = e; &#125; &#125; //找到了哈希冲突的点 if (e != null) &#123; // existing mapping for key V oldValue = e.value; //如果允许覆盖则覆盖原来的值 if (!onlyIfAbsent || oldValue == null) e.value = value; afterNodeAccess(e); return oldValue; &#125; &#125; //如果没有哈希冲突，就要向hashmap中添加新节点 //这样以来map的结构就发生了变化 ++modCount; //如果size超过扩容门槛，则进行扩容 if (++size &gt; threshold) resize(); afterNodeInsertion(evict); return null;&#125; 将hash值映射到数组介绍完了添加方法，就可以说明hash()方法以及如何将hash值映射到相应数组下标。 123456789//求哈希值static final int hash(Object key) &#123; int h; return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);&#125;//将哈希值映射到数组下标int n=tab.length;p = tab[(n - 1) &amp; hash] 从代码中可以发现映射函数为f(hash)=(length-1)&amp;hash。首先在前面说过，哈希表数组的长度都为2的幂次方，因此，length-1就能够得到一个一串连续二进制1组成的数。例如： 12316-1=15=111132-1=31=11111...... 因此可以发现，上面的移位方式和取模达到的效果是一样的，但是比取模运算高效很多。 hash值的原理介绍了如何将hash值映射到数组中，现在就介绍一下为什么要这样求hash值，它的道理在哪里？我们先看一组示例 123456789101112131415161718直接使用hashCode作为hash值对于下面两组明显不同的HashCode0101 0011 0010 1010 1101 1011 0101 10100101 1010 0000 1110 0001 0111 0010 1010此时数组容量为16如果直接使用hashCode作为hash值0101 0011 0010 1010 1101 1011 0101 10100000 0000 0000 0000 0000 0000 0000 1111——————————————————————————————————————0000 0000 0000 0000 0000 0000 0000 1010==&gt;数组下标:1010 0101 1010 0000 1110 0001 0111 0010 10100000 0000 0000 0000 0000 0000 0000 1111——————————————————————————————————————0000 0000 0000 0000 0000 0000 0000 1010==&gt;数组下标:1010 通过运算我们发现，这两个完全不同的hashCode被映射到了同一个数组下标1010。不仅如此，只要后四位相同的hashCode都会被映射到同一数组下标，这样的hash算法相当于只看hashCode的低位，高位完全不能产生影响，这是完全不合理的。因此，HashMap采用的hash算法将高位和低位取异或运算，使得高位也能够产生影响，从而使得分布更加均匀。 123456789101112131415161718192021222324252627282930使用hash算法求hash值对于下面两组明显不同的HashCode0101 0011 0010 1010 1101 1011 0101 10100101 1010 0000 1110 0001 0111 0010 1010求hash值0101 0011 0010 1010 1101 1011 0101 10100000 0000 0000 0000 0101 0011 0010 1010——————————————————————————————————————0101 0011 0010 1010 1000 1000 0111 00000101 1010 0000 1110 0001 0111 0010 10100000 0000 0000 0000 0101 0011 0010 1011——————————————————————————————————————0101 1010 0000 1110 0100 0100 0000 0001此时数组容量为16如果直接使用hashCode作为hash值0101 0011 0010 1010 1000 1000 0111 00000000 0000 0000 0000 0000 0000 0000 1111——————————————————————————————————————0000 0000 0000 0000 0000 0000 0000 0000==&gt;数组下标：0 0101 1010 0000 1110 0100 0100 0000 00010000 0000 0000 0000 0000 0000 0000 1111——————————————————————————————————————0000 0000 0000 0000 0000 0000 0000 0000==&gt;数组下标：1 具体的添加细节，向链表中添加比较简单，直接添加到链表末尾即可。由于对红黑树不太了解，因此向红黑树中添加就不赘述。 查找方法HashMap的查找主要分为三步 根据hash算法求出hash值，然后映射到数组的索引位置。equals()判断当前节点是否是需要查找的key。是就返回true，否则执行2 判断当前节点有无next节点，如果有判断是链表类型还是红黑树类型，并执行3；没有返回false 分别走链表和红黑树不同类型的查找方式 123456789101112131415161718192021222324252627282930public boolean containsKey(Object key) &#123; return getNode(hash(key), key) != null;&#125;final Node&lt;K,V&gt; getNode(int hash, Object key) &#123; Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k; //如果数组不为空并且长度大于0并且要hash值映射的数组位置不为空 if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp; (first = tab[(n - 1) &amp; hash]) != null) &#123; //如果当前节点的hash值和要查找的key的hash值相等 //并且两者也相等，直接返回当前节点 if (first.hash == hash &amp;&amp; ((k = first.key) == key || (key != null &amp;&amp; key.equals(k)))) return first; //判断当前节点是否有下一个节点 if ((e = first.next) != null) &#123; //如果是红黑树，调用红黑树查找方法 if (first instanceof TreeNode) return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key); //如果是链表则遍历链表查找 do &#123; if (e.hash == hash &amp;&amp; ((k = e.key) == key || (key != null &amp;&amp; key.equals(k)))) return e; &#125; while ((e = e.next) != null); &#125; &#125; return null;&#125; 对于红黑树的查找，可以大致介绍思路(类似AVL树) 从根节点开始查找 比较当前节点和要查找key的hash值，根据红黑树左小右大的特性 判断查找节点在第2步有没有找到节点，如果找到直接返回，没有重复2、3步 一直循环直到定位到节点位置为止。 HashMap的内容比较多，这里只是介绍了其中的一部分。可以看出，HashMap的API大多都是对数组+链表+红黑树这种数据结构进行封装。本文部分参考自慕课网文贺老师专栏。]]></content>
+    <content type="text"><![CDATA[介绍完了List集合，接下来就介绍一下Map集合中最常用的的HashMap集合，本文还是基于JDK1.8来介绍HashMap集合，由于HashMap集合比较复杂，这里只介绍一部分内容，对于红黑树部分跳过，本文基于JDK1.8版本。 整体架构在JDK1.8中，对HashMap进行了调整，1.8及其以后的数据结构主要是数组+链表+红黑树。其中当链表长度大于等于8并且数组长度大于等于64时，链表会转化为红黑树；当红黑树大小小于等于6时，红黑树会转化成链表，整体的数据结构如下图：左边竖着的就是HashMap的数组结构，数组的元素有三种情况 单个Node节点(存放键值对数据) 一个链表 一个红黑树 类注释从HashMap的类注释中，我们可以得知： HashMap允许存储null值 loadfactor(负载因子)默认为0.75，这时均衡了时间和空间损耗算出来的值。如果较高虽然节省了空间，但是增加了查找成本(hash冲突增加，链表长度边长) 扩容条件：当HashMap中元素的个数(size)&gt;=数组大小(Capacity)*负载因子(loadfactor)时，就要进行扩容。 如果有很多数据需要存储到HashMap中，建议HashMap一开始就设置成足够的大小，这样可以防止在使用过程中不断扩容。影响性能。 HashMap是非线程安全的，我们可以自己在外部加锁，或者使用Collections.synchronizedMap。该类和前面List集合一样，通过在每个方法上加锁来达到线程安全的目的。 HashMap是快速失败的，即在迭代过程中如果结构发生了变化，就会抛出异常。 类属性在介绍HashMap的方法之前，先了解一下HashMap的一些成员属性。 1234567891011121314151617181920212223242526272829303132数组初始容量为16static final int DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4;//数组能扩容的最大容量static final int MAXIMUM_CAPACITY = 1 &lt;&lt; 30;//默认负载因子为0.75static final float DEFAULT_LOAD_FACTOR = 0.75f;//当链表长度大于等于时，链表转化为红黑树static final int TREEIFY_THRESHOLD = 8;//当红黑树大小小于等于6时，红黑树转换为链表static final int UNTREEIFY_THRESHOLD = 6;//当数组大小大于64时，链表才会转换为红黑树static final int MIN_TREEIFY_CAPACITY = 64;//存放数据的数组transient Node&lt;K,V&gt;[] table;//HashMap元素的个数transient int size;//记录HashMap版本，用于快速失败transient int modCount;//扩容的门槛//如果初始化时给定数组大小，那么通过tableSizeFor计算，//数组大小永远接近于2的幂次方，如果给定19，那么实际上初始化大小为32。//如果是通过resize()方法进行扩容，那么threshold=数组大小*0.75int threshold; 构造方法后面讲到的扩容和初始化方式有关，因此这里先介绍一下构造方法 123456789101112131415161718192021222324252627282930313233343536373839404142/** * 指定数组大小和负载因子构造方法 * @param 指定数组大小 * @param 指定负载因子 */public HashMap(int initialCapacity, float loadFactor) &#123; //如果参数小于0，抛出异常 if (initialCapacity &lt; 0) throw new IllegalArgumentException(&quot;Illegal initial capacity: &quot; + initialCapacity); //如果指定容量大于HashMap能扩容的最大值，就令其为最大值 if (initialCapacity &gt; MAXIMUM_CAPACITY) initialCapacity = MAXIMUM_CAPACITY; //如果负载因子为空或小于0，抛出异常 if (loadFactor &lt;= 0 || Float.isNaN(loadFactor)) throw new IllegalArgumentException(&quot;Illegal load factor: &quot; + loadFactor); //前面讲过，使用tableSizeFor方法使得数组大小一直是一个接近2的幂次方的数 //关于tableSizeFor()方法一会儿介绍 this.loadFactor = loadFactor; this.threshold = tableSizeFor(initialCapacity);&#125;“==============================”/** * 空参构造方法 * 则负载因子为0.75 * 初始容量为0 */public HashMap() &#123; this.loadFactor = DEFAULT_LOAD_FACTOR;&#125;“==============================”/** * 一个参数构造方法 * 负载因子默认0.75 * @param 指定数组初始容量 */public HashMap(int initialCapacity) &#123; this(initialCapacity, DEFAULT_LOAD_FACTOR);&#125; 初始化方法源码下面我们首先来介绍一些HashMap中一些和初始化相关的方法源码。 hash()123456789/** * 求键值对中键的哈希码 * @param key * @return */static final int hash(Object key) &#123; int h; return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);&#125; 该hash()方法将Key的哈希值高16位和低16位做异或运算。后面介绍这样做的好处 tableSizeFor(int cap)前面介绍过，HashMap会使数组大小尽量维持在2的幂次方，那么当使用指定大小初始化时，如果指定的初始大小不是2的幂次方，就会调用此方法，将数组大小变为接近指定参数的2的幂次方。例如指定大小为19，那么数组实际大小为32。 123456789static final int tableSizeFor(int cap) &#123; int n = cap - 1; n |= n &gt;&gt;&gt; 1; n |= n &gt;&gt;&gt; 2; n |= n &gt;&gt;&gt; 4; n |= n &gt;&gt;&gt; 8; n |= n &gt;&gt;&gt; 16; return (n &lt; 0) ? 1 : (n &gt;= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;&#125; 这个算法的思路很厉害，我们来分析一下：首先，这个方法是在指定大小初始化方法中被调用的。通过查看这两个构造方法可以保证传递进来的参数0&lt;=cap&lt;=MAXIMUM_CAPACITY。 当cap=0时，n=-1，那么经过5行移位和或运算之后n的仍为-1。我们再看最后一行返回代码，当n&lt;0时返回1(2的0次方) 当cap=1时，n=0，那么经过一系列操作之后n仍为0。同样的我们看最后一行返回语句，此时返回n+1=1(2的0次方) 当cap=2的幂次方(二进制表示就是只有一个1其余全是0，如1000)，那么最后运算得到的返回值仍为cap。 如果cap是其他值，那么经过移位运算和或运算之后得到的值一定是…1111(2的n次幂-1)，最后如果没有超出范围则返回2的n次幂。并且返回值是比cap大的最近的2的幂次方。 那么int n=cap-1有什么用呢？当cap=2的幂次方时，如果不采取这一步操作，最后得到的值就是2*cap，而不是cap。 hash()方法能够得到键值对的hash值，而tableSizeFor()方法在使用指定大小构造方法时能够将数组的大小指定为2的幂次方。 扩容方法前面说过，当哈希表中元素个数大于扩容门槛时，会对数组进行扩容。下面就来具体介绍一下扩容方法。 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101final Node&lt;K,V&gt;[] resize() &#123; //记录扩容前数组 Node&lt;K,V&gt;[] oldTab = table; //记录扩容前数组长度 int oldCap = (oldTab == null) ? 0 : oldTab.length; //记录扩容前数组的扩容门槛threshold int oldThr = threshold; //初始化新数组的大小和扩容门槛 int newCap, newThr = 0; //如果扩容前数组不为空 if (oldCap &gt; 0) &#123; //如果上一次已经将数组扩容为最大长度 //那么就将扩容门槛threshold调整为最大值 //此时并不进行扩容 if (oldCap &gt;= MAXIMUM_CAPACITY) &#123; threshold = Integer.MAX_VALUE; return oldTab; &#125; //先将新数组容量设置为老数组的二倍 //如果没有超过最大容量并且老数组大小大于初始容量 //则将新的扩容门槛也变为老数组扩容门槛的二倍 else if ((newCap = oldCap &lt;&lt; 1) &lt; MAXIMUM_CAPACITY &amp;&amp; oldCap &gt;= DEFAULT_INITIAL_CAPACITY) newThr = oldThr &lt;&lt; 1; // double threshold &#125; //如果扩容前数组为空，但是扩容前数组的扩容门槛大于0，即创建对象时使用的带参构造方法 else if (oldThr &gt; 0) //将前面tableSizeFor()方法得到的数赋值给新数组大小 newCap = oldThr; //扩容前数组为空并且扩容门槛为0，即创建对象时使用的无参数初始化 else &#123; newCap = DEFAULT_INITIAL_CAPACITY; newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY); &#125; //进入次if语句有两种可能 //1. 进入if(oldCap&gt;0)分支但是不满足里面两个if条件 //2. 进入了else if (oldThr &gt; 0)分支 //第一种情况说明此时是扩容，并且创建对象时使用的带参构造方法并且指定数组的大小小于16 //第二种情况说明此时是初始化，并且创建对象时使用的带参构造方法 if (newThr == 0) &#123; float ft = (float)newCap * loadFactor; newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (float)MAXIMUM_CAPACITY ? (int)ft : Integer.MAX_VALUE); &#125; //创建新数组，修改扩容门槛threshold threshold = newThr; @SuppressWarnings(&#123;&quot;rawtypes&quot;,&quot;unchecked&quot;&#125;) Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])new Node[newCap]; table = newTab; //将数据拷贝到新数组中 if (oldTab != null) &#123; for (int j = 0; j &lt; oldCap; ++j) &#123; Node&lt;K,V&gt; e; if ((e = oldTab[j]) != null) &#123; oldTab[j] = null; if (e.next == null) newTab[e.hash &amp; (newCap - 1)] = e; else if (e instanceof TreeNode) ((TreeNode&lt;K,V&gt;)e).split(this, newTab, j, oldCap); else &#123; // preserve order Node&lt;K,V&gt; loHead = null, loTail = null; Node&lt;K,V&gt; hiHead = null, hiTail = null; Node&lt;K,V&gt; next; do &#123; next = e.next; if ((e.hash &amp; oldCap) == 0) &#123; if (loTail == null) loHead = e; else loTail.next = e; loTail = e; &#125; else &#123; if (hiTail == null) hiHead = e; else hiTail.next = e; hiTail = e; &#125; &#125; while ((e = next) != null); if (loTail != null) &#123; loTail.next = null; newTab[j] = loHead; &#125; if (hiTail != null) &#123; hiTail.next = null; newTab[j + oldCap] = hiHead; &#125; &#125; &#125; &#125; &#125; return newTab;&#125; 添加方法向哈希表中新增一个键值对，大概步骤如下 数组有无初始化，如果没有则先初始化 通过hash()方法计算得到的key的hash能够直接找到值，跳转到6，否则跳转到3 如果哈希冲突，有两种解决方案：链表或红黑树 如果是链表，递归循环，将新元素添加到队尾 如果是红黑树，调用红黑树的新增方法 通过2、4、5将新元素追加成功，再根据onlyAbsent()方法判断是否需要覆盖 判断是否需要扩容，结束 我们来看一下源码实现 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788public V put(K key, V value) &#123; return putVal(hash(key), key, value, false, true);&#125;”===================================“/** * Implements Map.put and related methods. * * @param 键的哈希值 * @param 键值对中键的值 * @param 键值对中值的值 * @param 如果是true，那么如果key有重复，不进行覆盖。默认为false * @param evict if false, the table is in creation mode. * @return previous value, or null if none */final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) &#123; //哈希表的底层结构之一：数组 Node&lt;K,V&gt;[] tab; //下标为i位置的Node值 Node&lt;K,V&gt; p; //数组长度 int n,i; //如果数组为空，那么先初始化数组 if ((tab = table) == null || (n = tab.length) == 0) n = (tab = resize()).length; //如果数组中要插入的位置为空，那么直接插入 if ((p = tab[i = (n - 1) &amp; hash]) == null) tab[i] = newNode(hash, key, value, null); //如果要插入的位置有值，即出现哈希冲突。 else &#123; //当前节点的临时变量 Node&lt;K,V&gt; e; K k; //如果要插入的节点的key和要插入位置的节点的key他们 //的hash和值都相等，直接将当前下标位置的Node赋值给e if (p.hash == hash &amp;&amp; ((k = p.key) == key || (key != null &amp;&amp; key.equals(k)))) e = p; //否则，判断如果是红黑树结构，使用红黑树的方式新增 else if (p instanceof TreeNode) e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value); //如果是链表，将新节点放到链表尾端 else &#123; //自旋 for (int binCount = 0; ; ++binCount) &#123; //表示从头开始，遍历链表。p.next==null表明p是链表的尾节点 if ((e = p.next) == null) &#123; //把新节点放到链表的尾部 p.next = newNode(hash, key, value, null); //如果链表的长度大于8，链表转为红黑树 if (binCount &gt;= TREEIFY_THRESHOLD - 1) // -1 for 1st treeifyBin(tab, hash); break; &#125; //链表遍历的过程中，发现有元素和新增元素相等，结束循环 if (e.hash == hash &amp;&amp; ((k = e.key) == key || (key != null &amp;&amp; key.equals(k)))) break; //将p向后移 p = e; &#125; &#125; //找到了哈希冲突的点 if (e != null) &#123; // existing mapping for key V oldValue = e.value; //如果允许覆盖则覆盖原来的值 if (!onlyIfAbsent || oldValue == null) e.value = value; afterNodeAccess(e); return oldValue; &#125; &#125; //如果没有哈希冲突，就要向hashmap中添加新节点 //这样以来map的结构就发生了变化 ++modCount; //如果size超过扩容门槛，则进行扩容 if (++size &gt; threshold) resize(); afterNodeInsertion(evict); return null;&#125; 将hash值映射到数组介绍完了添加方法，就可以说明hash()方法以及如何将hash值映射到相应数组下标。 123456789//求哈希值static final int hash(Object key) &#123; int h; return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);&#125;//将哈希值映射到数组下标int n=tab.length;p = tab[(n - 1) &amp; hash] 从代码中可以发现映射函数为f(hash)=(length-1)&amp;hash。首先在前面说过，哈希表数组的长度都为2的幂次方，因此，length-1就能够得到一个一串连续二进制1组成的数。例如： 12316-1=15=111132-1=31=11111...... 因此可以发现，上面的移位方式和取模达到的效果是一样的，但是比取模运算高效很多。 hash值的原理介绍了如何将hash值映射到数组中，现在就介绍一下为什么要这样求hash值，它的道理在哪里？我们先看一组示例 123456789101112131415161718直接使用hashCode作为hash值对于下面两组明显不同的HashCode0101 0011 0010 1010 1101 1011 0101 10100101 1010 0000 1110 0001 0111 0010 1010此时数组容量为16如果直接使用hashCode作为hash值0101 0011 0010 1010 1101 1011 0101 10100000 0000 0000 0000 0000 0000 0000 1111——————————————————————————————————————0000 0000 0000 0000 0000 0000 0000 1010==&gt;数组下标:1010 0101 1010 0000 1110 0001 0111 0010 10100000 0000 0000 0000 0000 0000 0000 1111——————————————————————————————————————0000 0000 0000 0000 0000 0000 0000 1010==&gt;数组下标:1010 通过运算我们发现，这两个完全不同的hashCode被映射到了同一个数组下标1010。不仅如此，只要后四位相同的hashCode都会被映射到同一数组下标，这样的hash算法相当于只看hashCode的低位，高位完全不能产生影响，这是完全不合理的。因此，HashMap采用的hash算法将高位和低位取异或运算，使得高位也能够产生影响，从而使得分布更加均匀。 123456789101112131415161718192021222324252627282930使用hash算法求hash值对于下面两组明显不同的HashCode0101 0011 0010 1010 1101 1011 0101 10100101 1010 0000 1110 0001 0111 0010 1010求hash值0101 0011 0010 1010 1101 1011 0101 10100000 0000 0000 0000 0101 0011 0010 1010——————————————————————————————————————0101 0011 0010 1010 1000 1000 0111 00000101 1010 0000 1110 0001 0111 0010 10100000 0000 0000 0000 0101 0011 0010 1011——————————————————————————————————————0101 1010 0000 1110 0100 0100 0000 0001此时数组容量为16如果直接使用hashCode作为hash值0101 0011 0010 1010 1000 1000 0111 00000000 0000 0000 0000 0000 0000 0000 1111——————————————————————————————————————0000 0000 0000 0000 0000 0000 0000 0000==&gt;数组下标：0 0101 1010 0000 1110 0100 0100 0000 00010000 0000 0000 0000 0000 0000 0000 1111——————————————————————————————————————0000 0000 0000 0000 0000 0000 0000 0000==&gt;数组下标：1 具体的添加细节，向链表中添加比较简单，直接添加到链表末尾即可。由于对红黑树不太了解，因此向红黑树中添加就不赘述。 查找方法HashMap的查找主要分为三步 根据hash算法求出hash值，然后映射到数组的索引位置。equals()判断当前节点是否是需要查找的key。是就返回true，否则执行2 判断当前节点有无next节点，如果有判断是链表类型还是红黑树类型，并执行3；没有返回false 分别走链表和红黑树不同类型的查找方式 123456789101112131415161718192021222324252627282930public boolean containsKey(Object key) &#123; return getNode(hash(key), key) != null;&#125;final Node&lt;K,V&gt; getNode(int hash, Object key) &#123; Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k; //如果数组不为空并且长度大于0并且要hash值映射的数组位置不为空 if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp; (first = tab[(n - 1) &amp; hash]) != null) &#123; //如果当前节点的hash值和要查找的key的hash值相等 //并且两者也相等，直接返回当前节点 if (first.hash == hash &amp;&amp; ((k = first.key) == key || (key != null &amp;&amp; key.equals(k)))) return first; //判断当前节点是否有下一个节点 if ((e = first.next) != null) &#123; //如果是红黑树，调用红黑树查找方法 if (first instanceof TreeNode) return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key); //如果是链表则遍历链表查找 do &#123; if (e.hash == hash &amp;&amp; ((k = e.key) == key || (key != null &amp;&amp; key.equals(k)))) return e; &#125; while ((e = e.next) != null); &#125; &#125; return null;&#125; 对于红黑树的查找，可以大致介绍思路(类似AVL树) 从根节点开始查找 比较当前节点和要查找key的hash值，根据红黑树左小右大的特性 判断查找节点在第2步有没有找到节点，如果找到直接返回，没有重复2、3步 一直循环直到定位到节点位置为止。 删除方法最后再介绍一下删除方法的逻辑代码，和查找比较类似。remove方法有两种重载形式，下面分别介绍。 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071//根据键删除节点public V remove(Object key) &#123; Node&lt;K,V&gt; e; return (e = removeNode(hash(key), key, null, false, true)) == null ? null : e.value;&#125;//根据键和值删除节点public boolean remove(Object key, Object value) &#123; return removeNode(hash(key), key, value, true, true) != null;&#125;”=======================================“/** * Implements Map.remove and related methods. * * @param 删除节点的hash值 * @param 要删除元素的键 * @param 如果只根据键删除，那么value传递null * @param 布尔值，如果为true那么说明要同时匹配键和值才能删除，否则只需要匹配键即可删除 * @param movable if false do not move other nodes while removing * @return 返回要删除的节点 */final Node&lt;K,V&gt; removeNode(int hash, Object key, Object value, boolean matchValue, boolean movable) &#123; Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, index; // if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp; (p = tab[index = (n - 1) &amp; hash]) != null) &#123; Node&lt;K,V&gt; node = null, e; K k; V v; if (p.hash == hash &amp;&amp; ((k = p.key) == key || (key != null &amp;&amp; key.equals(k)))) node = p; else if ((e = p.next) != null) &#123; if (p instanceof TreeNode) node = ((TreeNode&lt;K,V&gt;)p).getTreeNode(hash, key); else &#123; do &#123; if (e.hash == hash &amp;&amp; ((k = e.key) == key || (key != null &amp;&amp; key.equals(k)))) &#123; node = e; break; &#125; p = e; &#125; while ((e = e.next) != null); &#125; &#125; if (node != null &amp;&amp; (!matchValue || (v = node.value) == value || (value != null &amp;&amp; value.equals(v)))) &#123; if (node instanceof TreeNode) ((TreeNode&lt;K,V&gt;)node).removeTreeNode(this, tab, movable); else if (node == p) tab[index] = node.next; else p.next = node.next; ++modCount; --size; afterNodeRemoval(node); return node; &#125; &#125; return null;&#125; HashMap的内容比较多，这里只是介绍了其中的一部分。可以看出，HashMap的API大多都是对数组+链表+红黑树这种数据结构进行封装。本文部分参考自慕课网文贺老师专栏。]]></content>
       <categories>
         <category>JDK源码</category>
       </categories>
@@ -205,8 +391,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>数组</tag>
         <tag>LeetCode</tag>
+        <tag>数组</tag>
       </tags>
   </entry>
   <entry>
@@ -229,8 +415,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>数组</tag>
         <tag>LeetCode</tag>
+        <tag>数组</tag>
         <tag>Boyer-Moore投票算法</tag>
       </tags>
   </entry>
@@ -281,8 +467,8 @@
       </categories>
       <tags>
         <tag>LeetCode</tag>
-        <tag>杨辉三角</tag>
         <tag>迭代</tag>
+        <tag>杨辉三角</tag>
       </tags>
   </entry>
   <entry>
@@ -321,8 +507,8 @@
       </categories>
       <tags>
         <tag>LeetCode</tag>
-        <tag>递归</tag>
         <tag>AVL树</tag>
+        <tag>递归</tag>
       </tags>
   </entry>
   <entry>
@@ -333,11 +519,11 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>数组</tag>
         <tag>LeetCode</tag>
-        <tag>递归</tag>
-        <tag>二分查找</tag>
         <tag>AVL树</tag>
+        <tag>递归</tag>
+        <tag>数组</tag>
+        <tag>二分查找</tag>
       </tags>
   </entry>
   <entry>
@@ -377,8 +563,8 @@
       </categories>
       <tags>
         <tag>LeetCode</tag>
-        <tag>斐波那契数列</tag>
         <tag>递归</tag>
+        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>
@@ -415,9 +601,9 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>数组</tag>
         <tag>LeetCode</tag>
         <tag>递归</tag>
+        <tag>数组</tag>
         <tag>二分查找</tag>
       </tags>
   </entry>
@@ -490,9 +676,9 @@
         <category>DataStructure</category>
       </categories>
       <tags>
-        <tag>读书笔记</tag>
-        <tag>递归</tag>
         <tag>AVL树</tag>
+        <tag>递归</tag>
+        <tag>读书笔记</tag>
         <tag>数据结构</tag>
         <tag>二叉查找树</tag>
       </tags>
@@ -580,8 +766,8 @@
         <category>DataStructure</category>
       </categories>
       <tags>
-        <tag>集合</tag>
         <tag>数组</tag>
+        <tag>集合</tag>
       </tags>
   </entry>
   <entry>
@@ -592,8 +778,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>数组</tag>
         <tag>动态规划</tag>
+        <tag>数组</tag>
         <tag>分治算法</tag>
       </tags>
   </entry>
@@ -1161,19 +1347,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[青蛙跳台阶]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
-      <categories>
-        <category>算法之美</category>
-      </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>动态规划</tag>
-        <tag>斐波那契数列</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[二叉树镜像对称]]></title>
     <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
     <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
@@ -1198,6 +1371,19 @@
         <tag>I/O</tag>
         <tag>乱码</tag>
         <tag>字符流/字节流</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[青蛙跳台阶]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>动态规划</tag>
+        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>
