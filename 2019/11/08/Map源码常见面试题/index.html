@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="前面相继介绍了HashMap和LinkedHashMap集合，对于TreeMap集合，由于它的底层实现红黑树我不熟悉所以没有深入了解。现在就总结一下Map集合的一些常见面试题。">
+<meta name="keywords" content="源码,集合,面试题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Map源码常见面试题">
+<meta property="og:url" content="https://HoA-W.github.io/2019/11/08/Map源码常见面试题/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="前面相继介绍了HashMap和LinkedHashMap集合，对于TreeMap集合，由于它的底层实现红黑树我不熟悉所以没有深入了解。现在就总结一下Map集合的一些常见面试题。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-11-09T01:50:39.701Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Map源码常见面试题">
+<meta name="twitter:description" content="前面相继介绍了HashMap和LinkedHashMap集合，对于TreeMap集合，由于它的底层实现红黑树我不熟悉所以没有深入了解。现在就总结一下Map集合的一些常见面试题。">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/11/08/Map源码常见面试题/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Map源码常见面试题 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/11/08/Map源码常见面试题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Map源码常见面试题
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-08 20:28:48" itemprop="dateCreated datePublished" datetime="2019-11-08T20:28:48+08:00">2019-11-08</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-11-09 09:50:39" itemprop="dateModified" datetime="2019-11-09T09:50:39+08:00">2019-11-09</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JDK源码/" itemprop="url" rel="index"><span itemprop="name">JDK源码</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前面相继介绍了HashMap和LinkedHashMap集合，对于TreeMap集合，由于它的底层实现红黑树我不熟悉所以没有深入了解。现在就总结一下Map集合的一些常见面试题。</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="Map整体数据结构类"><a href="#Map整体数据结构类" class="headerlink" title="Map整体数据结构类"></a>Map整体数据结构类</h1><ol>
+<li><font color="red"><b>说一说HashMap底层数据结构</b></font><br>HashMap底层是数组+链表+红黑树的数据结构，数组的主要作用是方便快速查找，时间复杂度为O(1)，默认大小为16，每次扩容保持为2的幂次方(通常以2倍扩容)。数组的下标索引是通过key的hashcode计算出来的，数组元素叫做Node，当多个key的hashcode一致，但是key值不同时(哈希冲突)，单个Node就会转化成为链表，链表的查询复杂度为O(n)，当链表的长度大于等于8并且数组大小超过64时，链表就会转化为红黑树，红黑树的查询复杂度是O(logN)。</li>
+<li><font color="red"><b>HashMap、TreeMap、LinkedHashMap三者有什么相同点，有什么不同点</b></font></li>
+</ol>
+<ul>
+<li>相同点：<ol>
+<li>三者在特定情况下都会使用红黑树</li>
+<li>底层的Hash算法相同</li>
+<li>在迭代过程中，如果Map的数据结构被改动，都会抛出ConcurrentModificationException异常。即快速失败策略</li>
+</ol>
+</li>
+<li>不同点：<ol>
+<li>HashMap数据结构以数组为主，查询很快，TreeMap数据结构以红黑树为主，利用了红黑树左小右大的特点，可以实现key排序，LinkedHashMap在HashMap的基础上增加了链表的结构，实现了插入顺序访问和最少访问删除两种策略。</li>
+<li>由于三种集合底层数据结构的差别，导致三者使用场景的不同。TreeMap适合需要根据key进行排序的场景，LinkedHashMap适合按照插入顺序访问或需要最少访问元素删除的场景，剩下的场景使用HashMap即可。HashMap是我们最常用的集合。</li>
+<li>由于三种map的底层数据结构的不同，导致上层包装的API略有差别。</li>
+</ol>
+</li>
+</ul>
+<ol start="3">
+<li><font color="red"><b>说一下HashMap的哈希算法</b></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 求键值对中键的哈希码</span><br><span class="line"> * @param key</span><br><span class="line"> * @return</span><br><span class="line"> */</span><br><span class="line">static final int hash(Object key) &#123;</span><br><span class="line">	int h;</span><br><span class="line">	return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>以上就是HashMap的哈希算法，这其实是一个数学问题，源码中首先通过key的hashCode()方法得到key的hashcode，在将该值的低16位和高16位做异或运算得到哈希值。这样做的好处是在大多数场景下，算出来的hash值比较分散。<br>一般来说，hash值算出来之后，要计算当前key在数组索引下标位置时，可以采用取模的方式，就是索引下标位置=hash%数组大小。这样做的好处就是可以保证计算出来的索引下标值可以均匀的分布在数组的各个索引位置上，但由于取模操作计算比较慢，数学上有个公式：当b是2的幂次方时候，a%b=a&amp;(b-1)，因此可以用该公式计算key的下标位置。</p>
+<ol start="4">
+<li><p><font color="red"><b>为什么不用key值和数组大小做取模运算而要计算key的哈希值并与数组大小做取模运算</b></font><br>如果key是数字，直接使用key%数组大小是完全没有问题的，但我们的key还有可能是字符串，是复杂对象，这时候用字符串或对象%数组大小是不行的，所以需要计算key的hash值</p>
+</li>
+<li><p><font color="red"><b>在计算hash值时，为什么要右移16位</b></font><br>这样做是为了使计算出的hash值更加分散，减少碰撞的可能性(具体见HashMap源码解析博客)</p>
+</li>
+<li><p><font color="red"><b>为什么提倡数组大小是2的幂次方</b></font><br>这样做有两个目的</p>
+<ol>
+<li><p>当我们使用&amp;运算映射数组下标时，要保证(数组下标-1)用二进制表示时必须是全1，这样才能很好的利用hash值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">假设数组大小为10，那么9的二进制表示为1001；</span><br><span class="line">现假设有三个hash值，分别为</span><br><span class="line">...... 0010 1110 1010 0110</span><br><span class="line">...... 0110 0101 1010 0100</span><br><span class="line">...... 0011 0111 1111 0010</span><br><span class="line">使用这三个完全不同hash值和1001做&amp;运算时，就会发现结果都是0，</span><br><span class="line">这是因为和1001做&amp;运算时，不论中间两位是什么，&amp;出来都是0</span><br><span class="line">这样就无法很好的利用hash值</span><br></pre></td></tr></table></figure>
+
+<p>当数组大小为2的幂次方时，数组下标-1后二进制表示为全1，这样就能很好的利用hash值</p>
+</li>
+<li><p>只用数组大小是2的幂次方时，hash&amp;(length-1)==hash%length才成立。</p>
+</li>
+</ol>
+</li>
+<li><p><font color="red"><b>为了解决哈希冲突，大概有哪些方法</b></font></p>
+<ol>
+<li>好的hash算法</li>
+<li>自动扩容，当数组大小快慢的时候，采取自动扩容，可以减少哈希冲突</li>
+<li>当哈希冲突发生时，使用拉链法来解决(链表)</li>
+<li>哈希冲突严重时，链表会自动转换为红黑树，提高遍历速度</li>
+</ol>
+</li>
+</ol>
+<h1 id="HashMap源码细节类问题"><a href="#HashMap源码细节类问题" class="headerlink" title="HashMap源码细节类问题"></a>HashMap源码细节类问题</h1><ol>
+<li><font color="red"><b>HashMap是如何扩容的</b></font></li>
+</ol>
+<ul>
+<li>扩容的时机：<ol>
+<li>put时，发现数组为空，进行初始化扩容，默认扩容大小为16</li>
+<li>put成功后，发现元素个数大于扩容阈值后，进行扩容，扩容为老数组的2倍</li>
+</ol>
+</li>
+<li>扩容的阈值是threshold，每次扩容时threshold都会被重新计算，阈值=数组大小*影响影子(0.75)</li>
+<li>新数组初始化后，需要将老数组的值拷贝到新数组上。</li>
+</ul>
+<ol start="2">
+<li><p><font color="red"><b>Hash冲突时怎么办</b></font><br>哈希冲突是指key值得hashcode计算相同，但是key值不同的情况。如果数组中元素已经有一个或已经是链表了，新增元素直接追加到链表尾部。如果数组中元素已经是链表，并且链表个数大于等于8时</p>
+<ol>
+<li>如果此时数组大小小于64，数组再次扩容，链表不会转化为红黑树</li>
+<li>如果此时数组大小大于等于64，链表转化为红黑树<br>这样做主要是因为红黑树占用空间比链表大很多，转化也比较损耗时间，所以数组容量小的情况下冲突比较严重，可以先尝试扩容，看看能否通过扩容解决冲突的问题。</li>
+</ol>
+</li>
+<li><p><font color="red"><b>为什么链表个数大于等于8时，链表要转化为红黑树</b></font><br>当链表个数太多了，遍历可能比较耗时，转化为红黑树可以使遍历的空间复杂度降低，但转化成红黑树有空间损耗和转化时成本，我们通过泊松分布得出，正常情况下链表个数出现8的概念不到千万分之一，因此正常情况下，链表都不会转化为红黑树。这样设计的目的是为了防止非正常情况下，比如hash算法出了问题，导致链表很轻易大于等于8时仍然能够快速遍历。</p>
+</li>
+<li><p><font color="red"><b>HashMap在put时，如果数组中已经有了这个key，我不想把value值覆盖怎么办？取值时如果得到的value是空，想返回默认值怎么办</b></font><br>如果数组中有了key但是不想覆盖value，可以选择putIfAbsent()方法，这个方法会再调用putVal时将onlyIfAbsent置为true，这样就不会覆盖了；而我们使用的put方法，将onlyIfAbsent设置为false。<br>取值时，若为空但是想返回默认值，可以使用getDefault方法，方法参数有两个：第一个是key，第二个为想要返回的默认值。</p>
+</li>
+<li><p><font color="red"><b>描述一下HashMap get、put的过程</b></font><br>在前面源码解析中介绍过，可以详细描述源码的实现路径，最好画图说明。</p>
+</li>
+</ol>
+<h1 id="其他面试题"><a href="#其他面试题" class="headerlink" title="其他面试题"></a>其他面试题</h1><ol>
+<li><font color="red"><b>LinkedHashMap中的LRU是什么意思，是如何实现的</b></font><br>LRU，全称是Least recently used，即最近最少访问，在LinkedHashMap中，也叫做最少访问策略，我们可以通过removeEldestEntry()方法设定一定的策略，使最少访问的元素在适当的时候被删除，原理是在put方法执行的最后，LinkedHashMap会检查这种策略，如果满足策略，就删除头节点。</li>
+<li><font color="red"><b>为什么推荐TreeMap的元素最好都实现Comparable接口？key是String的时候我们却没有额外的工作呢</b></font><br>因为TreeMap的底层就是通过排序来比较两个key的大小的，所以推荐key实现Comparable接口，是为了往你所希望的排序上发展，而String本身已经实现了Comparable接口，所以在使用时不需要做额外的动作。不仅仅是String，其他包装类型也都实现了Comparable接口。</li>
+</ol>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Map的面试题主要以HashMap为主，会问很多源码方面的东西，TreeMap和LinkedHashMap主要以功能和场景为主，作为加分项。只要弄懂了Map的源码，不管问题怎么变，问题都不大，所以说源码才是重点。<br>本文摘自<a href="https://www.imooc.com/read/47" target="_blank" rel="noopener">慕课网文贺老师专栏</a>。</p>
+<hr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/源码/" rel="tag"><i class="fa fa-tag"></i>源码</a>
+            
+              <a href="/tags/集合/" rel="tag"><i class="fa fa-tag"></i>集合</a>
+            
+              <a href="/tags/面试题/" rel="tag"><i class="fa fa-tag"></i>面试题</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/11/08/4的幂/" rel="next" title="4的幂">
+                  <i class="fa fa-chevron-left"></i> 4的幂
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Map整体数据结构类"><span class="nav-number">1.</span> <span class="nav-text">Map整体数据结构类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HashMap源码细节类问题"><span class="nav-number">2.</span> <span class="nav-text">HashMap源码细节类问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他面试题"><span class="nav-number">3.</span> <span class="nav-text">其他面试题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">114</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">94</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
