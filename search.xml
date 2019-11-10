@@ -4,6 +4,60 @@
   
     
     <entry>
+      <title>两整数之和</title>
+      <link href="/2019/11/10/%E4%B8%A4%E6%95%B4%E6%95%B0%E4%B9%8B%E5%92%8C/"/>
+      <url>/2019/11/10/%E4%B8%A4%E6%95%B4%E6%95%B0%E4%B9%8B%E5%92%8C/</url>
+      
+        <content type="html"><![CDATA[<p><b>LeetCode第三百七十一题</b><br>难度：<font color="green">简单</font><br>题目：不使用运算符 + 和 - ​​​​​​​，计算两整数 ​​​​​​​a 、b ​​​​​​​之和。</p><hr><a id="more"></a><h1 id="思想分析"><a href="#思想分析" class="headerlink" title="思想分析"></a>思想分析</h1><p>看到不能使用+、-，我们应该第一时间想到位运算。我们来看一下二进制加减法的规律</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1+0=1</span><br><span class="line">0+1=1</span><br><span class="line">0+0=0</span><br><span class="line">1+1=0(进位)</span><br></pre></td></tr></table></figure><p>很明显的，可以看到二进制做加法，其实就是异或操作，只不过1+1时有溢出，那么如何解决溢出呢？通过加法的规律可以知道，当前位相加进位的部分和高一位的部分相加，因此我们将采用a&amp;b&lt;&lt;1操作</p><h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public int getSum(int a, int b) &#123;</span><br><span class="line">int res;</span><br><span class="line">//b==0时说明无进位操作</span><br><span class="line">while(b!=0)&#123;</span><br><span class="line">//将当前数字做&amp;运算得到需要进位的部分</span><br><span class="line">//再见进位右移一位</span><br><span class="line">res=(a&amp;b)&lt;&lt;1;</span><br><span class="line">a=a^b;</span><br><span class="line">b=res;</span><br><span class="line">&#125;</span><br><span class="line">return a;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>不得不说，位运算有时候还是相当巧妙的。</p><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法之美 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> LeetCode </tag>
+            
+            <tag> 位运算 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>有效的完全平方数</title>
+      <link href="/2019/11/10/%E6%9C%89%E6%95%88%E7%9A%84%E5%AE%8C%E5%85%A8%E5%B9%B3%E6%96%B9%E6%95%B0/"/>
+      <url>/2019/11/10/%E6%9C%89%E6%95%88%E7%9A%84%E5%AE%8C%E5%85%A8%E5%B9%B3%E6%96%B9%E6%95%B0/</url>
+      
+        <content type="html"><![CDATA[<p><b>LeetCode第三百六十七题</b><br>难度：<font color="green">简单</font><br>题目：给定一个正整数 num，编写一个函数，如果 num 是一个完全平方数，则返回 True，否则返回 False。(不使用内置方法)</p><hr><a id="more"></a><h1 id="思想分析"><a href="#思想分析" class="headerlink" title="思想分析"></a>思想分析</h1><p>解决这道题，有三种不同的思路。分别使用优化的暴力循环、二分法以及数学公式法</p><ol><li>优化的暴力循环，创建一个变量i从1遍历到num/2</li><li>数学公式有：N^2=1+3+5+…+2*N-1。这样问题就会简单很多</li><li>二分法主要在于细节，思路就不赘述</li></ol><h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">//优化的暴力循环</span><br><span class="line">public boolean isPerfectSquare(int num) &#123;</span><br><span class="line">//优化暴力循环</span><br><span class="line">for(int i=1;i&lt;=num/2;i++)&#123;</span><br><span class="line">if(i*i==num)</span><br><span class="line">return true;</span><br><span class="line">if(i*i&gt;num)</span><br><span class="line">return false;</span><br><span class="line">&#125;</span><br><span class="line">//考虑num=1的特殊情况</span><br><span class="line">return num==1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“===========================”</span><br><span class="line">//数学公式法</span><br><span class="line">public boolean isPerfectSquare(int num) &#123;</span><br><span class="line">//数学公式法：1+3+5+...+(2*N-1)=N^2</span><br><span class="line">if(num==1)</span><br><span class="line">return true;</span><br><span class="line">int val=1;</span><br><span class="line">while(num&gt;0)&#123;</span><br><span class="line">num-=val;</span><br><span class="line">val+=2;</span><br><span class="line">&#125;</span><br><span class="line">return num==0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“===========================”</span><br><span class="line">//二分法</span><br><span class="line">public boolean isPerfectSquare(int num) &#123;</span><br><span class="line">//二分法</span><br><span class="line">int left=0;</span><br><span class="line">int right=num;</span><br><span class="line">int mid;</span><br><span class="line">while(right&gt;=left)&#123;</span><br><span class="line">mid=left+(right-left)/2;</span><br><span class="line">//要转化为long类型，否则会溢出导致结果为负，进入死循环</span><br><span class="line">if((long)mid*mid==num)</span><br><span class="line">return true;</span><br><span class="line">else if((long)mid*mid&gt;num)&#123;</span><br><span class="line">right=mid-1;</span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">left=mid+1;</span><br><span class="line">&#125;</span><br><span class="line">return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>对于二分法要注意的一点就是要考虑乘法溢出导致结果为负，最后陷入死循环，因此应该将值显式的转化为long类型。</p><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法之美 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> LeetCode </tag>
+            
+            <tag> 二分 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>深入剖析ThreadLocal</title>
       <link href="/2019/11/10/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90ThreadLocal/"/>
       <url>/2019/11/10/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90ThreadLocal/</url>
@@ -103,9 +157,9 @@
       
         <tags>
             
-            <tag> 位运算 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 位运算 </tag>
             
         </tags>
       
@@ -236,9 +290,9 @@
       
         <tags>
             
-            <tag> 位运算 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 位运算 </tag>
             
             <tag> 数组 </tag>
             
@@ -265,9 +319,9 @@
       
         <tags>
             
-            <tag> 位运算 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 位运算 </tag>
             
         </tags>
       
@@ -435,9 +489,9 @@
       
         <tags>
             
-            <tag> 位运算 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 位运算 </tag>
             
         </tags>
       
@@ -2985,9 +3039,9 @@
       
         <tags>
             
-            <tag> BOM </tag>
-            
             <tag> 前端 </tag>
+            
+            <tag> BOM </tag>
             
             <tag> JavaScript </tag>
             
@@ -3106,35 +3160,6 @@
     
     
     <entry>
-      <title>字符流和字节流</title>
-      <link href="/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/"/>
-      <url>/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/</url>
-      
-        <content type="html"><![CDATA[<p><a href="http://www.itcast.cn/news/20181219/14592257466.shtml" target="_blank" rel="noopener">深入理解字符流编码</a></p><p><strong>首先要理解字符流输入的原理：</strong><br>字符流输入其实底层也是字节流输入</p><p>字符–&gt;计算机二进制数字（字节）：编码<br>字节(计算机二进制数字)–&gt;字符：解码</p><a id="more"></a><h2 id="写入时："><a href="#写入时：" class="headerlink" title="写入时："></a>写入时：</h2><pre><code>1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中</code></pre><h2 id="读取时："><a href="#读取时：" class="headerlink" title="读取时："></a>读取时：</h2><pre><code>使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序</code></pre><h2 id="图片不能用字符流的原因"><a href="#图片不能用字符流的原因" class="headerlink" title="图片不能用字符流的原因"></a>图片不能用字符流的原因</h2><pre><code>因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符，在写入的时候，会将未知字符丢掉，所以图片拷贝不成功因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节**举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1....使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1....但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符；例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)；在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1....这样拷贝自然就失败了</code></pre><h2 id="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"><a href="#关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接" class="headerlink" title="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"></a>关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接</h2><pre><code>**最后**：字符流因为解码编码等原因，比字节流慢很多字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输图片等视频音频文件要用字节流</code></pre>]]></content>
-      
-      
-      <categories>
-          
-          <category> JAVA </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> I/O </tag>
-            
-            <tag> 乱码 </tag>
-            
-            <tag> 字符流/字节流 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>二叉树镜像对称</title>
       <link href="/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/"/>
       <url>/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/</url>
@@ -3187,6 +3212,35 @@
             <tag> 动态规划 </tag>
             
             <tag> 斐波那契数列 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>字符流和字节流</title>
+      <link href="/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/"/>
+      <url>/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/</url>
+      
+        <content type="html"><![CDATA[<p><a href="http://www.itcast.cn/news/20181219/14592257466.shtml" target="_blank" rel="noopener">深入理解字符流编码</a></p><p><strong>首先要理解字符流输入的原理：</strong><br>字符流输入其实底层也是字节流输入</p><p>字符–&gt;计算机二进制数字（字节）：编码<br>字节(计算机二进制数字)–&gt;字符：解码</p><a id="more"></a><h2 id="写入时："><a href="#写入时：" class="headerlink" title="写入时："></a>写入时：</h2><pre><code>1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中</code></pre><h2 id="读取时："><a href="#读取时：" class="headerlink" title="读取时："></a>读取时：</h2><pre><code>使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序</code></pre><h2 id="图片不能用字符流的原因"><a href="#图片不能用字符流的原因" class="headerlink" title="图片不能用字符流的原因"></a>图片不能用字符流的原因</h2><pre><code>因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符，在写入的时候，会将未知字符丢掉，所以图片拷贝不成功因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节**举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1....使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1....但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符；例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)；在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1....这样拷贝自然就失败了</code></pre><h2 id="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"><a href="#关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接" class="headerlink" title="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"></a>关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接</h2><pre><code>**最后**：字符流因为解码编码等原因，比字节流慢很多字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输图片等视频音频文件要用字节流</code></pre>]]></content>
+      
+      
+      <categories>
+          
+          <category> JAVA </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> I/O </tag>
+            
+            <tag> 乱码 </tag>
+            
+            <tag> 字符流/字节流 </tag>
             
         </tags>
       
