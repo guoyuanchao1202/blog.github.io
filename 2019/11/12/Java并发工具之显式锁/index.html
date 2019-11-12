@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="在JDK1.5后，增加了一种新的同步机制，那就是ReentrantLock。和synchronized不同，ReentrantLock并不是一种代替内置加锁的方式，而是当内置加锁机制不适用时，作为一种可选择的功能。Lock提供了一种无条件的、可轮询的、定时的以及可中断的锁获取操作。">
+<meta name="keywords" content="多线程,ReentrantLock">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java并发工具之显式锁">
+<meta property="og:url" content="https://HoA-W.github.io/2019/11/12/Java并发工具之显式锁/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="在JDK1.5后，增加了一种新的同步机制，那就是ReentrantLock。和synchronized不同，ReentrantLock并不是一种代替内置加锁的方式，而是当内置加锁机制不适用时，作为一种可选择的功能。Lock提供了一种无条件的、可轮询的、定时的以及可中断的锁获取操作。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-11-12T13:16:44.128Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java并发工具之显式锁">
+<meta name="twitter:description" content="在JDK1.5后，增加了一种新的同步机制，那就是ReentrantLock。和synchronized不同，ReentrantLock并不是一种代替内置加锁的方式，而是当内置加锁机制不适用时，作为一种可选择的功能。Lock提供了一种无条件的、可轮询的、定时的以及可中断的锁获取操作。">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/11/12/Java并发工具之显式锁/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Java并发工具之显式锁 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/11/12/Java并发工具之显式锁/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Java并发工具之显式锁
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-12 19:54:33 / 修改时间：21:16:44" itemprop="dateCreated datePublished" datetime="2019-11-12T19:54:33+08:00">2019-11-12</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java并发编程/" itemprop="url" rel="index"><span itemprop="name">Java并发编程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在JDK1.5后，增加了一种新的同步机制，那就是ReentrantLock。和synchronized不同，ReentrantLock并不是一种代替内置加锁的方式，而是当内置加锁机制不适用时，作为一种可选择的功能。Lock提供了一种无条件的、可轮询的、定时的以及可中断的锁获取操作。</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>我们知道，由synchronized锁造成的线程阻塞是无法被中断的，并且在内置锁中，死锁是一个很严重的问题，唯一恢复程序的方式就是重新启动程序，而防止死锁的唯一方法就是在构造程序时避免出现不一致的顺序。但是ReentrantLock中的可定时可轮询机制提供了另一种选择：避免死锁的发生。我们将在稍后进行介绍。本文不涉及源码方面的知识，仅介绍ReentrantLock不同枷加锁方法的介绍和演示。</p>
+<h1 id="ReentrantLock的使用"><a href="#ReentrantLock的使用" class="headerlink" title="ReentrantLock的使用"></a>ReentrantLock的使用</h1><p>下面将分别介绍ReentrantLock的一般加锁、可中断锁、定时锁和轮询锁几种不同的用法。</p>
+<h2 id="一般加锁"><a href="#一般加锁" class="headerlink" title="一般加锁"></a><font size="5">一般加锁</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class NormalLock implements Runnable &#123;</span><br><span class="line">    public static ReentrantLock lock = new ReentrantLock();</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            //加锁，进入同步区域</span><br><span class="line">            lock.lock();</span><br><span class="line">            System.out.println(&quot;同步区域&quot;);</span><br><span class="line">            Thread.sleep(1000);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;finally &#123;</span><br><span class="line">            //退出同步区域</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        NormalLock r = new NormalLock();</span><br><span class="line">        new Thread(r).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用lock()方法，相当于进入了同步区，而调用unlock()方法，就相当于退出同步块。通俗的说，这两个方法之间的部分，就是一个synchronized同步块。但是要注意的是，当同步区域发生异常时，<font color="red"><b>ReentrantLock并不会像synchronized一样释放锁，因此对于这种同步方法，解锁操作一定要放在finally语句中，保证线程无论出现什么情况都能够释放锁。</b></font></p>
+<h2 id="可中断锁"><a href="#可中断锁" class="headerlink" title="可中断锁"></a><font size="5">可中断锁</font></h2><p>对于synchronized来说，一个线程在等待锁，那么结果只有两种情况，要么获得锁继续执行，要么就保持等待，它是屏蔽中断的。而是用ReentrantLock，则提供另外一种可能，那就是可以响应中断。也就是说在等待锁的过程中，程序可以根据需要取消对锁的请求。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line">public class IntLock implements Runnable &#123;</span><br><span class="line">    public static ReentrantLock lock1 = new ReentrantLock();</span><br><span class="line">    public static ReentrantLock lock2 = new ReentrantLock();</span><br><span class="line">    int lock;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 通过参数控制加锁顺序</span><br><span class="line">     * @param lock</span><br><span class="line">     */</span><br><span class="line">    public IntLock(int lock) &#123;</span><br><span class="line">        this.lock = lock;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">        </span><br><span class="line">            if (lock == 1) &#123;</span><br><span class="line">                lock1.lockInterruptibly();</span><br><span class="line">                try &#123;</span><br><span class="line">                    Thread.sleep(500);</span><br><span class="line">                &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                    System.out.println(&quot;lock1 Sleep Interrupted!&quot;);</span><br><span class="line">                &#125;</span><br><span class="line">                lock2.lockInterruptibly();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            else &#123;</span><br><span class="line">                lock2.lockInterruptibly();</span><br><span class="line">                try &#123;</span><br><span class="line">                    Thread.sleep(500);</span><br><span class="line">                &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                    System.out.println(&quot;lock2 Sleep Interrupted&quot;);</span><br><span class="line">                &#125;</span><br><span class="line">                lock1.lockInterruptibly();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; </span><br><span class="line">        catch (InterruptedException e) &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getId()+&quot;: 响应中断&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        //在finally语句中进行锁的释放</span><br><span class="line">        finally &#123;</span><br><span class="line">            //如果线程持有锁，返回true</span><br><span class="line">            if (lock1.isHeldByCurrentThread()) &#123;</span><br><span class="line">                System.out.println(Thread.currentThread().getId()+&quot; lock1 锁解锁&quot;);</span><br><span class="line">                lock1.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">            if (lock2.isHeldByCurrentThread()) &#123;</span><br><span class="line">                System.out.println(Thread.currentThread().getId()+&quot; lock2 锁解锁&quot;);</span><br><span class="line">                lock2.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread().getId() + &quot;: 线程退出&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line">        IntLock r1 = new IntLock(1);</span><br><span class="line">        IntLock r2 = new IntLock(2);</span><br><span class="line"></span><br><span class="line">        Thread t1 = new Thread(r1);</span><br><span class="line">        Thread t2 = new Thread(r2);</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line"></span><br><span class="line">        Thread.sleep(1000);</span><br><span class="line">        t2.interrupt();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“===============================”</span><br><span class="line">Output：</span><br><span class="line">t2: 响应中断</span><br><span class="line">t2 lock2 锁解锁</span><br><span class="line">t2: 线程退出</span><br><span class="line">t1 lock1 锁解锁</span><br><span class="line">t1 lock2 锁解锁</span><br><span class="line">t1: 线程退出</span><br></pre></td></tr></table></figure>
+
+<p>我们启动两个线程t1和t2</p>
+<ul>
+<li>t1先占用lock1，再占用lock2</li>
+<li>t2先占用lock2，再占用lock1</li>
+<li>然后统一使用lockInterruptibly()方法进行加锁</li>
+</ul>
+<p>在这种情况下，如果使用synchronized同步代码块，就造成了死锁，并且无法改变。但是在这里，我们使用<font color="red"><b>ReentrantLock的lockInterruptibly()方法，这是一个可以对中断进行响应的锁申请动作，在等待锁的过程中，可以响应中断。即如果收到中断请求，该方法会抛出异常的方式来进行响应。</b></font>在上述程序中，t1获取到了lock1后在等待lock2锁，而t2获得了lock2后在等待lock1，在主线程中调用了t2线程的中断方法，此时t2放弃对lock1锁的获取，中断执行任务，并在finally中释放了lock2锁；因此t1线程成功获取到lock2锁，最终成功执行完毕。因此虽然t1和t2都退出了，但是只有t1完成了任务，t2则放弃其任务直接退出。</p>
+<h2 id="定时锁"><a href="#定时锁" class="headerlink" title="定时锁"></a><font size="5">定时锁</font></h2><p>除了等待外部通知以外，要避免死锁还有另外一种方法，那就是限时等待。通常，我们无法判断为什么一个线程迟迟拿不到锁，也许是因为死锁了，也许是因为产生了饥饿。如果给定一个等待时间，如果超时还无法获取到锁，让线程自动放弃，那么这么做对系统来说是有意义的。tryLock(long timeout,TimeUnit unit)方法可以做到这点。该方法给定一个等待时间，如果在给定时间内获得了锁，那么返回true；否则返回false。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public class TimeLock implements Runnable &#123;</span><br><span class="line">    public static ReentrantLock lock = new ReentrantLock();</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            if (lock.tryLock(5, TimeUnit.SECONDS)) &#123;</span><br><span class="line">                Thread.sleep(6000);</span><br><span class="line">            &#125;else &#123;</span><br><span class="line">                System.out.println(&quot;get Lock failed&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;finally &#123;</span><br><span class="line">            if (lock.isHeldByCurrentThread()) &#123;</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        TimeLock r1 = new TimeLock();</span><br><span class="line">        TimeLock r2 = new TimeLock();</span><br><span class="line"></span><br><span class="line">        new Thread(r1).start();</span><br><span class="line">        new Thread(r2).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“===============================”</span><br><span class="line">Output：</span><br><span class="line">get Lock failed</span><br></pre></td></tr></table></figure>
+
+<p>在上述代码中，线程1先拿到了锁，进入后调用sleep阻塞6s中，而之后线程2尝试获取锁时，在5s内无法获取到锁，因为此时锁正由线程1持有。所以tryLock返回false，线程2放弃获取锁，不执行if语句中内容。</p>
+<h2 id="轮询锁"><a href="#轮询锁" class="headerlink" title="轮询锁"></a><font size="5">轮询锁</font></h2><p>当使用不带参数的tryLock方法时，当前线程会尝试获得锁，如果获取成功则返回true。如果当前锁已经被占用，那么当前线程不会进行等待，而是立即返回false。相当于等待时间为0，和前面定时锁类似，不做赘述。</p>
+<h2 id="公平锁"><a href="#公平锁" class="headerlink" title="公平锁"></a><font size="5">公平锁</font></h2><p>在ReentrantLock的构造方法中提供了两种公平性的选择：</p>
+<ul>
+<li>创建一个非公平锁(默认情况下)<br>在这种情况下，允许插队：当一个线程获取非公平锁时，如果在发出请求的同时该锁可用，那么这个线程可能跳过所有等待的线程并获取这把锁。</li>
+<li>创建一个公平锁(传入true参数)<br>线程按照它们发出请求的顺序来获得锁</li>
+</ul>
+<p>在公平锁中，如果有另一个线程持有这个锁或者有其他线程在队列中等待这把锁，那么新发出的请求将被放在队列中，由于队列先进先出的特性，先发出请求的线程自然也就先入队，因而能够先获得锁。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 公平锁，可以避免饥饿问题</span><br><span class="line"> */</span><br><span class="line">public class FairLock implements Runnable &#123;</span><br><span class="line">    public static ReentrantLock lock = new ReentrantLock(true);</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                lock.lock();</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + &quot;: 获得锁&quot;);</span><br><span class="line">            &#125;finally &#123;</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ExecutorService exec = Executors.newCachedThreadPool();</span><br><span class="line">        for (int i = 0; i &lt; 3; i++) &#123;</span><br><span class="line">            exec.execute(new FairLock());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“===============================”</span><br><span class="line">Output：</span><br><span class="line">pool-1-thread-1: 获得锁</span><br><span class="line">pool-1-thread-2: 获得锁</span><br><span class="line">pool-1-thread-3: 获得锁</span><br><span class="line">pool-1-thread-1: 获得锁</span><br><span class="line">pool-1-thread-2: 获得锁</span><br><span class="line">pool-1-thread-3: 获得锁</span><br><span class="line">pool-1-thread-1: 获得锁</span><br><span class="line">pool-1-thread-2: 获得锁</span><br><span class="line">pool-1-thread-3: 获得锁</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，三个线程交替获取锁。公平锁不会产生饥饿现象，但是要实现公平锁必然要求系统维护一个有序队列，因此实现公平锁的成本比较高，性能比较低下，非公平锁是抢占式的，线程不必加入等待队列就可以获得锁，不仅免去了构造节点并加入队列的繁琐操作，也节省了线程阻塞唤醒的开销。因此如果没有特别需求，默认使用非公平锁</p>
+<h1 id="Synchronized和ReentrantLock"><a href="#Synchronized和ReentrantLock" class="headerlink" title="Synchronized和ReentrantLock"></a>Synchronized和ReentrantLock</h1><p>介绍了ReentrantLock之后，我们又多了一种加锁的方式，那我们又该如何选择这两种方式呢？ReentrantLock在加锁和内存上提供的语义和内置锁相同，此外它还提供了一些其他的功能。但是内置锁也有它的优点：使用起来简洁紧凑，并且不用显式的加锁和释放锁，当出现异常后会自动释放锁，而显式锁却每次使用后要在finally语句中释放锁以保证后续线程能够重新获取锁，这对于开发人员来说无疑是个隐形的坑。因此，<font color="red"><b>在一些内置锁无法满足需求的情况下，我们才去使用显式锁。这些需求包括：可定时的、可中断的与可轮询的获取操作、公平锁。否则还是应该优先使用synchronized内置锁。</b></font></p>
+<hr>
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/多线程/" rel="tag"><i class="fa fa-tag"></i>多线程</a>
+            
+              <a href="/tags/ReentrantLock/" rel="tag"><i class="fa fa-tag"></i>ReentrantLock</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/11/11/浅谈Java多线程中断机制/" rel="next" title="浅谈Java多线程中断机制">
+                  <i class="fa fa-chevron-left"></i> 浅谈Java多线程中断机制
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ReentrantLock的使用"><span class="nav-number">2.</span> <span class="nav-text">ReentrantLock的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一般加锁"><span class="nav-number">2.1.</span> <span class="nav-text">一般加锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可中断锁"><span class="nav-number">2.2.</span> <span class="nav-text">可中断锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定时锁"><span class="nav-number">2.3.</span> <span class="nav-text">定时锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#轮询锁"><span class="nav-number">2.4.</span> <span class="nav-text">轮询锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#公平锁"><span class="nav-number">2.5.</span> <span class="nav-text">公平锁</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Synchronized和ReentrantLock"><span class="nav-number">3.</span> <span class="nav-text">Synchronized和ReentrantLock</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">122</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">102</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>

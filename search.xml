@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Java并发工具之显式锁]]></title>
+    <url>%2F2019%2F11%2F12%2FJava%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7%E4%B9%8B%E6%98%BE%E5%BC%8F%E9%94%81%2F</url>
+    <content type="text"><![CDATA[在JDK1.5后，增加了一种新的同步机制，那就是ReentrantLock。和synchronized不同，ReentrantLock并不是一种代替内置加锁的方式，而是当内置加锁机制不适用时，作为一种可选择的功能。Lock提供了一种无条件的、可轮询的、定时的以及可中断的锁获取操作。 概述我们知道，由synchronized锁造成的线程阻塞是无法被中断的，并且在内置锁中，死锁是一个很严重的问题，唯一恢复程序的方式就是重新启动程序，而防止死锁的唯一方法就是在构造程序时避免出现不一致的顺序。但是ReentrantLock中的可定时可轮询机制提供了另一种选择：避免死锁的发生。我们将在稍后进行介绍。本文不涉及源码方面的知识，仅介绍ReentrantLock不同枷加锁方法的介绍和演示。 ReentrantLock的使用下面将分别介绍ReentrantLock的一般加锁、可中断锁、定时锁和轮询锁几种不同的用法。 一般加锁1234567891011121314151617181920212223public class NormalLock implements Runnable &#123; public static ReentrantLock lock = new ReentrantLock(); @Override public void run() &#123; try &#123; //加锁，进入同步区域 lock.lock(); System.out.println(&quot;同步区域&quot;); Thread.sleep(1000); &#125; catch (InterruptedException e) &#123; e.printStackTrace(); &#125;finally &#123; //退出同步区域 lock.unlock(); &#125; &#125; public static void main(String[] args) &#123; NormalLock r = new NormalLock(); new Thread(r).start(); &#125;&#125; 调用lock()方法，相当于进入了同步区，而调用unlock()方法，就相当于退出同步块。通俗的说，这两个方法之间的部分，就是一个synchronized同步块。但是要注意的是，当同步区域发生异常时，ReentrantLock并不会像synchronized一样释放锁，因此对于这种同步方法，解锁操作一定要放在finally语句中，保证线程无论出现什么情况都能够释放锁。 可中断锁对于synchronized来说，一个线程在等待锁，那么结果只有两种情况，要么获得锁继续执行，要么就保持等待，它是屏蔽中断的。而是用ReentrantLock，则提供另外一种可能，那就是可以响应中断。也就是说在等待锁的过程中，程序可以根据需要取消对锁的请求。 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980public class IntLock implements Runnable &#123; public static ReentrantLock lock1 = new ReentrantLock(); public static ReentrantLock lock2 = new ReentrantLock(); int lock; /** * 通过参数控制加锁顺序 * @param lock */ public IntLock(int lock) &#123; this.lock = lock; &#125; @Override public void run() &#123; try &#123; if (lock == 1) &#123; lock1.lockInterruptibly(); try &#123; Thread.sleep(500); &#125; catch (InterruptedException e) &#123; System.out.println(&quot;lock1 Sleep Interrupted!&quot;); &#125; lock2.lockInterruptibly(); &#125; else &#123; lock2.lockInterruptibly(); try &#123; Thread.sleep(500); &#125; catch (InterruptedException e) &#123; System.out.println(&quot;lock2 Sleep Interrupted&quot;); &#125; lock1.lockInterruptibly(); &#125; &#125; catch (InterruptedException e) &#123; System.out.println(Thread.currentThread().getId()+&quot;: 响应中断&quot;); &#125; //在finally语句中进行锁的释放 finally &#123; //如果线程持有锁，返回true if (lock1.isHeldByCurrentThread()) &#123; System.out.println(Thread.currentThread().getId()+&quot; lock1 锁解锁&quot;); lock1.unlock(); &#125; if (lock2.isHeldByCurrentThread()) &#123; System.out.println(Thread.currentThread().getId()+&quot; lock2 锁解锁&quot;); lock2.unlock(); &#125; System.out.println(Thread.currentThread().getId() + &quot;: 线程退出&quot;); &#125; &#125; public static void main(String[] args) throws InterruptedException &#123; IntLock r1 = new IntLock(1); IntLock r2 = new IntLock(2); Thread t1 = new Thread(r1); Thread t2 = new Thread(r2); t1.start(); t2.start(); Thread.sleep(1000); t2.interrupt(); &#125;&#125;“===============================”Output：t2: 响应中断t2 lock2 锁解锁t2: 线程退出t1 lock1 锁解锁t1 lock2 锁解锁t1: 线程退出 我们启动两个线程t1和t2 t1先占用lock1，再占用lock2 t2先占用lock2，再占用lock1 然后统一使用lockInterruptibly()方法进行加锁 在这种情况下，如果使用synchronized同步代码块，就造成了死锁，并且无法改变。但是在这里，我们使用ReentrantLock的lockInterruptibly()方法，这是一个可以对中断进行响应的锁申请动作，在等待锁的过程中，可以响应中断。即如果收到中断请求，该方法会抛出异常的方式来进行响应。在上述程序中，t1获取到了lock1后在等待lock2锁，而t2获得了lock2后在等待lock1，在主线程中调用了t2线程的中断方法，此时t2放弃对lock1锁的获取，中断执行任务，并在finally中释放了lock2锁；因此t1线程成功获取到lock2锁，最终成功执行完毕。因此虽然t1和t2都退出了，但是只有t1完成了任务，t2则放弃其任务直接退出。 定时锁除了等待外部通知以外，要避免死锁还有另外一种方法，那就是限时等待。通常，我们无法判断为什么一个线程迟迟拿不到锁，也许是因为死锁了，也许是因为产生了饥饿。如果给定一个等待时间，如果超时还无法获取到锁，让线程自动放弃，那么这么做对系统来说是有意义的。tryLock(long timeout,TimeUnit unit)方法可以做到这点。该方法给定一个等待时间，如果在给定时间内获得了锁，那么返回true；否则返回false。 1234567891011121314151617181920212223242526272829303132public class TimeLock implements Runnable &#123; public static ReentrantLock lock = new ReentrantLock(); @Override public void run() &#123; try &#123; if (lock.tryLock(5, TimeUnit.SECONDS)) &#123; Thread.sleep(6000); &#125;else &#123; System.out.println(&quot;get Lock failed&quot;); &#125; &#125; catch (InterruptedException e) &#123; e.printStackTrace(); &#125;finally &#123; if (lock.isHeldByCurrentThread()) &#123; lock.unlock(); &#125; &#125; &#125; public static void main(String[] args) &#123; TimeLock r1 = new TimeLock(); TimeLock r2 = new TimeLock(); new Thread(r1).start(); new Thread(r2).start(); &#125;&#125;“===============================”Output：get Lock failed 在上述代码中，线程1先拿到了锁，进入后调用sleep阻塞6s中，而之后线程2尝试获取锁时，在5s内无法获取到锁，因为此时锁正由线程1持有。所以tryLock返回false，线程2放弃获取锁，不执行if语句中内容。 轮询锁当使用不带参数的tryLock方法时，当前线程会尝试获得锁，如果获取成功则返回true。如果当前锁已经被占用，那么当前线程不会进行等待，而是立即返回false。相当于等待时间为0，和前面定时锁类似，不做赘述。 公平锁在ReentrantLock的构造方法中提供了两种公平性的选择： 创建一个非公平锁(默认情况下)在这种情况下，允许插队：当一个线程获取非公平锁时，如果在发出请求的同时该锁可用，那么这个线程可能跳过所有等待的线程并获取这把锁。 创建一个公平锁(传入true参数)线程按照它们发出请求的顺序来获得锁 在公平锁中，如果有另一个线程持有这个锁或者有其他线程在队列中等待这把锁，那么新发出的请求将被放在队列中，由于队列先进先出的特性，先发出请求的线程自然也就先入队，因而能够先获得锁。 1234567891011121314151617181920212223242526272829303132333435363738/** * 公平锁，可以避免饥饿问题 */public class FairLock implements Runnable &#123; public static ReentrantLock lock = new ReentrantLock(true); @Override public void run() &#123; while (true) &#123; try &#123; lock.lock(); System.out.println(Thread.currentThread().getName() + &quot;: 获得锁&quot;); &#125;finally &#123; lock.unlock(); &#125; &#125; &#125; public static void main(String[] args) &#123; ExecutorService exec = Executors.newCachedThreadPool(); for (int i = 0; i &lt; 3; i++) &#123; exec.execute(new FairLock()); &#125; &#125;&#125;“===============================”Output：pool-1-thread-1: 获得锁pool-1-thread-2: 获得锁pool-1-thread-3: 获得锁pool-1-thread-1: 获得锁pool-1-thread-2: 获得锁pool-1-thread-3: 获得锁pool-1-thread-1: 获得锁pool-1-thread-2: 获得锁pool-1-thread-3: 获得锁...... 可以看到，三个线程交替获取锁。公平锁不会产生饥饿现象，但是要实现公平锁必然要求系统维护一个有序队列，因此实现公平锁的成本比较高，性能比较低下，非公平锁是抢占式的，线程不必加入等待队列就可以获得锁，不仅免去了构造节点并加入队列的繁琐操作，也节省了线程阻塞唤醒的开销。因此如果没有特别需求，默认使用非公平锁 Synchronized和ReentrantLock介绍了ReentrantLock之后，我们又多了一种加锁的方式，那我们又该如何选择这两种方式呢？ReentrantLock在加锁和内存上提供的语义和内置锁相同，此外它还提供了一些其他的功能。但是内置锁也有它的优点：使用起来简洁紧凑，并且不用显式的加锁和释放锁，当出现异常后会自动释放锁，而显式锁却每次使用后要在finally语句中释放锁以保证后续线程能够重新获取锁，这对于开发人员来说无疑是个隐形的坑。因此，在一些内置锁无法满足需求的情况下，我们才去使用显式锁。这些需求包括：可定时的、可中断的与可轮询的获取操作、公平锁。否则还是应该优先使用synchronized内置锁。]]></content>
+      <categories>
+        <category>Java并发编程</category>
+      </categories>
+      <tags>
+        <tag>多线程</tag>
+        <tag>ReentrantLock</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[浅谈Java多线程中断机制]]></title>
     <url>%2F2019%2F11%2F11%2F%E6%B5%85%E8%B0%88Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E6%96%AD%E6%9C%BA%E5%88%B6%2F</url>
     <content type="text"><![CDATA[在Java中，线程中断是一种重要的线程协作机制。从表面上理解，终端就是让目标线程停止执行的意思，实际上并非如此。对中断操作的正确理解是：它并不会真正的中断一个正在运行的线程，而只是发出中断请求，然后由线程在下一个合适的时刻中断自己。中断是实现取消的最好方式。 概述严格的讲，线程中断并不会使线程立即退出，而是给线程发送一个通知，告知目标线程，有人希望你退出了。至于目标线程接到通知后如何处理，则完全由目标线程自行决定！理解这点很重要。 中断方法有三个方法和中断有关，这三个方法看起来很像，很有可能会引起混淆和误用，稍后将会详细介绍这三个方法的作用 123456//实例方法，中断线程public void Thread.interrupt()//实例方法，判断线程是否被中断public boolean Thread.isInterrupted()//静态方法，判断是否被中断并清除当前中断状态public static boolean Thread.interrupted() 该方法是一个实例方法。它通知目标线程中断，也就是设置中断标志位。中断标志位表示当前线程已经被中断了。当发出中断请求时，该线程可通过不同的方式来响应中断 中断方式一12345678910111213141516171819class RunnableImpl implements Runnable&#123; @Override public void run() &#123; while (!Thread.currentThread().isInterrupted()) &#123; Thread.yield(); &#125; System.out.println(&quot;Interrupted&quot;); &#125;&#125;public class InterruptedTest &#123; public static void main(String[] args) &#123; RunnableImpl r = new RunnableImpl(); Thread t = new Thread(r); t.start(); t.interrupt(); &#125;&#125; 通过上述代码我们可以发现，线程可以通过判断当前中断状态来决定是否继续循环执行。 中断方式二12345678910111213141516171819202122232425class RunnableImpl implements Runnable&#123; @Override public void run() &#123; while (true) &#123; try &#123; Thread.sleep(1000); System.out.println(&quot;running......&quot;); &#125; catch (InterruptedException e) &#123; System.out.println(Thread.currentThread().isInterrupted()); break; &#125; &#125; &#125;&#125;public class InterruptedTest &#123; public static void main(String[] args) throws InterruptedException &#123; RunnableImpl r = new RunnableImpl(); Thread t = new Thread(r); t.start(); Thread.sleep(5000); t.interrupt(); &#125;&#125; 上述代码中，当线程调用sleep阻塞时，如果收到了中断请求，就会通过抛出异常的方式来处理中断请求。但是要注意的是，在抛出异常后，现成的中断请求会被复位，也就是说，如果在上述代码的catch语句中没有break语句的话，线程在处理完中断请求(执行catch语句后)将会继续循环下去。实际上break也是处理中断请求的一部分。 小结 在线程调用wait、sleep、join等方法(显式声明InterruptedException的方法)陷入阻塞时，会以异常的方式来处理外部的中断请求，相应的处理中断请求的逻辑代码在catch语句中编写。但是要注意的是，当抛出异常后，线程的中断请求相当于得到了处理，此时中断状态就会复位。如果想维持中断状态，应该在catch中再次调用interrupt()方法将中断状态复位。 可以结合isInterrupted()方法和interrupted()方法判断中断标志位来处理中断请求，但是要注意的是使用静态方法interrupted判断中断标志位时，判断过后会将中断标志位复位(类似于异常处理)。 如果线程没有处理中断请求的逻辑代码，那么中断请求并不能中断请求，只是改变了线程的中断标志位，线程仍将继续运行下去。 测试代码下面来写几段测试代码来验证上面的小结 中断请求并不总会中断线程12345678910111213141516171819class RunnableImpl implements Runnable&#123; @Override public void run() &#123; while (true) &#123; Thread.yield(); &#125; &#125;&#125;public class InterruptedTest &#123; public static void main(String[] args) throws InterruptedException &#123; RunnableImpl r = new RunnableImpl(); Thread t = new Thread(r); t.start(); t.interrupt(); &#125;&#125; 以上代码在调用线程的中断方法interrupt()时，由于线程的run方法并没有处理中断的逻辑代码，既没有阻塞方法异常处理，也没有使用isInterrupted()和interrupted()方法处理，所以此时中断请求相当于被线程屏蔽了，线程并不会停止，而是会无限期的执行下去。 静态方法interrupted自动恢复中断标志位12345678910111213141516171819202122232425class RunnableImpl implements Runnable&#123; @Override public void run() &#123; while (!Thread.interrupted()) &#123; Thread.yield(); &#125; System.out.println(&quot;线程使用interrupted()方法响应中断&quot;); System.out.println(&quot;此时中断标志位:&quot;+Thread.interrupted()); &#125;&#125;public class InterruptedTest &#123; public static void main(String[] args) throws InterruptedException &#123; RunnableImpl r = new RunnableImpl(); Thread t = new Thread(r); t.start(); t.interrupt(); &#125;&#125;”=========================“Output：线程使用interrupted()方法响应中断此时中断标志位:false 我们可以看到，t线程中使用Thread的静态方法interrupted()来响应中断，第一次调用该方法时，返回true，因此退出while循环，但当我们第二次再次调用该方法时，却返回false。这说明Thread.interrupted()在第一次判断中断标志位后将中断标志位恢复了。 使用异常处理中断后同样会将会将中断标志位恢复123456789101112131415161718192021222324252627282930class RunnableImpl implements Runnable&#123; @Override public void run() &#123; while (true) &#123; try &#123; Thread.sleep(1000); &#125; catch (InterruptedException e) &#123; System.out.println(&quot;线程被中断&quot;); System.out.println(&quot;此时中断标志位:&quot;+Thread.interrupted()); &#125; &#125; &#125;&#125;public class InterruptedTest &#123; public static void main(String[] args) throws InterruptedException &#123; RunnableImpl r = new RunnableImpl(); Thread t = new Thread(r); t.start(); Thread.sleep(2000); t.interrupt(); &#125;&#125;”=========================“Output：线程被中断此时中断标志位:false 通过输出可以很清楚的看到，在线程阻塞时，通过异常处理中断请求。在进入catch块中的语句后，调用interrupted()方法检查线程的中断状态，返回false。这说明当使用异常处理中断请求时，进入catch语句块后，相当于已经响应了中断请求，重新将线程的中断标志位恢复。 总结对于中断线程，通俗的说就是调用interruptt()方法将线程的中断标志位置为true(可以这么理解)，但是线程是否处理该终端是由线程自己决定，或者说是由编写线程的人决定。所谓的中断仅仅是改变线程的中断标志位而已，线程最终是否停止执行由线程自身的逻辑代码决定。]]></content>
@@ -45,8 +57,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>LeetCode</tag>
         <tag>位运算</tag>
+        <tag>LeetCode</tag>
       </tags>
   </entry>
   <entry>
@@ -106,8 +118,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>LeetCode</tag>
         <tag>位运算</tag>
+        <tag>LeetCode</tag>
       </tags>
   </entry>
   <entry>
@@ -165,8 +177,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>LeetCode</tag>
         <tag>位运算</tag>
+        <tag>LeetCode</tag>
         <tag>数组</tag>
       </tags>
   </entry>
@@ -178,8 +190,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>LeetCode</tag>
         <tag>位运算</tag>
+        <tag>LeetCode</tag>
       </tags>
   </entry>
   <entry>
@@ -254,8 +266,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>LeetCode</tag>
         <tag>位运算</tag>
+        <tag>LeetCode</tag>
       </tags>
   </entry>
   <entry>
@@ -538,8 +550,8 @@
         <category>Java编程思想</category>
       </categories>
       <tags>
-        <tag>I/O</tag>
         <tag>Java基础</tag>
+        <tag>I/O</tag>
         <tag>读书笔记</tag>
       </tags>
   </entry>
@@ -1391,8 +1403,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>BOM</tag>
         <tag>前端</tag>
+        <tag>BOM</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
@@ -1428,8 +1440,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>前端</tag>
         <tag>HTML5</tag>
+        <tag>前端</tag>
       </tags>
   </entry>
   <entry>
@@ -1445,19 +1457,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[字符流和字节流]]></title>
-    <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
-    <content type="text"><![CDATA[深入理解字符流编码 首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入 字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码 写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
-      <categories>
-        <category>JAVA</category>
-      </categories>
-      <tags>
-        <tag>I/O</tag>
-        <tag>乱码</tag>
-        <tag>字符流/字节流</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[青蛙跳台阶]]></title>
     <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
     <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
@@ -1468,6 +1467,19 @@
         <tag>LeetCode</tag>
         <tag>动态规划</tag>
         <tag>斐波那契数列</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[字符流和字节流]]></title>
+    <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
+    <content type="text"><![CDATA[深入理解字符流编码 首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入 字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码 写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
+      <categories>
+        <category>JAVA</category>
+      </categories>
+      <tags>
+        <tag>I/O</tag>
+        <tag>乱码</tag>
+        <tag>字符流/字节流</tag>
       </tags>
   </entry>
   <entry>
