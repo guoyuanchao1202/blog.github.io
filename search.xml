@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[CopyOnWriteArrayList源码解析]]></title>
+    <url>%2F2019%2F11%2F13%2FCopyOnWriteArrayList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%2F</url>
+    <content type="text"><![CDATA[在前面介绍ArrayList集合时，我们说过，ArrayList是一个非线程安全的集合，它的类注释推荐我们自己加锁或者使用Collections.synchronizedList方法来获取线程安全的集合。其实JDK还有另外一种线程安全的List，叫做CopyOnWriteArrayList。接下来将基于JDK1.8版本介绍该集合。 概述CopyOnWriteArrayList集合具有以下特征 线程安全的，多线程情况下无需加锁可以直接使用 通过锁+数组拷贝+volatile关键字保证了线程安全 每次数组操作，都会把数组拷贝一份出来，在新数组上进行操作，操作成功后再赋值回去 整体架构从整体架构上来说，CopyOnWriteArrayList数据结构和ArrayList是一致的，底层是个数组，只不过CopyOnWriteArrayList在对数组进行操作的时候，基本会走四步： 加锁 从原数组中拷贝出新数组 在新数组上进行操作，并将新数组赋给集合 解锁 除了加锁之外，CopyOnWriteArrayList地底层数组还被volatile修饰，意思是一旦数组被修改，其他线程立马能够感知到 1private transient volatile Object[] array; 整体来说，CopyOnWriteArrayList就是利用锁+数组拷贝+volatile关键字保证了List的线程安全。 源码学习类注释我们看看从CopyOnWriteArrayList的类注释上能得到哪些信息： 所有的操作都是线程安全的，因为操作都是在新拷贝的数组上进行的； 数组的拷贝虽然有一定的成本，但往往比一般的替代效率高 迭代过程中，不会影响原来的数组，也不会抛出ConcurrentModificationException异常。 新增方法新增方法有很多种重载形式，比如新增到数组尾部、新增到数组某个索引位置、批量新增等等，操作的思路还是前面说的四步，我们以新增到尾部为例 1234567891011121314151617181920public boolean add(E e) &#123; final ReentrantLock lock = this.lock; //获取锁 lock.lock(); try &#123; //得到原数组 Object[] elements = getArray(); int len = elements.length; //将所有数据拷贝到新数组中，长度为len+1，因为要添加一个元素进去 Object[] newElements = Arrays.copyOf(elements, len + 1); //在新数组中进行赋值 newElements[len] = e; //替换掉原来的数组 setArray(newElements); return true; //finally中释放锁 &#125; finally &#123; lock.unlock(); &#125;&#125; 从源码中我们发现，整个add()方法都是在持有锁的状态下进行的，通过加锁，来保证同一时刻只有一个线程对数组进行访问。除了加锁之外，还会从老数组中创建出一个新数组，然后将老数组中的值拷贝到新数组上。这时候就有一个问题了：既然已经加了锁，为什么还要拷贝一个新数组并且在新数组上操作而不直接在原来数组中进行操作呢？这样做是因为： volatile关键字修饰的是数组，如果简单地在原来数组上修改某几个元素的值，是无法触发可见性的，我们必须通过修改数组的内存地址才行，也就是说对数组进行重新赋值 在新的数组上进行拷贝，对老数组没有任何影响，只有新数组完全拷贝完成之后，外部才能访问到，降低了在赋值过程中老数组数据变动的影响 下面我们再看看指定位置添加元素的方法源码 12345678910111213141516171819202122232425262728293031public void add(int index, E element) &#123; final ReentrantLock lock = this.lock; lock.lock(); try &#123; Object[] elements = getArray(); int len = elements.length; //校验参数是否越界 if (index &gt; len || index &lt; 0) throw new IndexOutOfBoundsException(&quot;Index: &quot;+index+ &quot;, Size: &quot;+len); Object[] newElements; int numMoved = len - index; //如果为0说明数据添加位置为数组末尾 if (numMoved == 0) newElements = Arrays.copyOf(elements, len + 1); else &#123; newElements = new Object[len + 1]; //第一次拷贝:将[0~index)的数据从原数组拷贝到新数组 System.arraycopy(elements, 0, newElements, 0, index); //第二次拷贝:将[index~len)的数据拷贝的新数组 //[index+1~len+1)位置 System.arraycopy(elements, index, newElements, index + 1, numMoved); &#125; //通过前两次拷贝，新数组中下标为index的位置为空，直接赋值 newElements[index] = element; setArray(newElements); &#125; finally &#123; lock.unlock(); &#125;&#125; 通过源码和注释我们可以很清楚的看到该方法的实现，先将原数组从插入位置一分为二，分别进行两次拷贝，最终将下标为index的位置空出来放置要插入的值 小结从add()方法源码可以看出，CopyOnWriteArrayList通过加锁+数组拷贝+volatile来保证了线程安全，每一个要素都有其独特的含义 加锁：保证同一时刻只能被一个线程操作 数组拷贝：保证数组的内存地址被修改，修改后立刻触发volatile可见性，其他线程立刻可以看到数组被修改后的值 volatile：值被修改后，其他线程能够立马感知最新值 三要素缺一不可，如果我们只是用1和3，去掉2，这样当我们修改数组中某个值时，并不会触发可见性，只有当数组内存地址被修改后，才能触发可见性 删除方法下面我们来看一看删除方法，删除方法也有不同的重载形式，这里介绍它其中一种，删除指定位置元素 123456789101112131415161718192021222324public E remove(int index) &#123; final ReentrantLock lock = this.lock; //加锁 lock.lock(); try &#123; Object[] elements = getArray(); int len = elements.length; //获取老值 E oldValue = get(elements, index); int numMoved = len - index - 1; if (numMoved == 0) setArray(Arrays.copyOf(elements, len - 1)); else &#123; Object[] newElements = new Object[len - 1]; System.arraycopy(elements, 0, newElements, 0, index); System.arraycopy(elements, index + 1, newElements, index, numMoved); setArray(newElements); &#125; return oldValue; &#125; finally &#123; lock.unlock(); &#125;&#125; 可以看到，删除方法和添加方法逻辑类似，从删除位置将将数组分成两部分，进行两次拷贝，具体分为三步 加锁 判断索引位置，从而进行不同的拷贝 解锁 批量删除数组的批量删除比较有意思，下面我们来看一看 12345678910111213141516171819202122232425262728293031323334public boolean removeAll(Collection&lt;?&gt; c) &#123; if (c == null) throw new NullPointerException(); final ReentrantLock lock = this.lock; lock.lock(); try &#123; Object[] elements = getArray(); int len = elements.length; //说明当前数组中有值，若当前集合没有元素直接返回false if (len != 0) &#123; //表示新数组的索引位置 int newlen = 0; Object[] temp = new Object[len]; //循环，把不包含在c里的元素拷贝到新数组中 for (int i = 0; i &lt; len; ++i) &#123; Object element = elements[i]; if (!c.contains(element)) temp[newlen++] = element; &#125; //拷贝新数组，变相删除了包含在c中的元素 if (newlen != len) &#123; setArray(Arrays.copyOf(temp, newlen)); return true; &#125; &#125; return false; &#125; finally &#123; lock.unlock(); &#125;&#125;“=================================”final void setArray(Object[] a) &#123; array = a;&#125; 从源码中可以看出，我们并不会直接对数组中的元素进行删除，而是先对数组中的值进行循环判断，把不需要删除的数据放到临时数组中，最后临时数组就是我们删除元素后的数组。可以和ArrayList的批量删除思想联系起来，所以我们在需要删除多个元素的时候，最好也采用这种批量删除的思想，而不是在for循环中单个删除；如果单个删除，那么每一次删除都会有拷贝操作；而如果批量删除，就只会有一次拷贝操作。 查找方法CopyOnWriteArrayList中的查找方法和普通ArrayList中查找方法一样，使用indexOf实现，并且不需要加锁。 12345678910111213141516171819202122232425/** * static version of indexOf, to allow repeated calls without * needing to re-acquire array each time. * @param 要查找的值 * @param 搜索的目标数组 * @param 搜索的开始位置 * @param 搜索的结束位置 * @return 返回搜索值得数组下标，未找到返回-1 */private static int indexOf(Object o, Object[] elements, int index, int fence) &#123; //如果要查找null值，则用==比较 if (o == null) &#123; for (int i = index; i &lt; fence; i++) if (elements[i] == null) return i; &#125; //如果要查找非空值，则使用equals方法 else &#123; for (int i = index; i &lt; fence; i++) if (o.equals(elements[i])) return i; &#125; return -1;&#125; 该方法是一个内部方法，实现了查找的逻辑代码。CopyOnWriteArrayList的内部使用比较广泛，各种重载形式的查找方法、contains内部都调用了该方法。 迭代方法在类注释中，明确的说明了在CopyOnWriteArrayList迭代过程中即使数组的原值被改变，也不会抛出ConcurrentModificationException异常。其根源在于数组每次变动，都会生成新的数组，并不会影响老数组，这样一来，在迭代过程中根本就不会发现迭代数组的变动。 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960public Iterator&lt;E&gt; iterator() &#123; return new COWIterator&lt;E&gt;(getArray(), 0);&#125;static final class COWIterator&lt;E&gt; implements ListIterator&lt;E&gt; &#123; private final Object[] snapshot; private int cursor; private COWIterator(Object[] elements, int initialCursor) &#123; cursor = initialCursor; snapshot = elements; &#125; public boolean hasNext() &#123; return cursor &lt; snapshot.length; &#125; public boolean hasPrevious() &#123; return cursor &gt; 0; &#125; public E next() &#123; if (! hasNext()) throw new NoSuchElementException(); return (E) snapshot[cursor++]; &#125; public E previous() &#123; if (! hasPrevious()) throw new NoSuchElementException(); return (E) snapshot[--cursor]; &#125; public int nextIndex() &#123; return cursor; &#125; public int previousIndex() &#123; return cursor-1; &#125; //不支持删除操作 public void remove() &#123; throw new UnsupportedOperationException(); &#125; //不支持修改操作 public void set(E e) &#123; throw new UnsupportedOperationException(); &#125; //不支持添加操作 public void add(E e) &#123; throw new UnsupportedOperationException(); &#125;&#125; 上面就是CopyOnWriteArrayList的迭代器源码，可以发现，内部迭代的数组直接持有原数组的引用。并且没有版本号。结合前面的添加删除方法，可以发现，每次操作后集合的内部数组就会改变，因此迭代器持有的数组也变成了无效数组，这也是该迭代器不支持删除、添加、修改操作的原因，因为如果迭代器创建后，如果集合结构发生了改变，那么在该数组上的任何修改操作都不会影响到集合中的数组。CopyOnWriteArrayList集合底层仍是数组，通过锁+拷贝数组+volatile实现线程安全，实现比较简单。]]></content>
+      <categories>
+        <category>JDK源码</category>
+      </categories>
+      <tags>
+        <tag>源码</tag>
+        <tag>CopyOnWriteArrayList集合</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[浅谈Java线程池(含常见面试题)]]></title>
     <url>%2F2019%2F11%2F13%2F%E6%B5%85%E8%B0%88Java%E7%BA%BF%E7%A8%8B%E6%B1%A0-%E5%90%AB%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98%2F</url>
     <content type="text"><![CDATA[线程池，从字面上看，是指管理一组同构工作线程的资源池。线程池是与工作队列密切相关的，其中在工作队列中保存了所有等待执行的任务。 概述在这篇文章中，将包含对线程池常见方法、线程池的内部实现、线程池的拒绝策略逐个进行介绍；除此之外，还包含一些常见的线程池面试题目。以上为Executor框架的继承体系结构 线程池常见方法获取方法获取一个线程池，我们有两种方法：一是通过Executor框架中Executors的静态方法来获取线程池对象。还可以通过直接创建ThreadPoolExecutor对象来直接创建线程池。这两种方法的差异以及如何选择这两种方法在后面会介绍。这里先介绍使用Executors的静态方法获取线程池对象。 1234public static ExecutorService newFixedThreadPool(int nThreads)public static ExecutorService newSingleThreadExecutor()public static ExecutorService newCachedThreadPool()public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize) newFixedThreadPool(int nThreads)该方法返回一个固定线程数量的线程池。该线程池中的线程数量始终不变，当有一个新的任务提交时，若线程池中有空闲线程，则立即执行。若没有，则新的任务会被暂存在任务队列中，待有线程空闲时，就处理任务队列中的线程。 newSingleThreadExecutor()该方法返回一个只有一个线程的线程池。若多余一个任务被提交，同样的，该任务会被保存到任务队列中，待到线程空闲时，按先进先出的顺序执行队列中的任务 newCachedThreadPool()该方法返回一个可根据实际情况调整线程数量的线程池。线程池的线程数量不确定，但若有空闲线程可复用，则会优先使用可复用线程。若所有线程均在工作，又有新任务提交，则会创建新的线程处理任务。所有线程在当前任务执行完毕后，将返回线程池复用。 newScheduledThreadPool(int corePoolSize)该方法返回一个ScheduledExecutorService对象，该对象可以在给定时间执行任务，如在固定时间后执行任务、或者周期性执行执行某个任务 执行方法这里只介绍几个常用的方法 12public void execute(Runnable command)public Future&lt;?&gt; submit(Runnable task) execute()该方法是定义在Exector接口中的方法，用于执行一个任务，接受一个Runnable接口，无返回值 submit()该方法是ExecutorService接口中定义的方法，用于提交一个任务，接受一个Runnable接口，返回一个Future接口实现类，用于管理提交的任务。 线程池的内部实现对于核心的集合线程池，无论是newFixedThreadPool()方法、还是newCachedThreadPool()方法，虽然看起来创建的线程有着完全不同的功能特点，但其内部均使用了ThreadPoolExecutor类。下面给出这三个方法的源码 123456789101112131415161718192021222324public static ExecutorService newFixedThreadPool(int nThreads) &#123; return new ThreadPoolExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue&lt;Runnable&gt;());&#125;public static ExecutorService newSingleThreadExecutor() &#123; return new FinalizableDelegatedExecutorService (new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue&lt;Runnable&gt;()));&#125;public static ExecutorService newCachedThreadPool() &#123; return new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue&lt;Runnable&gt;());&#125; 上述三个方法就是Executors类三个工厂方法的源码，通过原阿门可以看到，他们都是返回一个ThreadPoolExecutor对象，只是传递的参数不同。接下来就看看ThreadPoolExecutor类最重要的构造方法： 1234567public ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue&lt;Runnable&gt; workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) 该方法的参数如下： corePoolSize：指定线程池中线程的数量 maximumPoolSize：指定线程池中最大线程的数量 keepAliveTime：当线程池中线程数量超过corePoolSize时，多余空闲线程的存活时间，即超过corePoolSize的空闲线程，在多长时间内会被销毁 unit：keepAliveTime的时间单位 workQueue：任务队列，被提交但尚未被执行的任务 threadFactory：线程工厂，用于创建线程，一般使用默认的即可 handler：拒绝策略。当任务太多来不及处理时，如何拒绝任务 对于以上7个参数，大部分都比较简单，特别说明以下workQueue和handler两个参数 workQueue是指被提交但尚未执行的任务队列，它是一个BlockingQueue接口的对象，仅用于存放Runnable接口对象。根据队列功能分类，在ThreadPoolExecutor类的构造方法可以使用以下几种BlockingQueue接口 直接提交队列：该功能由SynchronousQueue对象提供SynchromousQueue是一个特殊的BlockingQueue。没有容量，每一个插入操作都要等待一个相应的删除操作，反之，每一个删除操作都要等待对应的插入操作。如果使用该队列，那么提交的任务不会被真实的保存，而是总将新任务提交给线程执行，如果没有空闲线程，则尝试创建新的线程，如果线程数量已经达到最大数量，则执行相应的拒绝策略。因此，在使用该队列时，通常要设置很大的maximumPoolSize。 有界的任务队列：有界的任务队列可以使用ArrayBlockingQueue类实现，ArrayBlockingQueue类的构造方法必须带一个容量参数，表示该队列的最大容量。使用有界的任务队列时，如有新的任务需要执行，如果线程池的实际线程数小于corePoolSize，则创建新的线程执行任务，若大于corePoolSize，则会将新的任务加入等待队列。若等待队列已满，无法加入，则在总线程数不大于maximumPoolSize的前提下，创建新的线程执行人物。若大于maximumPoolSize，则执行拒绝策略。可以发现，有界队列仅在任务队列装满时，才可能将线程数提升到corePoolSize以上。 无界的任务队列：无界的任务队列可以通过LinkedBlockingQueue类实现，与有界队列相比，除非资源耗尽，否则无界队列不存在入队失败的情况。当有新任务到来，系统线程数小于corePoolSize时，线程池创建新的线程执行任务，但当系统线程数达到corePoolSize后，就不会增加了。若后续仍有任务加入但是没有空闲线程，则任务直接进入队列等待。 解释了ThreadPoolExecutor的构造方法后，Executors的几个获取线程池的工厂方法获取的线程池参数也就很清楚了。 拒绝策略ThreadPoolExecutor类的最后一个参数指定了拒绝策略。也就是当任务数量超过系统实际承载能力时，就要用到拒绝策略了。拒绝策略可以说是系统超负荷运行时的补救措施。JDK内置了四种拒绝策略 AbortPolicy策略：该策略直接抛出异常，阻止系统正常工作 CallerRunsPolicy策略：只要线程池未关闭，该策略直接在调用者线程中，运行当前被丢弃的任务。显然这样做不会真的丢弃任务，但是提交线程的性能极有可能会急剧下降。 DiscardOldestPolicy策略：该策略将丢弃最老的一个请求，也就是即将被执行的一个任务(队头)，并尝试再次提交当前任务 DiscardPolicy策略：该策略默默丢弃一个无法处理的任务，不予以任何处理。如果允许任务丢失，这是最好的方案。 以上内置策略均实现了RejectedExecutionHandler接口，若以上策略仍无法实际满足需要，可以自己实现该接口，定义自己的方法。 1234public interface RejectedExecutionHandler &#123; void rejectedExecution(Runnable r, ThreadPoolExecutor executor);&#125; 该接口只有一个抽象方法rejectedExecution，其中r为请求执行的任务，executor为当前线程池。 123456789101112131415161718192021222324252627282930313233343536public class ThreadPoolExecutorTest implements Runnable &#123; @Override public void run() &#123; System.out.println(System.currentTimeMillis() + &quot; : Thread ID: &quot; + Thread.currentThread().getId()); try &#123; Thread.sleep(1000); &#125; catch (InterruptedException e) &#123; e.printStackTrace(); &#125; &#125; public static void main(String[] args) throws InterruptedException &#123; ThreadPoolExecutorTest r = new ThreadPoolExecutorTest(); ExecutorService ex = new ThreadPoolExecutor( 5, 5, 0L, TimeUnit.SECONDS, new LinkedBlockingQueue&lt;Runnable&gt;(10), Executors.defaultThreadFactory(), new RejectedExecutionHandler() &#123; @Override public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) &#123; System.out.println(&quot;任务提交过多&quot;); &#125; &#125;// (runnable,executor)-&gt; &#123;// throw new RuntimeException(&quot;任务提交过多&quot;);// &#125; ); for (int i = 0; i &lt; Integer.MAX_VALUE; i++) &#123; ex.execute(r); &#125; &#125;&#125; 如果，使用ThreadPoolExecutor构造方法创建线程池时，自己实现了rejectedExecution接口，并重写了rejectedExecution方法(设置自己的拒绝策略) ThreadFactory介绍了这么多关于线程池的知识，你可能会问：那线程池中的线程从哪里来呢？之前我们说过，线程池的作用主要是为了线程复用，也就是避免线程的频繁创建和销毁，但是最开始的线程又是哪里来的呢？答案就是ThreadFactory。Factory是一个接口，他只有一个用来创建线程的方法 1234public interface ThreadFactory &#123; Thread newThread(Runnable r);&#125; 当线程池需要新建线程时，就会调用该方法。自定义线程池可以帮助我们做不少事情。比如，我们可以跟踪线程究竟在何时创建了多少个线程，也可以自定义线程名称，组以及优先级等信息，甚至可以将所有线程设置为守护线程。 常见面试题1.什么是线程池？为什么要使用线程池线程池是一种多线程处理形式，处理过程将任务提交到线程池，任务的执行交由线程池来管理。创建和销毁线程的花销是比较大的，这些时间可能比线程执行的时间还要长。频繁的创建和销毁线程也会给GC造成很大的压力，延长GC停顿时间。为了避免频繁的创建和销毁线程，我们可以让线程复用，线程池正是实现了这个功能，当需要执行任务时，从线程池中取出一个线程，任务执行完毕后线程并不销毁而是返回给线程池用于执行下一个任务。 几种常见的线程池及使用场景 newSingleThreadExecutor:创建单个线程的线程池，它只会用唯一的线程来执行任务，并且保证公平性 newFixedThreadPool:创建定长线程池，可控制最大并发数，超出的线程会在队列中等待 newCachedThreadPool:创建一个可缓存的线程池，如果线程池长度超过处理需要，可回收灵活空闲线程，如果无可用线程，则会创建线程 newScheduledThreadPool:创建一个定长线程池，支持定时及周期性任务执行 线程池中几种重要的参数 corePoolSize:核心线程的数量，这些线程在空闲的时候也不会被回收 maxmumPoolSize:线程池最大可以容纳的线程数 keepAliveTime:除了核心线程外其他空闲线程最长可保留时间 unit:计算这个时间的单位 workQueue:任务队列，如果当前没有空闲线程，那么被提交的任务将被存储在队列中 ThreadFactory:创建线程的线程工厂，当线程池需要创建新的线程时，就会调用该对象的newThread()方法 handler:一种拒绝策略，当线程池超负荷运行时，可以拒绝执行某些任务 线程池的拒绝策略当任务不断地提交过来，而系统又处理不过来时，我们需要采取一定的拒绝策略来拒绝服务。前面介绍过JDK内置的四种拒绝策略以及自定义拒绝策略地方法，这里不做赘述。 线程池地关闭关闭线程池可以调用shutDownNow()和shutdown()两个方法来实现。shutDownNow方法对正在执行的任务全部发出interrupt()中断请求，停止执行，对还未开始执行的任务全部取消，并且返回还没开始的任务列表；shutdown()方法调用后不再接受新任务，但也不会去强制终止已经提交或正在执行中的任务。但是要注意的是，shutDownNow方法并不一定会终结线程，因为它调用的是线程的interrupt()方法，线程是否终止由线程自己来决定。]]></content>
@@ -576,8 +588,8 @@
         <category>Java编程思想</category>
       </categories>
       <tags>
-        <tag>Java基础</tag>
         <tag>I/O</tag>
+        <tag>Java基础</tag>
         <tag>读书笔记</tag>
       </tags>
   </entry>
@@ -902,8 +914,8 @@
         <category>DataStructure</category>
       </categories>
       <tags>
-        <tag>数组</tag>
         <tag>集合</tag>
+        <tag>数组</tag>
       </tags>
   </entry>
   <entry>
@@ -914,8 +926,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>数组</tag>
         <tag>动态规划</tag>
+        <tag>数组</tag>
         <tag>分治算法</tag>
       </tags>
   </entry>
@@ -1429,8 +1441,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>BOM</tag>
         <tag>前端</tag>
+        <tag>BOM</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
@@ -1496,19 +1508,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[青蛙跳台阶]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
-      <categories>
-        <category>算法之美</category>
-      </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>动态规划</tag>
-        <tag>斐波那契数列</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[二叉树镜像对称]]></title>
     <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
     <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
@@ -1520,6 +1519,19 @@
         <tag>递归</tag>
         <tag>迭代法</tag>
         <tag>二叉树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[青蛙跳台阶]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>动态规划</tag>
+        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>
