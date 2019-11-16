@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="前面介绍了LinkedBlockingQueue，现在来介绍同步队列容器的另一种实现-ArrayBlockingQueue，很容易理解，该队列的底层数据结构为数组。下面就基于JDK1.8来介绍该容器。">
+<meta name="keywords" content="ArrayBlockingQueue集合,源码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ArrayBlockingQueue源码详解">
+<meta property="og:url" content="https://HoA-W.github.io/2019/11/16/ArrayBlockingQueue源码详解/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="前面介绍了LinkedBlockingQueue，现在来介绍同步队列容器的另一种实现-ArrayBlockingQueue，很容易理解，该队列的底层数据结构为数组。下面就基于JDK1.8来介绍该容器。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-11-16T07:03:10.177Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ArrayBlockingQueue源码详解">
+<meta name="twitter:description" content="前面介绍了LinkedBlockingQueue，现在来介绍同步队列容器的另一种实现-ArrayBlockingQueue，很容易理解，该队列的底层数据结构为数组。下面就基于JDK1.8来介绍该容器。">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/11/16/ArrayBlockingQueue源码详解/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>ArrayBlockingQueue源码详解 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/11/16/ArrayBlockingQueue源码详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">ArrayBlockingQueue源码详解
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-16 10:59:35 / 修改时间：15:03:10" itemprop="dateCreated datePublished" datetime="2019-11-16T10:59:35+08:00">2019-11-16</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JDK源码/" itemprop="url" rel="index"><span itemprop="name">JDK源码</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前面介绍了LinkedBlockingQueue，现在来介绍同步队列容器的另一种实现-ArrayBlockingQueue，很容易理解，该队列的底层数据结构为数组。下面就基于JDK1.8来介绍该容器。</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h1><h2 id="类注释"><a href="#类注释" class="headerlink" title="类注释"></a><font size="5">类注释</font></h2><p>先看一下类注释</p>
+<ol>
+<li>有界的阻塞数组，容量一旦创建后续大小无法修改</li>
+<li>元素是有序的，按照先入先出的特性，从队头取出数据，从队尾插入数据</li>
+<li>队列满时，put操作被阻塞；队列空时，take操作被阻塞</li>
+</ol>
+<p>从类注释我们发现，ArrayBlockingQueue和一般的数组结构的容器不同，是不支持后续扩容的。如果队满或队空，put或take会被阻塞</p>
+<h2 id="类字段"><a href="#类字段" class="headerlink" title="类字段"></a><font size="5">类字段</font></h2><p>老样子，我们来先看一看该类有哪些字段，便于我们后期学习</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//存放数据</span><br><span class="line">final Object[] items;</span><br><span class="line"></span><br><span class="line">//下次拿数据的时候的索引位置</span><br><span class="line">int takeIndex;</span><br><span class="line"></span><br><span class="line">//下次放数据的索引位置</span><br><span class="line">int putIndex;</span><br><span class="line"></span><br><span class="line">//当前集合中元素个数</span><br><span class="line">int count;</span><br><span class="line"></span><br><span class="line">//锁结构</span><br><span class="line">final ReentrantLock lock;</span><br><span class="line">private final Condition notEmpty;</span><br><span class="line">private final Condition notFull;</span><br></pre></td></tr></table></figure>
+
+<p>以上代码有两个字段takeIndex和putIndex，分别表示下次拿数据和放数据的索引位置，所以说在添加和删除数据时无需计算，可以直接知道相应的索引位置</p>
+<h1 id="源码学习"><a href="#源码学习" class="headerlink" title="源码学习"></a>源码学习</h1><p>下面我们正式看一下源码</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a><font size="5">初始化</font></h2><p>初始化时，有两个重要参数：数组的大小(即队列的容量)，是否公平。和LinkedBlockingQueue一样，初始化方法有三个</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">//指定大小初始化，默认非公平</span><br><span class="line">public ArrayBlockingQueue(int capacity) &#123;</span><br><span class="line">    this(capacity, false);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//指定大小和是否公平</span><br><span class="line">public ArrayBlockingQueue(int capacity, boolean fair) &#123;</span><br><span class="line">    if (capacity &lt;= 0)</span><br><span class="line">        throw new IllegalArgumentException();</span><br><span class="line">    this.items = new Object[capacity];</span><br><span class="line">    lock = new ReentrantLock(fair);</span><br><span class="line">    notEmpty = lock.newCondition();</span><br><span class="line">    notFull =  lock.newCondition();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//同时向集合中添加数据</span><br><span class="line">public ArrayBlockingQueue(int capacity, boolean fair,</span><br><span class="line">                          Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    this(capacity, fair);</span><br><span class="line"></span><br><span class="line">    final ReentrantLock lock = this.lock;</span><br><span class="line">    lock.lock(); // Lock only for visibility, not mutual exclusion</span><br><span class="line">    try &#123;</span><br><span class="line">        int i = 0;</span><br><span class="line">        try &#123;</span><br><span class="line">            for (E e : c) &#123;</span><br><span class="line">                checkNotNull(e);</span><br><span class="line">                items[i++] = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (ArrayIndexOutOfBoundsException ex) &#123;</span><br><span class="line">            throw new IllegalArgumentException();</span><br><span class="line">        &#125;</span><br><span class="line">        count = i;</span><br><span class="line">        putIndex = (i == capacity) ? 0 : i;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过源码可以看出，构造方法的第二个boolean参数，主要是用于创建ReentrantLock时指定锁是否为公平锁。如果锁是公平的，那么在锁竞争时就会按照先来先获取的顺序；如果是非公平锁，锁竞争时是随机的。我们举个例子来说明：</p>
+<ul>
+<li>加入现在队列已满还有很多线程执行put操作，必然会有很多线程被阻塞，当有其他线程执行take操作时，会唤醒等待的线程，如果是公平锁，会按照阻塞等待的顺序依次唤醒等待的线程，如果是非公平锁，会随机唤醒等待的线程。队列空时也是一样的道理<h2 id="添加元素"><a href="#添加元素" class="headerlink" title="添加元素"></a><font size="5">添加元素</font></h2>添加数据时都会按照putIndex的位置进行添加<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public void put(E e) throws InterruptedException &#123;</span><br><span class="line">    //检查添加元素是否为null，如果为null抛出异常</span><br><span class="line">    checkNotNull(e);</span><br><span class="line">    final ReentrantLock lock = this.lock;</span><br><span class="line">    //可响应中断锁</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">    try &#123;</span><br><span class="line">        //如果数组已满，该线程等待</span><br><span class="line">        while (count == items.length)</span><br><span class="line">            notFull.await();</span><br><span class="line">        //将元素入队</span><br><span class="line">        enqueue(e);</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“=================================”</span><br><span class="line">//检查null</span><br><span class="line">private static void checkNotNull(Object v) &#123;</span><br><span class="line">    if (v == null)</span><br><span class="line">        throw new NullPointerException();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“=================================”</span><br><span class="line">//添加方法</span><br><span class="line">private void enqueue(E x) &#123;</span><br><span class="line">    final Object[] items = this.items;</span><br><span class="line">    items[putIndex] = x;</span><br><span class="line">    //实现循环队列</span><br><span class="line">    if (++putIndex == items.length)</span><br><span class="line">        putIndex = 0;</span><br><span class="line">    count++;</span><br><span class="line">    //唤醒其他取数据的线程</span><br><span class="line">    notEmpty.signal();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>从源码可以看出，该队列实现的是一个循环队列，当新增到队尾时，下次新增会从队头开始</p>
+<h2 id="取出元素"><a href="#取出元素" class="headerlink" title="取出元素"></a><font size="5">取出元素</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">public E take() throws InterruptedException &#123;</span><br><span class="line">    final ReentrantLock lock = this.lock;</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">    try &#123;</span><br><span class="line">        //如果数组为空，该线程等待</span><br><span class="line">        while (count == 0)</span><br><span class="line">            notEmpty.await();</span><br><span class="line">        return dequeue();</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“=================================”</span><br><span class="line">//取数据方法</span><br><span class="line">private E dequeue() &#123;</span><br><span class="line">    final Object[] items = this.items;</span><br><span class="line">    E x = (E) items[takeIndex];</span><br><span class="line">    items[takeIndex] = null;</span><br><span class="line">    //如果takeIndex已经到队尾，则下次从头开始拿</span><br><span class="line">    if (++takeIndex == items.length)</span><br><span class="line">        takeIndex = 0;</span><br><span class="line">    //元素个数--</span><br><span class="line">    count--;</span><br><span class="line">    if (itrs != null)</span><br><span class="line">        itrs.elementDequeued();</span><br><span class="line">    //唤醒其他等待添加数据的线程</span><br><span class="line">    notFull.signal();</span><br><span class="line">    return x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>take方法的源码也比较简单，就是普通的对循环队列的操作</p>
+<h2 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a><font size="5">删除元素</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">public boolean remove(Object o) &#123;</span><br><span class="line">    //如果指定参数为null，直接返回false</span><br><span class="line">    if (o == null) return false;</span><br><span class="line">    final Object[] items = this.items;</span><br><span class="line">    final ReentrantLock lock = this.lock;</span><br><span class="line">    //不可响应中断锁</span><br><span class="line">    lock.lock();</span><br><span class="line">    try &#123;</span><br><span class="line">        if (count &gt; 0) &#123;</span><br><span class="line">            final int putIndex = this.putIndex;</span><br><span class="line">            int i = takeIndex;</span><br><span class="line">            //从队头开始遍历，找到要删除元素</span><br><span class="line">            do &#123;</span><br><span class="line">                if (o.equals(items[i])) &#123;</span><br><span class="line">                    removeAt(i);</span><br><span class="line">                    return true;</span><br><span class="line">                &#125;</span><br><span class="line">                //由于是循环队列，因此当遍历到数据末端时从开头继续</span><br><span class="line">                if (++i == items.length)</span><br><span class="line">                    i = 0;</span><br><span class="line">            &#125; while (i != putIndex);</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“==============================”</span><br><span class="line">//删除方法逻辑代码</span><br><span class="line">void removeAt(final int removeIndex) &#123;</span><br><span class="line">   </span><br><span class="line">    final Object[] items = this.items;</span><br><span class="line">    //如果要删除的位置和takeIndex一样</span><br><span class="line">    //则直接将该位置置为null，将takeIndex后移，count--</span><br><span class="line">    if (removeIndex == takeIndex) &#123;</span><br><span class="line">        </span><br><span class="line">        items[takeIndex] = null;</span><br><span class="line">        if (++takeIndex == items.length)</span><br><span class="line">            takeIndex = 0;</span><br><span class="line">        count--;</span><br><span class="line">        if (itrs != null)</span><br><span class="line">            itrs.elementDequeued();</span><br><span class="line">    &#125; </span><br><span class="line">    //如果要删除元素的位置和takeIndex不同</span><br><span class="line">    else &#123;</span><br><span class="line">        </span><br><span class="line">        final int putIndex = this.putIndex;</span><br><span class="line">        //从要删除位置循环向后遍历，直到遍历到putIndex为止</span><br><span class="line">        //将元素依次向前移一个位置</span><br><span class="line">        for (int i = removeIndex;;) &#123;</span><br><span class="line">            int next = i + 1;</span><br><span class="line">            if (next == items.length)</span><br><span class="line">                next = 0;</span><br><span class="line">            if (next != putIndex) &#123;</span><br><span class="line">                items[i] = items[next];</span><br><span class="line">                i = next;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                items[i] = null;</span><br><span class="line">                this.putIndex = i;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        count--;</span><br><span class="line">        if (itrs != null)</span><br><span class="line">            itrs.removedAt(removeIndex);</span><br><span class="line">    &#125;</span><br><span class="line">    //唤醒添加方法上阻塞的线程</span><br><span class="line">    notFull.signal();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>对于ArrayBlockingQueue，底层是一个数组组成了一个循环队列，线程安全并且不可扩容。由于是循环队列，因此当takeIndex和putIndex到达队尾时都会重新从0开始</p>
+<hr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/ArrayBlockingQueue集合/" rel="tag"><i class="fa fa-tag"></i>ArrayBlockingQueue集合</a>
+            
+              <a href="/tags/源码/" rel="tag"><i class="fa fa-tag"></i>源码</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/11/16/LinkedBlockingQueue源码详解/" rel="next" title="LinkedBlockingQueue源码详解">
+                  <i class="fa fa-chevron-left"></i> LinkedBlockingQueue源码详解
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#整体架构"><span class="nav-number">1.</span> <span class="nav-text">整体架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#类注释"><span class="nav-number">1.1.</span> <span class="nav-text">类注释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类字段"><span class="nav-number">1.2.</span> <span class="nav-text">类字段</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#源码学习"><span class="nav-number">2.</span> <span class="nav-text">源码学习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">2.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加元素"><span class="nav-number">2.2.</span> <span class="nav-text">添加元素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#取出元素"><span class="nav-number">2.3.</span> <span class="nav-text">取出元素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除元素"><span class="nav-number">2.4.</span> <span class="nav-text">删除元素</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">127</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">109</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
