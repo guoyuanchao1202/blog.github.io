@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>设计模式之生产者-消费者模式</title>
+      <link href="/2019/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F/"/>
+      <url>/2019/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F/</url>
+      
+        <content type="html"><![CDATA[<p>既然前面介绍了阻塞队列，现在就用阻塞队列ArrayBlockingQueue实现一个生产者消费者模式。在本文中，除了使用Java自带的同步容器，还将使用ReentrantLock+Condition的方式实现一个生产者-消费者模式。</p><hr><a id="more"></a><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>生产者-消费者模式，生产者消费者模式就是通过一个容器来解决生产者和消费者的强耦合问题。生产者和消费者彼此之间不直接通讯，而通过阻塞队列来进行通讯，所以生产者生产完数据之后不用等待消费者处理，直接扔给阻塞队列，消费者不找生产者要数据，而是直接从阻塞队列里取，阻塞队列就相当于一个缓冲区，平衡了生产者和消费者的处理能力。这个阻塞队列就是用来给生产者和消费者解耦的。在线程世界里，生产者就是生产数据的线程，消费者就是消费数据的线程。在多线程开发当中，如果生产者处理速度很快，而消费者处理速度很慢，那么生产者就必须等待消费者处理完，才能继续生产数据。同样的道理，如果消费者的处理能力大于生产者，那么消费者就必须等待生产者。为了解决这种生产消费能力不均衡的问题，所以便有了生产者和消费者模式</p><h1 id="ArrayBlockingQueue实现"><a href="#ArrayBlockingQueue实现" class="headerlink" title="ArrayBlockingQueue实现"></a>ArrayBlockingQueue实现</h1><p>我们先来个简单地方式，使用阻塞队列来实现。后面你会发现，使用该方法其实也就是免去了自己创建仓库类的步骤。</p><h2 id="商品类"><a href="#商品类" class="headerlink" title="商品类"></a><font size="5">商品类</font></h2><p>既然是生产者-消费者模型，那肯定要有一个商品类</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class som &#123;</span><br><span class="line">    private final int count;</span><br><span class="line"></span><br><span class="line">    public som(int count) &#123;</span><br><span class="line">        this.count = count;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;商品ID: &quot; + count;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>商品类很简单，只有一个用于标识商品的count和便于打印商品的toString()方法</p><h2 id="生产者"><a href="#生产者" class="headerlink" title="生产者"></a><font size="5">生产者</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">public class Producer implements Runnable &#123;</span><br><span class="line">    //缓冲区</span><br><span class="line">    private ArrayBlockingQueue&lt;som&gt; queue;</span><br><span class="line">    //该线程生产的商品数</span><br><span class="line">    AtomicInteger count = new AtomicInteger(0);</span><br><span class="line"></span><br><span class="line">    public Producer(ArrayBlockingQueue&lt;som&gt; queue) &#123;</span><br><span class="line">        this.queue = queue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            //生产者一直生产商品</span><br><span class="line">            while (true) &#123;</span><br><span class="line">                som s = new som(count.incrementAndGet());</span><br><span class="line">                //将商品添加到缓冲区，使用put方法</span><br><span class="line">                //如果缓冲区满则阻塞</span><br><span class="line">                queue.put(s);</span><br><span class="line">                System.out.println(&quot;|生产线程&quot; + Thread.currentThread().getId() + &quot; 生产 &quot; + s);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="消费者"><a href="#消费者" class="headerlink" title="消费者"></a><font size="5">消费者</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public class Consumer implements Runnable &#123;</span><br><span class="line">    //缓冲区</span><br><span class="line">    private ArrayBlockingQueue&lt;som&gt; queue;</span><br><span class="line"></span><br><span class="line">    public Consumer(ArrayBlockingQueue&lt;som&gt; queue) &#123;</span><br><span class="line">        this.queue = queue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            while (true) &#123;</span><br><span class="line">                //使得消费者消费速度比生产速度慢</span><br><span class="line">                Thread.sleep(2000);</span><br><span class="line">                //take()方法，如果队列为空则阻塞</span><br><span class="line">                System.out.println(&quot;|消费线程&quot; + Thread.currentThread().getId() + &quot; 消费 &quot; + queue.take());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a><font size="5">测试</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class ProducerAndConsumer &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ExecutorService exec = Executors.newCachedThreadPool();</span><br><span class="line">        ArrayBlockingQueue&lt;som&gt; queue = new ArrayBlockingQueue&lt;&gt;(10,true);</span><br><span class="line"></span><br><span class="line">        //启动三个生产者线程</span><br><span class="line">        for (int i = 0; i &lt; 3; i++) &#123;</span><br><span class="line">            exec.execute(new Producer(queue));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //启动10个消费者线程</span><br><span class="line">        for (int i = 0; i &lt; 10; i++) &#123;</span><br><span class="line">            exec.execute(new Consumer(queue));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>以上就是使用阻塞队列ArrayBlockingQueue实现生产者-消费者模式。</p><h1 id="ReentrantLock-Concition实现"><a href="#ReentrantLock-Concition实现" class="headerlink" title="ReentrantLock+Concition实现"></a>ReentrantLock+Concition实现</h1><p>接下来我们使用ReentrantLock+Condition创建缓冲区代替阻塞队列来实现生产者-消费者模式</p><h2 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a><font size="5">仓库</font></h2><p>个人实现，正确性应该没问题，性能应该还好。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br></pre></td><td class="code"><pre><span class="line">public class MyList&lt;E&gt; &#123;</span><br><span class="line">    //存放数据的数组</span><br><span class="line">    E[] list;</span><br><span class="line">    //下一次添加和删除的索引</span><br><span class="line">    private int putIndex;</span><br><span class="line">    private int takeIndex;</span><br><span class="line">    //记录缓冲区元素个数</span><br><span class="line">    private AtomicInteger count = new AtomicInteger(0);</span><br><span class="line">    private int cal;</span><br><span class="line">    //put锁和take锁，分别对put()和take()加锁</span><br><span class="line">    private ReentrantLock putlock;</span><br><span class="line">    private Condition isFull;</span><br><span class="line">    private ReentrantLock takelock;</span><br><span class="line">    private Condition isEmpty;</span><br><span class="line"></span><br><span class="line">    public MyList(int count, ReentrantLock putlock, ReentrantLock takelock) &#123;</span><br><span class="line">        list = (E[]) new Object[count];</span><br><span class="line">        cal = count;</span><br><span class="line">        this.putlock = putlock;</span><br><span class="line">        this.takelock = takelock;</span><br><span class="line">        this.isEmpty = takelock.newCondition();</span><br><span class="line">        this.isFull = putlock.newCondition();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 唤醒在take方法上阻塞的线程</span><br><span class="line">     */</span><br><span class="line">    private void isEmpty() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            takelock.lock();</span><br><span class="line">            if (count.get() &gt; 0) &#123;</span><br><span class="line">                isEmpty.signalAll();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;finally &#123;</span><br><span class="line">            takelock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 唤醒在put方法上阻塞的线程</span><br><span class="line">     */</span><br><span class="line">    private void isFull() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            putlock.lock();</span><br><span class="line">            if (count.get() &lt; list.length) &#123;</span><br><span class="line">                isFull.signalAll();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;finally &#123;</span><br><span class="line">            putlock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 同时获得两把锁</span><br><span class="line">     */</span><br><span class="line">    private void AllLock() &#123;</span><br><span class="line">        putlock.lock();</span><br><span class="line">        takelock.lock();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 同时释放两把锁</span><br><span class="line">     */</span><br><span class="line">    private void AllUnlock() &#123;</span><br><span class="line">        takelock.unlock();</span><br><span class="line">        putlock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 获取当前缓冲区元素个数</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public int size() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            AllLock();</span><br><span class="line">            return count.get();</span><br><span class="line">        &#125;finally &#123;</span><br><span class="line">            AllUnlock();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 像缓冲区添加元素</span><br><span class="line">     * @param e</span><br><span class="line">     * @throws InterruptedException</span><br><span class="line">     */</span><br><span class="line">    public void put(E e) throws InterruptedException &#123;</span><br><span class="line">        //获取put锁</span><br><span class="line">        putlock.lockInterruptibly();</span><br><span class="line">        try &#123;</span><br><span class="line">            //如果当前缓冲区满，则阻塞</span><br><span class="line">            while (count.get() == list.length) &#123;</span><br><span class="line">                isFull.await();</span><br><span class="line">            &#125;</span><br><span class="line">            //将元素添加到指定索引位置</span><br><span class="line">            list[putIndex] = e;</span><br><span class="line">            count.getAndIncrement();</span><br><span class="line">            //循环</span><br><span class="line">            if (++putIndex == list.length) &#123;</span><br><span class="line">                putIndex = 0;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;finally &#123;</span><br><span class="line">            putlock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">        isEmpty();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 取出缓冲区中元素</span><br><span class="line">     * @return 要取出的元素</span><br><span class="line">     * @throws InterruptedException</span><br><span class="line">     */</span><br><span class="line">    public E take() throws InterruptedException &#123;</span><br><span class="line">        E res;</span><br><span class="line">        takelock.lockInterruptibly();</span><br><span class="line">        try &#123;</span><br><span class="line">            while (count.get() == 0) &#123;</span><br><span class="line">                isEmpty.await();</span><br><span class="line">            &#125;</span><br><span class="line">            res = list[takeIndex];</span><br><span class="line">            list[takeIndex] = null;</span><br><span class="line">            if (++takeIndex == list.length) &#123;</span><br><span class="line">                takeIndex = 0;</span><br><span class="line">            &#125;</span><br><span class="line">            count.getAndDecrement();</span><br><span class="line">            return res;</span><br><span class="line">        &#125;finally &#123;</span><br><span class="line">            isFull();</span><br><span class="line">            takelock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>如上，直接使用数组来实现，具体细节和ArrayBlockingQueue相似，但是锁部分则使用的是LinkedBlockingQueue的锁分离思想外加原子变量，能够使得生产和消费线程同时进行，提高了并发性能。</p><h2 id="商品"><a href="#商品" class="headerlink" title="商品"></a><font size="5">商品</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class Som &#123;</span><br><span class="line">    private final int ID;</span><br><span class="line"></span><br><span class="line">    public Som(int id) &#123;</span><br><span class="line">        ID = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;商品ID: &quot; + ID;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>和前面的一样</p><h2 id="生产者-1"><a href="#生产者-1" class="headerlink" title="生产者"></a><font size="5">生产者</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public class Producer implements Runnable&#123;</span><br><span class="line">    MyList&lt;Som&gt; list;</span><br><span class="line">    private AtomicInteger count = new AtomicInteger(0);</span><br><span class="line"></span><br><span class="line">    public Producer(MyList&lt;Som&gt; list) &#123;</span><br><span class="line">        this.list = list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                Som s = new Som(count.incrementAndGet());</span><br><span class="line">                list.put(s);</span><br><span class="line">                System.out.println(s + &quot; is put in the queue&quot;);</span><br><span class="line">            &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>生产者很简单，开启一个线程，不断地往缓冲区添加商品即可</p><h2 id="消费者-1"><a href="#消费者-1" class="headerlink" title="消费者"></a><font size="5">消费者</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public class Consumer implements Runnable&#123;</span><br><span class="line">    MyList&lt;Som&gt; list;</span><br><span class="line"></span><br><span class="line">    public Consumer(MyList&lt;Som&gt; list) &#123;</span><br><span class="line">        this.list = list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                Thread.sleep(2000);</span><br><span class="line">                System.out.println(list.take() + &quot; is out the queue ||&quot;);</span><br><span class="line">            &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>同样的，不断往缓冲区中拿即可</p><h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>为了日后验证方便，所以将全部代码贴上，如果要运行直接拷贝即可。可以看出，用JDK提供的阻塞队列来实现生产者消费者模式还是很方便的。自己实现的时，如果采用ReentrantLock+Condition方式，可以采用LinkedBlockingQueue源码中的锁分离思想，能够提高并发性能。</p><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 设计模式 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 多线程 </tag>
+            
+            <tag> 设计模式 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>ArrayBlockingQueue源码详解</title>
       <link href="/2019/11/16/ArrayBlockingQueue%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/"/>
       <url>/2019/11/16/ArrayBlockingQueue%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/</url>
@@ -269,9 +296,9 @@
       
         <tags>
             
-            <tag> 位运算 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 位运算 </tag>
             
         </tags>
       
@@ -406,9 +433,9 @@
       
         <tags>
             
-            <tag> 位运算 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 位运算 </tag>
             
         </tags>
       
@@ -539,9 +566,9 @@
       
         <tags>
             
-            <tag> 位运算 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 位运算 </tag>
             
             <tag> 数组 </tag>
             
@@ -568,9 +595,9 @@
       
         <tags>
             
-            <tag> 位运算 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 位运算 </tag>
             
         </tags>
       
@@ -738,9 +765,9 @@
       
         <tags>
             
-            <tag> 位运算 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 位运算 </tag>
             
         </tags>
       
@@ -3288,9 +3315,9 @@
       
         <tags>
             
-            <tag> 前端 </tag>
-            
             <tag> BOM </tag>
+            
+            <tag> 前端 </tag>
             
             <tag> JavaScript </tag>
             
@@ -3409,6 +3436,35 @@
     
     
     <entry>
+      <title>字符流和字节流</title>
+      <link href="/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/"/>
+      <url>/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/</url>
+      
+        <content type="html"><![CDATA[<p><a href="http://www.itcast.cn/news/20181219/14592257466.shtml" target="_blank" rel="noopener">深入理解字符流编码</a></p><p><strong>首先要理解字符流输入的原理：</strong><br>字符流输入其实底层也是字节流输入</p><p>字符–&gt;计算机二进制数字（字节）：编码<br>字节(计算机二进制数字)–&gt;字符：解码</p><a id="more"></a><h2 id="写入时："><a href="#写入时：" class="headerlink" title="写入时："></a>写入时：</h2><pre><code>1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中</code></pre><h2 id="读取时："><a href="#读取时：" class="headerlink" title="读取时："></a>读取时：</h2><pre><code>使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序</code></pre><h2 id="图片不能用字符流的原因"><a href="#图片不能用字符流的原因" class="headerlink" title="图片不能用字符流的原因"></a>图片不能用字符流的原因</h2><pre><code>因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符，在写入的时候，会将未知字符丢掉，所以图片拷贝不成功因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节**举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1....使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1....但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符；例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)；在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1....这样拷贝自然就失败了</code></pre><h2 id="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"><a href="#关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接" class="headerlink" title="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"></a>关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接</h2><pre><code>**最后**：字符流因为解码编码等原因，比字节流慢很多字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输图片等视频音频文件要用字节流</code></pre>]]></content>
+      
+      
+      <categories>
+          
+          <category> JAVA </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> I/O </tag>
+            
+            <tag> 乱码 </tag>
+            
+            <tag> 字符流/字节流 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>二叉树镜像对称</title>
       <link href="/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/"/>
       <url>/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/</url>
@@ -3432,35 +3488,6 @@
             <tag> 迭代法 </tag>
             
             <tag> 二叉树 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>字符流和字节流</title>
-      <link href="/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/"/>
-      <url>/2019/09/07/JAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3/</url>
-      
-        <content type="html"><![CDATA[<p><a href="http://www.itcast.cn/news/20181219/14592257466.shtml" target="_blank" rel="noopener">深入理解字符流编码</a></p><p><strong>首先要理解字符流输入的原理：</strong><br>字符流输入其实底层也是字节流输入</p><p>字符–&gt;计算机二进制数字（字节）：编码<br>字节(计算机二进制数字)–&gt;字符：解码</p><a id="more"></a><h2 id="写入时："><a href="#写入时：" class="headerlink" title="写入时："></a>写入时：</h2><pre><code>1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中，2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中</code></pre><h2 id="读取时："><a href="#读取时：" class="headerlink" title="读取时："></a>读取时：</h2><pre><code>使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序</code></pre><h2 id="图片不能用字符流的原因"><a href="#图片不能用字符流的原因" class="headerlink" title="图片不能用字符流的原因"></a>图片不能用字符流的原因</h2><pre><code>因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符，在写入的时候，会将未知字符丢掉，所以图片拷贝不成功因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节**举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1....使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1....但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符；例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)；在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1....这样拷贝自然就失败了</code></pre><h2 id="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"><a href="#关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接" class="headerlink" title="关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接"></a>关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接</h2><pre><code>**最后**：字符流因为解码编码等原因，比字节流慢很多字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输图片等视频音频文件要用字节流</code></pre>]]></content>
-      
-      
-      <categories>
-          
-          <category> JAVA </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> I/O </tag>
-            
-            <tag> 乱码 </tag>
-            
-            <tag> 字符流/字节流 </tag>
             
         </tags>
       
