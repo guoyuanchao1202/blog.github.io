@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="队列，在我们平时使用的线程池、读写锁、消息队列等技术和框架使用的非常广泛，它是很多高级API的基础，因此今天就来介绍一下一种同步队列–LinkedBlockingQueue。(本文基于JDK1.8版本)">
+<meta name="keywords" content="源码,LinkedBlockingQueue集合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LinkedBlockingQueue源码详解">
+<meta property="og:url" content="https://HoA-W.github.io/2019/11/16/LinkedBlockingQueue源码详解/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="队列，在我们平时使用的线程池、读写锁、消息队列等技术和框架使用的非常广泛，它是很多高级API的基础，因此今天就来介绍一下一种同步队列–LinkedBlockingQueue。(本文基于JDK1.8版本)">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://hoa-w.github.io/2019/11/16/LinkedBlockingQueue源码详解/1.png">
+<meta property="og:updated_time" content="2019-11-16T02:36:16.966Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LinkedBlockingQueue源码详解">
+<meta name="twitter:description" content="队列，在我们平时使用的线程池、读写锁、消息队列等技术和框架使用的非常广泛，它是很多高级API的基础，因此今天就来介绍一下一种同步队列–LinkedBlockingQueue。(本文基于JDK1.8版本)">
+<meta name="twitter:image" content="https://hoa-w.github.io/2019/11/16/LinkedBlockingQueue源码详解/1.png">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/11/16/LinkedBlockingQueue源码详解/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>LinkedBlockingQueue源码详解 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/11/16/LinkedBlockingQueue源码详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">LinkedBlockingQueue源码详解
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-16 08:38:36 / 修改时间：10:36:16" itemprop="dateCreated datePublished" datetime="2019-11-16T08:38:36+08:00">2019-11-16</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JDK源码/" itemprop="url" rel="index"><span itemprop="name">JDK源码</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>队列，在我们平时使用的线程池、读写锁、消息队列等技术和框架使用的非常广泛，它是很多高级API的基础，因此今天就来介绍一下一种同步队列–LinkedBlockingQueue。(本文基于JDK1.8版本)</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h1><h2 id="继承体系"><a href="#继承体系" class="headerlink" title="继承体系"></a><font size="5">继承体系</font></h2><p>LinkedBlockingQueue中文名叫做链表阻塞队列，因此我们可以知道其底层数据结构是链表，并且队列是可阻塞的，首先我们看一看LinkedBlockingQueue的类图<br><img src="/2019/11/16/LinkedBlockingQueue源码详解/1.png" alt>从类图中我们可以看出，该类的继承体系有两条路径</p>
+<ol>
+<li>AbstractQueue-&gt;AbstractCollection-&gt;Collection-&gt;Iterable，这一条路径主要是想复用Collection和迭代器的一些操作</li>
+<li>BlockingQueue-&gt;Queue-&gt;Collection，这里主要说一下BlockingQueue和Queue两个接口</li>
+</ol>
+<p>Queue是最基础的接口，几乎所有的队列实现类都会实现这个接口，该接口定义了三大类操作</p>
+<ol>
+<li><b>新增操作</b><ol>
+<li>add：队列满时抛出异常</li>
+<li>offer：队列满时返回false</li>
+</ol>
+</li>
+<li><b>查看并删除操作</b><ol>
+<li>remove：队列空时抛出异常</li>
+<li>poll：队列空时返回null</li>
+</ol>
+</li>
+<li><b>只查看不删除操作</b><ol>
+<li>element：队列空时抛出异常</li>
+<li>peek：队列空时返回null</li>
+</ol>
+</li>
+</ol>
+<p>一共六种方法，也可以按照是否抛出异常分类</p>
+<ol>
+<li>遇到队空或满时抛出异常，如add、remove、element</li>
+<li>遇到队空或满时返回特殊值，如offer、poll、peek</li>
+</ol>
+<p>BlockingQueue在Queue的基础上加了阻塞的概念，结合上面的几个方法，我们通过一个表格来比较一下</p>
+<table>
+<thead>
+<tr>
+<th align="center">操作类型</th>
+<th align="center">抛异常</th>
+<th align="center">返回特殊值</th>
+<th align="center">一直阻塞</th>
+<th align="center">阻塞一段时间</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">新增-&gt;队满</td>
+<td align="center">add</td>
+<td align="center">offer返回false</td>
+<td align="center">put</td>
+<td align="center">offer超时时间后返回false</td>
+</tr>
+<tr>
+<td align="center">查看并删除-&gt;队空</td>
+<td align="center">remove</td>
+<td align="center">poll返回null</td>
+<td align="center">take</td>
+<td align="center">poll超时时间后返回false</td>
+</tr>
+<tr>
+<td align="center">查看-&gt;队空</td>
+<td align="center">element</td>
+<td align="center">peek返回null</td>
+<td align="center">无</td>
+<td align="center">无</td>
+</tr>
+</tbody></table>
+<p>注意：<b>remove方法BlockingQueue类注释中定义的是抛异常，但是实际实现时返回false</b></p>
+<h2 id="类注释"><a href="#类注释" class="headerlink" title="类注释"></a><font size="5">类注释</font></h2><p>接下来我们看一看LinkedBlockingQueue的类注释</p>
+<ol>
+<li>基于链表的阻塞队列，其底层数据结构为链表</li>
+<li>链表维护FIFO，新元素被放在队尾，获取元素从头部拿</li>
+<li>链表大小在初始化时可以设置，默认为Integer的最大值</li>
+<li>可以使用Collection和Iterator连个接口的所有操作</li>
+</ol>
+<h2 id="成员属性"><a href="#成员属性" class="headerlink" title="成员属性"></a><font size="5">成员属性</font></h2><p>我们来看一看LinkedBlockingQueue有哪些字段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">//链表节点</span><br><span class="line">static class Node&lt;E&gt; &#123;</span><br><span class="line">    E item;</span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line">    Node(E x) &#123; item = x; &#125;</span><br><span class="line">&#125;</span><br><span class="line">//默认容量，为Integer.MAX_VALUE</span><br><span class="line">private final int capacity;</span><br><span class="line">//使用原子类计算链表元素个数</span><br><span class="line">private final AtomicInteger count = new AtomicInteger();</span><br><span class="line">//链表头</span><br><span class="line">transient Node&lt;E&gt; head;</span><br><span class="line">//链表尾</span><br><span class="line">private transient Node&lt;E&gt; last;</span><br><span class="line"></span><br><span class="line">//锁结构</span><br><span class="line">private final ReentrantLock takeLock = new ReentrantLock();</span><br><span class="line">private final Condition notEmpty = takeLock.newCondition();</span><br><span class="line">private final ReentrantLock putLock = new ReentrantLock();</span><br><span class="line">private final Condition notFull = putLock.newCondition();</span><br></pre></td></tr></table></figure>
+
+<p>从代码上来看，LinkedBlockingQueue结构很清晰，主要是链表存储+锁+迭代器。链表的作用是为了保存当前节点，锁有take锁和put锁，是为了保证操作时线程安全，设计两种锁是为了take和put两种操作可以同时进行，互不影响。</p>
+<h1 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h1><p>下面我们来看一看LinkedBlockingQueue的源码</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a><font size="5">初始化</font></h2><p>初始化有三种方式</p>
+<ol>
+<li>指定容量初始化</li>
+<li>默认初始化，默认大小为Integer.MAX_VALUE</li>
+<li>对已有集合数据进行初始化</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">//默认初始化</span><br><span class="line">public LinkedBlockingQueue() &#123;</span><br><span class="line">    this(Integer.MAX_VALUE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“=================================”</span><br><span class="line">//指定大小初始化</span><br><span class="line">public LinkedBlockingQueue(int capacity) &#123;</span><br><span class="line">    if (capacity &lt;= 0) throw new IllegalArgumentException();</span><br><span class="line">    this.capacity = capacity;</span><br><span class="line">    last = head = new Node&lt;E&gt;(null);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“=================================”</span><br><span class="line">//指定数据初始化</span><br><span class="line">public LinkedBlockingQueue(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">    this(Integer.MAX_VALUE);</span><br><span class="line">    final ReentrantLock putLock = this.putLock;</span><br><span class="line">    //使用put锁进行同步，即同一时刻只能有一个线程put</span><br><span class="line">    putLock.lock(); </span><br><span class="line">    try &#123;</span><br><span class="line">        int n = 0;</span><br><span class="line">        for (E e : c) &#123;</span><br><span class="line">            //集合中元素不能为空</span><br><span class="line">            if (e == null)</span><br><span class="line">                throw new NullPointerException();</span><br><span class="line">            //元素个数不能超过指定容量</span><br><span class="line">            if (n == capacity)</span><br><span class="line">                throw new IllegalStateException(&quot;Queue full&quot;);</span><br><span class="line">            //将节点插入链表尾</span><br><span class="line">            enqueue(new Node&lt;E&gt;(e));</span><br><span class="line">            ++n;</span><br><span class="line">        &#125;</span><br><span class="line">        //修改size</span><br><span class="line">        count.set(n);</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        //释放锁</span><br><span class="line">        putLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“=================================”</span><br><span class="line">//插入方法</span><br><span class="line">private void enqueue(Node&lt;E&gt; node) &#123;</span><br><span class="line">    last = last.next = node;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在上述第三种添加方法中，源码在检查容量是在for循环中，每添加一个元素就检查一次，这样不够好；最好是在for循环外(添加元素前)就检查容量是否足够，如果不够直接抛出异常。举个例子：如果当前容量为500，要添加600个元素进去，按照源码的实例，会在添加第501个元素时才抛出异常；如果在循环外面判断，则会直接抛出异常而不用添加这么多次。</p>
+<h2 id="辅助方法"><a href="#辅助方法" class="headerlink" title="辅助方法"></a><font size="5">辅助方法</font></h2><p>在正式介绍添加删除等方法时，先介绍几个后面会用到的辅助方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">//唤醒在notEmpty上阻塞的一个线程</span><br><span class="line">private void signalNotEmpty() &#123;</span><br><span class="line">    final ReentrantLock takeLock = this.takeLock;</span><br><span class="line">    takeLock.lock();</span><br><span class="line">    try &#123;</span><br><span class="line">        notEmpty.signal();</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        takeLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//唤醒在notFull上阻塞的一个线程</span><br><span class="line">private void signalNotFull() &#123;</span><br><span class="line">    final ReentrantLock putLock = this.putLock;</span><br><span class="line">    putLock.lock();</span><br><span class="line">    try &#123;</span><br><span class="line">        notFull.signal();</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        putLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//将元素添加到队尾</span><br><span class="line">private void enqueue(Node&lt;E&gt; node) &#123;</span><br><span class="line">    // assert putLock.isHeldByCurrentThread();</span><br><span class="line">    // assert last.next == null;</span><br><span class="line">    last = last.next = node;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//删除队头元素</span><br><span class="line">private E dequeue() &#123;</span><br><span class="line">    Node&lt;E&gt; h = head;</span><br><span class="line">    Node&lt;E&gt; first = h.next;</span><br><span class="line">    //后面迭代器时会讲到为什么这么做</span><br><span class="line">    h.next = h; </span><br><span class="line">    head = first;</span><br><span class="line">    E x = first.item;</span><br><span class="line">    first.item = null;</span><br><span class="line">    return x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="阻塞添加-put方法"><a href="#阻塞添加-put方法" class="headerlink" title="阻塞添加-put方法"></a><font size="5">阻塞添加-put方法</font></h2><p>支持添加的方法不止一个，比如add、put、offer，三者的区别前面已经介绍过，我们下面以put方法为例，进行学习</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">public void put(E e) throws InterruptedException &#123;</span><br><span class="line">    //如果新增元素为null，抛出异常</span><br><span class="line">    if (e == null) throw new NullPointerException();</span><br><span class="line">    </span><br><span class="line">    int c = -1;</span><br><span class="line">    Node&lt;E&gt; node = new Node&lt;E&gt;(e);</span><br><span class="line">    final ReentrantLock putLock = this.putLock;</span><br><span class="line">    final AtomicInteger count = this.count;</span><br><span class="line">    //使用put锁的可中断锁方法</span><br><span class="line">    putLock.lockInterruptibly();</span><br><span class="line">    try &#123;</span><br><span class="line">        //如果队列已满，线程阻塞</span><br><span class="line">        while (count.get() == capacity) &#123;</span><br><span class="line">            notFull.await();</span><br><span class="line">        &#125;</span><br><span class="line">        //队列未满，添加元素到链表尾</span><br><span class="line">        enqueue(node);</span><br><span class="line">        //使用的是getAndIncrement，即先获取后增加</span><br><span class="line">        //和incrementAndGet不同</span><br><span class="line">        //因此获取的c比添加后容量小1</span><br><span class="line">        c = count.getAndIncrement();</span><br><span class="line">        //如果此时链表大小小于容量，说明链表未满</span><br><span class="line">        //调用signal方法尝试唤醒一个put的等待线程</span><br><span class="line">        if (c + 1 &lt; capacity)</span><br><span class="line">            notFull.signal();</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        putLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">    //c=0，代表队列里有一个元素</span><br><span class="line">    //则会尝试唤醒一个take的等待线程</span><br><span class="line">    if (c == 0)</span><br><span class="line">        signalNotEmpty();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从源码中我们可以得到</p>
+<ol>
+<li>添加数据之前，使用put锁加锁，所以添加数据是线程安全的</li>
+<li>put方法简单地将数据添加到队尾</li>
+<li>添加时，如果队满，当前线程是会被阻塞的。</li>
+<li>新增数据成功后，在适当的时机会唤起put的等待线程(队列不满时)，或者take的等待线程。这样保证一旦满足put或take条件时立马就能唤起阻塞线程，继续运行。</li>
+</ol>
+<h2 id="阻塞添加-offer方法"><a href="#阻塞添加-offer方法" class="headerlink" title="阻塞添加-offer方法"></a><font size="5">阻塞添加-offer方法</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">//指定超时时间</span><br><span class="line">public boolean offer(E e, long timeout, TimeUnit unit)</span><br><span class="line">    throws InterruptedException &#123;</span><br><span class="line"></span><br><span class="line">    if (e == null) throw new NullPointerException();</span><br><span class="line">    long nanos = unit.toNanos(timeout);</span><br><span class="line">    int c = -1;</span><br><span class="line">    final ReentrantLock putLock = this.putLock;</span><br><span class="line">    final AtomicInteger count = this.count;</span><br><span class="line">    putLock.lockInterruptibly();</span><br><span class="line">    try &#123;</span><br><span class="line">        while (count.get() == capacity) &#123;</span><br><span class="line">            //如果nanos&lt;=0说明超过等待时间，</span><br><span class="line">            //直接返回false</span><br><span class="line">            if (nanos &lt;= 0)</span><br><span class="line">                return false;</span><br><span class="line">            nanos = notFull.awaitNanos(nanos);</span><br><span class="line">        &#125;</span><br><span class="line">        enqueue(new Node&lt;E&gt;(e));</span><br><span class="line">        c = count.getAndIncrement();</span><br><span class="line">        if (c + 1 &lt; capacity)</span><br><span class="line">            notFull.signal();</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        putLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">    if (c == 0)</span><br><span class="line">        signalNotEmpty();</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“=================================”</span><br><span class="line">//不指定时间的offer方法</span><br><span class="line">public boolean offer(E e) &#123;</span><br><span class="line">    if (e == null) throw new NullPointerException();</span><br><span class="line">    final AtomicInteger count = this.count;</span><br><span class="line">    //如果队列满，直接返回false</span><br><span class="line">    if (count.get() == capacity)</span><br><span class="line">        return false;</span><br><span class="line"></span><br><span class="line">    int c = -1;</span><br><span class="line">    Node&lt;E&gt; node = new Node&lt;E&gt;(e);</span><br><span class="line"></span><br><span class="line">    final ReentrantLock putLock = this.putLock;</span><br><span class="line">    putLock.lock();</span><br><span class="line">    try &#123;</span><br><span class="line">        //双重检查，保证队列未满</span><br><span class="line">        //可能其他线程进行了put操作，导致队列满</span><br><span class="line">        if (count.get() &lt; capacity) &#123;</span><br><span class="line">            enqueue(node);</span><br><span class="line">            c = count.getAndIncrement();</span><br><span class="line">            if (c + 1 &lt; capacity)</span><br><span class="line">                notFull.signal();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        putLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (c == 0)</span><br><span class="line">        signalNotEmpty();</span><br><span class="line">    //如果添加成功返回true</span><br><span class="line">    //否则返回false</span><br><span class="line">    return c &gt;= 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>指定等待时间的offer方法和put的区别只在于调用的阻塞方法不同，而不指定等待时间的offer方法如果队列满会直接返回false，不会进行等待。</p>
+<h2 id="阻塞删除-take方法"><a href="#阻塞删除-take方法" class="headerlink" title="阻塞删除-take方法"></a><font size="5">阻塞删除-take方法</font></h2><p>删除的方法也有很多，我们以take方法为例进行学习</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public E take() throws InterruptedException &#123;</span><br><span class="line">    E x;</span><br><span class="line">    int c = -1;</span><br><span class="line">    final AtomicInteger count = this.count;</span><br><span class="line">    final ReentrantLock takeLock = this.takeLock;</span><br><span class="line">    takeLock.lockInterruptibly();</span><br><span class="line">    try &#123;</span><br><span class="line">        while (count.get() == 0) &#123;</span><br><span class="line">            notEmpty.await();</span><br><span class="line">        &#125;</span><br><span class="line">        //获取头节点值</span><br><span class="line">        x = dequeue();</span><br><span class="line">        //先获取后减1</span><br><span class="line">        c = count.getAndDecrement();</span><br><span class="line">        //如果此时队不为空，唤醒一个take的阻塞线程</span><br><span class="line">        if (c &gt; 1)</span><br><span class="line">            notEmpty.signal();</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        takeLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">    //c==capacity说明队列还有一个空闲空间</span><br><span class="line">    //尝试唤醒一个put方法的阻塞线程</span><br><span class="line">    if (c == capacity)</span><br><span class="line">        signalNotFull();</span><br><span class="line">    return x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>take方法的流程很简单，在take锁的同步块内进行，整体思想和put方法类似，同样的poll方法和前面的offer方法也很类似。下面我们紧接着介绍一下查看方法</p>
+<h2 id="查看-peek方法"><a href="#查看-peek方法" class="headerlink" title="查看-peek方法"></a><font size="5">查看-peek方法</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public E peek() &#123;</span><br><span class="line">    if (count.get() == 0)</span><br><span class="line">        return null;</span><br><span class="line">    final ReentrantLock takeLock = this.takeLock;</span><br><span class="line">    takeLock.lock();</span><br><span class="line">    try &#123;</span><br><span class="line">        Node&lt;E&gt; first = head.next;</span><br><span class="line">        if (first == null)</span><br><span class="line">            return null;</span><br><span class="line">        else</span><br><span class="line">            return first.item;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        takeLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，peek方法使用的也是take锁，这很容易理解。</p>
+<h1 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h1><p>不知道前面你注意到没有，在删除节点调用dequeue()方法删除节点时，使用的是h.next=h，而不是直接将h.next=null，这是什么原因呢？看完了迭代器你就会知道</p>
+<h2 id="辅助方法-1"><a href="#辅助方法-1" class="headerlink" title="辅助方法"></a><font size="5">辅助方法</font></h2><p>在介绍迭代器之前，先介绍三个个辅助方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">//将take锁和put锁全部获得</span><br><span class="line">void fullyLock() &#123;</span><br><span class="line">    putLock.lock();</span><br><span class="line">    takeLock.lock();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//释放两锁</span><br><span class="line">void fullyUnlock() &#123;</span><br><span class="line">    takeLock.unlock();</span><br><span class="line">    putLock.unlock();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//删除方法</span><br><span class="line">void unlink(Node&lt;E&gt; p, Node&lt;E&gt; trail) &#123;</span><br><span class="line">    p.item = null;</span><br><span class="line">    trail.next = p.next;</span><br><span class="line">    if (last == p)</span><br><span class="line">        last = trail;</span><br><span class="line">    //由于进行了删除，因此如果当前集合中还有一个容量</span><br><span class="line">    //则唤醒一个put方法上等待的线程</span><br><span class="line">    if (count.getAndDecrement() == capacity)</span><br><span class="line">        notFull.signal();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这是可以理解的，在迭代过程中必须保证既不能添加也不能删除和查看。</p>
+<h2 id="迭代方法"><a href="#迭代方法" class="headerlink" title="迭代方法"></a><font size="5">迭代方法</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line">//同样的，返回一个Iterator实现类对象</span><br><span class="line">public Iterator&lt;E&gt; iterator() &#123;</span><br><span class="line">    return new Itr();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">“=========================”</span><br><span class="line">//迭代器实现类</span><br><span class="line">private class Itr implements Iterator&lt;E&gt; &#123;</span><br><span class="line">    //下一次迭代节点</span><br><span class="line">    private Node&lt;E&gt; current;</span><br><span class="line">    //上一次迭代节点</span><br><span class="line">    private Node&lt;E&gt; lastRet;</span><br><span class="line">    private E currentElement;</span><br><span class="line"></span><br><span class="line">    Itr() &#123;</span><br><span class="line">        //进入同步区域</span><br><span class="line">        fullyLock();</span><br><span class="line">        try &#123;</span><br><span class="line">            current = head.next;</span><br><span class="line">            if (current != null)</span><br><span class="line">                currentElement = current.item;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            fullyUnlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean hasNext() &#123;</span><br><span class="line">        return current != null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //获取下一个节点</span><br><span class="line">    private Node&lt;E&gt; nextNode(Node&lt;E&gt; p) &#123;</span><br><span class="line">        for (;;) &#123;</span><br><span class="line">            Node&lt;E&gt; s = p.next;</span><br><span class="line">            //此时进行过take操作，并且current指向已经被删除的头节点</span><br><span class="line">            if (s == p)</span><br><span class="line">                return head.next;</span><br><span class="line">            if (s == null || s.item != null)</span><br><span class="line">                return s;</span><br><span class="line">            p = s;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public E next() &#123;</span><br><span class="line">        fullyLock();</span><br><span class="line">        try &#123;</span><br><span class="line">            </span><br><span class="line">            if (current == null)</span><br><span class="line">                throw new NoSuchElementException();</span><br><span class="line">            //获取当前迭代节点值</span><br><span class="line">            E x = currentElement;</span><br><span class="line">            //赋值上一次迭代节点</span><br><span class="line">            lastRet = current;</span><br><span class="line">            //获取下一次迭代节点</span><br><span class="line">            current = nextNode(current);</span><br><span class="line">            //此时说明链表为空</span><br><span class="line">            currentElement = (current == null) ? null : current.item;</span><br><span class="line">            return x;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            fullyUnlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void remove() &#123;</span><br><span class="line">        //第一次迭代或者当前节点已经被删除</span><br><span class="line">        if (lastRet == null)</span><br><span class="line">            throw new IllegalStateException();</span><br><span class="line">        fullyLock();</span><br><span class="line">        try &#123;</span><br><span class="line">            Node&lt;E&gt; node = lastRet;</span><br><span class="line">            lastRet = null;</span><br><span class="line">            for (Node&lt;E&gt; trail = head, p = trail.next;</span><br><span class="line">                 p != null;</span><br><span class="line">                 trail = p, p = p.next) &#123;</span><br><span class="line">                //找到上次迭代的节点进行删除</span><br><span class="line">                if (p == node) &#123;</span><br><span class="line">                    unlink(p, trail);</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            fullyUnlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上就是迭代器方法源码，主要说以下一点</p>
+<ol>
+<li><b>nextNode方法中为什么会存在if (s == p)分支？</b><br>结合前面dequeue方法的源码我们可以得出结论，在dequeue方法中，删除第一个节点后，并不是将next域置为null，而是指向自身。关键就在这里，当删除节点为current指向的节点时，如果将next节点置为null，那么迭代将无法继续。因此将next指向自身，在迭代方法中进行额外判断。<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1>LinkedBlockingQueue队列使用带头节点的单向链表+ReentrantLick锁来实现阻塞队列，实现思想比较简单，但是其中同步的细节和迭代器的实现很棒，值得我们学习。<hr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/源码/" rel="tag"><i class="fa fa-tag"></i>源码</a>
+            
+              <a href="/tags/LinkedBlockingQueue集合/" rel="tag"><i class="fa fa-tag"></i>LinkedBlockingQueue集合</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/11/13/CopyOnWriteArrayList源码解析/" rel="next" title="CopyOnWriteArrayList源码解析">
+                  <i class="fa fa-chevron-left"></i> CopyOnWriteArrayList源码解析
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#整体架构"><span class="nav-number">1.</span> <span class="nav-text">整体架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#继承体系"><span class="nav-number">1.1.</span> <span class="nav-text">继承体系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类注释"><span class="nav-number">1.2.</span> <span class="nav-text">类注释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#成员属性"><span class="nav-number">1.3.</span> <span class="nav-text">成员属性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#源码分析"><span class="nav-number">2.</span> <span class="nav-text">源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">2.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#辅助方法"><span class="nav-number">2.2.</span> <span class="nav-text">辅助方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阻塞添加-put方法"><span class="nav-number">2.3.</span> <span class="nav-text">阻塞添加-put方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阻塞添加-offer方法"><span class="nav-number">2.4.</span> <span class="nav-text">阻塞添加-offer方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阻塞删除-take方法"><span class="nav-number">2.5.</span> <span class="nav-text">阻塞删除-take方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看-peek方法"><span class="nav-number">2.6.</span> <span class="nav-text">查看-peek方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#迭代器"><span class="nav-number">3.</span> <span class="nav-text">迭代器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#辅助方法-1"><span class="nav-number">3.1.</span> <span class="nav-text">辅助方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迭代方法"><span class="nav-number">3.2.</span> <span class="nav-text">迭代方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">4.</span> <span class="nav-text">小结</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
