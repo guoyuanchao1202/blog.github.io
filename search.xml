@@ -1,6 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[数组中消失的数字]]></title>
+    <url>%2F2019%2F11%2F18%2F%E6%95%B0%E7%BB%84%E4%B8%AD%E6%B6%88%E5%A4%B1%E7%9A%84%E6%95%B0%E5%AD%97%2F</url>
+    <content type="text"><![CDATA[LeetCode第四百四十八题难度：简单题目：给定一个范围在1≤a[i]≤n(n=数组大小)的整型数组，数组中的元素一些出现了两次，另一些只出现一次。找到所有在[1,n]范围之间没有出现在数组中的数字。(不使用额外空间并且O(n)复杂度，返回的数组不算) 12345示例:输入:[4,3,2,7,8,2,3,1]输出:[5,6] 算法思想这道题，我们可以在遍历数组的过程中一边遍历一边将数组元素放到正确的位置(即1放在a[0]中)。第二次遍历时如果数组中元素和下标不对应的即为缺失元素。 代码实现1234567891011121314151617181920212223242526public List&lt;Integer&gt; findDisappearedNumbers(int[] nums) &#123; List&lt;Integer&gt; list = new ArrayList(); for(int i = 0;i &lt; nums.length;i++)&#123; //nums[i] != nums[nums[i] - 1]，说明没有放到正确位置上 //当nums[i] == nums[nums[i] - 1]时有两种情况 //1. 元素放置到了正确的位置上 //2. 元素发生重复，并且其中一个放置到了正确的位置 //要用while循环而不能用if，因为交换后的元素可能仍没有在正确位置上 while(nums[i]!=nums[nums[i]-1])&#123; swap(nums,i,nums[i]-1); &#125; &#125; for(int i = 0; i &lt; nums.length;i++)&#123; if(i + 1 != nums[i])&#123; list.add(i + 1); &#125; &#125; return list; &#125;//不使用额外变量交换元素private void swap(int[] nums,int index1,int index2)&#123; nums[index1]=nums[index1]+nums[index2]; nums[index2]=nums[index1]-nums[index2]; nums[index1]=nums[index1]-nums[index2];&#125; 代码注释比较明了，如果不明白最好debug以下就好，主要在于在遍历数组将元素放在正确位置时要使用while循环而不是if循环]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>数组</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[压缩字符串]]></title>
+    <url>%2F2019%2F11%2F17%2F%E5%8E%8B%E7%BC%A9%E5%AD%97%E7%AC%A6%E4%B8%B2%2F</url>
+    <content type="text"><![CDATA[LeetCode第四百四十三题难度：简单题目：给定一组字符，使用原地算法将其压缩。压缩后的长度必须始终小于或等于原数组长度。数组的每个元素应该是长度为1 的字符（不是 int 整数类型）。在完成原地修改输入数组后，返回数组的新长度。(你能否仅使用O(1) 空间解决问题) 12345678910111213141516171819202122232425示例 1：输入：[&quot;a&quot;,&quot;a&quot;,&quot;b&quot;,&quot;b&quot;,&quot;c&quot;,&quot;c&quot;,&quot;c&quot;]输出：返回6，输入数组的前6个字符应该是：[&quot;a&quot;,&quot;2&quot;,&quot;b&quot;,&quot;2&quot;,&quot;c&quot;,&quot;3&quot;]说明：&quot;aa&quot;被&quot;a2&quot;替代。&quot;bb&quot;被&quot;b2&quot;替代。&quot;ccc&quot;被&quot;c3&quot;替代。示例 2：输入：[&quot;a&quot;]输出：返回1，输入数组的前1个字符应该是：[&quot;a&quot;]说明：没有任何字符串被替代。示例 3：输入：[&quot;a&quot;,&quot;b&quot;,&quot;b&quot;,&quot;b&quot;,&quot;b&quot;,&quot;b&quot;,&quot;b&quot;,&quot;b&quot;,&quot;b&quot;,&quot;b&quot;,&quot;b&quot;,&quot;b&quot;,&quot;b&quot;]输出：返回4，输入数组的前4个字符应该是：[&quot;a&quot;,&quot;b&quot;,&quot;1&quot;,&quot;2&quot;]。说明：由于字符&quot;a&quot;不重复，所以不会被压缩。&quot;bbbbbbbbbbbb&quot;被“b12”替代。注意每个数字在数组中都有它自己的位置。 思想分析设置三个变量left、right、size，初始化都为0 right向后遍历，直到和left指向的字符不相等为止 更新size，并且将当前字符的数量right-left以字符串形式添加进去 重复1、2，直到数组遍历完毕 代码实现123456789101112131415161718192021public int compress(char[] chars) &#123; //双指针法 int left = 0; int size = 0; for (int right = 0; right &lt;= chars.length; right++) &#123; //当right遍历完数组或者遍历到不相等字符时 if (right == chars.length || chars[right] != chars[left]) &#123; // 更新字符 chars[size++] = chars[left]; // 更新计数，当个数大于 1 时才更新 if (right - left &gt; 1) &#123; for(char c : (&quot;&quot;+(right-left)).toCharArray()) &#123; chars[size++] = c; &#125; &#125; //更新左边指针 left = right; &#125; &#125; return size;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>字符串</tag>
+        <tag>双指针法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[字符串相加]]></title>
+    <url>%2F2019%2F11%2F17%2F%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9B%B8%E5%8A%A0%2F</url>
+    <content type="text"><![CDATA[LeetCode第四百一十五题难度：简单题目：给定两个字符串形式的非负整数num1和num2，计算它们的和。 12345注意：num1 和num2 的长度都小于 5100.num1 和num2 都只包含数字 0-9.num1 和num2 都不包含任何前导零。你不能使用任何內建 BigInteger 库， 也不能直接将输入的字符串转换为整数形式 思想分析和链表相加类似，倒着遍历两字符串，短的字符串补0，话不多说，直接上代码。 代码实现12345678910111213141516171819202122232425public String addStrings(String num1, String num2) &#123; //判断特殊情况 if(num1==&quot;&quot;||num1==null)&#123; return num2; &#125; if(num2==&quot;&quot;||num2==null)&#123; return num1; &#125; int carry=0; int len1=num1.length(); int len2=num2.length(); StringBuilder sb=new StringBuilder(); //倒着遍历字符串 for(int i=len1-1,j=len2-1;i&gt;=0||j&gt;=0;i--,j--)&#123; int x=i&gt;=0?num1.charAt(i)-48:0; int y=j&gt;=0?num2.charAt(j)-48:0; int sum=x+y+carry; carry=sum/10; sb.append(sum%10); &#125; if(carry==1)&#123; sb.append(1); &#125; return sb.reverse().toString();&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>字符串</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[第三大的数]]></title>
+    <url>%2F2019%2F11%2F17%2F%E7%AC%AC%E4%B8%89%E5%A4%A7%E7%9A%84%E6%95%B0%2F</url>
+    <content type="text"><![CDATA[LeetCode第四百一十四题难度：简单题目：给定一个非空数组，返回此数组中第三大的数。如果不存在，则返回数组中最大的数。要求算法时间复杂度必须是O(n)。 123456789101112131415示例 1:输入: [3, 2, 1]输出: 1解释: 第三大的数是 1.示例 2:输入: [1, 2]输出: 2解释: 第三大的数不存在, 所以返回最大的数 2 .示例 3:输入: [2, 2, 3, 1]输出: 1解释: 注意，要求返回第三大的数，是指第三大且唯一出现的数。存在两个值为2的数，它们都排第二。 思想分析这道题的主要思路在于最开始维护三个变量，分别存放前三大的数，在遍历数组时如果有数字满足条件，就更新这三个数。难点在于如何在初始化得到三个前三大的数。下面采用了一种巧妙地方法，直接上代码 代码实现12345678910111213141516171819public static int thirdMax(int[] nums) &#123; //用long保证max的初始值最小 long max = Long.MIN_VALUE; long mid = Long.MIN_VALUE; long min = Long.MIN_VALUE; for (int i = 0; i &lt; nums.length; i++) &#123; if (nums[i] &gt; max) &#123; min = mid; mid = max; max = nums[i]; &#125; else if (nums[i] &gt; mid &amp;&amp; nums[i] &lt; max) &#123; min = mid; mid = nums[i]; &#125; else if ((nums[i] &gt; min &amp;&amp; nums[i] &lt; mid)) &#123; min = nums[i]; &#125; &#125; return min==Long.MIN_VALUE?(int)max:(int)min;&#125; 这道题巧妙之处在于初始化三个变量，需要好好揣摩。]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>数组</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[最长回文串]]></title>
+    <url>%2F2019%2F11%2F17%2F%E6%9C%80%E9%95%BF%E5%9B%9E%E6%96%87%E4%B8%B2%2F</url>
+    <content type="text"><![CDATA[LeetCode第四百零九题难度：简单题目：给定一个包含大写字母和小写字母的字符串，找到通过这些字母构造成的最长的回文串。在构造过程中，请注意区分大小写。比如 “Aa” 不能当做一个回文字符串。 1234567示例 1:输入:&quot;abccccdd&quot;输出:7解释:我们可以构造的最长的回文串是&quot;dccaccd&quot;, 它的长度是 7 思想分析我们分析，如果要一个字母要成为回文串的一部分，那么这个字母至少出现两次。并且如果回文串的长度小于字符串长度，那么回文串长度还要加1，因为位于回文串中间的字符可以只出现一次。由于说明存在大小写字母，因此要使用两个大小为26的数组进行统计。 代码实现12345678910111213141516171819202122232425262728293031323334353637383940public int longestPalindrome(String s) &#123; //判断特殊情况 if(s==&quot;&quot;||s==null)&#123; return 0; &#125; int len; if((len=s.length())==1)&#123; return 1; &#125; //分别用于统计大写字母和小写字母的个数 int[] little=new int[26]; int[] big=new int[26]; //遍历字符串 for(int i=0;i&lt;len;i++)&#123; int index; if((index=s.charAt(i))&gt;&apos;Z&apos;)&#123; big[index-&apos;a&apos;]++; &#125; else&#123; little[index-&apos;A&apos;]++; &#125; &#125; //统计回文长度 int res=0; for(int i=0;i&lt;26;i++)&#123; if(little[i]%2==0)&#123; res+=little[i]; &#125; else&#123; res+=little[i]-1; &#125; if(big[i]%2==0)&#123; res+=big[i]; &#125; else&#123; res+=big[i]-1; &#125; &#125; return res&lt;len?res+1:res;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>字符串</tag>
+        <tag>回文</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[数字转十六进制数]]></title>
+    <url>%2F2019%2F11%2F16%2F%E6%95%B0%E5%AD%97%E8%BD%AC%E5%8D%81%E5%85%AD%E8%BF%9B%E5%88%B6%E6%95%B0%2F</url>
+    <content type="text"><![CDATA[LeetCode第四百零五题难度：简单题目：给定一个整数，编写一个算法将这个数转换为十六进制数。对于负整数，我们通常使用补码运算方法。 1234567891011示例 1：输入:26输出:&quot;1a&quot;示例 2：输入:-1输出:&quot;ffffffff&quot; 思想分析十六进制数由16个字符组成:0、1、2、3、4、5、6、7、8、9、a、b、c、d、e、f。因此可以使用一个数组来存储这些字符。将数字每四位和15做与运算，映射到数组的相应位置 代码实现1234567891011121314public String toHex(int num) &#123; if(num==0)&#123; return &quot;0&quot;; &#125; char[] count=&quot;0123456789abcdef&quot;.toCharArray(); int mark=15; String s=&quot;&quot;; while(num!=0)&#123; s=count[num&amp;mark]+s; //每四位二进制转换成一位16进制数 num&gt;&gt;&gt;=4; &#125; return s;&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>位运算</tag>
+        <tag>LeetCode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[左叶子之和]]></title>
+    <url>%2F2019%2F11%2F16%2F%E5%B7%A6%E5%8F%B6%E5%AD%90%E4%B9%8B%E5%92%8C%2F</url>
+    <content type="text"><![CDATA[LeetCode第四百零四题难度：简单题目：计算给定二叉树的所有左叶子之和。 123456789示例： 3 / \ 9 20 / \ 15 7在这个二叉树中，有两个左叶子，分别是 9 和 15，所以返回 24 思想分析对于二叉树，大部分都可以使用递归，这个题当然也可以。我们来分析一下 如果当前节点为空，返回0(递归出口) 如果当前节点的左子树为空，那么当前节点的左叶子和就是当前节点右子树的左叶子之和 如果当前节点的左子树为叶子，那么当前节点的左叶子和就是当前节点的左叶子+当前节点的右子树的左叶子和 如果当前节点左右子树都存在，那么当前节点的左叶子和就是当前节点的左子树左叶子和+当前节点的右子树的左叶子和 代码实现1234567891011121314public int sumOfLeftLeaves(TreeNode root) &#123; if (root == null) return 0; //如果左子树为空，那么只需返回右子树的左叶子和 if (root.left == null) return sumOfLeftLeaves(root.right); // 如果左子树为叶子节点，那么需返回右子树的左叶子和 + 左孩子的值 if (root.left.left == null &amp;&amp; root.left.right == null) return sumOfLeftLeaves(root.right) + root.left.val; // 其他情况需返回左右子树的左叶子和之和 return sumOfLeftLeaves(root.left) + sumOfLeftLeaves(root.right); &#125; 递归的代码简单明了，关键在于如何捋清思路。]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>二叉树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[判断子序列]]></title>
+    <url>%2F2019%2F11%2F16%2F%E5%88%A4%E6%96%AD%E5%AD%90%E5%BA%8F%E5%88%97%2F</url>
+    <content type="text"><![CDATA[LeetCode第三百九十二题难度：简单题目：给定字符串s和t，判断s是否为t的子序列。你可以认为s和t中仅包含英文小写字母。字符串t可能会很长（长度 ~= 500,000），而s是个短字符串（长度 &lt;=100）。字符串的一个子序列是原始字符串删除一些（也可以不删除）字符而不改变剩余字符相对位置形成的新字符串。（例如，”ace”是”abcde”的一个子序列，而”aec”不是）。 1234567示例 1:s = &quot;abc&quot;, t = &quot;ahbgdc&quot;返回 true.示例 2:s = &quot;axc&quot;, t = &quot;ahbgdc&quot;返回 false. 思想分析这道题需要结合String类的indexOf()方法来做 同时遍历两字符串，如果都没有遍历完并且s串当前字符位于t串中(并且在上一个字符的后面) 遍历下一个字符串，记录当前字符在t串中出现的位置(用于下次循环使用) 循环结束后，判断s串是否遍历完毕，如果遍历完毕，说明s是t的子序列，返回true；否则返回false 代码实现123456789public boolean isSubsequence(String s, String t) &#123; int index = 0,i = 0; //从s的上一个字符在t中的位置+1开始往后搜索 while(index &lt; s.length() &amp;&amp; t.indexOf(s.charAt(index),i) &gt;= i)&#123; i = t.indexOf(s.charAt(index),i) + 1; index++; &#125; return index == s.length();&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>字符串</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[找不同]]></title>
+    <url>%2F2019%2F11%2F16%2F%E6%89%BE%E4%B8%8D%E5%90%8C%2F</url>
+    <content type="text"><![CDATA[LeetCode第三百八十九题难度：简单题目：给定两个字符串 s 和 t，它们只包含小写字母。字符串t由字符串s随机重排，然后在随机位置添加一个字母。请找出在 t 中被添加的字母。 12345678输入：s = &quot;abcd&quot;t = &quot;abcde&quot;输出：e解释：&apos;e&apos; 是那个被添加的字母。 思想分析又是一道字符串问题，并且题目说了，只包含小写字母；这时，我们第一时间应该想到可以使用大小为26的数组干点儿什么。想到这里就很简单了，不多说直接上代码 代码实现12345678910111213141516171819public char findTheDifference(String s, String t) &#123; //边界条件 if(s==&quot;&quot;||s==null) return t.charAt(0); int[] res=new int[26]; int lenS=s.length(); int lenT=t.length(); //遇到t中字符，相应位置+1 for(int i=0;i&lt;lenT;i++) res[t.charAt(i)-&apos;a&apos;]++; //遇到s中字符，相应位置-1 for(int i=0;i&lt;lenS;i++) res[s.charAt(i)-&apos;a&apos;]--; //数组中值为1的下标即为不同的字符 for(int i=0;i&lt;26;i++) if(res[i]==1) return (char)(i+&apos;a&apos;); throw new RuntimeException();&#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>字符串</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[字符串中唯一字符]]></title>
+    <url>%2F2019%2F11%2F16%2F%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E5%94%AF%E4%B8%80%E5%AD%97%E7%AC%A6%2F</url>
+    <content type="text"><![CDATA[LeetCode第三百八十七题难度：简单题目：给定一个字符串，找到它的第一个不重复的字符，并返回它的索引。如果不存在，则返回 -1。(假设只包含小写字符) 12345s = &quot;leetcode&quot;返回 0.s = &quot;loveleetcode&quot;,返回 2. 思想分析这道题，我想出了两种方法解决，一种直接使用哈希表，一种较为巧妙，组要结合String类提供的方法解决 哈希表，遍历字符串，以字符为键，字符出现的次数为值，存入到哈希表中。最后再遍历字符串，找到字符串中第一个值为1的字符。 由于题目说明只包含小写字符，那么遍历[a-z]26个小写字母，记录每个字符再字符串中第一次出现的位置(indexOf())first 如果first==-1，说明字符串中不包含该字符，直接进行下一次循环 再找到该字符再字符串中最后一次出现的位置(lastIndexOf())last，如果first==last(说明该字符只出现一次)。 代码实现1234567891011121314151617181920212223//哈希表实现比较简单，这里说下第二种思路public int firstUniqChar(String s) &#123; //判断特殊情况 if (s == null || s.length() == 0) &#123; return -1; &#125; int min = s.length(); //遍历26个小写字符 for (int i = &apos;a&apos;; i &lt;= &apos;z&apos;; i++) &#123; int first = s.indexOf(i); //如果当前字符不在字符串中，直接判断下一个字符 if (first == -1) &#123; continue; &#125; //如果当前字符在字符串中只出现了一次并且出现的位置最靠前 //更新min if (first == s.lastIndexOf(i) &amp;&amp; min &gt; first) &#123; min = first; &#125; &#125; return min == s.length() ? -1 : min;&#125; 在字符串问题中，会经常使用到大小为26的数组来模拟哈希表结构。]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>字符串</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[赎金信]]></title>
+    <url>%2F2019%2F11%2F16%2F%E8%B5%8E%E9%87%91%E4%BF%A1%2F</url>
+    <content type="text"><![CDATA[LeetCode第三百八十三题难度：简单题目：给定一个赎金信 (ransom) 字符串和一个杂志(magazine)字符串，判断第一个字符串ransom能不能由第二个字符串magazines里面的字符构成。如果可以构成，返回 true ；否则返回 false。(两个字符串均只含有小写字母) 123canConstruct(&quot;a&quot;, &quot;b&quot;) -&gt; falsecanConstruct(&quot;aa&quot;, &quot;ab&quot;) -&gt; falsecanConstruct(&quot;aa&quot;, &quot;aab&quot;) -&gt; true 思想分析题目意思很简单，就是判断一个字符串中是否能由另一个字符串中的字符组成。可以使用哈希结构解决，由于题目说明了只包含小写字母，因此可以使用一个大小为26的数据来代替哈希表 代码实现123456789101112131415161718192021222324252627282930313233343536373839404142434445public boolean canConstruct(String ransomNote, String magazine) &#123; //如果没有说明只包含小写字母 //特殊边界情况 // if(ransomNote==&quot;&quot;||ransomNote==null) // return true; // if(magazine==null||magazine==&quot;&quot;) // return false; // if(ransomNote.length()&gt;magazine.length()) // return false; // Map&lt;Character,Integer&gt; map=new HashMap&lt;&gt;(); // //将字符串转化为数组 // char[] m=magazine.toCharArray(); // char[] r=ransomNote.toCharArray(); // for(int i=0;i&lt;m.length;i++)&#123; // if(map.containsKey(m[i])) // map.put(m[i],map.get(m[i])+1); // else // map.put(m[i],1); // &#125; // for(int i=0;i&lt;r.length;i++)&#123; // if(map.containsKey(r[i]))&#123; // int count=map.get(r[i]); // map.put(r[i],--count); // if(count&lt;0) // return false; // &#125; // else // return false; // &#125; // return true; //指明了只包含小写字母，因此可以使用数组代替哈希表 int[] num=new int[26]; char[] m=magazine.toCharArray(); char[] r=ransomNote.toCharArray(); //遇到杂志上的字符，哈希表相应位置+1 for(int i=0;i&lt;m.length;i++) num[m[i]-&apos;a&apos;]++; //遇到赎金信上的字符，响应位置-1 //如果&lt;0说明不能组成赎金信，返回false for(int i=0;i&lt;r.length;i++) if(--num[r[i]-&apos;a&apos;]&lt;0) return false; return true; &#125;]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>字符串</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[设计模式之生产者-消费者模式]]></title>
     <url>%2F2019%2F11%2F16%2F%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F%2F</url>
     <content type="text"><![CDATA[既然前面介绍了阻塞队列，现在就用阻塞队列ArrayBlockingQueue实现一个生产者消费者模式。在本文中，除了使用Java自带的同步容器，还将使用ReentrantLock+Condition的方式实现一个生产者-消费者模式。 概述生产者-消费者模式，生产者消费者模式就是通过一个容器来解决生产者和消费者的强耦合问题。生产者和消费者彼此之间不直接通讯，而通过阻塞队列来进行通讯，所以生产者生产完数据之后不用等待消费者处理，直接扔给阻塞队列，消费者不找生产者要数据，而是直接从阻塞队列里取，阻塞队列就相当于一个缓冲区，平衡了生产者和消费者的处理能力。这个阻塞队列就是用来给生产者和消费者解耦的。在线程世界里，生产者就是生产数据的线程，消费者就是消费数据的线程。在多线程开发当中，如果生产者处理速度很快，而消费者处理速度很慢，那么生产者就必须等待消费者处理完，才能继续生产数据。同样的道理，如果消费者的处理能力大于生产者，那么消费者就必须等待生产者。为了解决这种生产消费能力不均衡的问题，所以便有了生产者和消费者模式 ArrayBlockingQueue实现我们先来个简单地方式，使用阻塞队列来实现。后面你会发现，使用该方法其实也就是免去了自己创建仓库类的步骤。 商品类既然是生产者-消费者模型，那肯定要有一个商品类 123456789101112public class som &#123; private final int count; public som(int count) &#123; this.count = count; &#125; @Override public String toString() &#123; return &quot;商品ID: &quot; + count; &#125;&#125; 商品类很简单，只有一个用于标识商品的count和便于打印商品的toString()方法 生产者123456789101112131415161718192021222324252627public class Producer implements Runnable &#123; //缓冲区 private ArrayBlockingQueue&lt;som&gt; queue; //该线程生产的商品数 AtomicInteger count = new AtomicInteger(0); public Producer(ArrayBlockingQueue&lt;som&gt; queue) &#123; this.queue = queue; &#125; @Override public void run() &#123; try &#123; //生产者一直生产商品 while (true) &#123; som s = new som(count.incrementAndGet()); //将商品添加到缓冲区，使用put方法 //如果缓冲区满则阻塞 queue.put(s); System.out.println(&quot;|生产线程&quot; + Thread.currentThread().getId() + &quot; 生产 &quot; + s); &#125; &#125; catch (InterruptedException e) &#123; e.printStackTrace(); &#125; &#125;&#125; 消费者12345678910111213141516171819202122public class Consumer implements Runnable &#123; //缓冲区 private ArrayBlockingQueue&lt;som&gt; queue; public Consumer(ArrayBlockingQueue&lt;som&gt; queue) &#123; this.queue = queue; &#125; @Override public void run() &#123; try &#123; while (true) &#123; //使得消费者消费速度比生产速度慢 Thread.sleep(2000); //take()方法，如果队列为空则阻塞 System.out.println(&quot;|消费线程&quot; + Thread.currentThread().getId() + &quot; 消费 &quot; + queue.take()); &#125; &#125; catch (InterruptedException e) &#123; e.printStackTrace(); &#125; &#125;&#125; 测试12345678910111213141516public class ProducerAndConsumer &#123; public static void main(String[] args) &#123; ExecutorService exec = Executors.newCachedThreadPool(); ArrayBlockingQueue&lt;som&gt; queue = new ArrayBlockingQueue&lt;&gt;(10,true); //启动三个生产者线程 for (int i = 0; i &lt; 3; i++) &#123; exec.execute(new Producer(queue)); &#125; //启动10个消费者线程 for (int i = 0; i &lt; 10; i++) &#123; exec.execute(new Consumer(queue)); &#125; &#125;&#125; 以上就是使用阻塞队列ArrayBlockingQueue实现生产者-消费者模式。 ReentrantLock+Concition实现接下来我们使用ReentrantLock+Condition创建缓冲区代替阻塞队列来实现生产者-消费者模式 仓库个人实现，正确性应该没问题，性能应该还好。 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135public class MyList&lt;E&gt; &#123; //存放数据的数组 E[] list; //下一次添加和删除的索引 private int putIndex; private int takeIndex; //记录缓冲区元素个数 private AtomicInteger count = new AtomicInteger(0); //数组容量(缓冲区大小) private int cal; //put锁和take锁，分别对put()和take()加锁 private ReentrantLock putlock; private Condition isFull; private ReentrantLock takelock; private Condition isEmpty; public MyList(int cal, ReentrantLock putlock, ReentrantLock takelock) &#123; list = (E[]) new Object[count]; cal = cal; this.putlock = putlock; this.takelock = takelock; this.isEmpty = takelock.newCondition(); this.isFull = putlock.newCondition(); &#125; /** * 唤醒在take方法上阻塞的线程 */ private void isEmpty() &#123; try &#123; takelock.lock(); if (count.get() &gt; 0) &#123; isEmpty.signalAll(); &#125; &#125;finally &#123; takelock.unlock(); &#125; &#125; /** * 唤醒在put方法上阻塞的线程 */ private void isFull() &#123; try &#123; putlock.lock(); if (count.get() &lt; list.length) &#123; isFull.signalAll(); &#125; &#125;finally &#123; putlock.unlock(); &#125; &#125; /** * 同时获得两把锁 */ private void AllLock() &#123; putlock.lock(); takelock.lock(); &#125; /** * 同时释放两把锁 */ private void AllUnlock() &#123; takelock.unlock(); putlock.unlock(); &#125; /** * 获取当前缓冲区元素个数 * @return */ public int size() &#123; try &#123; AllLock(); return count.get(); &#125;finally &#123; AllUnlock(); &#125; &#125; /** * 像缓冲区添加元素 * @param e * @throws InterruptedException */ public void put(E e) throws InterruptedException &#123; //获取put锁 putlock.lockInterruptibly(); try &#123; //如果当前缓冲区满，则阻塞 while (count.get() == list.length) &#123; isFull.await(); &#125; //将元素添加到指定索引位置 list[putIndex] = e; count.getAndIncrement(); //循环 if (++putIndex == list.length) &#123; putIndex = 0; &#125; &#125;finally &#123; putlock.unlock(); &#125; isEmpty(); &#125; /** * 取出缓冲区中元素 * @return 要取出的元素 * @throws InterruptedException */ public E take() throws InterruptedException &#123; E res; takelock.lockInterruptibly(); try &#123; while (count.get() == 0) &#123; isEmpty.await(); &#125; res = list[takeIndex]; list[takeIndex] = null; if (++takeIndex == list.length) &#123; takeIndex = 0; &#125; count.getAndDecrement(); return res; &#125;finally &#123; isFull(); takelock.unlock(); &#125; &#125;&#125; 如上，直接使用数组来实现，具体细节和ArrayBlockingQueue相似，但是锁部分则使用的是LinkedBlockingQueue的锁分离思想外加原子变量，能够使得生产和消费线程同时进行，提高了并发性能。 商品123456789101112public class Som &#123; private final int ID; public Som(int id) &#123; ID = id; &#125; @Override public String toString() &#123; return &quot;商品ID: &quot; + ID; &#125;&#125; 和前面的一样 生产者12345678910111213141516171819202122public class Producer implements Runnable&#123; MyList&lt;Som&gt; list; private AtomicInteger count = new AtomicInteger(0); public Producer(MyList&lt;Som&gt; list) &#123; this.list = list; &#125; @Override public void run() &#123; while (true) &#123; try &#123; Som s = new Som(count.incrementAndGet()); list.put(s); System.out.println(s + &quot; is put in the queue&quot;); &#125; catch (InterruptedException e) &#123; e.printStackTrace(); &#125; &#125; &#125;&#125; 生产者很简单，开启一个线程，不断地往缓冲区添加商品即可 消费者12345678910111213141516171819public class Consumer implements Runnable&#123; MyList&lt;Som&gt; list; public Consumer(MyList&lt;Som&gt; list) &#123; this.list = list; &#125; @Override public void run() &#123; while (true) &#123; try &#123; Thread.sleep(2000); System.out.println(list.take() + &quot; is out the queue ||&quot;); &#125; catch (InterruptedException e) &#123; e.printStackTrace(); &#125; &#125; &#125;&#125; 同样的，不断往缓冲区中拿即可 小结为了日后验证方便，所以将全部代码贴上，如果要运行直接拷贝即可。可以看出，用JDK提供的阻塞队列来实现生产者消费者模式还是很方便的。自己实现的时，如果采用ReentrantLock+Condition方式，可以采用LinkedBlockingQueue源码中的锁分离思想，能够提高并发性能。]]></content>
@@ -290,8 +424,8 @@
       </categories>
       <tags>
         <tag>LeetCode</tag>
-        <tag>哈希表</tag>
         <tag>字符串</tag>
+        <tag>哈希表</tag>
       </tags>
   </entry>
   <entry>
@@ -406,8 +540,8 @@
       </categories>
       <tags>
         <tag>LeetCode</tag>
-        <tag>哈希表</tag>
         <tag>字符串</tag>
+        <tag>哈希表</tag>
       </tags>
   </entry>
   <entry>
@@ -624,8 +758,8 @@
         <category>Java编程思想</category>
       </categories>
       <tags>
-        <tag>Java基础</tag>
         <tag>I/O</tag>
+        <tag>Java基础</tag>
         <tag>读书笔记</tag>
       </tags>
   </entry>
@@ -1531,6 +1665,20 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[二叉树镜像对称]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>递归</tag>
+        <tag>迭代法</tag>
+        <tag>二叉树</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[青蛙跳台阶]]></title>
     <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
     <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
@@ -1554,20 +1702,6 @@
         <tag>I/O</tag>
         <tag>乱码</tag>
         <tag>字符流/字节流</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[二叉树镜像对称]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
-      <categories>
-        <category>算法之美</category>
-      </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>递归</tag>
-        <tag>迭代法</tag>
-        <tag>二叉树</tag>
       </tags>
   </entry>
   <entry>
