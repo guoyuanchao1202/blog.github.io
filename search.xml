@@ -93,8 +93,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>位运算</tag>
         <tag>LeetCode</tag>
+        <tag>位运算</tag>
       </tags>
   </entry>
   <entry>
@@ -288,8 +288,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>位运算</tag>
         <tag>LeetCode</tag>
+        <tag>位运算</tag>
       </tags>
   </entry>
   <entry>
@@ -349,8 +349,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>位运算</tag>
         <tag>LeetCode</tag>
+        <tag>位运算</tag>
       </tags>
   </entry>
   <entry>
@@ -408,8 +408,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>位运算</tag>
         <tag>LeetCode</tag>
+        <tag>位运算</tag>
         <tag>数组</tag>
       </tags>
   </entry>
@@ -421,8 +421,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>位运算</tag>
         <tag>LeetCode</tag>
+        <tag>位运算</tag>
       </tags>
   </entry>
   <entry>
@@ -497,8 +497,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>位运算</tag>
         <tag>LeetCode</tag>
+        <tag>位运算</tag>
       </tags>
   </entry>
   <entry>
@@ -1634,8 +1634,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>前端</tag>
         <tag>BOM</tag>
+        <tag>前端</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
@@ -1688,17 +1688,16 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[二叉树镜像对称]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
+    <title><![CDATA[青蛙跳台阶]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
       <categories>
         <category>算法之美</category>
       </categories>
       <tags>
         <tag>LeetCode</tag>
-        <tag>递归</tag>
-        <tag>迭代法</tag>
-        <tag>二叉树</tag>
+        <tag>动态规划</tag>
+        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>
@@ -1715,16 +1714,17 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[青蛙跳台阶]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
+    <title><![CDATA[二叉树镜像对称]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
       <categories>
         <category>算法之美</category>
       </categories>
       <tags>
         <tag>LeetCode</tag>
-        <tag>动态规划</tag>
-        <tag>斐波那契数列</tag>
+        <tag>递归</tag>
+        <tag>迭代法</tag>
+        <tag>二叉树</tag>
       </tags>
   </entry>
   <entry>
