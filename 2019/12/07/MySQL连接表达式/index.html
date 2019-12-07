@@ -57,16 +57,19 @@
   };
 </script>
 
-  <meta name="keywords" content="读书笔记,数据库">
+  <meta name="description" content="在SQL语句中，查询类语句是使用的最多的，当查询时，可能仅仅对一个表进行查询并不能满足我们的要求，需要对多个表进行操作，这时候连接操作不失为一种好选择。下面我们基于MySQL数据库介绍SQL语言中的连接关键字JOIN。">
+<meta name="keywords" content="读书笔记,数据库,MySQL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="数据库之事务隔离级别">
-<meta property="og:url" content="https://HoA-W.github.io/2019/12/02/数据库之事务隔离级别/index.html">
+<meta property="og:title" content="MySQL连接表达式">
+<meta property="og:url" content="https://HoA-W.github.io/2019/12/07/MySQL连接表达式/index.html">
 <meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="在SQL语句中，查询类语句是使用的最多的，当查询时，可能仅仅对一个表进行查询并不能满足我们的要求，需要对多个表进行操作，这时候连接操作不失为一种好选择。下面我们基于MySQL数据库介绍SQL语言中的连接关键字JOIN。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-02T15:08:11.882Z">
+<meta property="og:updated_time" content="2019-12-07T11:38:49.820Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="数据库之事务隔离级别">
-  <link rel="canonical" href="https://HoA-W.github.io/2019/12/02/数据库之事务隔离级别/">
+<meta name="twitter:title" content="MySQL连接表达式">
+<meta name="twitter:description" content="在SQL语句中，查询类语句是使用的最多的，当查询时，可能仅仅对一个表进行查询并不能满足我们的要求，需要对多个表进行操作，这时候连接操作不失为一种好选择。下面我们基于MySQL数据库介绍SQL语言中的连接关键字JOIN。">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/12/07/MySQL连接表达式/">
 
 
 <script id="page-configurations">
@@ -80,7 +83,7 @@
   };
 </script>
 
-  <title>数据库之事务隔离级别 | CommonGuy</title>
+  <title>MySQL连接表达式 | CommonGuy</title>
   
 
 
@@ -256,7 +259,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/12/02/数据库之事务隔离级别/">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/12/07/MySQL连接表达式/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="买太平湖底陈年水墨">
@@ -268,7 +271,7 @@
       <meta itemprop="name" content="CommonGuy">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">数据库之事务隔离级别
+        <h1 class="post-title" itemprop="name headline">MySQL连接表达式
 
           
         </h1>
@@ -284,7 +287,7 @@
                 
               
 
-              <time title="创建时间：2019-12-02 23:07:32 / 修改时间：23:08:11" itemprop="dateCreated datePublished" datetime="2019-12-02T23:07:32+08:00">2019-12-02</time>
+              <time title="创建时间：2019-12-07 17:07:24 / 修改时间：19:38:49" itemprop="dateCreated datePublished" datetime="2019-12-07T17:07:24+08:00">2019-12-07</time>
             </span>
           
             
@@ -316,8 +319,66 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <hr>
+        <p>在SQL语句中，查询类语句是使用的最多的，当查询时，可能仅仅对一个表进行查询并不能满足我们的要求，需要对多个表进行操作，这时候连接操作不失为一种好选择。下面我们基于MySQL数据库介绍SQL语言中的连接关键字JOIN。</p>
+<hr>
 <a id="more"></a>
+
+<h1 id="连接种类"><a href="#连接种类" class="headerlink" title="连接种类"></a>连接种类</h1><p>对于MySQL中的连接，有两种分类</p>
+<ol>
+<li><b>内连接(INNER JOIN)</b><br>这也是默认的连接，INNER可以省略</li>
+<li><b>外连接(OUTER JOIN)</b><br>外连接又分为三种<ul>
+<li><b>LEFT OUTER JOIN</b></li>
+<li><b>RIGHT OUTER JOIN</b></li>
+<li><b>FULL OUTER JOIN</b></li>
+</ul>
+</li>
+</ol>
+<p>下面分别对着几种连接进行介绍</p>
+<h1 id="自然连接"><a href="#自然连接" class="headerlink" title="自然连接"></a>自然连接</h1><p>在介绍这几种连接之前，先介绍一下最简单的自然连接，该连接方式不需要连接条件，只需要两个关系有相同的属性即可<br>现有两关系</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//学生表</span><br><span class="line">student(ID,name,dept_name)</span><br><span class="line">//选课表</span><br><span class="line">takes(ID,course_id,credits,dept_name)</span><br></pre></td></tr></table></figure>
+
+<p>学生表和选课表中有两个相同属性，分别是:ID和dept_name。我们对这两个关系进行自然连接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">student NATURAL JOIN takes</span><br><span class="line">或</span><br><span class="line">takes NATURAL JOIN student</span><br></pre></td></tr></table></figure>
+
+<p>以上操作得到一个新的关系，新关系的属性依次为：<font color="red"><b>两关系的共有属性，NATURAL JOIN字段前的关系除了共有属性的属性，NATURAL JOIN后的关系除了共有属性的属性。只有在student.ID=takes.ID并且student.dept_name=takes.dept_name元组才会被合并。</b></font></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">student NATURAL JOIN takes</span><br><span class="line">得到新关系属性</span><br><span class="line">(ID,dept_name,name,course_id,credits)</span><br></pre></td></tr></table></figure>
+
+<h1 id="普通连接"><a href="#普通连接" class="headerlink" title="普通连接"></a>普通连接</h1><p>当我们使用自然连接时，我们无法选择两关系连接的条件，例如，在上述两关系中，默认两关系的(ID,dept_name)都相等时才能进行连接，如果我们只需要其中一个条件，即当两关系的ID属性相等时就可以进行连接，自然连接是做不到的，这时候就需要用到普通连接。</p>
+<h2 id="连接条件"><a href="#连接条件" class="headerlink" title="连接条件"></a><font size="5">连接条件</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">student JOIN takes USING(ID)</span><br><span class="line">或</span><br><span class="line">student JOIN takes ON student.ID=takes.ID</span><br><span class="line">该语句表明两关系的ID属性相等的元组(行)可以进行连接</span><br></pre></td></tr></table></figure>
+
+<p><b>和自然连接不同，以上两种方式所查询到的结果不会去除重复的属性。</b></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">student JOIN takes ON student.ID=takes.ID</span><br><span class="line">得到新关系属性</span><br><span class="line">(ID,name,dept_name,ID,course_id,credits,dept_name)</span><br></pre></td></tr></table></figure>
+
+<h2 id="左外连接"><a href="#左外连接" class="headerlink" title="左外连接"></a><font size="5">左外连接</font></h2><p>还是对于上面的学生表和选课表，我们假设有一些学生，他们没有选修任何课程。那么student表和takes进行连接时，这些学生是无法被查询到的(因为在takes表中没有这些学生的ID和dept_name)。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">student LEFT OUTER JOIN takes;</span><br></pre></td></tr></table></figure>
+
+<p>对于在student但是没有出现在takes的元组(记录)，合并后从student中的得到的属性值不变，从takes中得到的属性值为null</p>
+<h2 id="右外连接"><a href="#右外连接" class="headerlink" title="右外连接"></a><font size="5">右外连接</font></h2><p>和左外连接相同，不过不同的是，右外连接保留右边的关系元组</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">student RIGHT OUTER JOIN takes;</span><br></pre></td></tr></table></figure>
+
+<p>能够保留出现在takes中但是不没有出现在student中的元组。</p>
+<h2 id="全外连接"><a href="#全外连接" class="headerlink" title="全外连接"></a><font size="5">全外连接</font></h2><p>相当于将左外连接和右外连接结合起来。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">student FALL OUTER JOIN takes;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>前面介绍了ON条件，你可能会发现，ON条件和WHERE条件非常类似，但实际上，对于普通的连接ON都可以用WHERE条件进行替换。但是对于外连接来说，WHERE条件和ON条件的作用就不一样了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//ON条件</span><br><span class="line">SELECT * </span><br><span class="line">    FROM student LEFT OUTER JOIN takes</span><br><span class="line">    ON student.ID=takes.ID;</span><br><span class="line">    </span><br><span class="line">//WHERE条件</span><br><span class="line">SELECT *</span><br><span class="line">    FROM student LEFT OUTER JOIN takes</span><br><span class="line">    ON TRUE</span><br><span class="line">    WHERE student.ID=takes.ID;</span><br></pre></td></tr></table></figure>
+
+<p>对于上面两条SQL语句，我们得到的查询结果是不同的，我们使用第一个SQL语句时，能够得到在student中出现的但是没有在takes中出现的元组。<br>但是我们使用第二个SQL语句时，它的执行过程是这样的</p>
+<ol>
+<li>由于ON条件是true，所以先将student和takes进行笛卡尔积得到一张新的临时表</li>
+<li>再在新的表中使用WHERE子句进行筛选</li>
+</ol>
+<p>通过上述过程可以发现，这种方式并不能达到左外连接的效果，这是因为外连接只为那些对相应内连接结果没有贡献的元组补上空值并加入结果，ON条件是外连接声明的一部分，但是WHERE子句却不是。</p>
+<h2 id="连接条件-1"><a href="#连接条件-1" class="headerlink" title="连接条件"></a><font size="5">连接条件</font></h2><p>对于以下四种连接类型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(INNER) JOIN</span><br><span class="line">LEFT OUTER JOIN</span><br><span class="line">RIGHT OUTER JOIN</span><br><span class="line">FULL OUTER JOIN</span><br></pre></td></tr></table></figure>
+
+<p>和以下三种连接条件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NATURAL</span><br><span class="line">ON 子句</span><br><span class="line">USING(A1,A2....)</span><br></pre></td></tr></table></figure>
+
+<p><font color="red"><d>任意的连接类型可以和任意的连接条件进行组合</d></font>例如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NATURAL LEFT OUTER JOIN</span><br></pre></td></tr></table></figure>
+
+<hr>
 
     </div>
 
@@ -369,6 +430,8 @@
             
               <a href="/tags/数据库/" rel="tag"><i class="fa fa-tag"></i>数据库</a>
             
+              <a href="/tags/MySQL/" rel="tag"><i class="fa fa-tag"></i>MySQL</a>
+            
           </div>
         
 
@@ -377,8 +440,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/12/01/分发饼干/" rel="next" title="分发饼干">
-                  <i class="fa fa-chevron-left"></i> 分发饼干
+                <a href="/2019/12/07/MySQL事务中对完整性约束的违反/" rel="next" title="MySQL事务中对完整性约束的违反">
+                  <i class="fa fa-chevron-left"></i> MySQL事务中对完整性约束的违反
                 </a>
               
             </div>
@@ -386,10 +449,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/12/07/MySQL事务中对完整性约束的违反/" rel="prev" title="MySQL事务中对完整性约束的违反">
-                  MySQL事务中对完整性约束的违反 <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -438,6 +497,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#连接种类"><span class="nav-number">1.</span> <span class="nav-text">连接种类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自然连接"><span class="nav-number">2.</span> <span class="nav-text">自然连接</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#普通连接"><span class="nav-number">3.</span> <span class="nav-text">普通连接</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#连接条件"><span class="nav-number">3.1.</span> <span class="nav-text">连接条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#左外连接"><span class="nav-number">3.2.</span> <span class="nav-text">左外连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#右外连接"><span class="nav-number">3.3.</span> <span class="nav-text">右外连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#全外连接"><span class="nav-number">3.4.</span> <span class="nav-text">全外连接</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#连接条件-1"><span class="nav-number">4.1.</span> <span class="nav-text">连接条件</span></a></li></ol></li></ol></div>
+        
       </div>
       <!--/noindex-->
 
