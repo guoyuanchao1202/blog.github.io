@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="E-R模型，即实体-联系模型(entity-relationship)。该数据模型能够方便我们的数据库设计，它将在现实世界实体的含义和交互映射到概念模式上。E-R模式涉及到三个基本概念:实体集、联系集和属性。">
+<meta name="keywords" content="读书笔记,数据库,数据库设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库设计之E-R模型">
+<meta property="og:url" content="https://HoA-W.github.io/2019/12/08/数据库设计之E-R模型/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="E-R模型，即实体-联系模型(entity-relationship)。该数据模型能够方便我们的数据库设计，它将在现实世界实体的含义和交互映射到概念模式上。E-R模式涉及到三个基本概念:实体集、联系集和属性。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://hoa-w.github.io/2019/12/08/数据库设计之E-R模型/1.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/12/08/数据库设计之E-R模型/2.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/12/08/数据库设计之E-R模型/3.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/12/08/数据库设计之E-R模型/4.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/12/08/数据库设计之E-R模型/5.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/12/08/数据库设计之E-R模型/6.png">
+<meta property="og:image" content="https://hoa-w.github.io/2019/12/08/数据库设计之E-R模型/7.png">
+<meta property="og:updated_time" content="2019-12-10T11:42:18.227Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据库设计之E-R模型">
+<meta name="twitter:description" content="E-R模型，即实体-联系模型(entity-relationship)。该数据模型能够方便我们的数据库设计，它将在现实世界实体的含义和交互映射到概念模式上。E-R模式涉及到三个基本概念:实体集、联系集和属性。">
+<meta name="twitter:image" content="https://hoa-w.github.io/2019/12/08/数据库设计之E-R模型/1.png">
+  <link rel="canonical" href="https://HoA-W.github.io/2019/12/08/数据库设计之E-R模型/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>数据库设计之E-R模型 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/12/08/数据库设计之E-R模型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">数据库设计之E-R模型
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-08 17:17:42" itemprop="dateCreated datePublished" datetime="2019-12-08T17:17:42+08:00">2019-12-08</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-12-10 19:42:18" itemprop="dateModified" datetime="2019-12-10T19:42:18+08:00">2019-12-10</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>E-R模型，即实体-联系模型(entity-relationship)。该数据模型能够方便我们的数据库设计，它将在现实世界实体的含义和交互映射到概念模式上。E-R模式涉及到三个基本概念:实体集、联系集和属性。</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p>这一小节中，主要介绍E-R模型涉及到的三个基本概念，为后面的深入学习做准备，它们分别是实体集、联系集和属性。</p>
+<h2 id="实体集"><a href="#实体集" class="headerlink" title="实体集"></a><font size="5">实体集</font></h2><ol>
+<li><b>实体</b><br><font color="red"><b>实体是现实世界中可区别于所有其他对象的一个事物或对象。</b></font>例如：一个人是一个实体，一支笔也是一个实体…简单地说，实体是现实世界中的任何事物(虽然不准确，但可以简单理解为关系型数据库中的一条记录)。</li>
+<li><b>实体集</b><br><font color="red"><b>实体集是具有相同类型(具有相同性质)的一个实体集合</b></font>，本质上是一个集合。例如:一个大学的所有教师是一个实体集、所有学生是一个实体集、甚至一个大学的所有人也是一个实体集。通俗的讲，实体集就是一类事物的总和，不同的实体集可以相交(可以不准确的理解为关系型数据库中的一张表)。</li>
+<li><b>属性</b><br>实体通过属性来表示，<font color="red"><b>属性是实体集中每个成员所拥有的描述性性质。</b></font>比如一个人，他有身高、体重、年龄等等不同的属性。(一个属性可以不准确的理解为表的一个列)</li>
+</ol>
+<p>每个实体的每个属性都有一个值，现在可以准确的说，该实体所有属性值的集合就相当于关系型数据库中一张表的一条记录。数据库包含一组实体集(若干张表)，每个实体集包括任意数量的相同类型的实体(若干条记录)。</p>
+<h2 id="联系集"><a href="#联系集" class="headerlink" title="联系集"></a><font size="5">联系集</font></h2><ol>
+<li><b>联系</b><br><font color="red"><b>联系是指多个实体间的相互关联。</b></font>例如：我们可以定义关联老师张三和学生李四的联系advisor，这一联系指明张三是李四的导师。(联系实际上也是一张表)</li>
+<li><b>联系集</b><br><font color="red"><b>联系集是相同类型联系的集合。</b></font>正规的说：联系集是N(N&gt;=2)个实体集(可能相同)上的数学关系，如果E1,E2,…,En为实体集，那么联系集R是<br><font size="5" color="red"><b>{(e1,e2,…,en)|e1∈E1,e2∈E2,…en∈En}的一个子集</b></font>，而(e1,e2,…,en)是一个联系。<br>事实上，虽然不够准确，但是可以理解为联系可以通过SQL语言中的主码外码和表来表示。</li>
+<li><b>参与和角色</b><br><font color="red"><b>实体集之间的关联称为参与</b></font>；也就是说，实体集E1,E2,…En参与联系集R。E-R模型中的一个联系实例表示在所建模的现实世界中实体间的一个关联：一个ID为45566的教师实体张三和一个学生ID为12345的学生实体李四参与到了advisor的一个联系实例中。这一联系实例表示在大学中张三是李四的导师。<br><font color="red"><b>实体在联系中扮演的功能称为实体的角色。</b></font>一般来说，参与一个联系集的实体集通常是互异的(类比于一张表参照于另一张表)，这时候角色是隐含的并且一半并不指定。但是，当参与联系的实体集是同一张表时，即同一个实体集以不同的角色参与一个联系集多次，我们需要用到角色。这类联系集有时被称作闭环联系集。例如：<b>一个记录大学开设的所有课程的信息的实体集course，我们用course的有序对来建立一个联系集prep，以描述一门课程(C2)是另一门课程(C1)的先修课。每对课程中的第一门课具有C1角色，第二门课具有C2角色。这时，所有的联系通过(C1,C2)来表示，就排除了(C2,C1)对。</b>(可以类比于SQL表中表自身的依赖关系)</li>
+<li><b>联系的属性</b><br>联系也可以具有描述性属性。例如：考虑前面介绍的张三和李四的联系advisor联系，我们可以给联系一个date属性，表示教师成为学生导师的日期。该date属性既不在教师集中也不在学生集中，它是advisor联系的一个属性。<font color="red">给定联系集中的一个联系实例必须是由参与实体唯一标识的，而不必使用联系自身的描述属性。</font><br><b>参与联系集的实体集的数目称为联系集的度</b>，二元联系集的度为2，三元联系集的度为3。</li>
+</ol>
+<h2 id="属性"><a href="#属性" class="headerlink" title="属性"></a><font size="5">属性</font></h2><p>每个属性都有一个可取值的集合，称为该属性的域，或者值集。在E-R模型中，属性有不同的划分：</p>
+<ol>
+<li><b>简单属性和复合属性</b><br><font color="red"><b>简单属性是指不能够划分为更小的部分。而复合属性可以再划分为更小的部分(即其他属性)。</b></font>例如：属性NAME可以设计为包含first_name,middle_name,last_name的复合属性。如果一个用户希望在一些场景中使用复合属性，而在另外一些场景中仅仅使用属性的一部分，那么我们可以将属性设计为复合属性。<br><img src="/2019/12/08/数据库设计之E-R模型/1.png" alt></li>
+<li><b>单值和多值属性</b><br><font color="red"><b>单值属性对于一个特定的实体只有单独的一个值。</b></font>例如：对于一个学生实体而言，它的ID属性只有一个。<font color="red"><b>而多值属性在某些情况下，对某个特定的实体而言，一个属性值可能对应一组值。</b></font>例如：对于一个教师实体，他可能有多个电话号码，那么它的phone_number属性可能有一组值。我们用{phone_number}来表示该属性是多值属性。</li>
+<li><b>派生属性</b><br><font color="red"><b>这类属性的值可以从别的相关属性或实体派生出来。</b></font>例如：我们假设教师实体有一个属性students_advised，表示一个教师指导了多少个学生。我们可以通过统计一个教师相关联的所有学生实体数来得到这个属性值。或者我们可以通过教师的birth(出生日期)和当前日期来得到教师的年龄age。派生属性的值不存储，而是在需要时计算出来。</li>
+</ol>
+<p><b>当一个实体在某个属性上没有值时可以使用空值，空值可以表示不适用、属性值未知。</b></p>
+<h1 id="约束"><a href="#约束" class="headerlink" title="约束"></a>约束</h1><p>E-R模式可以定义一些数据库中的数据必须满足的约束，下面我们就讨论映射基数和参与约束。</p>
+<h2 id="映射基数"><a href="#映射基数" class="headerlink" title="映射基数"></a><font size="5">映射基数</font></h2><p><font color="red"><b>映射基数，表示一个实体通过一个联系集能关联的实体的个数。</b></font>映射基数在描述二元联系集时非常有用，它也可以用来表述多元联系集，这里主要介绍二元联系集。对于实体集A和B之间的二元联系集R，映射基数必是以下情况之一</p>
+<ol>
+<li><b>一对一</b><br>A中的多个实体至多与B中的一个实体相关联，并且B中的一个实体也至多与A中的一个实体相关联</li>
+<li><b>一对多</b><br>A中的一个实体可以与B中任意数目(可以是0个)实体相关联，而B中的一个实体至多与A中的一个实体相关联</li>
+<li><b>多对一</b><br>A中的一个实体至多与B中的一个实体相关联，而B中的一个实体可以与A中任意数目实体相关联</li>
+<li><b>多对多</b><br>A中的一个实体可以和B中的任意数目实体相关联，B中的一个实体也可以和A中任意数目实体相关联</li>
+</ol>
+<p>如下图所示<br><img src="/2019/12/08/数据库设计之E-R模型/2.png" alt>，你应该注意到，四种情况下两实体集中都可能会存在没有和另外一个实体集关联的实体。</p>
+<h2 id="参与约束"><a href="#参与约束" class="headerlink" title="参与约束"></a><font size="5">参与约束</font></h2><p><font color="red"><b>如果实体集E的每一个实体都参与到联系集R的至少一个联系中，实体集E在联系中的参与称为全部参与。如果E中只有部分实体参与到R的练习中，实体集E到联系集R的参与称为部分的。</b></font><br>例如，我们期望每个学生实体通过advisor联系至少同一名教师相联系，因而学生实体集在联系集advisor中的参与是全部的；相反的，每个教师实体不是必须指导一个学生，因此很可能只有一部分教师实体通过advisor联系同学生实体集相联系，于是教师实体集在advisor中的参与是部分的。</p>
+<h2 id="码"><a href="#码" class="headerlink" title="码"></a><font size="5">码</font></h2><h3 id="码的定义"><a href="#码的定义" class="headerlink" title="码的定义"></a><font size="5">码的定义</font></h3><p>我们应该有一个区分给定实体集中实体的方法。从概念上说，各个实体间是不同的，但是从数据库观点来看，它们的区别必须通过其属性来体现。我们来介绍三种码</p>
+<ol>
+<li><b>超码</b><br>超码是一个或多个属性的集合，这些属性的组合可以使我们唯一的标识一个元组(关系模型的概念，可以理解为实体，或者是数据库中的一行记录)</li>
+<li><b>候选码</b><br>超码中可能包含无关紧要的属性，例如：ID和name的组合是学生关系(关系模型的概念，相当于数据库中的表，E-R模型中的实体集)，但是我们发现，ID属性就已经足够唯一标识一个元组，即该超码的中含有多余的属性name。<font color="red"><b>如果一个超码的任意真子集都不能称为超码，那么这个超码就是候选码。</b></font></li>
+<li><b>主码</b><br>主码是数据库设计者选定的、用来在一个关系中区分不同元组的候选码。(主码仍是候选码)</li>
+</ol>
+<h3 id="联系集的码"><a href="#联系集的码" class="headerlink" title="联系集的码"></a><font size="5">联系集的码</font></h3><p>上面介绍的关系模型中的三种码同样适用于实体集，即实体的码是一个足以区分每个实体的属性集。<b>码同样用于唯一的标识联系，从而将联系相互区分开来。</b><br>假设R是一个涉及实体集E1,E2,…En的联系集。设主码(Ei)代表构成实体集Ei主码的属性集合。<font color="red"><b>目前我们假设所有主码的属性名是互不相同的，联系集的主码构成依赖于同联系集R相关联的属性集合。</b></font></p>
+<ol>
+<li>如果联系集R没有属性与之相关联，那么属性集合<br><font color="red" size="5"><b>rimary-key(E1)∪primary-key(E2)∪…primary-key(En)</b></font><br>描述了集合R中的一个联系</li>
+<li>如果联系集R有属性a1,a2,…am与之相关联，那么属性集合<br><font color="red" size="5"><b>rimary-key(E1)∪…primary-key(En)∪{a1,a2,…an}</b></font><br>描述了集合R中的一个联系</li>
+<li><b>综合</b><br><b>以上两种情况下，属性集合</b><br><font color="red" size="5"><b>rimary-key(E1)∪primary-key(E2)∪…primary-key(En)</b></font><br><b>构成了联系集R的一个超码</b></li>
+</ol>
+<p>如果实体集间主码的属性名称不是互不相同的，重命名这些属性以区分它们；实体集的名字加属性名可以构成唯一的名称。如果一个实体集不止一次参与某个联系集(前面的prep)，则使用角色名代替实体集名构成唯一属性名。</p>
+<h3 id="联系集的主码"><a href="#联系集的主码" class="headerlink" title="联系集的主码"></a><font size="5">联系集的主码</font></h3><p><b>联系集的主码结构依赖于联系集的映射基数。</b>例如：考虑上面A和B的四种映射基数，假设他们的联系集为AB，则</p>
+<ol>
+<li>如果A和B是多对多的关系，那么AB的主码有A和B的主码的并集组成</li>
+<li>如果联系是从A到B多对一的，那么AB的主码就是A的主码</li>
+<li>如果联系是从A到B一对多的，那么AB的主码就是B的主码</li>
+<li>如果A和B之间是一对一关系，那么AB的主码可以是A的主码也可以是B的</li>
+<li>对于非二元关系，如果没有基数的限制，那么上面的介绍的超码就是联系集的主码；如果有基数限制，后面再进行介绍。</li>
+</ol>
+<h1 id="从实体集中删除冗余属性"><a href="#从实体集中删除冗余属性" class="headerlink" title="从实体集中删除冗余属性"></a>从实体集中删除冗余属性</h1><p>当我们使用E-R数据模型设计数据库时，通常从确定应当包含哪些实体集，当确定好实体集后，我们必须挑选适当的属性。一旦选择好实体和它们相应的属性，不同实体间的联系集就建立起来了。这些联系集可能会导致不同实体集中的属性冗余，我们需要删除冗余的属性。现在假设：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">实体集instructor(教师集)包含属性</span><br><span class="line">ID,name,dept_name,salary。其中ID为主码</span><br><span class="line"></span><br><span class="line">实体集department(系名)包含属性</span><br><span class="line">dept_name,building,budget。其中dept_name为主码</span><br></pre></td></tr></table></figure>
+
+<p>我们用关联instructor和department的联系集inst_dept对每个教师都有一个关联的系得情况进行建模。属性dept_name在两实体集中都出现了，由于它是department的主码，因此它在实体集instructor中是冗余的，需要将其移除。<br>后面我们会看到，只有当一个教师最多只与一个系关联(多对一)时，属性dept_name才会添加到instructor中。如果一个教师有多个关联的系(一个系也不止一个教师，所以是多对多关系)时，教师与系之间的联系会记录在一个单独的关系inst_dept中。<b>将教师和系之间的关联同统一看成联系，而不是instructor的一个属性，使得逻辑关系明确，并有助于过早的假设每个教师只与一个系关联。</b></p>
+<h1 id="E-R图"><a href="#E-R图" class="headerlink" title="E-R图"></a>E-R图</h1><p>E-R图可以图形化表示数据库的全局逻辑结构，即简单又清晰，在数据库设计中被广泛使用</p>
+<h2 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a><font size="5">基本结构</font></h2><p>E-R图包括如下几个主要构件</p>
+<ol>
+<li><b>分成两部分的矩形</b><br>代表实体集，一部分包含实体集的名字；另一部分包含实体集中所有属性的名字</li>
+<li><b>菱形</b>代表联系集</li>
+<li><b>未分割的矩形</b><br>代表联系集的属性，构成主码的属性下划线表明</li>
+<li><b>线段</b>将实体集连接到联系集</li>
+<li><b>虚线</b>将联系集属性连接到联系集</li>
+<li><b>双线</b>显式实体在联系集中的参与度(双线表示全部参与)</li>
+<li><b>双菱形</b><br>表示连接到弱实体集的标识性联系集(后面介绍)</li>
+</ol>
+<h2 id="映射基数-1"><a href="#映射基数-1" class="headerlink" title="映射基数"></a><font size="5">映射基数</font></h2><p>前面我们过了映射基数，下面主要介绍如何在E-R图中表示映射基数。如下图所示<br><img src="/2019/12/08/数据库设计之E-R模型/3.png" alt><br>通过图我们可以发现规律，在四种映射关系中：<font color="red"><b>如果实体集是一，则联系集用箭头指向该实体集；如果实体集是多，则联系集用线段指向该实体集。</b></font></p>
+<h2 id="复杂的属性"><a href="#复杂的属性" class="headerlink" title="复杂的属性"></a><font size="5">复杂的属性</font></h2><p>如果一个实体集拥有复杂的属性，那么它的E-R图又该怎么表示？我们假设前面instructor实体集的name属性为复杂属性，则instructor的E-R如下所示<br><img src="/2019/12/08/数据库设计之E-R模型/4.png" alt>可以看到，<font color="red"><b>在E-R图中，我们使用{属性名}表示多值属性。</b></font></p>
+<h2 id="角色"><a href="#角色" class="headerlink" title="角色"></a><font size="5">角色</font></h2><p>前面介绍过，在闭环联系集中，我们需要用到角色，那么E-R图又是如何表示角色的呢？<br><img src="/2019/12/08/数据库设计之E-R模型/5.png" alt>从图中可以看到，我们使用两条线段分别标识不同的角色。</p>
+<h2 id="非二元的联系集"><a href="#非二元的联系集" class="headerlink" title="非二元的联系集"></a><font size="5">非二元的联系集</font></h2><p>非二元的联系集也可以在E-R图中简单地表示，如下图所示<br><img src="/2019/12/08/数据库设计之E-R模型/6.png" alt>如图，在非二元的联系集中，我们可以表示某些类型的多对一关系。假设student在每个项目(project)上最多只能有一位导师(学生和导师多对一)，这种约束可以从proj_guide指向instructor的箭头表示。另外要注意的是：<font color="red"><b>在一个联系集外我们至多允许使用一个箭头。</b></font></p>
+<h2 id="弱实体集"><a href="#弱实体集" class="headerlink" title="弱实体集"></a><font size="5">弱实体集</font></h2><p>前面在介绍E-R图形的时候，说了双菱形代表连接到弱实体集的标识性联系集，下面就来介绍一下什么是弱实体集。</p>
+<h3 id="示例介绍"><a href="#示例介绍" class="headerlink" title="示例介绍"></a><font size="5">示例介绍</font></h3><p>假设一个section(开课)实体，它由课程编号、学期、学年以及开课编号唯一标识。显然，开课实体和课程(course)实体相关联。假定我们在实体集section和course之间创建了一个联系集sec_course。<br>现在，发现sec_course中的信息是冗余的，由于section存在属性course_id，它标识该开课所关联的课程。消除这种冗余的一个方法是删除联系sec_course。然而，这么做会使得section和course之间的联系隐含于一个属性中，这不是一个好办法。消除这种冗余的另一个方法是在实体section中不保留course_id，但是由于course_id参与构成section的主码，去掉之后剩下的属性无法唯一标识一个指定的section实体，为了解决这个问题，我们将联系sec_course视为一个特殊的联系，它给唯一标识section实体提供额外信息，即course_id。</p>
+<h3 id="弱实体集定义"><a href="#弱实体集定义" class="headerlink" title="弱实体集定义"></a><font size="5">弱实体集定义</font></h3><p><font color="red"><b>没有足够的属性以形成主码的实体被称为弱实体集，与之对应的，有主码的实体称作强实体集。</b></font><b>弱实体集必须和另外一个称作标识实体集的实体集关联才有意义，每个弱实体集必须和一个标识实体集关联。我们称标识实体集拥有它所标识的弱实体集。弱实体集和标识实体集相连的联系称为标识性联系。标识性联系从弱实体集到标识实体集是多对一的，并且弱实体集是全部参与的，标识性联系不能有自己的属性。</b></p>
+<h3 id="弱实体集主码"><a href="#弱实体集主码" class="headerlink" title="弱实体集主码"></a><font size="5">弱实体集主码</font></h3><p>通过弱实体集的定义可知，弱实体集是没有主码的，但是我们仍需要依赖于特定强实体集的弱实体集中的实体。<font color="red"><b>弱实体集的主码由标识实体集的主码加上该弱实体集的分辨符构成。</b></font><br>假设上面的section弱实体集，它的分辨符为{sec_id,semester,year}，该弱实体集所依赖的标识实体集course的主码为course_id，因此该弱实体集的主码为{course_id,sec_id,semester,year}。</p>
+<h3 id="弱实体集的E-R图"><a href="#弱实体集的E-R图" class="headerlink" title="弱实体集的E-R图"></a><font size="5">弱实体集的E-R图</font></h3><p>弱实体集和强实体集类似，使用矩形表示，主要有以下两点区别</p>
+<ol>
+<li>弱实体集的分辨符以虚下划线表明，而不是实线</li>
+<li>关联弱实体集和标识实体集的联系集以双菱形表示</li>
+<li>弱实体集是全部参与的并且从标识实体集到弱实体集是一对多的关系</li>
+</ol>
+<p><img src="/2019/12/08/数据库设计之E-R模型/7.png" alt></p>
+<ol>
+<li><b>弱实体集可以参与标识性联系以外的其他联系。</b>例如，一个section实体可以和time_slot实体参与一个联系，以标识开课时间</li>
+<li><b>一个弱实体集可以作为另一个弱实体集的标识实体集</b></li>
+<li><b>一个弱实体集也可能不止与一个标识实体集关联</b>，这样的话，该弱实体集的主码就由这些标识实体集的主码的并集加上弱实体集的分辨符组成。</li>
+</ol>
+<h1 id="E-R模式转换为关系模式"><a href="#E-R模式转换为关系模式" class="headerlink" title="E-R模式转换为关系模式"></a>E-R模式转换为关系模式</h1><p>我们可以将一个复合E-R数据库模式的数据库表示为一些关系模式的集合。在数据库设计中，<font color="red"><b>对于每个实体集以及每个联系集，都有唯一的关系模式与之对应</b></font>，关系模式名即为相应的实体集或联系集的名称。下面就将介绍如何用关系模式来表示E-R模型</p>
+<h2 id="具有简单属性的强实体集表示"><a href="#具有简单属性的强实体集表示" class="headerlink" title="具有简单属性的强实体集表示"></a><font size="5">具有简单属性的强实体集表示</font></h2><p>对于一个只具有简单属性的强实体集，将其转换为关系模式很简单。强实体集的属性就是生成的关系模式的属性，强实体集的主码就是生成的关系模式的主码。</p>
+<h2 id="具有复杂属性的强实体集表示"><a href="#具有复杂属性的强实体集表示" class="headerlink" title="具有复杂属性的强实体集表示"></a><font size="5">具有复杂属性的强实体集表示</font></h2><p>当一个强实体集具有一些非简单属性时。根据不同的属性有不同的处理方法</p>
+<ol>
+<li><b>复合属性</b><br><font color="red"><b>通过为每个子属性创建一个单独的属性来处理复合属性，同时，我们并不为复合属性创建一个单独的属性。</b></font>例如：假设实体集(ID,name,address)，其中name为复合属性(first_name,middle_name,last_name)，那么我们得到的关系模式的属性为(ID,first_name,middle_name.last_name,address)。可以看到，在关系模式中我们将复合属性拆成了子属性。</li>
+<li><b>多值属性</b><br><font color="red"><b>对于多属性，我们会为这些属性创建一个新的关系模式。</b></font>例如：假设有一个实体集(ID,name,phone_number)，其中ID为主码，name为复合属性，phone_number为多值属性。<b>对于多值属性M，构造一个关系模式R，该模式包含一个对应于M的属性A，以及对应于M所在的实体集或联系集的主码的属性。</b>因此，对于实体集(ID,name,phone_number)，我们会得到两个关系模式，分别是(ID,first_name,middle_name,last_name)主码为ID，(ID,phone_number)主码为(ID,phone_number)。<ul>
+<li><b>为多值属性创建的关系模式的主码由该关系模式的所有属性组成</b></li>
+<li><b>为多值属性创建的关系模式的外码由该实体集(ID,name,phone_number)的主码生成的属性去参照实体集所生成的关系。(在上例中，多值属性关系模式的外码为ID，参照实体集的ID属性)</b></li>
+<li><b>在实体集只有两个属性时(一个为主码一个为多值属性)，可以删除掉该实体集对应的关系模式，只保留多值属性对应的关系模式</b></li>
+</ul>
+</li>
+</ol>
+<h2 id="弱实体集的表示"><a href="#弱实体集的表示" class="headerlink" title="弱实体集的表示"></a><font size="5">弱实体集的表示</font></h2><p>假设A是具有属性a1,a2,…am的弱实体集，设B是A所依赖的强实体集，设B的主码为b1,b2,…,bn。那么得到的关系模式A为<br><font color="red" size="5"><b>(a1,a2,…,am,b1,b2,…,bn)</b></font></p>
+<ul>
+<li><b>主码</b>：对于弱实体集转化得到的关系模式，该模式的主码由弱实体集的标识实体集加弱实体集的分辨符组成</li>
+<li><b>外码</b>：模式中来自于标识实体集的属性依赖于标识实体集</li>
+</ul>
+<h2 id="联系集的表示"><a href="#联系集的表示" class="headerlink" title="联系集的表示"></a><font size="5">联系集的表示</font></h2><p>设R是联系集，设a1,a2,…,am表示所有参与R的实体集的主码的并集，设R的描述属性(如果有描述属性的话)b1,b2,…,bn，那么由联系集R得到的关系模式为<br><font size="5" color="red"><b>(a1,a2,…,am,b1,b2,…,bn)</b></font></p>
+<ul>
+<li><p><b>主码</b><br>前面介绍了联系集的主码，现在介绍一下关系模式的主码，其实大体类似</p>
+<ul>
+<li>多对多关系，参与实体集的主码属性的并集成为主码</li>
+<li>一对一关系，任何一个实体集的主码都可以选作主码</li>
+<li>一对多或多对一关系，联系集’多’的那一方的实体集的主码成为主码</li>
+<li>对于边上没有箭头的N元联系集，所有参与联系的实体集的主码并集构成主码</li>
+<li>对于边上有箭头的N元联系集(前面说过至多有一个)，不在箭头侧的实体集的主码(并集)构成主码</li>
+</ul>
+</li>
+<li><p><b>外码</b><br>对于由联系集R得到的关系模式，模式中来自实体集Ei的属性ei参照关系模式Ei的主码。</p>
+</li>
+</ul>
+<h2 id="模式的冗余"><a href="#模式的冗余" class="headerlink" title="模式的冗余"></a><font size="5">模式的冗余</font></h2><p>连接弱实体集和相应强实体集的联系集比较特殊，<font color="red"><b>一般情况下，连接弱实体集与其所依赖的强实体集的联系集的模式是冗余的。</b></font></p>
+<h2 id="模式的合并"><a href="#模式的合并" class="headerlink" title="模式的合并"></a><font size="5">模式的合并</font></h2><p><font color="red"><b>假设从实体集到实体集B的一个一对多联系集AB，并且假设A在该联系中是全部参与的。即A中的每个实体a都必须参与到联系AB中。那么我们可以将A和AB模式进行合并。合并后的模式C的主码就是A的主码，并且B的主码在合并后的模式中作为外码参照B。</b></font>另外，即使A是部分参与，也可以通过使用null值来进行模式的合并。</p>
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/读书笔记/" rel="tag"><i class="fa fa-tag"></i>读书笔记</a>
+            
+              <a href="/tags/数据库/" rel="tag"><i class="fa fa-tag"></i>数据库</a>
+            
+              <a href="/tags/数据库设计/" rel="tag"><i class="fa fa-tag"></i>数据库设计</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/12/07/MySQL连接表达式/" rel="next" title="MySQL连接表达式">
+                  <i class="fa fa-chevron-left"></i> MySQL连接表达式
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本概念"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#实体集"><span class="nav-number">1.1.</span> <span class="nav-text">实体集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#联系集"><span class="nav-number">1.2.</span> <span class="nav-text">联系集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#属性"><span class="nav-number">1.3.</span> <span class="nav-text">属性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#约束"><span class="nav-number">2.</span> <span class="nav-text">约束</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#映射基数"><span class="nav-number">2.1.</span> <span class="nav-text">映射基数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参与约束"><span class="nav-number">2.2.</span> <span class="nav-text">参与约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#码"><span class="nav-number">2.3.</span> <span class="nav-text">码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#码的定义"><span class="nav-number">2.3.1.</span> <span class="nav-text">码的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#联系集的码"><span class="nav-number">2.3.2.</span> <span class="nav-text">联系集的码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#联系集的主码"><span class="nav-number">2.3.3.</span> <span class="nav-text">联系集的主码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#从实体集中删除冗余属性"><span class="nav-number">3.</span> <span class="nav-text">从实体集中删除冗余属性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#E-R图"><span class="nav-number">4.</span> <span class="nav-text">E-R图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本结构"><span class="nav-number">4.1.</span> <span class="nav-text">基本结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#映射基数-1"><span class="nav-number">4.2.</span> <span class="nav-text">映射基数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复杂的属性"><span class="nav-number">4.3.</span> <span class="nav-text">复杂的属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#角色"><span class="nav-number">4.4.</span> <span class="nav-text">角色</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非二元的联系集"><span class="nav-number">4.5.</span> <span class="nav-text">非二元的联系集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#弱实体集"><span class="nav-number">4.6.</span> <span class="nav-text">弱实体集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#示例介绍"><span class="nav-number">4.6.1.</span> <span class="nav-text">示例介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#弱实体集定义"><span class="nav-number">4.6.2.</span> <span class="nav-text">弱实体集定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#弱实体集主码"><span class="nav-number">4.6.3.</span> <span class="nav-text">弱实体集主码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#弱实体集的E-R图"><span class="nav-number">4.6.4.</span> <span class="nav-text">弱实体集的E-R图</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#E-R模式转换为关系模式"><span class="nav-number">5.</span> <span class="nav-text">E-R模式转换为关系模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#具有简单属性的强实体集表示"><span class="nav-number">5.1.</span> <span class="nav-text">具有简单属性的强实体集表示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#具有复杂属性的强实体集表示"><span class="nav-number">5.2.</span> <span class="nav-text">具有复杂属性的强实体集表示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#弱实体集的表示"><span class="nav-number">5.3.</span> <span class="nav-text">弱实体集的表示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#联系集的表示"><span class="nav-number">5.4.</span> <span class="nav-text">联系集的表示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模式的冗余"><span class="nav-number">5.5.</span> <span class="nav-text">模式的冗余</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模式的合并"><span class="nav-number">5.6.</span> <span class="nav-text">模式的合并</span></a></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">145</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">116</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
