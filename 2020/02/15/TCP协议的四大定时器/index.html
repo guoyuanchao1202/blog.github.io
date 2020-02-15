@@ -57,17 +57,19 @@
   };
 </script>
 
-  <meta name="description" content="欲买桂花同载酒，终不似，少年游...">
-<meta property="og:type" content="website">
-<meta property="og:title" content="CommonGuy">
-<meta property="og:url" content="https://HoA-W.github.io/archives/2019/09/page/5/index.html">
+  <meta name="description" content="对于TCP协议，有四个非常重要的定时器，它们分别是:重传定时器、坚持定时器、保活定时器、2MSL定时器。下面就分别介绍一下这四大定时器的作用和使用场景。">
+<meta name="keywords" content="读书笔记,TCP&#x2F;IP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP协议的四大定时器">
+<meta property="og:url" content="https://HoA-W.github.io/2020/02/15/TCP协议的四大定时器/index.html">
 <meta property="og:site_name" content="CommonGuy">
-<meta property="og:description" content="欲买桂花同载酒，终不似，少年游...">
+<meta property="og:description" content="对于TCP协议，有四个非常重要的定时器，它们分别是:重传定时器、坚持定时器、保活定时器、2MSL定时器。下面就分别介绍一下这四大定时器的作用和使用场景。">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-02-15T05:42:57.124Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CommonGuy">
-<meta name="twitter:description" content="欲买桂花同载酒，终不似，少年游...">
-  <link rel="canonical" href="https://HoA-W.github.io/archives/2019/09/page/5/">
+<meta name="twitter:title" content="TCP协议的四大定时器">
+<meta name="twitter:description" content="对于TCP协议，有四个非常重要的定时器，它们分别是:重传定时器、坚持定时器、保活定时器、2MSL定时器。下面就分别介绍一下这四大定时器的作用和使用场景。">
+  <link rel="canonical" href="https://HoA-W.github.io/2020/02/15/TCP协议的四大定时器/">
 
 
 <script id="page-configurations">
@@ -75,13 +77,13 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: false,
+    isPost: true,
     isPage: false,
-    isArchive: true
+    isArchive: false
   };
 </script>
 
-  <title>归档 | CommonGuy</title>
+  <title>TCP协议的四大定时器 | CommonGuy</title>
   
 
 
@@ -213,27 +215,6 @@
 
     
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
 </nav>
   <div class="site-search">
     <div class="popup search-popup">
@@ -272,126 +253,179 @@
           <div id="content" class="content">
             
 
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
   
   
   
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        
-        
-         
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/02/15/TCP协议的四大定时器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">TCP协议的四大定时器
+
           
-        <span class="collection-header">非常好! 目前共计 149 篇日志。 继续努力。</span>
-      </div>
-      
+        </h1>
 
-      
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
 
-  
-  
+              
+                
+              
 
-  
+              <time title="创建时间：2020-02-15 10:14:31 / 修改时间：13:42:57" itemprop="dateCreated datePublished" datetime="2020-02-15T10:14:31+08:00">2020-02-15</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/计算机网络/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
     
-    <div class="collection-year">
-      <h1 class="collection-header">2019</h1>
-    </div>
-  
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+      
+        <p>对于TCP协议，有四个非常重要的定时器，它们分别是:重传定时器、坚持定时器、保活定时器、2MSL定时器。下面就分别介绍一下这四大定时器的作用和使用场景。</p>
+<hr>
+<a id="more"></a>
 
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/2019/09/07/LeetCode-第70题/" itemprop="url">
-            <span itemprop="name">青蛙跳台阶</span>
-          </a>
-        
-      </h2>
+<h1 id="重传定时器"><a href="#重传定时器" class="headerlink" title="重传定时器"></a>重传定时器</h1><p>该定时器在TCP的可靠数据传输中起到至关重要的作用。有一点很重要：<font color="red"><b>在一个TCP连接中，只有一个重传计时器。</b></font>那么该计时器是如何工作的呢？我们举例说明：</p>
+<ol>
+<li>如果有{1,2,3}三个包需要发送，先发送了1，在没有收到ACK1的情况下发送了2。定时器在发送1的时候启动，在发送2的时候不会被重置，因为当前窗口内仍有已发送但未被确认的报文段。</li>
+<li>同样的有三个包要发送，如果先发送了1，在收到ACK1的情况下发送了2。定时器在发送1的时候启动，在发送2的时候会被重置，因为发送2时，窗口内没有已发送未被确认的报文段(1已经得到确认)。</li>
+</ol>
+<p>通过上述举例我们知道：</p>
+<ul>
+<li><font color="red"><b>一个TCP连接只有一个重传定时器</b></font></li>
+<li><font color="red"><b>在TCP数据发送过程中，只有当前窗口内没有已发送但未被确认的报文段，重传定时器才会被重置。也就是说，如果发送了很多段，如果前面的段没有得到确认，那么后面发送的时候不会重置该定时器。</b></font></li>
+</ul>
+<h1 id="坚持定时器"><a href="#坚持定时器" class="headerlink" title="坚持定时器"></a>坚持定时器</h1><p>该定时器在TCP的流量控制中起到了预防死锁的作用。我们来思考这样一个场景:当接收方窗口大小为0时，接收方向发送方发送一个0窗口确认报文段，当发送方收到后，将会停止向接收方发送报文段。这样一来，发送方并不知道什么时候可以继续发送报文段，这就要用到坚持定时器。发送方收到0窗口确认报文时启动该定时器，当该定时器超时后，如果仍没有收到来了接收方的非0窗口确认(可能是接收方发送了但是丢失了，也有可能是接收方缓存仍满)，那么发送方发送一个1字节数据大小的探测报文并重新启动坚持计时器(每次重新启动定时器的超时时间加倍，最大为64)。这样当接收方缓存有空余时，发送方就能得知，坚持定时器在发送方收到非0窗口确认报文时关闭。</p>
+<h1 id="保活定时器"><a href="#保活定时器" class="headerlink" title="保活定时器"></a>保活定时器</h1><p>该定时器用于确认两主机间TCP连接是否可用。现假设客户端和服务器之间有一个TCP连接，而客户端由于故障关闭了，这时候服务器并不知道客户端的情况，那么服务器端的TCP连接就会一直保持开启状态，但事实上该连接已经没有用了，这种情况下就会造成资源的浪费。<br>要解决这种问题，我们使用保活定时器，每当服务器收到客户端的信息，就重置该定时器。定时器的超时时间通常为2小时，如果服务器在2小时内没有收到客户的信息，它就发送一个探测报文，如果发送了10个探测报文(每隔75s发一个)都没有响应，就假定客户端出了故障，服务器就终止该TCP连接。</p>
+<h1 id="2MSL定时器"><a href="#2MSL定时器" class="headerlink" title="2MSL定时器"></a>2MSL定时器</h1><p>在断开TCP连接中使用(四次挥手)，当最后一次挥手(客户端对服务器的FIN报文段进行确认)后，客户端并不会立刻关闭连接，而是等待2MSL后再关闭(MSL:报文的最大生存时间)。至于为什么等待2MSL，有两点原因:</p>
+<ol>
+<li>为了保证最后的ACK报文段能够到达</li>
+<li>为了使本次连接中所产生的所有报文段都从网络中消失，而不会对下次连接产生影响。</li>
+</ol>
+<hr>
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-09-07T17:15:18+08:00"
-              content="2019-09-07">
-          09-07
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-  
-  
-
-  
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/2019/09/07/JAVA输入输出流-字符流和字节流详解/" itemprop="url">
-            <span itemprop="name">字符流和字节流</span>
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-09-07T17:15:18+08:00"
-              content="2019-09-07">
-          09-07
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-  
-  
-
-  
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/2019/09/07/hello-world/" itemprop="url">
-            <span itemprop="name">Hello World</span>
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-09-07T10:07:46+08:00"
-              content="2019-09-07">
-          09-07
-        </time>
-      </div>
-
-    </header>
-  </article>
 
 
 
 
     </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/读书笔记/" rel="tag"><i class="fa fa-tag"></i>读书笔记</a>
+            
+              <a href="/tags/TCP-IP/" rel="tag"><i class="fa fa-tag"></i>TCP/IP</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/02/15/GBN协议、SR协议以及TCP协议区别/" rel="next" title="GBN协议、SR协议以及TCP协议区别">
+                  <i class="fa fa-chevron-left"></i> GBN协议、SR协议以及TCP协议区别
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
   </div>
   
   
   
+  </article>
 
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/archives/2019/09/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/archives/2019/09/">1</a><span class="space">&hellip;</span><a class="page-number" href="/archives/2019/09/page/4/">4</a><span class="page-number current">5</span>
-  </nav>
-
+  </div>
 
 
           </div>
@@ -410,6 +444,11 @@
 
   <aside class="sidebar">
     <div class="sidebar-inner">
+        
+        
+        
+        
+      
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
@@ -422,6 +461,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#重传定时器"><span class="nav-number">1.</span> <span class="nav-text">重传定时器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#坚持定时器"><span class="nav-number">2.</span> <span class="nav-text">坚持定时器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#保活定时器"><span class="nav-number">3.</span> <span class="nav-text">保活定时器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2MSL定时器"><span class="nav-number">4.</span> <span class="nav-text">2MSL定时器</span></a></li></ol></div>
+        
       </div>
       <!--/noindex-->
 
