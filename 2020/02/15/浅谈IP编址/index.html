@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="我们知道，我们的电脑都有一个IP地址(确切的说，是一个接口对应一个IP地址，不过在这里不影响)，它能够唯一的标识我们的主机，那么电脑的IP地址又是怎么来的呢？这就涉及到了IP编址。(本文仅涉及到IPv4编址，并不涉及IPv6)">
+<meta name="keywords" content="读书笔记,IP编址">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈IP编址">
+<meta property="og:url" content="https://HoA-W.github.io/2020/02/15/浅谈IP编址/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="我们知道，我们的电脑都有一个IP地址(确切的说，是一个接口对应一个IP地址，不过在这里不影响)，它能够唯一的标识我们的主机，那么电脑的IP地址又是怎么来的呢？这就涉及到了IP编址。(本文仅涉及到IPv4编址，并不涉及IPv6)">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/15/浅谈IP编址/1.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/15/浅谈IP编址/2.jpg">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/15/浅谈IP编址/3.jpg">
+<meta property="og:updated_time" content="2020-02-17T03:51:01.481Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浅谈IP编址">
+<meta name="twitter:description" content="我们知道，我们的电脑都有一个IP地址(确切的说，是一个接口对应一个IP地址，不过在这里不影响)，它能够唯一的标识我们的主机，那么电脑的IP地址又是怎么来的呢？这就涉及到了IP编址。(本文仅涉及到IPv4编址，并不涉及IPv6)">
+<meta name="twitter:image" content="https://hoa-w.github.io/2020/02/15/浅谈IP编址/1.png">
+  <link rel="canonical" href="https://HoA-W.github.io/2020/02/15/浅谈IP编址/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>浅谈IP编址 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/02/15/浅谈IP编址/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">浅谈IP编址
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-02-15 20:37:40" itemprop="dateCreated datePublished" datetime="2020-02-15T20:37:40+08:00">2020-02-15</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-17 11:51:01" itemprop="dateModified" datetime="2020-02-17T11:51:01+08:00">2020-02-17</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/计算机网络/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>我们知道，我们的电脑都有一个IP地址(确切的说，是一个接口对应一个IP地址，不过在这里不影响)，它能够唯一的标识我们的主机，那么电脑的IP地址又是怎么来的呢？这就涉及到了IP编址。(本文仅涉及到IPv4编址，并不涉及IPv6)</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="IP编址的前世今生"><a href="#IP编址的前世今生" class="headerlink" title="IP编址的前世今生"></a>IP编址的前世今生</h1><p>IP地址经历了三个阶段，它们分别是</p>
+<ol>
+<li>分类的IP地址阶段</li>
+<li>划分子网阶段</li>
+<li>无分类间域路由选择(CIDR)阶段</li>
+</ol>
+<p>目前主要采用CIDR编址，分类编址已经渐渐被淘汰，因此本文主要介绍CIDR编址。</p>
+<h1 id="分类编址"><a href="#分类编址" class="headerlink" title="分类编址"></a>分类编址</h1><p>早期的IP地址被分为5类，它们分别是A、B、C、D、E类。不过我们常用的只有A类、B类和C类。<br><img src="/2020/02/15/浅谈IP编址/1.png" alt><br>IP地址由<font color="red">网络号+主机号</font>组成，这几类地址的不同之处在于网络号和主机号各自占的位数不同。并且对于任意一类地址，它们主机号全0和全1不能使用(有特殊用途)，因此各类地址能表示的主机数：<br><img src="/2020/02/15/浅谈IP编址/2.jpg" alt></p>
+<ol>
+<li><font color="red"><b>主机号全0:表示这个网络的地址</b></font></li>
+<li><font color="red"><b>主机号全1:本子网内的广播地址</b></font></li>
+</ol>
+<p>例如:210.45.240.0就表示一个C类地址，同样的210.45.240.255就表示该C类地址的广播地址</p>
+<h1 id="划分子网"><a href="#划分子网" class="headerlink" title="划分子网"></a>划分子网</h1><p>后来发现，使用分类编址有两个问题：</p>
+<ol>
+<li>造成IP地址的大量浪费。例如：现有一个公司需要分配一个网络地址，已知该公司内有300台主机。这时候，就需要给该公司分配一个B类地址(因为C类地址最多表示254台主机)，但是问题来了，一个B类地址能够表示65534台主机，而在这里只用了300个，那么剩余的65234个IP地址都被浪费了。这样会造成IP地址的迅速衰竭。</li>
+<li>给每一个物理网络分配一个网络号会使路由表太大。</li>
+</ol>
+<h2 id="划分方法"><a href="#划分方法" class="headerlink" title="划分方法"></a><font size="5">划分方法</font></h2><p>子网划分实际上就是将原来的两级IP地址转变为三级IP地址，此时<font color="red">IP地址为{网络号+子网号+主机号}</font>。从这里可以看出，子网划分其实就是从32位中拿出几位来表示子网号。要注意的是，这里网络号不变，子网号就是从主机号接走的。所以就很好理解了，<font color="red">子网划分实际上就是减少了主机数，分配到不同的子网，每个子网包含一定的主机数。</font>但是对于网络外部来说，还是一个大的网络，从外部看并没有变化。<br>有一点非常重要，由于子网号是从主机号中拿出几位表示的，而前面说过，主机号全0和全1不能使用，因此每次划分子网时，子网号全0和全1仍不能使用，因此每划分一次子网，同样会浪费一些IP地址<br><img src="/2020/02/15/浅谈IP编址/3.jpg" alt></p>
+<h2 id="子网掩码"><a href="#子网掩码" class="headerlink" title="子网掩码"></a><font size="5">子网掩码</font></h2><p>子网划分中有一个十分重要的概念就是子网掩码。大家想一想，在在传输的过程中，路由器是怎么识别子网划分后的IP地址中的网络地址的？如果不提供任何信息，路由器是无法分清楚的，所以就出现了子网掩码。子网掩码很简单，<font color="red">就是将网络号和子网号对应的位置1，将主机号对应位置0，就得到了子网掩码。</font>将子网掩码和IP地址做“与”逻辑运算，就得到了网络地址。</p>
+<h1 id="CIDR编址"><a href="#CIDR编址" class="headerlink" title="CIDR编址"></a>CIDR编址</h1><p>CIDR的全称是无分类间域路由选择，该方法在一定程度上解决了路由表过大问题。之所以被称为无分类，是因为CIDR完全放弃了之前的分类表示法，消除了传统的A类、B类、C类以及划分子网的概念。使用CIDR时，<font color="red">IP地址={网络前缀+主机号}/网络前缀所占位数</font>。CIDR仅将IP地址划分为网络前缀和主机号两部分，可以说又回到了二级IP表示。但是有一点要注意，最后用斜线/分隔，并写上网络前缀所占的位数，这样就不需要告知路由器地址掩码，仅需要通过网络前缀所占位数就可以得到地址掩码。为了便于介绍，CIDR中的地址掩码在本文中仍称作子网掩码。<br>CIDR表示法给出任何一个IP地址，就相当于给出了一个地址块，一个由连续地址构成的地址块，这样就实现了路由聚合：即从一个IP地址就可以得知一个CIDR地址块。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">例如:已知一个IP地址128.14.35.7/20。我们来分析一下</span><br><span class="line">128.14.35.7/20=[10000000 00001110 0010]0011 00000011</span><br><span class="line">即前20位是网络前缀，后12位是主机号，那么我们令主机号</span><br><span class="line">全0和全1就可以得到一个CIDR地址块的最小地址和最大地址</span><br><span class="line"></span><br><span class="line">128.14.32.0=[10000000 00001110 0010]0000 00000000-&gt;最小地址</span><br><span class="line">128.14.47.255=[10000000 00001110 0010]1111 11111111-&gt;最大地址</span><br><span class="line">255.255.240.0=[11111111 11111111 1111]0000 00000000-&gt;子网掩码</span><br><span class="line"></span><br><span class="line">可以看出，该CIDR地址块可以指派(47-32+1)*255=4096个IP地址</span><br><span class="line">包括全0和全1</span><br></pre></td></tr></table></figure>
+
+<h1 id="CIDR子网划分"><a href="#CIDR子网划分" class="headerlink" title="CIDR子网划分"></a>CIDR子网划分</h1><p>CIDR表示法也可以进行进一步的子网划分，和前面的子网划分类似，我们只需要从主机号中借走一定的位数即可。但是和前面不同的是，这里子网号全0和全1可以使用。也就是说，如果借走两位作为子网号，那么可以划分4个子网。</p>
+<h1 id="总结-重要"><a href="#总结-重要" class="headerlink" title="总结(重要)"></a>总结(重要)</h1><p>通过上面的介绍，相信你对IP地址的划分已经有了初步的了解，这里再强调几点</p>
+<ol>
+<li>不管是CIDR编址还是传统的分类编址，主机号全0和主机号全1都有特殊意义<ol>
+<li>主机号全0:本网络的地址</li>
+<li>主机号全1:本网络的IP地址</li>
+</ol>
+</li>
+<li>CIDR的子网划分和分类编址子网划分不同的是，CIDR子网划分时子网号全0和全1可以使用(是子网号而不是主机号)。</li>
+</ol>
+<p>对于上面两点你可能会疑惑为什么，但是没关系，我将在下面一篇文章中详细说明。</p>
+<hr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/读书笔记/" rel="tag"><i class="fa fa-tag"></i>读书笔记</a>
+            
+              <a href="/tags/IP编址/" rel="tag"><i class="fa fa-tag"></i>IP编址</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/02/15/浅谈IP分片机制/" rel="next" title="浅谈IP分片机制">
+                  <i class="fa fa-chevron-left"></i> 浅谈IP分片机制
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#IP编址的前世今生"><span class="nav-number">1.</span> <span class="nav-text">IP编址的前世今生</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分类编址"><span class="nav-number">2.</span> <span class="nav-text">分类编址</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#划分子网"><span class="nav-number">3.</span> <span class="nav-text">划分子网</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#划分方法"><span class="nav-number">3.1.</span> <span class="nav-text">划分方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#子网掩码"><span class="nav-number">3.2.</span> <span class="nav-text">子网掩码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CIDR编址"><span class="nav-number">4.</span> <span class="nav-text">CIDR编址</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CIDR子网划分"><span class="nav-number">5.</span> <span class="nav-text">CIDR子网划分</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结-重要"><span class="nav-number">6.</span> <span class="nav-text">总结(重要)</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">152</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">123</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
