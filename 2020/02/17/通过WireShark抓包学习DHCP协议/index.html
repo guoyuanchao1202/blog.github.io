@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="当我们的主机接入网络时，它还没有自己的IP地址、子网掩码等一些必要的信息，这些信息需要从别处获取。那么这些信息是如何获取的？是人为配置的么？当然不是的。如果每一台主机的接入和断开都需要网络管理员进行配置(IP的分配回收等)，那管理员是忙不过来的。幸好，有DHCP协议来自动完成这些配置。下面，我将通过WireShark抓包来具体的介绍DHCP是如何工作的。">
+<meta name="keywords" content="读书笔记,应用层,DHCP协议">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过WireShark抓包学习DHCP协议">
+<meta property="og:url" content="https://HoA-W.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="当我们的主机接入网络时，它还没有自己的IP地址、子网掩码等一些必要的信息，这些信息需要从别处获取。那么这些信息是如何获取的？是人为配置的么？当然不是的。如果每一台主机的接入和断开都需要网络管理员进行配置(IP的分配回收等)，那管理员是忙不过来的。幸好，有DHCP协议来自动完成这些配置。下面，我将通过WireShark抓包来具体的介绍DHCP是如何工作的。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/1.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/2.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/3">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/3.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/4.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/5.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/6.png">
+<meta property="og:updated_time" content="2020-02-17T12:15:15.145Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="通过WireShark抓包学习DHCP协议">
+<meta name="twitter:description" content="当我们的主机接入网络时，它还没有自己的IP地址、子网掩码等一些必要的信息，这些信息需要从别处获取。那么这些信息是如何获取的？是人为配置的么？当然不是的。如果每一台主机的接入和断开都需要网络管理员进行配置(IP的分配回收等)，那管理员是忙不过来的。幸好，有DHCP协议来自动完成这些配置。下面，我将通过WireShark抓包来具体的介绍DHCP是如何工作的。">
+<meta name="twitter:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/1.png">
+  <link rel="canonical" href="https://HoA-W.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>通过WireShark抓包学习DHCP协议 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">通过WireShark抓包学习DHCP协议
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-02-17 15:06:10 / 修改时间：20:15:15" itemprop="dateCreated datePublished" datetime="2020-02-17T15:06:10+08:00">2020-02-17</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/计算机网络/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>当我们的主机接入网络时，它还没有自己的IP地址、子网掩码等一些必要的信息，这些信息需要从别处获取。那么这些信息是如何获取的？是人为配置的么？当然不是的。如果每一台主机的接入和断开都需要网络管理员进行配置(IP的分配回收等)，那管理员是忙不过来的。幸好，有DHCP协议来自动完成这些配置。下面，我将通过WireShark抓包来具体的介绍DHCP是如何工作的。</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><p>在学习DHCP协议之前，先介绍一个Windows命令行指令(打开CMD窗口)以及基本的WireShark操作</p>
+<ol>
+<li><p>ipconfig命令(对于下面命令可以自己在cmd上进行试验)<br>该命令能够查询本机的IP地址以及一些其他的信息。</p>
+<ul>
+<li>ipconfig/all：显式更详细的信息</li>
+<li>ipconfig/release：断开网络连接，主机IP变为0.0.0.0，主机与网络断开，不能访问网络。 </li>
+<li>ipconfig/renew：更新适配器信息，请求连接网络，这条命令结束之后，主机会获得一个可用的IP，再次接入网络。</li>
+</ul>
+</li>
+<li><p>WireShark操作<br><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/1.png" alt><br>这是WireShark3的界面，我使用的WiFi连接，因此<font color="red">点击WLAN选项</font><br><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/2.png" alt><br>如图，<font color="red">在过滤器中输入DHCP(只捕获DHCP协议的分组)</font></p>
+</li>
+</ol>
+<p>关于前期准备就介绍到这里，下面开始介绍DHCP协议。</p>
+<h1 id="DHCP协议"><a href="#DHCP协议" class="headerlink" title="DHCP协议"></a>DHCP协议</h1><h2 id="DHCP简介"><a href="#DHCP简介" class="headerlink" title="DHCP简介"></a><font size="5">DHCP简介</font></h2><p>DHCP(Dynamic Host Configuration Protocol),动态主机配置协议，是一个<font color="red">应用层协议</font>并且运行在UDP协议之上。当我们将客户主机ip地址设置为动态获取方式时，DHCP服务器就会根据DHCP协议给客户端分配IP，使得客户机能够利用这个IP上网。</p>
+<h2 id="DHCP协议工作过程"><a href="#DHCP协议工作过程" class="headerlink" title="DHCP协议工作过程"></a><font size="5">DHCP协议工作过程</font></h2><p><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/3" alt><br>DHCP的实现分为4步，分别是： </p>
+<ol>
+<li>第一步(DHCP发现)：Client端在局域网内发起一个DHCP　Discover包，目的是想发现能够给它提供IP的DHCP Server。 </li>
+<li>第二步(DHCP提供)：可用的DHCP Server接收到Discover包之后，通过发送DHCP Offer包给予Client端应答，意在告诉Client端它可以提供IP地址。 </li>
+<li>第三步(DHCP请求)：Client端接收到Offer包之后，发送DHCP Request包请求分配IP。 </li>
+<li>第四步(DHCP响应)：DHCP Server发送ACK数据包，确认信息。</li>
+</ol>
+<hr>
+
+<h2 id="WireShark抓包实验"><a href="#WireShark抓包实验" class="headerlink" title="WireShark抓包实验"></a><font size="5">WireShark抓包实验</font></h2><h3 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a><font size="5">实验环境</font></h3><ol>
+<li>操作系统:Windows10</li>
+<li>WireShark版本:3.2.1</li>
+<li>网络环境:无线连接</li>
+</ol>
+<h3 id="实验步骤"><a href="#实验步骤" class="headerlink" title="实验步骤"></a><font size="5">实验步骤</font></h3><ol>
+<li>使用ipconfig/release命令断开连接<br><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/3.png" alt><br>此时能观察到WireShark捕获到一个DHCP Release分组<br><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/4.png" alt></li>
+<li>使用ipconfig/renew命令重新连接<br><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/5.png" alt><br>此时WireShark再次捕获到4个DHCP分组<br><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/6.png" alt><br>在这里，有一点很重要:DHCP的四个分组中，目的地址应该都是255.255.255，但是在实际抓包实验中发现DHCP OFFER和DHCP ACK包的目的地址都是实际给主机分配的地址。这应该是缓存导致的。至于DHCP四个包的内容，有兴趣可以自行使用WireShark抓包观察一下，比较简单就不做赘述。</li>
+</ol>
+<h1 id="DHCP协议如何工作"><a href="#DHCP协议如何工作" class="headerlink" title="DHCP协议如何工作"></a>DHCP协议如何工作</h1><p>最后，将前面的文章梳理一遍，再对DHCP的工作流程进行进一步的介绍。</p>
+<ol>
+<li>DHCP发现:一台新到达主机的首要任务就是发现一个要与其交互的DHCP服务器。此时主机并不知道DHCP服务器的地址，甚至还没有自己的IP地址，因此该分组的源地址为0.0.0.0，目的地址为255.255.255.255。</li>
+<li>DHCP提供:当DHCP服务器收到一个DHCP发现报文时，用DHCP提供报文向客户作出响应，此报文的目的地址仍为255.255.255。这是因为，一个子网中可能有多个DHCP服务器，客户可以从这几个服务器中选择一个合适的。(此时DHCP为客户机保留该选中的IP，如果在此期间收到了其他主机的DHCP发现报文，该IP不会被分配给其他主机)</li>
+<li>DHCP请求:新到达主机从一个或多个服务器提供中选择一个，并向选中的服务器发送DHCP请求报文，回显DHCP 提供报文中服务器配置的参数</li>
+<li>DHCP响应:服务器用DHCP ACK报文对客户机的请求作出响应，证实所要求的参数。</li>
+<li>客户端在接收到DHCP ack广播后，会向网络发送三个针对此IP地址的ARP解析请求以执行冲突检测(免费ARP，后面会说到)，查询网络上有没有其它机器使用该IP地址；如果发现该IP地址已经被使用，客户机会发出一个DHCP decline数据包给DHCP服务器，拒绝此IP地址租约，并重新发送DHCP discover信息。此时，在DHCP服务器管理控制台中，会显示此IP地址为BAD_ADDRESS。</li>
+<li>如果没有，则该IP地址正式被主机使用。</li>
+</ol>
+<hr>
+
+<p><a href="https://blog.csdn.net/zqixiao_09/article/details/77131239" target="_blank" rel="noopener">参考文章1(参考较多)</a><br><a href="https://blog.csdn.net/zzd_zzd/article/details/88372014" target="_blank" rel="noopener">参考文章2(较详细深入)</a></p>
+<hr>
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/读书笔记/" rel="tag"><i class="fa fa-tag"></i>读书笔记</a>
+            
+              <a href="/tags/应用层/" rel="tag"><i class="fa fa-tag"></i>应用层</a>
+            
+              <a href="/tags/DHCP协议/" rel="tag"><i class="fa fa-tag"></i>DHCP协议</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/02/17/子网号全0全1那些事儿/" rel="next" title="子网号全0全1那些事儿">
+                  <i class="fa fa-chevron-left"></i> 子网号全0全1那些事儿
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前期准备"><span class="nav-number">1.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DHCP协议"><span class="nav-number">2.</span> <span class="nav-text">DHCP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DHCP简介"><span class="nav-number">2.1.</span> <span class="nav-text">DHCP简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DHCP协议工作过程"><span class="nav-number">2.2.</span> <span class="nav-text">DHCP协议工作过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WireShark抓包实验"><span class="nav-number">2.3.</span> <span class="nav-text">WireShark抓包实验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实验环境"><span class="nav-number">2.3.1.</span> <span class="nav-text">实验环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验步骤"><span class="nav-number">2.3.2.</span> <span class="nav-text">实验步骤</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DHCP协议如何工作"><span class="nav-number">3.</span> <span class="nav-text">DHCP协议如何工作</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">154</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
