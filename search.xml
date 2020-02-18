@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[网络层协议之ARP协议]]></title>
+    <url>%2F2020%2F02%2F18%2F%E7%BD%91%E7%BB%9C%E5%B1%82%E5%8D%8F%E8%AE%AE%E4%B9%8BARP%E5%8D%8F%E8%AE%AE%2F</url>
+    <content type="text"><![CDATA[尽管有些书上将ARP协议看作是位于网络层和链路层之间的协议，但是和IP协议一样，ARP协议是封装在链路层帧上在网络中传输的。因此我更倾向于把ARP协议当作网络层协议。下面就让我们来学习一下ARP协议。 简介网络设备有数据要发送给另一台网络设备时，必须要知道对方的网络层地址（即IP地址）。IP地址由网络层来提供，但是仅有IP地址是不够的，IP数据报文必须封装成帧才能通过数据链路进行发送。数据帧必须要包含目的MAC地址，因此发送端还必须获取到目的MAC地址。通过目的IP地址获取的MAC地址的过程是由ARP（Address Resolution Protocol）协议来实现的。 MAC地址IP地址前面介绍过，就不做赘述。这里主要介绍一下MAC地址。实际上，并不是主机或者路由器具有MAC地址，而是它们的适配器(网络接口)具有MAC地址。因此，如果一个主机或路由器有多个网络接口，那么它就有多个MAC地址。MAC地址长度为6个字节，通常用十六进制表示法，每个字节用一个十六进制数表示，字节之间用’-‘连接，例如：ff-ff-ff-ff-ff-ff。 MAC的获取和IP地址不同，MAC地址是一个硬件地址，是制造商在制造的时候添加的，一旦确定不会发生变化。并且每个网络接口的MAC地址都是独一无二的。那么制造商的MAC地址是哪来的呢？答案是IEEE。该机构在管理着MAC地址空间，当一个公司要生产适配器时，它象征性的支付一定的费用购买组成2(24次方)个地址的一块地址空间。IEEE分配的方式是：前24个比特由IEEE指定，后面24个bite由生产厂商自己搭配。 ARP协议ARP分组格式这里直接简单的介绍一下ARP分组的格式作为了解，对于ARP协议，主要在于了解它的工作流程 硬件类型：发送方硬件接口类型，1为以太网 协议类型：发送方请求解析的协议地址类型，0x0800为IP协议地址 硬件地址长度：发送方硬件地址长度，MAC地址(以太网地址)为48 协议地址长度：请求解析的协议地址长度，IP协议为32 操作类型：本报文的操作类型，1为ARP请求、2为ARP响应、3和4分别为RARP请求和响应 剩下的就是源IP地址和源MAC地址以及目的IP地址和目的MAC地址 ARP协议工作流程(重要)现在假设在一个局域网内有两台主机A、B。现A要向B发送数据。因此数据在主机A中被层层封装，应用层、传输层、网络层、链路层。但是问题来了：A只知道B的IP地址，因此只能封装到网络层(即将数据封装成IP数据报)，如果要将IP数据报成帧，那么就必须知道B的MAC地址。那么A如何得知B的MAC地址呢？ 每台主机内都有一个ARP缓存表，该表记录了最近运行时使用过的(IP-MAC)映射对，如果A的ARP缓存表中有B的IP-MAC映射，那么直接将B的MAC地址作为目的MAC地址，成帧后发送给主机B。如果所示在Windows下使用arp-a查看本机ARP缓存： 如果本机的ARP缓存中没有目标主机的(IP-MAC)映射对，则在本局域网内发送广播帧(即链路层帧首部的目的MAC地址字段为ff-ff-ff-ff-ff-ff-ff)，本局域网内的所有主机都会收到该ARP广播帧，但是只有IP地址和ARP中的目的IP相同的主机在会进行响应，向发送方回送一个标准帧(目的地址为发送方MAC地址)，其余的主机会丢弃该分组。 当主机A收到B的ARP响应后，就得知了主机B的MAC地址，因此就能和主机B进行数据传输了。 有一点需要区分清楚：ARP请求分组中的源IP地址和源MAC地址为A的IP地址和MAC地址，而目的IP地址为B的IP地址，目的MAC地址为0-0-0-0-0-0(因为A并不知道B的MAC地址)。 通过WireShark捕获的一组ARP请求/响应报文从图中我们可以清楚的看到，ARP请求报文中目的MAC地址为0-0-0-0-0-0，但是应该是由于缓存的原因，该请求报文是一个标准帧而不是一个广播帧。 免费ARP前面介绍的ARP又被称为标准ARP，那么我们接下来就介绍另外一种：即免费ARP协议(又称无偿ARP协议)。免费ARP的主要作用为验证同一个局域网中该主机的IP地址是否冲突。当一个ARP请求分组满足以下条件时： 源IP和目的IP相同，都是发送该ARP报文的主机IP地址 源MAC地址为该主机的MAC地址 目的MAC地址为0-0-0-0-0-0(和ARP请求报文一样) 是一个广播帧(链路层首部字段的目的MAC地址为ff-ff-ff-ff-ff-ff-ff)。 通俗的说，免费ARP可以这么理解：一个主机A对一个局域网内的所有其他主机发起询问:我的IP地址是….，有没有和我重复的。]]></content>
+      <categories>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>读书笔记</tag>
+        <tag>网络层</tag>
+        <tag>ARP协议</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[通过WireShark抓包学习DHCP协议]]></title>
     <url>%2F2020%2F02%2F17%2F%E9%80%9A%E8%BF%87WireShark%E6%8A%93%E5%8C%85%E5%AD%A6%E4%B9%A0DHCP%E5%8D%8F%E8%AE%AE%2F</url>
     <content type="text"><![CDATA[当我们的主机接入网络时，它还没有自己的IP地址、子网掩码等一些必要的信息，这些信息需要从别处获取。那么这些信息是如何获取的？是人为配置的么？当然不是的。如果每一台主机的接入和断开都需要网络管理员进行配置(IP的分配回收等)，那管理员是忙不过来的。幸好，有DHCP协议来自动完成这些配置。下面，我将通过WireShark抓包来具体的介绍DHCP是如何工作的。 前期准备在学习DHCP协议之前，先介绍一个Windows命令行指令(打开CMD窗口)以及基本的WireShark操作 ipconfig命令(对于下面命令可以自己在cmd上进行试验)该命令能够查询本机的IP地址以及一些其他的信息。 ipconfig/all：显式更详细的信息 ipconfig/release：断开网络连接，主机IP变为0.0.0.0，主机与网络断开，不能访问网络。 ipconfig/renew：更新适配器信息，请求连接网络，这条命令结束之后，主机会获得一个可用的IP，再次接入网络。 WireShark操作这是WireShark3的界面，我使用的WiFi连接，因此点击WLAN选项如图，在过滤器中输入DHCP(只捕获DHCP协议的分组) 关于前期准备就介绍到这里，下面开始介绍DHCP协议。 DHCP协议DHCP简介DHCP(Dynamic Host Configuration Protocol),动态主机配置协议，是一个应用层协议并且运行在UDP协议之上。当我们将客户主机ip地址设置为动态获取方式时，DHCP服务器就会根据DHCP协议给客户端分配IP，使得客户机能够利用这个IP上网。 DHCP协议工作过程DHCP的实现分为4步，分别是： 第一步(DHCP发现)：Client端在局域网内发起一个DHCP Discover包，目的是想发现能够给它提供IP的DHCP Server。 第二步(DHCP提供)：可用的DHCP Server接收到Discover包之后，通过发送DHCP Offer包给予Client端应答，意在告诉Client端它可以提供IP地址。 第三步(DHCP请求)：Client端接收到Offer包之后，发送DHCP Request包请求分配IP。 第四步(DHCP响应)：DHCP Server发送ACK数据包，确认信息。 WireShark抓包实验实验环境 操作系统:Windows10 WireShark版本:3.2.1 网络环境:无线连接 实验步骤 使用ipconfig/release命令断开连接此时能观察到WireShark捕获到一个DHCP Release分组 使用ipconfig/renew命令重新连接此时WireShark再次捕获到4个DHCP分组在这里，有一点很重要:DHCP的四个分组中，目的地址应该都是255.255.255，但是在实际抓包实验中发现DHCP OFFER和DHCP ACK包的目的地址都是实际给主机分配的地址。这应该是缓存导致的。至于DHCP四个包的内容，有兴趣可以自行使用WireShark抓包观察一下，比较简单就不做赘述。 DHCP协议如何工作最后，将前面的文章梳理一遍，再对DHCP的工作流程进行进一步的介绍。 DHCP发现:一台新到达主机的首要任务就是发现一个要与其交互的DHCP服务器。此时主机并不知道DHCP服务器的地址，甚至还没有自己的IP地址，因此该分组的源地址为0.0.0.0，目的地址为255.255.255.255。 DHCP提供:当DHCP服务器收到一个DHCP发现报文时，用DHCP提供报文向客户作出响应，此报文的目的地址仍为255.255.255。这是因为，一个子网中可能有多个DHCP服务器，客户可以从这几个服务器中选择一个合适的。(此时DHCP为客户机保留该选中的IP，如果在此期间收到了其他主机的DHCP发现报文，该IP不会被分配给其他主机) DHCP请求:新到达主机从一个或多个服务器提供中选择一个，并向选中的服务器发送DHCP请求报文，回显DHCP 提供报文中服务器配置的参数 DHCP响应:服务器用DHCP ACK报文对客户机的请求作出响应，证实所要求的参数。 客户端在接收到DHCP ack广播后，会向网络发送三个针对此IP地址的ARP解析请求以执行冲突检测(免费ARP，后面会说到)，查询网络上有没有其它机器使用该IP地址；如果发现该IP地址已经被使用，客户机会发出一个DHCP decline数据包给DHCP服务器，拒绝此IP地址租约，并重新发送DHCP discover信息。此时，在DHCP服务器管理控制台中，会显示此IP地址为BAD_ADDRESS。 如果没有，则该IP地址正式被主机使用。 参考文章1(参考较多)参考文章2(较详细深入)]]></content>
@@ -60,9 +73,9 @@
       </categories>
       <tags>
         <tag>读书笔记</tag>
-        <tag>TCP/IP</tag>
         <tag>网络安全</tag>
         <tag>DOS攻击</tag>
+        <tag>TCP/IP</tag>
       </tags>
   </entry>
   <entry>
@@ -1805,8 +1818,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>BOM</tag>
         <tag>前端</tag>
+        <tag>BOM</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
