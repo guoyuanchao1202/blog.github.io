@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="什么是范式？范式是符合某一级别的关系模式的集合。关系型数据库中的关系必须满足一定的要求，满足不同程度要求的为不同范式。下面将主要介绍数据库的三大范式，并对BC范式进行简单了解。">
+<meta name="keywords" content="数据库,三大范式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库范式那点儿事">
+<meta property="og:url" content="https://HoA-W.github.io/2020/02/23/数据库范式那点儿事/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="什么是范式？范式是符合某一级别的关系模式的集合。关系型数据库中的关系必须满足一定的要求，满足不同程度要求的为不同范式。下面将主要介绍数据库的三大范式，并对BC范式进行简单了解。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/23/数据库范式那点儿事/1.jpg">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/23/数据库范式那点儿事/2.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/23/数据库范式那点儿事/2.jpg">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/23/数据库范式那点儿事/3.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/23/数据库范式那点儿事/3.jpg">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/23/数据库范式那点儿事/4.jpg">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/23/数据库范式那点儿事/5.jpg">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/23/数据库范式那点儿事/6.jpg">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/23/数据库范式那点儿事/6.jpg">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/23/数据库范式那点儿事/5.jpg">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/23/数据库范式那点儿事/7.jpg">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/23/数据库范式那点儿事/8.jpg">
+<meta property="og:updated_time" content="2020-02-23T08:30:58.208Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据库范式那点儿事">
+<meta name="twitter:description" content="什么是范式？范式是符合某一级别的关系模式的集合。关系型数据库中的关系必须满足一定的要求，满足不同程度要求的为不同范式。下面将主要介绍数据库的三大范式，并对BC范式进行简单了解。">
+<meta name="twitter:image" content="https://hoa-w.github.io/2020/02/23/数据库范式那点儿事/1.jpg">
+  <link rel="canonical" href="https://HoA-W.github.io/2020/02/23/数据库范式那点儿事/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>数据库范式那点儿事 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/02/23/数据库范式那点儿事/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">数据库范式那点儿事
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-02-23 13:22:03 / 修改时间：16:30:58" itemprop="dateCreated datePublished" datetime="2020-02-23T13:22:03+08:00">2020-02-23</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>什么是范式？范式是符合某一级别的关系模式的集合。关系型数据库中的关系必须满足一定的要求，满足不同程度要求的为不同范式。下面将主要介绍数据库的三大范式，并对BC范式进行简单了解。</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在正式学习范式之前，我们先要了解几个介绍范式用到的概念。由于书本的严谨性，书上讲解的关于范式的理论过于抽象，在本文将尽力用通俗易懂的说法和适当的举例把范式这块介绍清楚。</p>
+<ol>
+<li><p><b>函数依赖</b><br>对于关系模式r(R)，关系模式名为r，属性集为R。对于其中的两个属性集α和β(α∈R且β∈R)。如果某两行记录他们在属性集α上的取值相同，那么这两条记录他们在β上的取值一定相同，记作α-&gt;β(β函数依赖α)。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">举例说明：</span><br><span class="line">对于一个关系模式(一张表)r&lt;ID,name,class,phone,address&gt;</span><br><span class="line">属性集α&lt;ID&gt; 属性集β&lt;name,class,phone,address&gt;</span><br><span class="line">我们知道ID是唯一的，ID相同的两条记录他们的&lt;name,class,phone,address&gt;一定相同。</span><br><span class="line">因此说明β依赖于α，即α-&gt;β。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><b>完全依赖</b><br>如果存在两个属性集α和β，并且α-&gt;β。那么<font color="red"><b>β依赖于α中所有属性，而不是依赖于α中的某些属性，则称β完全依赖与α。</b></font>说起来可能难以理解，我们举个例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">属性集α&lt;商品数量,单价&gt;</span><br><span class="line">属性集β&lt;总价&gt;</span><br><span class="line">在上述两个属性集中，β由α中所有属性决定，因此β完全依赖于α</span><br><span class="line"></span><br><span class="line">==============</span><br><span class="line">属性集α&lt;商品数量，单价，日期&gt;</span><br><span class="line">属性集β&lt;总价&gt;</span><br><span class="line">在上述两个属性集中，β只由α中的两个属性&lt;商品数量,单价&gt;决定，不受日期影响</span><br><span class="line">因此β部分依赖于α</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><b>传递依赖</b><br>有三个属性集α、β、γ。其中<font color="red"><b>α-&gt;β，β-&gt;γ。那么可以得到α-&gt;γ，即γ传递依赖于α。</b></font>同样的我们举例说明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">现有一关系模式r&lt;student_ID,name,dept_ID(系编号),dept_name&gt;，其中student_ID是主码</span><br><span class="line">假设三个属性集</span><br><span class="line">α&lt;student_ID&gt;</span><br><span class="line">β&lt;dept_ID&gt;</span><br><span class="line">γ&lt;dept_name&gt;</span><br><span class="line"></span><br><span class="line">我们可以得到α-&gt;β，β-&gt;γ。这不难理解</span><br><span class="line">那么我们可以得到α-&gt;γ，即&lt;student_ID&gt; -&gt; &lt;dept_ID&gt;</span><br><span class="line">事实上也是这样，因为α是主码属性集</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>对于概念的介绍就到这里，不知道你理解了没有。接下来就一次介绍三大范式</p>
+<h1 id="第一范式-1NF"><a href="#第一范式-1NF" class="headerlink" title="第一范式(1NF)"></a>第一范式(1NF)</h1><h2 id="范式定义"><a href="#范式定义" class="headerlink" title="范式定义"></a><font size="5">范式定义</font></h2><p>第一范式的定义为：<font color="red" size="5"><b>符合1NF关系中的所有属性都不可再分，同一列不能有多个值(不能有多值属性)。</b></font></p>
+<h2 id="反面案例"><a href="#反面案例" class="headerlink" title="反面案例"></a><font size="5">反面案例</font></h2><ol>
+<li><b>属性可再分</b><br><img src="/2020/02/23/数据库范式那点儿事/1.jpg" alt><br>该关系模式就不满足第一范式，因为进货属性和售价属性可以被分割成属性</li>
+<li><b>多值属性</b><br><img src="/2020/02/23/数据库范式那点儿事/2.png" alt="数据库范式那点儿事"><br>对于图中关系模式的phone属性，一个人可以有多个电话号码(同一列有多个值)，因此该关系模式不符合第一范式。</li>
+</ol>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a><font size="5">解决方法</font></h2><ol>
+<li><p>对于非原子属性(复合属性)，解决方法很简单，我们直接将该属性的所有子属性拿出来作为关系模式的属性即可。<br><img src="/2020/02/23/数据库范式那点儿事/2.jpg" alt><br>如图，该关系模式就符合第一范式</p>
+</li>
+<li><p>对于多值属性，将该属性单独拆分成一个关系。<br><img src="/2020/02/23/数据库范式那点儿事/3.png" alt><br>对于多值属性，单独创建一个关系，和原关系模式进行外码约束</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">关系1&lt;ID,name&gt; ID为主码</span><br><span class="line">关系2&lt;ID,phone&gt; ID为关系1的外码，&lt;ID,phone&gt;共同构成关系2主码</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><font size="5">总结</font></h2><p>对于关系型数据库而言，1NF是最基本的要求。我们在关系型数据库(MySQL,SQLServer,Oracle等)中创建表的时，如果不符合1NF，那么操作是一定不可能成功的。换句话说，<font color="red"><b>只要在关系型数据库中存在的表，一定符合1NF。</b></font></p>
+<h1 id="第二范式-2NF"><a href="#第二范式-2NF" class="headerlink" title="第二范式(2NF)"></a>第二范式(2NF)</h1><h2 id="范式定义-1"><a href="#范式定义-1" class="headerlink" title="范式定义"></a><font size="5">范式定义</font></h2><p>第二范式的定义为：<font color="red" size="5"><b>在满足第一范式的基础上，所有的非主属性对码完全函数依赖。</b></font></p>
+<h2 id="反面案例-1"><a href="#反面案例-1" class="headerlink" title="反面案例"></a><font size="5">反面案例</font></h2><p><img src="/2020/02/23/数据库范式那点儿事/3.jpg" alt><br>对于图中所示的关系模式，它是满足第一范式的，但是仍然存在许多问题</p>
+<ol>
+<li><b>数据冗余过大</b><br>每一个学生的学号、姓名、系名、系主任重复多次。每个系的系主任重复多次</li>
+<li><b>插入异常</b><br>加入学校新创建了一个系，但是还没有招生，那么该系的信息无法插入进数据</li>
+<li><b>删除异常</b><br>假设某个系所有的学生都转走了，即该系中所有学生相关的记录都删除了，那么这个系相应的信息也没有了</li>
+<li><b>修改异常</b><br>如果李小明要转到法律系，为了保证一致性，要修改三条记录。</li>
+</ol>
+<p>对于一个符合1NF的关系模式，仍然可能存在许许多多的问题，因此我们需要提高设计标准。使其符合第二范式</p>
+<h2 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a><font size="5">解决方法</font></h2><p>对于满足第一范式不满足第二范式的关系模式，要使其满足第二范式，我们应该这么做：<font color="red"><b>若存在非主属性依赖于码的部分属性，那么要将发生部份依赖的这一组属性单独新建一个关系模式，并使用外码约束和原关系模式相连。</b></font>具体为一下四个步骤</p>
+<ol>
+<li>找出数据表中所有的码(能作为主键的属性集)</li>
+<li>根据第一步的码，找到所有的主属性</li>
+<li>数据表中，去掉主属性，剩下的就是非主属性</li>
+<li>是否存在非主属性对码的部份依赖</li>
+</ol>
+<p>对于上述关系模式，我们四步走</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. 找码：α&lt;学号，课名&gt;</span><br><span class="line">2. 主属性：学号和课名</span><br><span class="line">3. 非主属性：姓名、系名、系主任、分数</span><br><span class="line">4. 判断是否存在部份依赖</span><br></pre></td></tr></table></figure>
+
+<p>如图得到关系模式中所有的依赖关系：<br><img src="/2020/02/23/数据库范式那点儿事/4.jpg" alt><br>可以发现，属性集&lt;学号,姓名,系名,系主任&gt;存在部份依赖。因此将该属性集提取出来创建一个新的关系模式<br><img src="/2020/02/23/数据库范式那点儿事/5.jpg" alt><br><img src="/2020/02/23/数据库范式那点儿事/6.jpg" alt><br>上图所示，分解得到的两个表是满足第二范式的。</p>
+<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a><font size="5">总结</font></h2><p>我们再来看看对于前面存在的4个问题，满足第二范式后还存在么？</p>
+<ol>
+<li>数据冗余：学生的姓名、系名、系主任重复次数减少，冗余情况得到改善。但是仍存在冗余(系主任)</li>
+<li>插入异常：仍无法插入一个没有学生的新系–&gt;<b><font color="red">无改进</font></b></li>
+<li>删除异常：删除某个系所有学生记录后，该系信息随之丢失–&gt;<b><font color="red">无改进</font></b></li>
+<li>修改异常：李小明转到法律系后，只需要修改一条对应记录，得到改善。<br>由此看来，当关系模式满足2NF后，仍会存在一些问题。我们发现出现问题的原因在于：存在非主属性对码的传递依赖。为了进一步解决问题，我们要使关系模式满足第三范式</li>
+</ol>
+<h1 id="第三范式-3NF"><a href="#第三范式-3NF" class="headerlink" title="第三范式(3NF)"></a>第三范式(3NF)</h1><h2 id="范式定义-2"><a href="#范式定义-2" class="headerlink" title="范式定义"></a><font size="5">范式定义</font></h2><p>第三范式的定义为：<font color="red" size="5"><b>在满足2NF的基础上，关系模式中的所有非主属性直接依赖于码，不存在传递依赖</b></font></p>
+<h2 id="反面案例-2"><a href="#反面案例-2" class="headerlink" title="反面案例"></a><font size="5">反面案例</font></h2><p><img src="/2020/02/23/数据库范式那点儿事/6.jpg" alt><br>对于该满足第二范式的两个表，我们来看一看它们是否也满足第三范式</p>
+<ol>
+<li>选课表<br>主码为&lt;学号,课名&gt;，主属性为学号和课名，非主属性为分数。不可能存在传递依赖，所以选课表满足3NF。</li>
+<li>学生表<br>主码为学号，主属性为学号，非主属性为姓名、系名和系主任。因为<b>学号-&gt;系名，并且系名-&gt;系主任，因此学号-&gt;系主任。存在传递依赖</b>，故学生表不满足3NF。</li>
+</ol>
+<h2 id="解决方法-2"><a href="#解决方法-2" class="headerlink" title="解决方法"></a><font size="5">解决方法</font></h2><p><font color="red"><b>如果关系模式中存在非主属性对主码的传递依赖，那么我们将发生传递依赖的属性创建一个新的关系模式，并和原关系模式外码约束。</b></font><br><img src="/2020/02/23/数据库范式那点儿事/5.jpg" alt><br>从图中可以看到，学生表的系主任对主码存在传递依赖，因此我们将发生传递依赖的部分&lt;系名,系主任&gt;单独创建关系模式，并使用外码约束：<br><img src="/2020/02/23/数据库范式那点儿事/7.jpg" alt><br><img src="/2020/02/23/数据库范式那点儿事/8.jpg" alt></p>
+<h2 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a><font size="5">总结</font></h2><p>经过分解，由最开始的一个关系模式得到现在的三个关系模式，并且三个模式都满足3NF，那么我们再来看看满足第三范式后，前面的问题还存在么？</p>
+<ol>
+<li>数据冗余：在2NF的基础上，更加少了。</li>
+<li>插入异常：可以插入一个没有学生的系。</li>
+<li>删除异常：删除某个系所有的学生记录，那么该系仍然存在。</li>
+</ol>
+<h1 id="总结-3"><a href="#总结-3" class="headerlink" title="总结"></a>总结</h1><p>我们看到，在满足第三范式，基本上就解决了数据冗余、插入异常、删除异常和修改异常的问题。除了第三范式以外，还有BC范式，第四范式，第五范式甚至是第六范式。那么我们在设计数据库时，是满足范式等级越高越好么？<br><b>当然不是这样！！！我们可以看到，满足的范式等级越高，表的数量越多。这往往也会带来一些问题:我们在使用数据库时，往往是查询操作比较多，当表过多时，查询时就需要连接多个表，增加了查询的复杂性，降低了数据库的性能。</b>因此我们在实际应用中只一般只需要满足第三范式即可。<br>最后再对三大范式进行总结</p>
+<ol>
+<li>1NF：字段是最小的的单元不可再分</li>
+<li>2NF：满足1NF,表中的字段必须完全依赖于全部主键而非部分主键 (一般我们都会做到)</li>
+<li>3NF：满足2NF,非主键外的所有字段必须互不依赖</li>
+</ol>
+<hr>
+
+<p>参考书籍：《数据库系统概念》<br><a href="https://blog.csdn.net/wenco1/article/details/88077279" target="_blank" rel="noopener">详细图文讲解(包含BC范式)</a><br><a href="https://www.zhihu.com/question/24696366/answer/246513577" target="_blank" rel="noopener">知乎总结回答</a></p>
+<hr>
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/数据库/" rel="tag"><i class="fa fa-tag"></i>数据库</a>
+            
+              <a href="/tags/三大范式/" rel="tag"><i class="fa fa-tag"></i>三大范式</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/02/21/一个Web页面的请求-计网知识综合/" rel="next" title="一个Web页面的请求(计网知识综合)">
+                  <i class="fa fa-chevron-left"></i> 一个Web页面的请求(计网知识综合)
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第一范式-1NF"><span class="nav-number">2.</span> <span class="nav-text">第一范式(1NF)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#范式定义"><span class="nav-number">2.1.</span> <span class="nav-text">范式定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反面案例"><span class="nav-number">2.2.</span> <span class="nav-text">反面案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方法"><span class="nav-number">2.3.</span> <span class="nav-text">解决方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">2.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第二范式-2NF"><span class="nav-number">3.</span> <span class="nav-text">第二范式(2NF)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#范式定义-1"><span class="nav-number">3.1.</span> <span class="nav-text">范式定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反面案例-1"><span class="nav-number">3.2.</span> <span class="nav-text">反面案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方法-1"><span class="nav-number">3.3.</span> <span class="nav-text">解决方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结-1"><span class="nav-number">3.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第三范式-3NF"><span class="nav-number">4.</span> <span class="nav-text">第三范式(3NF)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#范式定义-2"><span class="nav-number">4.1.</span> <span class="nav-text">范式定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反面案例-2"><span class="nav-number">4.2.</span> <span class="nav-text">反面案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方法-2"><span class="nav-number">4.3.</span> <span class="nav-text">解决方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结-2"><span class="nav-number">4.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结-3"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">159</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">132</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
