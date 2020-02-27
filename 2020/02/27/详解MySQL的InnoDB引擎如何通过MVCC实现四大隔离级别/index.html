@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="在前面两篇博客中分别介绍了数据库的四大特性和数据库的四大隔离级别。那么不知道你有没有想过：数据库是怎么实现四大隔离级别的呢？由于不同的数据库实现方法可能不同，我就以我常用的MySQL为例，介绍一下MySQL的InnoDB如何实现数据库四大隔离级别，本文基于Win10环境下MySQL5.5版本。">
+<meta name="keywords" content="数据库,隔离级别,InnoDB,MVCC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别">
+<meta property="og:url" content="https://HoA-W.github.io/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="在前面两篇博客中分别介绍了数据库的四大特性和数据库的四大隔离级别。那么不知道你有没有想过：数据库是怎么实现四大隔离级别的呢？由于不同的数据库实现方法可能不同，我就以我常用的MySQL为例，介绍一下MySQL的InnoDB如何实现数据库四大隔离级别，本文基于Win10环境下MySQL5.5版本。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/1.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/2.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/1.jpg">
+<meta property="og:updated_time" content="2020-02-27T15:37:27.686Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别">
+<meta name="twitter:description" content="在前面两篇博客中分别介绍了数据库的四大特性和数据库的四大隔离级别。那么不知道你有没有想过：数据库是怎么实现四大隔离级别的呢？由于不同的数据库实现方法可能不同，我就以我常用的MySQL为例，介绍一下MySQL的InnoDB如何实现数据库四大隔离级别，本文基于Win10环境下MySQL5.5版本。">
+<meta name="twitter:image" content="https://hoa-w.github.io/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/1.png">
+  <link rel="canonical" href="https://HoA-W.github.io/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-02-27 00:10:01 / 修改时间：23:37:27" itemprop="dateCreated datePublished" datetime="2020-02-27T00:10:01+08:00">2020-02-27</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在前面两篇博客中分别介绍了数据库的四大特性和数据库的四大隔离级别。那么不知道你有没有想过：数据库是怎么实现四大隔离级别的呢？由于不同的数据库实现方法可能不同，我就以我常用的MySQL为例，介绍一下MySQL的InnoDB如何实现数据库四大隔离级别，本文基于Win10环境下MySQL5.5版本。</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>多版本并发控制(MVCC)是MySQL的InnoDB存储引擎实现隔离级别的一种具体方式，该方式主要实现了提交读和可重复读两种隔离级别，至于未提交读较为简单，要求很低，无需使用MVCC；而较高的隔离级别SERIALIZABLE，通过两阶段锁协议实现。这些在后文我会一一进行介绍。</p>
+<h1 id="MySQL行记录的元信息"><a href="#MySQL行记录的元信息" class="headerlink" title="MySQL行记录的元信息"></a>MySQL行记录的元信息</h1><p>我们在创建一张表时，会指明这张表有哪些列(属性)，列名以及列的类型(int char等)。但是在InnoDB中，除了我们指定的列以外，MySQL还会添加两个隐藏列：</p>
+<ol>
+<li><font color="red"><b>trx_id</b></font><br>存储操作(增删改)这条记录的事务ID，后面会介绍ID的概念。</li>
+<li><font color="red"><b>db_roll_ptr</b></font><br>一个指向Undo记录的指针。同样，后面会介绍Undo记录。</li>
+</ol>
+<p>这两个列被称为<b>ROW HEADER–元信息</b>。我们来举例说明，假设我们创建一张表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">create table t(</span><br><span class="line">    ID int,</span><br><span class="line">    count int</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>那么该表在InnoDB中是这样的：<br><img src="/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/1.png" alt><br>在本节中，我们只需要了解行记录的元信息即可，至于它们的作用在后面的小节介绍。</p>
+<h1 id="MySQL版本号"><a href="#MySQL版本号" class="headerlink" title="MySQL版本号"></a>MySQL版本号</h1><p>MySQL维护了两个版本号</p>
+<ol>
+<li><font color="red"><b>系统版本号(sys_id)</b></font><br>是一个递增的数字，每开启一个事务，该版本号+1。</li>
+<li><font color="red"><b>事务版本号(trx_id)</b></font><br>事务开始时系统的版本号。事务的版本号能够表明事务开启的先后顺序。</li>
+</ol>
+<p>其中行记录元信息中的trx_id即为事务的版本号。</p>
+<h1 id="MySQL索引"><a href="#MySQL索引" class="headerlink" title="MySQL索引"></a>MySQL索引</h1><p>InnoDB中使用B+树索引结构，并且主键所在的索引为<font color="red"><b>聚簇索引</b></font>。索引的每个叶子节点中保存了对应的数据内容。一个表只能有一个主键，所以只能有一个聚簇索引。<font color="red"><b>在MySQL中，聚簇索引只能是主键。</b></font>如果我们在创建表时候没有指定索引，那么对于InnoDB</p>
+<ol>
+<li>如果创建表时定义了主键，那么系统会自动为该主键创建聚簇索引</li>
+<li>如果创建表时没有定义主键，那么<b>指定该表的第一个非空唯一索引为聚簇索引。</b></li>
+<li>如果既没有主键也没有合适的索引，那么InnoDB会生成一个隐藏的主键作为聚簇索引。该隐藏主键6字节，并且自增。</li>
+</ol>
+<p>如果你对B+树有一定的了解，那么到目前为止你应该已经知道了MySQL中数据的组织方式。<font color="red"><b>即一张表就是一个B+树，树的每一个叶子节点就是表中的一条记录。</b></font></p>
+<h1 id="回滚日志-Undo-Log"><a href="#回滚日志-Undo-Log" class="headerlink" title="回滚日志-Undo Log"></a>回滚日志-Undo Log</h1><p>MySQL的InnoDB中存在多种日志，如Redo Log、bin Log以及Undo Log等，而今天要介绍的就是和MVCC相关的Undo Log–回滚日志。当然，这里只是对回滚日志进行极其简单的学习，为后面的学习做准备。Undo Log用于数据的撤回操作，它记录了修改的反向操作，如插入对应删除、修改对应修改为原来的数据，通过Undo Log可以实现事务回滚，并且可以回滚到某个特定版本的数据，实现MVCC。<br>Undo Log分为INSERT和UPDATE两种(DELETE被视为特殊的更新，在记录上修改删除标记)</p>
+<ol>
+<li>当进行插入操作时，生成的INSERT Undo Log在事务提交后即可删除，这很容易理解，因为其他事务不需要这个Undo Log</li>
+<li>进行删除修改操作时，生成对应的Undo Log。记录相应信息。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">例如在MySQL创建了一个表t，包含主键id和一个字段x，</span><br><span class="line">并假设系统版本号sys_id=1</span><br><span class="line">我们对该表进行如下操作：</span><br><span class="line">INSERT INTO t VALUES(1,&apos;a&apos;);</span><br><span class="line">UPDATE t SET x=&apos;b&apos; WHERE id=1;</span><br><span class="line">UPDATE t SET x=&apos;c&apos; WHERE id=1;</span><br></pre></td></tr></table></figure>
+
+<p>我们没有使用start transaction来开启一个事务，因此根据MySQL的AUTOCOMMIT机制，每一条SQL语句都被当作一个事务执行，因此一共执行了三个事务，事务的版本号分别为1，2，3。<br><img src="/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/2.png" alt><br>到目前为止，我们知道了数据在MySQL中的组织方式以及Undo记录，上图中Undo记录中每一个数据行被称为一张快照。</p>
+<h1 id="事务执行状态的快照–ReadView"><a href="#事务执行状态的快照–ReadView" class="headerlink" title="事务执行状态的快照–ReadView"></a>事务执行状态的快照–ReadView</h1><p>MVCC维护了一个被称为READ VIEW的结构，它的基本结构如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ReadView&#123;</span><br><span class="line">    creator_trx_id</span><br><span class="line">    trx_id_min</span><br><span class="line">    trx_id_max</span><br><span class="line">    id1</span><br><span class="line">    id2</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该结构包含了当前系统所有活动的事务(未提交的事务)的trx_id。MVCC还维护了最大值(TRX_ID_MAX)和最小值(TRX_ID_MIN)，这表示当前未提交的事务中最年轻事务(最新开启)的ID和最年老事务(最早开启)的ID。<br><img src="/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/1.jpg" alt><br>ReadView用于进行可见性判断，我们在后面详细说，现在你只需要知道：ReadView是由事务创建的(至于什么时候创建什么时候更新由不同的隔离级别决定)，用于可见性判断。</p>
+<h1 id="快照读和当前读"><a href="#快照读和当前读" class="headerlink" title="快照读和当前读"></a>快照读和当前读</h1><p>在正式介绍四大隔离级别的实现时，我们先介绍两个概念，个人觉得这两个概念对于后面的学习至关重要。</p>
+<h2 id="快照读-snapshot-read"><a href="#快照读-snapshot-read" class="headerlink" title="快照读(snapshot read)"></a><font size="5">快照读(snapshot read)</font></h2><p>MVCC中的SELECT操作读取的是快照中的数据，你可以理解为前面图中Undo记录中的数据，并不是B+树的节点。该操作不需要加锁。<br>在提交读和可重复读两种隔离级别下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT ? FROM table WHERE ?</span><br></pre></td></tr></table></figure>
+
+<p>这类普通的SELECT语句全部都是快照读！</p>
+<h2 id="当前读"><a href="#当前读" class="headerlink" title="当前读"></a><font size="5">当前读</font></h2><p>MVCC其他修改数据的操作读取的是最新的数据，你可以理解为前面图中B+树的叶子节点。该操作需要加锁，至于加什么锁怎么加锁视情况而定。<br>在提交读和可重复读两种隔离级别下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SELECT ? FROM table WHERE ? FOR SHARE MODE--加共享锁</span><br><span class="line">SELECT ? FROM table WHERE ? FOR UPDATE</span><br><span class="line">UPDATE</span><br><span class="line">INSERT</span><br><span class="line">DELETE</span><br></pre></td></tr></table></figure>
+
+<p>除了第一条加共享锁外，其余·都加排他锁。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><font size="5">总结</font></h2><p>不知道你发现没有，<font color="red"><b>MVCC在进行普通SELECT时，读的都是快照中的数据，而在进行修改时，修改的都是B+树叶子节点上的数据(最新的数据)–这一结论仅在提交读和可重复读级别下成立。</b></font>这很类似于Java中的CopyOnWrite，实现了读写分离。</p>
+<h1 id="READ-COMMIT-提交读"><a href="#READ-COMMIT-提交读" class="headerlink" title="READ COMMIT-提交读"></a>READ COMMIT-提交读</h1><p>在此隔离级别下，会存在不可重复读的问题。我们来看看此时MVCC是如何工作的</p>
+<h2 id="ReadView的创建和更新时机"><a href="#ReadView的创建和更新时机" class="headerlink" title="ReadView的创建和更新时机"></a><font size="5">ReadView的创建和更新时机</font></h2><p>事务每一次快照读(snapshot read)都会创建一个新的ReadView，可以理解为每次SELECT时都会更新ReadView，得到所有当前最新的未提交的事务。</p>
+<h2 id="MVCC具体实现–判断可见性"><a href="#MVCC具体实现–判断可见性" class="headerlink" title="MVCC具体实现–判断可见性"></a><font size="5">MVCC具体实现–判断可见性</font></h2><p>在进行普通SELECT操作时，根据数据行快照的trx_id与ReadView中trx_id_min和trx_id_max之间的关系，判断快照是否可用</p>
+<ul>
+<li><p><font color="blue" size="5"><b>trx_id==creator_trx_id</b></font><br>表示该数据行的快照是当前事务创建的，可以使用。</p>
+</li>
+<li><p><font color="blue" size="5"><b>trx_id&lt;trx_id_min</b></font><br>表示该数据行快照在当前所有未提交事务启动之前更改的，因此可以使用(即SELECT读取到该快照)。</p>
+</li>
+<li><p><font color="blue" size="5"><b>trx_id&gt;trx_id_max</b></font><br>表示该数据行快照是在事务启动后被修改的，因此不可使用该快照。</p>
+</li>
+<li><p><font color="blue" size="5"><b>trx_id_min&lt;=trx_id&lt;=trx_id_max</b></font><br>此时有两种情况</p>
+<ol>
+<li>如果该快照的trx_id在ReadView中，说明该快照对应的事务还没有提交，则该快照不可使用</li>
+<li>如果该快照的trx_id不在ReadView中，说明该快照对应的事务已提交，在该隔离级别下可以使用。</li>
+</ol>
+</li>
+<li><p><font color="red"><b>如果当前数据行快照不可使用，那么沿着db_roll_ptr找到该数据行的下一个快照重复上述步骤。</b></font></p>
+</li>
+</ul>
+<h1 id="READ-REAPETABLE-可重复读"><a href="#READ-REAPETABLE-可重复读" class="headerlink" title="READ REAPETABLE-可重复读"></a>READ REAPETABLE-可重复读</h1><p>该隔离级别解决了不可重复读的问题，但是会存在幻行。</p>
+<h2 id="ReadView的创建和更新时机-1"><a href="#ReadView的创建和更新时机-1" class="headerlink" title="ReadView的创建和更新时机"></a><font size="5">ReadView的创建和更新时机</font></h2><p>和提交读不同，在RR级别下，ReadView只创建一次，创建以后不会改变，在事务开始后第一此快照读(snapshot read)时创建。</p>
+<h2 id="MVCC具体实现"><a href="#MVCC具体实现" class="headerlink" title="MVCC具体实现"></a><font size="5">MVCC具体实现</font></h2><p>在进行普通SELECT操作时，根据数据行快照的trx_id与ReadView中trx_id_min和trx_id_max之间的关系，判断快照是否可用</p>
+<ul>
+<li><font color="blue" size="5"><b>trx_id==creator_trx_id</b></font><br>表示该数据行的快照是当前事务创建的，可以使用。</li>
+<li><font color="blue" size="5"><b>trx_id&lt;trx_id_min</b></font><br>表示该数据行快照在当前所有未提交事务启动之前更改的，因此可以使用(即SELECT读取到该快照)。</li>
+<li><font color="blue" size="5"><b>trx_id&gt;trx_id_max</b></font><br>表示该数据行快照是在事务启动后被修改的，因此不可使用该快照。</li>
+<li><font color="blue" size="5"><b>trx_id_min&lt;=trx_id&lt;=trx_id_max</b></font><br>所有的快照都不可使用，因为如果可以使用的话，那么就会产生不可重复读的问题。</li>
+<li><font color="red"><b>如果当前数据行快照不可使用，那么沿着db_roll_ptr找到该数据行的下一个快照重复上述步骤。</b></font></li>
+</ul>
+<h1 id="READ-UNCOMMITTED-未提交读"><a href="#READ-UNCOMMITTED-未提交读" class="headerlink" title="READ UNCOMMITTED-未提交读"></a>READ UNCOMMITTED-未提交读</h1><p>在当前隔离级别下，每次读取只会读取最新的数据，不会遍历版本链(Undo记录)，不会进行查找可见版本，因此可能会出现脏读。即读取到其他未提交事务修改的数据。</p>
+<h1 id="SERIALIZABLE-可串行化"><a href="#SERIALIZABLE-可串行化" class="headerlink" title="SERIALIZABLE-可串行化"></a>SERIALIZABLE-可串行化</h1><p>在此隔离级别上，MySQL执行严格两阶段锁(S2PL)并发控制协议，读写都要加锁！</p>
+<h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><p>对于MySQL并发事务的读操作，通过本文你应该了解了MVCC是如何进行控制的。我们知道，除非特别指定，MVCC下普通的读都是快照读，写都是要加锁的。那么问题来了，在不同的隔离级别下分别怎么加锁，要加什么锁呢？我会在后面的博客进行介绍。</p>
+<hr>
+
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/数据库/" rel="tag"><i class="fa fa-tag"></i>数据库</a>
+            
+              <a href="/tags/隔离级别/" rel="tag"><i class="fa fa-tag"></i>隔离级别</a>
+            
+              <a href="/tags/InnoDB/" rel="tag"><i class="fa fa-tag"></i>InnoDB</a>
+            
+              <a href="/tags/MVCC/" rel="tag"><i class="fa fa-tag"></i>MVCC</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/02/26/事务的四大隔离级别/" rel="next" title="事务的四大隔离级别">
+                  <i class="fa fa-chevron-left"></i> 事务的四大隔离级别
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL行记录的元信息"><span class="nav-number">2.</span> <span class="nav-text">MySQL行记录的元信息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL版本号"><span class="nav-number">3.</span> <span class="nav-text">MySQL版本号</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL索引"><span class="nav-number">4.</span> <span class="nav-text">MySQL索引</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#回滚日志-Undo-Log"><span class="nav-number">5.</span> <span class="nav-text">回滚日志-Undo Log</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#事务执行状态的快照–ReadView"><span class="nav-number">6.</span> <span class="nav-text">事务执行状态的快照–ReadView</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#快照读和当前读"><span class="nav-number">7.</span> <span class="nav-text">快照读和当前读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#快照读-snapshot-read"><span class="nav-number">7.1.</span> <span class="nav-text">快照读(snapshot read)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#当前读"><span class="nav-number">7.2.</span> <span class="nav-text">当前读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">7.3.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#READ-COMMIT-提交读"><span class="nav-number">8.</span> <span class="nav-text">READ COMMIT-提交读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ReadView的创建和更新时机"><span class="nav-number">8.1.</span> <span class="nav-text">ReadView的创建和更新时机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MVCC具体实现–判断可见性"><span class="nav-number">8.2.</span> <span class="nav-text">MVCC具体实现–判断可见性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#READ-REAPETABLE-可重复读"><span class="nav-number">9.</span> <span class="nav-text">READ REAPETABLE-可重复读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ReadView的创建和更新时机-1"><span class="nav-number">9.1.</span> <span class="nav-text">ReadView的创建和更新时机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MVCC具体实现"><span class="nav-number">9.2.</span> <span class="nav-text">MVCC具体实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#READ-UNCOMMITTED-未提交读"><span class="nav-number">10.</span> <span class="nav-text">READ UNCOMMITTED-未提交读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SERIALIZABLE-可串行化"><span class="nav-number">11.</span> <span class="nav-text">SERIALIZABLE-可串行化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结-1"><span class="nav-number">12.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">136</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>

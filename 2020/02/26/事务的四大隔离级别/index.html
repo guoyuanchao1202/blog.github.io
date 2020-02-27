@@ -57,13 +57,13 @@
   };
 </script>
 
-  <meta name="description" content="在上一篇博客中介绍了事务的四大特性，并且也说：为了提高性能和利用率，我们有时候会破坏一致性，违背隔离性。那么这个限度到底是多少呢？破坏之后又会带来哪些负面效果呢？下面就让我们来看一看事务的四大隔离级别。本文中相关实验基于Windows10环境下的MySQL实现。">
+  <meta name="description" content="在上一篇博客中介绍了事务的四大特性，并且也说：为了提高性能和利用率，我们有时候会弱化一致性，设置不同的隔离级别。那么到底怎么做呢？设置不同的隔离级别之后又会带来哪些负面效果呢？下面就让我们来看一看事务的四大隔离级别。本文中相关实验基于Windows10环境下的MySQL实现。">
 <meta name="keywords" content="数据库,隔离级别">
 <meta property="og:type" content="article">
 <meta property="og:title" content="事务的四大隔离级别">
 <meta property="og:url" content="https://HoA-W.github.io/2020/02/26/事务的四大隔离级别/index.html">
 <meta property="og:site_name" content="CommonGuy">
-<meta property="og:description" content="在上一篇博客中介绍了事务的四大特性，并且也说：为了提高性能和利用率，我们有时候会破坏一致性，违背隔离性。那么这个限度到底是多少呢？破坏之后又会带来哪些负面效果呢？下面就让我们来看一看事务的四大隔离级别。本文中相关实验基于Windows10环境下的MySQL实现。">
+<meta property="og:description" content="在上一篇博客中介绍了事务的四大特性，并且也说：为了提高性能和利用率，我们有时候会弱化一致性，设置不同的隔离级别。那么到底怎么做呢？设置不同的隔离级别之后又会带来哪些负面效果呢？下面就让我们来看一看事务的四大隔离级别。本文中相关实验基于Windows10环境下的MySQL实现。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/26/事务的四大隔离级别/1.png">
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/26/事务的四大隔离级别/2.png">
@@ -81,10 +81,10 @@
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/26/事务的四大隔离级别/14.png">
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/26/事务的四大隔离级别/15.png">
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/26/事务的四大隔离级别/16.png">
-<meta property="og:updated_time" content="2020-02-26T03:30:36.083Z">
+<meta property="og:updated_time" content="2020-02-27T07:40:37.629Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="事务的四大隔离级别">
-<meta name="twitter:description" content="在上一篇博客中介绍了事务的四大特性，并且也说：为了提高性能和利用率，我们有时候会破坏一致性，违背隔离性。那么这个限度到底是多少呢？破坏之后又会带来哪些负面效果呢？下面就让我们来看一看事务的四大隔离级别。本文中相关实验基于Windows10环境下的MySQL实现。">
+<meta name="twitter:description" content="在上一篇博客中介绍了事务的四大特性，并且也说：为了提高性能和利用率，我们有时候会弱化一致性，设置不同的隔离级别。那么到底怎么做呢？设置不同的隔离级别之后又会带来哪些负面效果呢？下面就让我们来看一看事务的四大隔离级别。本文中相关实验基于Windows10环境下的MySQL实现。">
 <meta name="twitter:image" content="https://hoa-w.github.io/2020/02/26/事务的四大隔离级别/1.png">
   <link rel="canonical" href="https://HoA-W.github.io/2020/02/26/事务的四大隔离级别/">
 
@@ -304,11 +304,19 @@
                 
               
 
-              <time title="创建时间：2020-02-26 09:25:26 / 修改时间：11:30:36" itemprop="dateCreated datePublished" datetime="2020-02-26T09:25:26+08:00">2020-02-26</time>
+              <time title="创建时间：2020-02-26 09:25:26" itemprop="dateCreated datePublished" datetime="2020-02-26T09:25:26+08:00">2020-02-26</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-27 15:40:37" itemprop="dateModified" datetime="2020-02-27T15:40:37+08:00">2020-02-27</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -336,7 +344,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>在上一篇博客中介绍了事务的四大特性，并且也说：为了提高性能和利用率，我们有时候会破坏一致性，违背隔离性。那么这个限度到底是多少呢？破坏之后又会带来哪些负面效果呢？下面就让我们来看一看事务的四大隔离级别。本文中相关实验基于Windows10环境下的MySQL实现。</p>
+        <p>在上一篇博客中介绍了事务的四大特性，并且也说：为了提高性能和利用率，我们有时候会弱化一致性，设置不同的隔离级别。那么到底怎么做呢？设置不同的隔离级别之后又会带来哪些负面效果呢？下面就让我们来看一看事务的四大隔离级别。本文中相关实验基于Windows10环境下的MySQL实现。</p>
 <hr>
 <a id="more"></a>
 
@@ -476,6 +484,10 @@
 
             <div class="post-nav-prev post-nav-item">
               
+                <a href="/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/" rel="prev" title="详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别">
+                  详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别 <i class="fa fa-chevron-right"></i>
+                </a>
+              
             </div>
           </div>
         
@@ -541,7 +553,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">161</span>
+          <span class="site-state-item-count">162</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -567,7 +579,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">134</span>
+        <span class="site-state-item-count">136</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
