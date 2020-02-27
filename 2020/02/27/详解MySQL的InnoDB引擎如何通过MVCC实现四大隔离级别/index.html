@@ -68,7 +68,7 @@
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/1.png">
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/2.png">
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/27/详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别/1.jpg">
-<meta property="og:updated_time" content="2020-02-27T15:37:27.686Z">
+<meta property="og:updated_time" content="2020-02-27T15:46:33.947Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="详解MySQL的InnoDB引擎如何通过MVCC实现四大隔离级别">
 <meta name="twitter:description" content="在前面两篇博客中分别介绍了数据库的四大特性和数据库的四大隔离级别。那么不知道你有没有想过：数据库是怎么实现四大隔离级别的呢？由于不同的数据库实现方法可能不同，我就以我常用的MySQL为例，介绍一下MySQL的InnoDB如何实现数据库四大隔离级别，本文基于Win10环境下MySQL5.5版本。">
@@ -291,7 +291,7 @@
                 
               
 
-              <time title="创建时间：2020-02-27 00:10:01 / 修改时间：23:37:27" itemprop="dateCreated datePublished" datetime="2020-02-27T00:10:01+08:00">2020-02-27</time>
+              <time title="创建时间：2020-02-27 00:10:01 / 修改时间：23:46:33" itemprop="dateCreated datePublished" datetime="2020-02-27T00:10:01+08:00">2020-02-27</time>
             </span>
           
             
@@ -404,6 +404,9 @@
 <h1 id="READ-UNCOMMITTED-未提交读"><a href="#READ-UNCOMMITTED-未提交读" class="headerlink" title="READ UNCOMMITTED-未提交读"></a>READ UNCOMMITTED-未提交读</h1><p>在当前隔离级别下，每次读取只会读取最新的数据，不会遍历版本链(Undo记录)，不会进行查找可见版本，因此可能会出现脏读。即读取到其他未提交事务修改的数据。</p>
 <h1 id="SERIALIZABLE-可串行化"><a href="#SERIALIZABLE-可串行化" class="headerlink" title="SERIALIZABLE-可串行化"></a>SERIALIZABLE-可串行化</h1><p>在此隔离级别上，MySQL执行严格两阶段锁(S2PL)并发控制协议，读写都要加锁！</p>
 <h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><p>对于MySQL并发事务的读操作，通过本文你应该了解了MVCC是如何进行控制的。我们知道，除非特别指定，MVCC下普通的读都是快照读，写都是要加锁的。那么问题来了，在不同的隔离级别下分别怎么加锁，要加什么锁呢？我会在后面的博客进行介绍。</p>
+<hr>
+
+<p>参考文章<br><a href="https://www.zhihu.com/question/263820564/answer/289269082" target="_blank" rel="noopener">来自知乎解答</a><br><a href="https://liuzhengyang.github.io/2017/04/18/innodb-mvcc/" target="_blank" rel="noopener">InnoDB存储引擎MVCC实现原理</a><br><a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86.md#" target="_blank" rel="noopener">来自个人博客</a></p>
 <hr>
 
 
