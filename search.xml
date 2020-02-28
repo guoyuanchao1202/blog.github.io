@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[查看MySQL正在执行的事务/锁/等待信息]]></title>
+    <url>%2F2020%2F02%2F28%2F%E6%9F%A5%E7%9C%8BMySQL%E6%AD%A3%E5%9C%A8%E6%89%A7%E8%A1%8C%E7%9A%84%E4%BA%8B%E5%8A%A1-%E9%94%81-%E7%AD%89%E5%BE%85%E4%BF%A1%E6%81%AF%2F</url>
+    <content type="text"><![CDATA[在5.5中，information_schema库中增加了三个关于锁的表，它们分别是：innodb_trx–当前运行的所有事务、innodb_locks–当前出现的锁以及innodb_lock_waits–锁等待的对应关系。今天看了一篇博客，对这方面进行了介绍。觉得写得很好，为了防止原博客404，特此记录一下。 常用的showstatus命令 查询返回的行数show status like ‘%innodb_rows_read%’ 插入成功的行数show status like ‘%innodb_rows_inserted%’ 更新成功的行数show status like ‘%innodb_rows_updated%’ 删除成功的行数show status like ‘%innodb_rows_deleted%’ 查看慢查询show status like ‘%Slow%’ 查看运行时间show status like ‘%up%’ 查看锁的时间分布show status like’%innodb_row_lock%’; 执行select的计数show status like ‘%Com_select%’ 执行insert的计数，批量插入算一次show status like ‘%Com_insert%’ 执行更新操作的计数show status like ‘%Com_update%’ 执行删除操作的计数show status like ‘%Com_delete%’ 提交事务计数show status like ‘%Com_commit%’ 回滚事务计数show status like ‘%Com_rollback%’ 查看警告信息show warnings1234567891011121314151617mysql&gt; show status like &apos;innodb_row_lock_%&apos;;+-------------------------------+-----------+| Variable_name | Value |+-------------------------------+-----------+| Innodb_row_lock_current_waits | 2 || Innodb_row_lock_time | 334377476 || Innodb_row_lock_time_avg | 50678 || Innodb_row_lock_time_max | 51974 || Innodb_row_lock_waits | 6598 |+-------------------------------+-----------+解释如下：Innodb_row_lock_current_waits : 当前等待锁的数量Innodb_row_lock_time : 系统启动到现在，锁定的总时间长度Innodb_row_lock_time_avg : 每次平均锁定的时间Innodb_row_lock_time_max : 最长一次锁定时间Innodb_row_lock_waits : 系统启动到现在总共锁定的次数 innodb_locks 在MySQL下使用desc information_schema.innodb_locks;语句可以查看innodb_locks表的结构，如图所示 使用select * from information_schema.innodb_locks\G;查看表中数据 123456789101112131415表各个字段含义+-------------+---------------------+------+-----+---------+-------+| Field | Type | Null | Key | Default | Extra |+-------------+---------------------+------+-----+---------+-------+| lock_id | varchar(81) | NO | | | |#锁ID| lock_trx_id | varchar(18) | NO | | | |#拥有锁的事务ID| lock_mode | varchar(32) | NO | | | |#锁模式| lock_type | varchar(32) | NO | | | |#锁类型| lock_table | varchar(1024) | NO | | | |#被锁的表| lock_index | varchar(1024) | YES | | NULL | |#被锁的索引| lock_space | bigint(21) unsigned | YES | | NULL | |#被锁的表空间号| lock_page | bigint(21) unsigned | YES | | NULL | |#被锁的页号| lock_rec | bigint(21) unsigned | YES | | NULL | |#被锁的记录号| lock_data | varchar(8192) | YES | | NULL | |#被锁的数据+-------------+---------------------+------+-----+---------+-------+ innodb_lock_waits 使用desc information_schema.innodb_lock_waits;命令查看innodb_lock_waits表的结构，如图所示 使用select * from information_schema.innodb_lock_waits\G;查看表中数据123456789表各个字段含义+-------------------+-------------+------+-----+---------+-------+| Field | Type | Null | Key | Default | Extra |+-------------------+-------------+------+-----+---------+-------+| requesting_trx_id | varchar(18) | NO | | | |#请求锁的事务ID| requested_lock_id | varchar(81) | NO | | | |#请求锁的锁ID| blocking_trx_id | varchar(18) | NO | | | |#当前拥有锁的事务ID| blocking_lock_id | varchar(81) | NO | | | |#当前拥有锁的锁ID+-------------------+-------------+------+-----+---------+-------+ innodb_trx 使用desc information_schema.innodb_trx;命令查看innodb_trx表的结构，如图所示 使用select * from information_schema.innodb_trx\G;查看表中数据12345678910111213141516171819202122232425262728表各个字段的含义desc information_schema.innodb_trx;+----------------------------+---------------------+------+-----+---------------------+-------+| Field | Type | Null | Key | Default | Extra |+----------------------------+---------------------+------+-----+---------------------+-------+| trx_id | varchar(18) | NO | | | |#事务ID| trx_state | varchar(13) | NO | | | |#事务状态：| trx_started | datetime | NO | | 0000-00-00 00:00:00 ||#事务开始时间；| trx_requested_lock_id | varchar(81) | YES | | NULL ||#innodb_locks.lock_id| trx_wait_started | datetime | YES | | NULL | |#事务开始等待的时间| trx_weight | bigint(21) unsigned | NO | | 0 | |#| trx_mysql_thread_id | bigint(21) unsigned | NO | | 0 ||#事务线程ID| trx_query | varchar(1024) | YES | | NULL | |#具体SQL语句| trx_operation_state | varchar(64) | YES | | NULL ||#事务当前操作状态| trx_tables_in_use | bigint(21) unsigned | NO | | 0 ||#事务中有多少个表被使用| trx_tables_locked | bigint(21) unsigned | NO | | 0 ||#事务拥有多少个锁| trx_lock_structs | bigint(21) unsigned | NO | | 0 | |#| trx_lock_memory_bytes | bigint(21) unsigned | NO | | 0 ||#事务锁住的内存大小（B）| trx_rows_locked | bigint(21) unsigned | NO | | 0 ||#事务锁住的行数| trx_rows_modified | bigint(21) unsigned | NO | | 0 ||#事务更改的行数| trx_concurrency_tickets | bigint(21) unsigned | NO | | 0 ||#事务并发票数| trx_isolation_level | varchar(16) | NO | | | |#事务隔离级别| trx_unique_checks | int(1) | NO | | 0 | |#是否唯一性检查| trx_foreign_key_checks | int(1) | NO | | 0 | |#是否外键检查| trx_last_foreign_key_error | varchar(256) | YES | | NULL ||#最后的外键错误| trx_adaptive_hash_latched | int(1) | NO | | 0 | |#| trx_adaptive_hash_timeout | bigint(21) unsigned | NO | | 0 ||#+----------------------------+---------------------+------+-----+---------------------+-------+ 总结一旦事务开启，innodb_trx表就有数据，有多少个未提交事务就有多少条数据。只有产生锁等待时，innodb_locks和innodb_lock_waits这两张表才会有数据。查看Mysql正在执行的事务，锁，等待mysqlshowstatus常用命令]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>数据库</tag>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[MySQL中获取锁超时和死锁问题]]></title>
     <url>%2F2020%2F02%2F28%2FMySQL%E4%B8%AD%E8%8E%B7%E5%8F%96%E9%94%81%E8%B6%85%E6%97%B6%E5%92%8C%E6%AD%BB%E9%94%81%E9%97%AE%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[MySQL地InnoDB引擎地并发控制有两种形式：分别是MVCC和两阶段封锁协议。在前面说过，两阶段封锁协议可能会出现死锁问题，那么出现死锁之后该如何处理呢？通过本文你将了解MySQL处理死锁问题以及获取锁超时问题地方式。本文所有实验演示全部基于Win10环境下MySQL5.4版本 前言在多个事务并发执行时，可能会出现两种情况 一个事务长时间地持有锁，导致其他事务长时间阻塞–获取锁超时。 死锁问题。 下面我将通过实验演示MySQL如何解决这两种情况。 什么是死锁在数据库中，死锁的定义如下：两个事务都持有对方需要的锁，并且在等待对方释放，并且双方都不会释放自己已经持有的锁。由于MySQL使用的是两阶段封锁协议，因此MySQL在并发环境下可能会出现死锁。 死锁检测和恢复MySQL不能保证不产生死锁，那么它就必须采用检测和恢复机制。检查系统状态的算法周期新激活，判断有无死锁发生。如果发生死锁，则系统必须尝试着从死锁中恢复。 死锁检测死锁可以用称为等待图的有向图来描述，该图由G=(V,E)来描述，其中V是顶点集，E是边集。顶点集由系统中所有事务组成，边集E的每个元素是一个有序对Ti–&gt;Tj。如果Ti–&gt;Tj属于E，则表示Ti在等待Tj释放所需要的数据项。当Ti申请的数据项被Tj持有时，边Ti–&gt;Tj被插入等待图中，只有当Tj不再持有Ti需要的数据项时，Ti–&gt;Tj才被删除。当且仅当等待途中包含环时，系统中存在死锁，该环的每一个事务称为处于死锁状态。要检测死锁，系统需维护等待图，并周期性的激活一个在等待图中搜索环的算法。如上图，第一张图中不存在环，因此没有死锁发生；而在第二张图中存在环，因此T2、T3以及T4处于死锁状态，需要进行死锁恢复。 死锁恢复当检测到死锁时，系统必须从死锁中恢复，解除死锁最通常的做法是回滚一个或多个事务。采取的动作有三个： 选择牺牲者死锁发生后，系统选择插入更新或者删除数量最少的事务进行回滚(基于INFORMATION_SCHEMA.INNODB_TRX表中的trx_weight字段来判断) 12使用该SQL语句可以查看事务信息(后面的博客会详细介绍)select * from information_schema.innodb_trx\G; 饿死防止某个事务在发生死锁时总是被回滚，导致该事务总是无法执行完毕，这样就发生饿死。为了防止这种情况，可以将事务的回滚次数作为一个影响因素来计算trx_weight。 死锁实验我们创建一张表 12345create table deadlock_test( ID int primary key, number int);并插入几条记录 开启两个事务T1和T2 123456T1: update deadlock_test set number=-1 where ID=13; update deadlock_test set number=-1 where ID=1; update deadlock_test set number=-1 where ID=3;T2:update deadlock_test set number=-2 where ID=3; update deadlock_test set number=-2 where ID=1; 为了更明显的区分，我让T1多做了一次update操作，这样发生死锁时就会回滚T2。以上事务执行顺序如下 T1先执行前两个SQL语句 T2执行第一条SQL语句 T1再执行第三条SQL语句 T2执行第二条SQL语句 ，再RR级别下，只有更新操作时，被回滚的事务直接终止。 超时等待在MySQL中，还有一种情况：那就是当一个事务长时间持有锁时，被阻塞的事务会一直等待该锁，那么等待多久呢？超时之后呢？ 等待多久在MySQL中，InnoDB默认的行级锁等待时间为50s。可以通过设置innodb_lock_wait_timeout的值来改变超时时间 1234innodb_lock_wait_timeout默认值：50s最小值：1s最大值：1073741824 可以通过下面命令查看超时等待时间 show variables like ‘innodb_lock_wait_timeout’;–查看当前会话 show global variables like ‘innodb_lock_wait_timeout’;–查看全局设置 通过下面SQL语句修改会话当前会话行级锁超时时间 set innodb_lock_wait_timeout=?； 超时之后当事务等待锁超时之后，会进行事务回滚，回滚到当前SQL语句(使事务等待锁的语句)上一步。 测试锁超时的实验很好测试，表还是上面的表，开启两个事务 123T1:update deadlock_test set number=-1 where ID=1;T2:update deadlock_test set number=-2 where ID=1; 两事务同时对一条记录进行修改，就会发生锁争用现象，后面的事务会被阻塞，知道获得锁或者超时。 附(查看修改超时时间操作截图) 查看行级锁超时时间 设置当前会话行级锁超时时间 总结对于MySQL中的死锁问题的介绍就到这里，由于MySQL使用两阶段封锁协议，不能保证不发生死锁，因此InnoDB具有完善的死锁检测和恢复机制。今天的介绍就到这里。]]></content>
+    <content type="text"><![CDATA[MySQL地InnoDB引擎地并发控制有两种形式：分别是MVCC和两阶段封锁协议。在前面说过，两阶段封锁协议可能会出现死锁问题，那么出现死锁之后该如何处理呢？通过本文你将了解MySQL处理死锁问题以及获取锁超时问题地方式。本文所有实验演示全部基于Win10环境下MySQL5.5版本 前言在多个事务并发执行时，可能会出现两种情况 一个事务长时间地持有锁，导致其他事务长时间阻塞–获取锁超时。 死锁问题。 下面我将通过实验演示MySQL如何解决这两种情况。 什么是死锁在数据库中，死锁的定义如下：两个事务都持有对方需要的锁，并且在等待对方释放，并且双方都不会释放自己已经持有的锁。由于MySQL使用的是两阶段封锁协议，因此MySQL在并发环境下可能会出现死锁。 死锁检测和恢复MySQL不能保证不产生死锁，那么它就必须采用检测和恢复机制。检查系统状态的算法周期新激活，判断有无死锁发生。如果发生死锁，则系统必须尝试着从死锁中恢复。 死锁检测死锁可以用称为等待图的有向图来描述，该图由G=(V,E)来描述，其中V是顶点集，E是边集。顶点集由系统中所有事务组成，边集E的每个元素是一个有序对Ti–&gt;Tj。如果Ti–&gt;Tj属于E，则表示Ti在等待Tj释放所需要的数据项。当Ti申请的数据项被Tj持有时，边Ti–&gt;Tj被插入等待图中，只有当Tj不再持有Ti需要的数据项时，Ti–&gt;Tj才被删除。当且仅当等待途中包含环时，系统中存在死锁，该环的每一个事务称为处于死锁状态。要检测死锁，系统需维护等待图，并周期性的激活一个在等待图中搜索环的算法。如上图，第一张图中不存在环，因此没有死锁发生；而在第二张图中存在环，因此T2、T3以及T4处于死锁状态，需要进行死锁恢复。 死锁恢复当检测到死锁时，系统必须从死锁中恢复，解除死锁最通常的做法是回滚一个或多个事务。采取的动作有三个： 选择牺牲者死锁发生后，系统选择插入更新或者删除数量最少的事务进行回滚(基于INFORMATION_SCHEMA.INNODB_TRX表中的trx_weight字段来判断) 12使用该SQL语句可以查看事务信息(后面的博客会详细介绍)select * from information_schema.innodb_trx\G; 饿死防止某个事务在发生死锁时总是被回滚，导致该事务总是无法执行完毕，这样就发生饿死。为了防止这种情况，可以将事务的回滚次数作为一个影响因素来计算trx_weight。 死锁实验我们创建一张表 12345create table deadlock_test( ID int primary key, number int);并插入几条记录 开启两个事务T1和T2 123456T1: update deadlock_test set number=-1 where ID=13; update deadlock_test set number=-1 where ID=1; update deadlock_test set number=-1 where ID=3;T2:update deadlock_test set number=-2 where ID=3; update deadlock_test set number=-2 where ID=1; 为了更明显的区分，我让T1多做了一次update操作，这样发生死锁时就会回滚T2。以上事务执行顺序如下 T1先执行前两个SQL语句 T2执行第一条SQL语句 T1再执行第三条SQL语句 T2执行第二条SQL语句 ，再RR级别下，只有更新操作时，被回滚的事务直接终止。 超时等待在MySQL中，还有一种情况：那就是当一个事务长时间持有锁时，被阻塞的事务会一直等待该锁，那么等待多久呢？超时之后呢？ 等待多久在MySQL中，InnoDB默认的行级锁等待时间为50s。可以通过设置innodb_lock_wait_timeout的值来改变超时时间 1234innodb_lock_wait_timeout默认值：50s最小值：1s最大值：1073741824 可以通过下面命令查看超时等待时间 show variables like ‘innodb_lock_wait_timeout’;–查看当前会话 show global variables like ‘innodb_lock_wait_timeout’;–查看全局设置 通过下面SQL语句修改会话当前会话行级锁超时时间 set innodb_lock_wait_timeout=?； 超时之后当事务等待锁超时之后，会进行事务回滚，回滚到当前SQL语句(使事务等待锁的语句)上一步。 测试锁超时的实验很好测试，表还是上面的表，开启两个事务 123T1:update deadlock_test set number=-1 where ID=1;T2:update deadlock_test set number=-2 where ID=1; 两事务同时对一条记录进行修改，就会发生锁争用现象，后面的事务会被阻塞，知道获得锁或者超时。 附(查看修改超时时间操作截图) 查看行级锁超时时间 设置当前会话行级锁超时时间 总结对于MySQL中的死锁问题的介绍就到这里，由于MySQL使用两阶段封锁协议，不能保证不发生死锁，因此InnoDB具有完善的死锁检测和恢复机制。今天的介绍就到这里。]]></content>
       <categories>
         <category>数据库</category>
       </categories>
@@ -201,9 +213,9 @@
       </categories>
       <tags>
         <tag>读书笔记</tag>
+        <tag>TCP/IP</tag>
         <tag>网络安全</tag>
         <tag>DOS攻击</tag>
-        <tag>TCP/IP</tag>
       </tags>
   </entry>
   <entry>
@@ -752,8 +764,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>递归</tag>
         <tag>LeetCode</tag>
+        <tag>递归</tag>
         <tag>二叉树</tag>
       </tags>
   </entry>
@@ -790,9 +802,9 @@
         <category>算法之美</category>
       </categories>
       <tags>
+        <tag>LeetCode</tag>
         <tag>AVL树</tag>
         <tag>递归</tag>
-        <tag>LeetCode</tag>
       </tags>
   </entry>
   <entry>
@@ -828,8 +840,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>递归</tag>
         <tag>LeetCode</tag>
+        <tag>递归</tag>
         <tag>二叉树</tag>
         <tag>迭代</tag>
       </tags>
@@ -867,8 +879,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>递归</tag>
         <tag>LeetCode</tag>
+        <tag>递归</tag>
         <tag>二分查找</tag>
         <tag>链表</tag>
       </tags>
@@ -991,8 +1003,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>递归</tag>
         <tag>LeetCode</tag>
+        <tag>递归</tag>
         <tag>快慢指针法</tag>
       </tags>
   </entry>
@@ -1101,8 +1113,8 @@
       </categories>
       <tags>
         <tag>读书笔记</tag>
-        <tag>I/O</tag>
         <tag>Java基础</tag>
+        <tag>I/O</tag>
       </tags>
   </entry>
   <entry>
@@ -1139,8 +1151,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>递归</tag>
         <tag>LeetCode</tag>
+        <tag>递归</tag>
         <tag>二叉树</tag>
       </tags>
   </entry>
@@ -1152,8 +1164,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>递归</tag>
         <tag>LeetCode</tag>
+        <tag>递归</tag>
         <tag>二叉树</tag>
         <tag>队列</tag>
       </tags>
@@ -1166,9 +1178,9 @@
         <category>算法之美</category>
       </categories>
       <tags>
+        <tag>LeetCode</tag>
         <tag>AVL树</tag>
         <tag>递归</tag>
-        <tag>LeetCode</tag>
       </tags>
   </entry>
   <entry>
@@ -1179,9 +1191,9 @@
         <category>算法之美</category>
       </categories>
       <tags>
+        <tag>LeetCode</tag>
         <tag>AVL树</tag>
         <tag>递归</tag>
-        <tag>LeetCode</tag>
         <tag>数组</tag>
         <tag>二分查找</tag>
       </tags>
@@ -1194,8 +1206,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>递归</tag>
         <tag>LeetCode</tag>
+        <tag>递归</tag>
         <tag>二叉树</tag>
         <tag>遍历</tag>
       </tags>
@@ -1208,8 +1220,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>递归</tag>
         <tag>LeetCode</tag>
+        <tag>递归</tag>
         <tag>二叉树</tag>
         <tag>镜像树</tag>
       </tags>
@@ -1222,8 +1234,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>递归</tag>
         <tag>LeetCode</tag>
+        <tag>递归</tag>
         <tag>斐波那契数列</tag>
       </tags>
   </entry>
@@ -1235,8 +1247,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>递归</tag>
         <tag>LeetCode</tag>
+        <tag>递归</tag>
         <tag>二分查找</tag>
       </tags>
   </entry>
@@ -1248,8 +1260,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>递归</tag>
         <tag>LeetCode</tag>
+        <tag>递归</tag>
         <tag>字符串</tag>
       </tags>
   </entry>
@@ -1261,8 +1273,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>递归</tag>
         <tag>LeetCode</tag>
+        <tag>递归</tag>
         <tag>数组</tag>
         <tag>二分查找</tag>
       </tags>
@@ -2000,20 +2012,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[二叉树镜像对称]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
-      <categories>
-        <category>算法之美</category>
-      </categories>
-      <tags>
-        <tag>递归</tag>
-        <tag>LeetCode</tag>
-        <tag>迭代法</tag>
-        <tag>二叉树</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[青蛙跳台阶]]></title>
     <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
     <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
@@ -2037,6 +2035,20 @@
         <tag>I/O</tag>
         <tag>乱码</tag>
         <tag>字符流/字节流</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[二叉树镜像对称]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC101%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度–简单题目 分析： 通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称 就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的 递归//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接 //快1ms，亲测 1、pre(TreeNode tree.left,TreeNode tree.right) 2、如果A.val==B.val --&gt;return true 3、如果A==null&amp;&amp;B==null --&gt;return true 4、如果A和B不同时为空，说明树是不对称的 --&gt;return false 5、遍历A的左子树和B的右子树 //pre(A.left,B.right) 6、遍历A的右子树和A的左子树 //pre(A.right,B.left)迭代法使用队列，比较容易理解，直接上代码(LeetCode官方题解)]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>递归</tag>
+        <tag>迭代法</tag>
+        <tag>二叉树</tag>
       </tags>
   </entry>
   <entry>
