@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[详解MySQL加锁处理]]></title>
+    <url>%2F2020%2F02%2F29%2F%E8%AF%A6%E8%A7%A3MySQL%E5%8A%A0%E9%94%81%E5%A4%84%E7%90%86%2F</url>
+    <content type="text"><![CDATA[在前面的文章中，对MySQL的MVCC机制进行了介绍，我们知道MVCC的特点就是读不加锁写加锁，实现了读写分离，那么今天就来介绍一下MySQL在并发控制中的加锁处理，理解这一点对于我们编写高效的SQL语句和处理死锁情况尤为重要。本文基于Win10环境下MySQL5.5版本/InnoDB存储引擎。 MVCC回顾MySQL InnoDB存储引擎，实现的是基于多版本并发控制协议MVCC(与MVCC相对的是基于锁的并发控制协议)。MVCC最大的好处，相信也是耳熟能详：读不加锁，读写不冲突。在读多写少的OLTP应用中，读写不冲突是非常重要的，极大的增加了系统的并发性能，这也是为什么现阶段，几乎所有的RDBMS，都支持了MVCC。 在MVCC并发控制中，读操作可以分成两类：快照读(snapshot read)与当前读(current read)。快照读：读取的是记录的可见版本(有可能是历史版本)，不用加锁。当前读：读取的是记录的最新版本，并且，当前读返回的记录，都会加上锁，保证其他事务不会再并发修改这条记录。 在一个支持MVCC并发控制的系统中，哪些读操作是快照读？哪些操作又是当前读呢？以MySQL InnoDB为例： 快照读简单的select操作，属于快照读，不加锁。(在SERIALIZABLE下情况有所不同，后面会说) 1SELECT * FROM table where ? 当前读特殊的读操作，插入/更新/删除操作，属于当前读，需要加锁。 12345select * from table where ? lock in share mode;select * from table where ? for update;insert into table values (…);update table set ? where ?;delete from table where ?; 除了第一条SQL加S锁以外，其他都加X锁 为什么将 插入/更新/删除 操作，都归为当前读？可以看看下面这个 更新 操作，在数据库中的执行流程： 从图中，可以看到，一个Update操作的具体流程：当Update SQL被发给MySQL后，MySQL Server会根据where条件，读取第一条满足条件的记录，然后InnoDB引擎会将第一条记录返回，并加锁 (current read)。待MySQL Server收到这条加锁的记录之后，会再发起一个Update请求，更新这条记录。一条记录操作完成，再读取下一条记录，直至没有满足条件的记录为止。因此，Update操作内部，就包含了一个当前读。同理，Delete操作也一样。Insert操作会稍微有些不同，简单来说，就是Insert操作可能会触发Unique Key的冲突检查，也会进行一个当前读。 注：根据上图的交互，针对一条当前读的SQL语句，InnoDB与MySQL Server的交互，是一条一条进行的，因此，加锁也是一条一条进行的。先对一条满足条件的记录加锁，返回给MySQL Server，做一些DML操作；然后在读取下一条加锁，直至读取完毕。 Cluster Index-聚簇索引MySQL InnoDB引擎使用的是B+树索引，InnoDB实现方式是这样的：表数据文件本身就是按B+Tree组织的一个索引结构，这棵树的叶节点data域保存了完整的数据记录。这个索引的key是数据表的主键，因此InnoDB表数据文件本身就是主索引，所以加锁锁的也是索引。对于辅助索引，也是B+树结构，辅助索引的data域存储的是主键的值。聚集索引这种实现方式使得按主键的搜索十分高效，但是辅助索引搜索需要检索两遍索引：首先检索辅助索引获得主键，然后用主键到主索引中检索获得记录。(对于本文来说，索引理解到这里就够了，但是对于索引的学习是远远不够的，我会另开博客进行介绍) 2PL-两阶段封锁协议这个在前面介绍过，2PL比较容易理解，说的是锁操作分为两个阶段：加锁阶段与解锁阶段，并且保证加锁阶段与解锁阶段不相交。但是MySQL在实际应用时为了提高性能，有时可能会违反2PL协议，后面会说。 Isolation Level隔离级别，前面也介绍过，这里简单提一下MySQL/InnoDB定义的4种隔离级别： Read Uncommited可以读取未提交记录。此隔离级别，基本不会使用，忽略。 Read Committed(RC)快照读前面介绍过，本文不考虑。针对当前读，RC隔离级别保证对读取到的记录加锁 (记录锁)，存在幻读现象。 Repeatable Read(RR)快照读本文不考虑。针对当前读，RR隔离级别保证对读取到的记录加锁 (记录锁)，同时保证对读取的范围加锁，新的满足查询条件的记录不能够插入 (间隙锁)，不存在幻读现象。 Serializable从MVCC并发控制退化为基于锁的并发控制。不区别快照读与当前读，所有的读操作均为当前读，读加读锁 (S锁)，写加写锁 (X锁)。Serializable隔离级别下，读写冲突，因此并发度急剧下降，在MySQL/InnoDB下不建议使用。 一条简单SQL是加锁分析12SQL1：select * from t1 where id = 10;SQL2：delete from t1 where id = 10; 对于上面两条SQL语句，如果你问我分别加什么锁，那么我可能会说： 12SQL1：不加锁，因为MVCC实现了快照读SQL2：加对id=10这条记录加记录锁(行级锁)，走主键索引。 但是这样说对么？可能对也可能不对。因为已知条件不足，这样问问题的无异于耍流氓。在不同的条件下加锁情况是不一样的。那么可能需要哪些条件呢？ 前提一：id列是不是主键？ 前提二：当前系统的隔离级别是什么？ 前提三：id列如果不是主键，那么id列上有索引吗？ 前提四：id列上如果有二级索引，那么这个索引是唯一索引吗？ 前提五：两个SQL的执行计划是什么？索引扫描？全表扫描？ 没有这些条件，直接给一条SQL语句问我怎么加锁，那太不专业了。而有了这些条件，那么再来回答加锁情况，答案就显而易见了。下面我将分不同的隔离级别，对这些问题进行组合，然后看看MySQL分别加什么锁。 RC级别在该级别下，我们有四种组合 组合一：id列是主键 组合二：id列是二级唯一索引 组合三：id列是二级非唯一索引 组合四：id列上没有索引 对于这四种情况，SQL1语句全都是快照读不加锁，我们主要讨论SQL2。 id列是主键这个组合是最简单、最容易分析的组合。id是主键，Read Committed隔离级别，给定SQL：delete from t1 where id = 10; 只需要将主键上id = 10的记录加上X锁即可。结论：where中使用主键进行等值查询时，只需要对指定记录加行级X锁。 id列是二级唯一索引id不是主键，而是一个Unique的二级索引键值(唯一索引)。那么在RC隔离级别下，delete from t1 where id = 10; 需要加什么锁呢？注意：在InnoDB中索引都是B+树结构，这里为了方便简化了实际结构。此组合中，id是unique索引，而主键是name列。 由于id是unique索引，因此delete语句会选择走id列的索引进行where条件的过滤 在找到id=10的记录后，首先会将unique索引上的id=10索引记录加上X锁 同时，会根据读取到的name列，回主键索引(聚簇索引)，然后将聚簇索引上的name = ‘d’ 对应的主键索引项加X锁。 为什么聚簇索引上的记录也要加锁？试想一下，如果有一个并发的SQL语句，是通过主键索引来更新：update t1 set id = 100 where name = ‘d’; 此时，如果delete语句没有将主键索引上的记录加锁，那么并发的update就会感知不到delete语句的存在，违背了同一记录上的更新/删除需要串行执行的约束。 结论：where中使用唯一索引(辅助索引)进行等值查询时，需要对聚簇索引和辅助索引上的记录分别加锁，即加两次锁。 id列是二级非唯一索引id列上的约束又降低了，id列不再唯一，只有一个普通的索引。假设delete from t1 where id = 10; 语句，仍旧选择id列上的索引进行过滤where条件，那么此时会持有哪些锁？可以看到， id列索引上，满足id = 10查询条件的记录，均已加锁。 同时，这些记录对应的主键索引上的记录也都加上了锁。 结论：加锁步骤和唯一索引相同。区别在于：使用唯一索引时最多只有一个满足等值查询的记录，而使用普通索引时会将所有满足查询条件的记录都加锁。 id列上没有索引此时更加特殊，id列上没有索引。where id = 10;这个过滤条件就没法通过索引进行过滤，那么只能走全表扫描做过滤。对应于这个组合，SQL会加什么锁？或者是换句话说，全表扫描时，会加什么锁？ 由于id列上没有索引，因此只能走聚簇索引，进行全部扫描。从图中可以看到，满足删除条件的记录有两条，但是聚簇索引上所有的记录，都被加上了X锁。无论记录是否满足条件，全部被加上X锁。既不是加表锁，也不是在满足条件的记录上加行锁。 为什么不是只在满足条件的记录上加锁呢？这是由于MySQL的实现决定的。如果一个条件无法通过索引快速过滤，那么存储引擎层面就会将所有记录加锁后返回，然后由MySQL Server层进行过滤。因此也就把所有的记录，都锁上了。 MySQL的改进在实际的实现中，MySQL有一些改进：在MySQL Server过滤条件，发现不满足后，会调用unlock_row方法，把不满足条件的记录放锁 (违背了2PL的约束)。这样做，保证了最后只会持有满足条件记录上的锁，但是每条记录的加锁操作还是不能省略的。 结论：若id列上没有索引，SQL会走聚簇索引的全扫描进行过滤，由于过滤是由MySQL Server层面进行的。因此每条记录，无论是否满足条件，都会被加上X锁。但是，为了效率考量，MySQL做了优化，对于不满足条件的记录，会在判断后放锁；最终持有的是满足条件的记录上的锁，但是不满足条件的记录上的加锁/放锁动作不会省略。该优化违背了2PL的约束。 RR级别同样的，我们也介绍和RC一样的四种组合 组合一：id列是主键 组合二：id列是二级唯一索引 组合三：id列是二级非唯一索引 组合四：id列上没有索引 但是在介绍之前，需要介绍一种锁：间隙锁–Gap_Lock。这是RR级别防止幻读的关键锁。 Gap_Lock–间隙锁和记录锁(行级锁)不同，间隙锁锁的不是索引，而是索引之间的间隙。 123456789假设现在又有下列值1 3 5 8 9那么这些值之间的间隙有(-∞,1)(1,3)(3,5)(5,8)(8,9)(9,+∞) 间隙锁和记录锁组合称为Next-Key Lock(下一键锁)，该锁在RR级别下进行当前读时预防了幻行现象。(注：进行快照读时，MVCC本身能够预防幻行) id列是主键结论：在RR级别下，where条件使用主键进行等值查询时，加锁情况和RC级别一样。只对指定记录加记录锁(行级锁)。 id列是二级唯一索引结论：在RR级别下，使用唯一索引(辅助索引)进行等值查询时，加锁情况和RC级别一样。需要对聚簇索引和辅助索引上的记录分别加锁，即加两次锁。 id列是二级非唯一索引我们知道：RC隔离级别允许幻读，而RR隔离级别不允许存在幻读。但是在前面讲到的两种情况下，加锁行为又是与RC下的加锁行为完全一致。那么RR隔离级别下，如何防止幻读呢？在这种组合下我们将会用到间隙锁。 Repeatable Read隔离级别，id上有一个非唯一索引，执行delete from t1 where id = 10; 假设选择id列上的索引进行条件过滤，最后的加锁行为，是怎么样的呢？我们看到，和RC级别不同的是，RR级别在聚簇索引上不仅加了记录锁(行级锁)，还加上了前面介绍的间隙锁(Gap_Lock)。这样就能防止幻行了么？我们来详细分析一下 幻行解决原理分析所谓防止幻行：就是同一个事务，连续做两次当前读 (例如：select * from t1 where id = 10 for update;)，那么这两次当前读返回的是完全相同的记录 (记录数量一致，记录本身也一致)，第二次的当前读，不会比第一次返回更多的记录 (幻象)。 为了保证两次当前读返回一致的记录，那就需要在第一次当前读与第二次当前读之间，其他的事务不会插入新的满足条件的记录并提交。为了实现这个功能，GAP锁应运而生。从图中我们可以发现，由于B+树的有序性，当聚簇索引上加上了三个Gap_Lock以后，其他事务就不能在插入id=10的记录，因此就不会出现幻行。 看到这里你可能会问，为什么前两种组合不使用Gap_Lock，而这种情况需要使用呢？这个问题其实很简单，对于主键和唯一索引，值是唯一的，那么进行等值查询时最多只会返回一条记录，因此也就避免了Gap_Lock的使用。 结论RR级别下，id列上有一个非唯一索引，对应SQL：delete from t1 where id = 10; 首先，通过id索引定位到第一条满足查询条件的记录，加记录上的X锁，并加上相应的GAP锁 然后加主键聚簇索引上的记录X锁，返回读取下一条，重复进行。直至进行到第一条不满足条件的记录 此时，不需要加记录X锁，但是仍旧需要加GAP锁，最后返回结束。 注意：在这种情况下Gap_Lock加在辅助索引上而不是聚簇索引上！！！！ id列上没有索引RR级别下，id列上没有索引。此时SQL：delete from t1 where id = 10; 没有其他的路径可以选择，只能进行全表扫描。最终的加锁情况，如下图所示： 这是一个很恐怖的现象。首先，聚簇索引上的所有记录，都被加上了X锁。其次，聚簇索引每条记录间的间隙(GAP)，也同时被加上了GAP锁。这个示例表，只有6条记录，一共需要6个记录锁，7个GAP锁。试想，如果表上有1000万条记录呢？ 此时，除了不加锁的快照读，其他任何加锁的并发SQL，均不能执行:不能更新、不能删除也不能插入，全表被锁死。 结论：若id列上没有索引，SQL会走聚簇索引的全扫描进行过滤，对表的每一条记录加记录锁(行级锁)，并对所有的间隙加间隙锁(Gap_Lock)。和RC不同，此时不会释放不满足条件的锁！！ SERIALIZABLR级别在该级别下，MVCC退化为基于锁的协议，读均为当前读，读写都要加锁。遵循严格两阶段封锁协议，即所有的锁只在事务提交/终止时释放。 对于复杂的SQL语句到目前为止，我们介绍的所有情况都是WHERE后面为等值检索的情况，那么对于范围检索呢？我们来看一看。 RR级别同样的分两种情况 如果WHERE中的检索条件有索引(聚簇索引/唯一索引/普通索引)，那么使用记录锁(行级锁)+Gap_Lock。 如果没有索引，则走聚簇索引进行全表扫描，锁定每一条记录和相应的间隙。 RC级别 如果WHERE中检索条件有索引，那么使用记录锁(行级锁)锁定满足条件的记录，不使用Gap_Lock。 如果没有索引，同样走聚簇索引进行全表扫描，首先对所有的记录都加锁，但是不使用Gap_Lock，最后释放不满足条件的记录上的锁(违反2PL规定)。 RC级别RC级别基本不使用，这里简单介绍一下 读为当前读(每次读取最新数据)，并且不加锁 写加锁，加锁方式和RC级别类似。 RR级别下的特殊情况前面说了，在RR级别下，WHERE检索条件中使用聚簇索引/唯一索引进行等值查询时候，不需要使用Gap_Lock。因为Gap_Lock主要用于防止幻读，而在这种情况下最多检索出一条记录。那么现在有一种特殊情况：如果没有检索到满足条件的记录，此时Gap_Lock能省略么？如图，假设我们在SQL语句为update table set name=’E’ where id=3;此时由于表中没有id=3的记录，那么此时应该使用Gap_Lock，将id=3所在的间隙使用间隙锁锁住，防止其他事务在此期间插入数据。 总结对于MySQL InnoDB存储引擎在并发环境下的加锁情况大概就是这些，对于更复杂情况(WHERE中有多个不同的检索条件)，这里不做介绍。有一点需要注意：不管是什么隔离级别，对于满足条件的记录，一旦加锁，锁只能等到事务提交/终止时释放。 MySQL加锁分析–简书]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>数据库</tag>
+        <tag>MySQL</tag>
+        <tag>并发控制</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[查看MySQL正在执行的事务/锁/等待信息]]></title>
     <url>%2F2020%2F02%2F28%2F%E6%9F%A5%E7%9C%8BMySQL%E6%AD%A3%E5%9C%A8%E6%89%A7%E8%A1%8C%E7%9A%84%E4%BA%8B%E5%8A%A1-%E9%94%81-%E7%AD%89%E5%BE%85%E4%BF%A1%E6%81%AF%2F</url>
     <content type="text"><![CDATA[在5.5中，information_schema库中增加了三个关于锁的表，它们分别是：innodb_trx–当前运行的所有事务、innodb_locks–当前出现的锁以及innodb_lock_waits–锁等待的对应关系。今天看了一篇博客，对这方面进行了介绍。觉得写得很好，为了防止原博客404，特此记录一下。 常用的showstatus命令 查询返回的行数show status like ‘%innodb_rows_read%’ 插入成功的行数show status like ‘%innodb_rows_inserted%’ 更新成功的行数show status like ‘%innodb_rows_updated%’ 删除成功的行数show status like ‘%innodb_rows_deleted%’ 查看慢查询show status like ‘%Slow%’ 查看运行时间show status like ‘%up%’ 查看锁的时间分布show status like’%innodb_row_lock%’; 执行select的计数show status like ‘%Com_select%’ 执行insert的计数，批量插入算一次show status like ‘%Com_insert%’ 执行更新操作的计数show status like ‘%Com_update%’ 执行删除操作的计数show status like ‘%Com_delete%’ 提交事务计数show status like ‘%Com_commit%’ 回滚事务计数show status like ‘%Com_rollback%’ 查看警告信息show warnings1234567891011121314151617mysql&gt; show status like &apos;innodb_row_lock_%&apos;;+-------------------------------+-----------+| Variable_name | Value |+-------------------------------+-----------+| Innodb_row_lock_current_waits | 2 || Innodb_row_lock_time | 334377476 || Innodb_row_lock_time_avg | 50678 || Innodb_row_lock_time_max | 51974 || Innodb_row_lock_waits | 6598 |+-------------------------------+-----------+解释如下：Innodb_row_lock_current_waits : 当前等待锁的数量Innodb_row_lock_time : 系统启动到现在，锁定的总时间长度Innodb_row_lock_time_avg : 每次平均锁定的时间Innodb_row_lock_time_max : 最长一次锁定时间Innodb_row_lock_waits : 系统启动到现在总共锁定的次数 innodb_locks 在MySQL下使用desc information_schema.innodb_locks;语句可以查看innodb_locks表的结构，如图所示 使用select * from information_schema.innodb_locks\G;查看表中数据 123456789101112131415表各个字段含义+-------------+---------------------+------+-----+---------+-------+| Field | Type | Null | Key | Default | Extra |+-------------+---------------------+------+-----+---------+-------+| lock_id | varchar(81) | NO | | | |#锁ID| lock_trx_id | varchar(18) | NO | | | |#拥有锁的事务ID| lock_mode | varchar(32) | NO | | | |#锁模式| lock_type | varchar(32) | NO | | | |#锁类型| lock_table | varchar(1024) | NO | | | |#被锁的表| lock_index | varchar(1024) | YES | | NULL | |#被锁的索引| lock_space | bigint(21) unsigned | YES | | NULL | |#被锁的表空间号| lock_page | bigint(21) unsigned | YES | | NULL | |#被锁的页号| lock_rec | bigint(21) unsigned | YES | | NULL | |#被锁的记录号| lock_data | varchar(8192) | YES | | NULL | |#被锁的数据+-------------+---------------------+------+-----+---------+-------+ innodb_lock_waits 使用desc information_schema.innodb_lock_waits;命令查看innodb_lock_waits表的结构，如图所示 使用select * from information_schema.innodb_lock_waits\G;查看表中数据123456789表各个字段含义+-------------------+-------------+------+-----+---------+-------+| Field | Type | Null | Key | Default | Extra |+-------------------+-------------+------+-----+---------+-------+| requesting_trx_id | varchar(18) | NO | | | |#请求锁的事务ID| requested_lock_id | varchar(81) | NO | | | |#请求锁的锁ID| blocking_trx_id | varchar(18) | NO | | | |#当前拥有锁的事务ID| blocking_lock_id | varchar(81) | NO | | | |#当前拥有锁的锁ID+-------------------+-------------+------+-----+---------+-------+ innodb_trx 使用desc information_schema.innodb_trx;命令查看innodb_trx表的结构，如图所示 使用select * from information_schema.innodb_trx\G;查看表中数据12345678910111213141516171819202122232425262728表各个字段的含义desc information_schema.innodb_trx;+----------------------------+---------------------+------+-----+---------------------+-------+| Field | Type | Null | Key | Default | Extra |+----------------------------+---------------------+------+-----+---------------------+-------+| trx_id | varchar(18) | NO | | | |#事务ID| trx_state | varchar(13) | NO | | | |#事务状态：| trx_started | datetime | NO | | 0000-00-00 00:00:00 ||#事务开始时间；| trx_requested_lock_id | varchar(81) | YES | | NULL ||#innodb_locks.lock_id| trx_wait_started | datetime | YES | | NULL | |#事务开始等待的时间| trx_weight | bigint(21) unsigned | NO | | 0 | |#| trx_mysql_thread_id | bigint(21) unsigned | NO | | 0 ||#事务线程ID| trx_query | varchar(1024) | YES | | NULL | |#具体SQL语句| trx_operation_state | varchar(64) | YES | | NULL ||#事务当前操作状态| trx_tables_in_use | bigint(21) unsigned | NO | | 0 ||#事务中有多少个表被使用| trx_tables_locked | bigint(21) unsigned | NO | | 0 ||#事务拥有多少个锁| trx_lock_structs | bigint(21) unsigned | NO | | 0 | |#| trx_lock_memory_bytes | bigint(21) unsigned | NO | | 0 ||#事务锁住的内存大小（B）| trx_rows_locked | bigint(21) unsigned | NO | | 0 ||#事务锁住的行数| trx_rows_modified | bigint(21) unsigned | NO | | 0 ||#事务更改的行数| trx_concurrency_tickets | bigint(21) unsigned | NO | | 0 ||#事务并发票数| trx_isolation_level | varchar(16) | NO | | | |#事务隔离级别| trx_unique_checks | int(1) | NO | | 0 | |#是否唯一性检查| trx_foreign_key_checks | int(1) | NO | | 0 | |#是否外键检查| trx_last_foreign_key_error | varchar(256) | YES | | NULL ||#最后的外键错误| trx_adaptive_hash_latched | int(1) | NO | | 0 | |#| trx_adaptive_hash_timeout | bigint(21) unsigned | NO | | 0 ||#+----------------------------+---------------------+------+-----+---------------------+-------+ 总结一旦事务开启，innodb_trx表就有数据，有多少个未提交事务就有多少条数据。只有产生锁等待时，innodb_locks和innodb_lock_waits这两张表才会有数据。查看Mysql正在执行的事务，锁，等待mysqlshowstatus常用命令]]></content>
@@ -55,7 +68,7 @@
   <entry>
     <title><![CDATA[详解MySQL的InnoDB引擎MVCC机制]]></title>
     <url>%2F2020%2F02%2F27%2F%E8%AF%A6%E8%A7%A3MySQL%E7%9A%84InnoDB%E5%BC%95%E6%93%8EMVCC%E6%9C%BA%E5%88%B6%2F</url>
-    <content type="text"><![CDATA[在前面两篇博客中分别介绍了数据库的四大特性和数据库的四大隔离级别。那么不知道你有没有想过：数据库是怎么实现四大隔离级别的呢？由于不同的数据库实现方法可能不同，我就以我常用的MySQL为例，介绍一下MySQL的InnoDB如何实现数据库四大隔离级别，本文基于Win10环境下MySQL5.5版本。 前言多版本并发控制(MVCC)是MySQL的InnoDB存储引擎实现隔离级别的一种具体方式，该方式主要实现了提交读和可重复读两种隔离级别，至于未提交读较为简单，要求很低，无需使用MVCC；而较高的隔离级别SERIALIZABLE，通过两阶段锁协议实现。这些在后文我会一一进行介绍。 MySQL行记录的元信息我们在创建一张表时，会指明这张表有哪些列(属性)，列名以及列的类型(int char等)。但是在InnoDB中，除了我们指定的列以外，MySQL还会添加两个隐藏列： trx_id存储操作(增删改)这条记录的事务ID，后面会介绍ID的概念。 db_roll_ptr一个指向Undo记录的指针。同样，后面会介绍Undo记录。 这两个列被称为ROW HEADER–元信息。我们来举例说明，假设我们创建一张表 1234create table t( ID int, count int); 那么该表在InnoDB中是这样的：在本节中，我们只需要了解行记录的元信息即可，至于它们的作用在后面的小节介绍。 MySQL版本号MySQL维护了两个版本号 系统版本号(sys_id)是一个递增的数字，每开启一个事务，该版本号+1。 事务版本号(trx_id)事务开始时系统的版本号。事务的版本号能够表明事务开启的先后顺序。 其中行记录元信息中的trx_id即为事务的版本号。 MySQL索引InnoDB中使用B+树索引结构，并且主键所在的索引为聚簇索引。索引的每个叶子节点中保存了对应的数据内容。一个表只能有一个主键，所以只能有一个聚簇索引。在MySQL中，聚簇索引只能是主键。如果我们在创建表时候没有指定索引，那么对于InnoDB 如果创建表时定义了主键，那么系统会自动为该主键创建聚簇索引 如果创建表时没有定义主键，那么指定该表的第一个非空唯一索引为聚簇索引。 如果既没有主键也没有合适的索引，那么InnoDB会生成一个隐藏的主键作为聚簇索引。该隐藏主键6字节，并且自增。 如果你对B+树有一定的了解，那么到目前为止你应该已经知道了MySQL中数据的组织方式。即一张表就是一个B+树，树的每一个叶子节点就是表中的一条记录。 回滚日志-Undo LogMySQL的InnoDB中存在多种日志，如Redo Log、bin Log以及Undo Log等，而今天要介绍的就是和MVCC相关的Undo Log–回滚日志。当然，这里只是对回滚日志进行极其简单的学习，为后面的学习做准备。Undo Log用于数据的撤回操作，它记录了修改的反向操作，如插入对应删除、修改对应修改为原来的数据，通过Undo Log可以实现事务回滚，并且可以回滚到某个特定版本的数据，实现MVCC。Undo Log分为INSERT和UPDATE两种(DELETE被视为特殊的更新，在记录上修改删除标记) 当进行插入操作时，生成的INSERT Undo Log在事务提交后即可删除，这很容易理解，因为其他事务不需要这个Undo Log 进行删除修改操作时，生成对应的Undo Log。记录相应信息。 123456例如在MySQL创建了一个表t，包含主键id和一个字段x，并假设系统版本号sys_id=1我们对该表进行如下操作：INSERT INTO t VALUES(1,&apos;a&apos;);UPDATE t SET x=&apos;b&apos; WHERE id=1;UPDATE t SET x=&apos;c&apos; WHERE id=1; 我们没有使用start transaction来开启一个事务，因此根据MySQL的AUTOCOMMIT机制，每一条SQL语句都被当作一个事务执行，因此一共执行了三个事务，事务的版本号分别为1，2，3。到目前为止，我们知道了数据在MySQL中的组织方式以及Undo记录，上图中Undo记录中每一个数据行被称为一张快照。 事务执行状态的快照–ReadViewMVCC维护了一个被称为READ VIEW的结构，它的基本结构如下。 12345678ReadView&#123; creator_trx_id trx_id_min trx_id_max id1 id2 ...&#125; 该结构包含了当前系统所有活动的事务(未提交的事务)的trx_id。MVCC还维护了最大值(TRX_ID_MAX)和最小值(TRX_ID_MIN)，这表示当前未提交的事务中最年轻事务(最新开启)的ID和最年老事务(最早开启)的ID。ReadView用于进行可见性判断，我们在后面详细说，现在你只需要知道：ReadView是由事务创建的(至于什么时候创建什么时候更新由不同的隔离级别决定)，用于可见性判断。 快照读和当前读在正式介绍四大隔离级别的实现时，我们先介绍两个概念，个人觉得这两个概念对于后面的学习至关重要。 快照读(snapshot read)MVCC中的SELECT操作读取的是快照中的数据，你可以理解为前面图中Undo记录中的数据，并不是B+树的节点。该操作不需要加锁。在提交读和可重复读两种隔离级别下： 1SELECT ? FROM table WHERE ? 这类普通的SELECT语句全部都是快照读！ 当前读MVCC其他修改数据的操作读取的是最新的数据，你可以理解为前面图中B+树的叶子节点。该操作需要加锁，至于加什么锁怎么加锁视情况而定。在提交读和可重复读两种隔离级别下： 12345SELECT ? FROM table WHERE ? FOR SHARE MODE--加共享锁SELECT ? FROM table WHERE ? FOR UPDATEUPDATEINSERTDELETE 除了第一条加共享锁外，其余都加排他锁。 总结不知道你发现没有，MVCC在进行普通SELECT时，读的都是快照中的数据，而在进行修改时，修改的都是B+树叶子节点上的数据(最新的数据)–这一结论仅在提交读和可重复读级别下成立。这很类似于Java中的CopyOnWrite，实现了读写分离。 READ COMMIT-提交读在此隔离级别下，会存在不可重复读的问题。我们来看看此时MVCC是如何工作的 ReadView的创建和更新时机事务每一次快照读(snapshot read)都会创建一个新的ReadView，可以理解为每次SELECT时都会更新ReadView，得到所有当前最新的未提交的事务。 MVCC具体实现–判断可见性在进行普通SELECT操作时，根据数据行快照的trx_id与ReadView中trx_id_min和trx_id_max之间的关系，判断快照是否可用 trx_id==creator_trx_id表示该数据行的快照是当前事务创建的，可以使用。 trx_id&lt;trx_id_min表示该数据行快照在当前所有未提交事务启动之前更改的，因此可以使用(即SELECT读取到该快照)。 trx_id&gt;trx_id_max表示该数据行快照是在事务启动后被修改的，因此不可使用该快照。 trx_id_min&lt;=trx_id&lt;=trx_id_max此时有两种情况 如果该快照的trx_id在ReadView中，说明该快照对应的事务还没有提交，则该快照不可使用 如果该快照的trx_id不在ReadView中，说明该快照对应的事务已提交，在该隔离级别下可以使用。 如果当前数据行快照不可使用，那么沿着db_roll_ptr找到该数据行的下一个快照重复上述步骤。 READ REAPETABLE-可重复读该隔离级别解决了不可重复读的问题，但是会存在幻行。 ReadView的创建和更新时机和提交读不同，在RR级别下，ReadView只创建一次，创建以后不会改变，在事务开始后第一此快照读(snapshot read)时创建。 MVCC具体实现在进行普通SELECT操作时，根据数据行快照的trx_id与ReadView中trx_id_min和trx_id_max之间的关系，判断快照是否可用 trx_id==creator_trx_id表示该数据行的快照是当前事务创建的，可以使用。 trx_id&lt;trx_id_min表示该数据行快照在当前所有未提交事务启动之前更改的，因此可以使用(即SELECT读取到该快照)。 trx_id&gt;trx_id_max表示该数据行快照是在事务启动后被修改的，因此不可使用该快照。 trx_id_min&lt;=trx_id&lt;=trx_id_max所有的快照都不可使用，因为如果可以使用的话，那么就会产生不可重复读的问题。 如果当前数据行快照不可使用，那么沿着db_roll_ptr找到该数据行的下一个快照重复上述步骤。 READ UNCOMMITTED-未提交读在当前隔离级别下，每次读取只会读取最新的数据，不会遍历版本链(Undo记录)，不会进行查找可见版本，因此可能会出现脏读。即读取到其他未提交事务修改的数据。 SERIALIZABLE-可串行化在此隔离级别上，MySQL执行严格两阶段锁(S2PL)并发控制协议，读写都要加锁！ 总结对于MySQL并发事务的读操作，通过本文你应该了解了MVCC是如何进行控制的。我们知道，除非特别指定，MVCC下普通的读都是快照读，写都是要加锁的。那么问题来了，在不同的隔离级别下分别怎么加锁，要加什么锁呢？我会在后面的博客进行介绍。 参考文章来自知乎解答InnoDB存储引擎MVCC实现原理来自个人博客]]></content>
+    <content type="text"><![CDATA[在前面两篇博客中分别介绍了数据库的四大特性和数据库的四大隔离级别。那么不知道你有没有想过：数据库是怎么实现四大隔离级别的呢？由于不同的数据库实现方法可能不同，我就以我常用的MySQL为例，介绍一下MySQL的InnoDB如何实现数据库四大隔离级别，本文基于Win10环境下MySQL5.5版本。 前言多版本并发控制(MVCC)是MySQL的InnoDB存储引擎实现隔离级别的一种具体方式，该方式主要实现了提交读和可重复读两种隔离级别，至于未提交读较为简单，要求很低，无需使用MVCC；而较高的隔离级别SERIALIZABLE，通过两阶段锁协议实现。这些在后文我会一一进行介绍。 MySQL行记录的元信息我们在创建一张表时，会指明这张表有哪些列(属性)，列名以及列的类型(int char等)。但是在InnoDB中，除了我们指定的列以外，MySQL还会添加两个隐藏列： trx_id存储操作(增删改)这条记录的事务ID，后面会介绍ID的概念。 db_roll_ptr一个指向Undo记录的指针。同样，后面会介绍Undo记录。 这两个列被称为ROW HEADER–元信息。我们来举例说明，假设我们创建一张表 1234create table t( ID int, count int); 那么该表在InnoDB中是这样的：在本节中，我们只需要了解行记录的元信息即可，至于它们的作用在后面的小节介绍。 MySQL版本号MySQL维护了两个版本号 系统版本号(sys_id)是一个递增的数字，每开启一个事务，该版本号+1。 事务版本号(trx_id)事务开始时系统的版本号。事务的版本号能够表明事务开启的先后顺序。 其中行记录元信息中的trx_id即为事务的版本号。 MySQL索引InnoDB中使用B+树索引结构，并且主键所在的索引为聚簇索引。索引的每个叶子节点中保存了对应的数据内容。一个表只能有一个主键，所以只能有一个聚簇索引。在MySQL中，聚簇索引只能是主键。如果我们在创建表时候没有指定索引，那么对于InnoDB 如果创建表时定义了主键，那么系统会自动为该主键创建聚簇索引 如果创建表时没有定义主键，那么指定该表的第一个非空唯一索引为聚簇索引。 如果既没有主键也没有合适的索引，那么InnoDB会生成一个隐藏的主键作为聚簇索引。该隐藏主键6字节，并且自增。 如果你对B+树有一定的了解，那么到目前为止你应该已经知道了MySQL中数据的组织方式。即一张表就是一个B+树，树的每一个叶子节点就是表中的一条记录。 回滚日志-Undo LogMySQL的InnoDB中存在多种日志，如Redo Log、bin Log以及Undo Log等，而今天要介绍的就是和MVCC相关的Undo Log–回滚日志。当然，这里只是对回滚日志进行极其简单的学习，为后面的学习做准备。Undo Log用于数据的撤回操作，它记录了修改的反向操作，如插入对应删除、修改对应修改为原来的数据，通过Undo Log可以实现事务回滚，并且可以回滚到某个特定版本的数据，实现MVCC。Undo Log分为INSERT和UPDATE两种(DELETE被视为特殊的更新，在记录上修改删除标记) 当进行插入操作时，生成的INSERT Undo Log在事务提交后即可删除，这很容易理解，因为其他事务不需要这个Undo Log 进行删除修改操作时，生成对应的Undo Log。记录相应信息。 123456例如在MySQL创建了一个表t，包含主键id和一个字段x，并假设系统版本号sys_id=1我们对该表进行如下操作：INSERT INTO t VALUES(1,&apos;a&apos;);UPDATE t SET x=&apos;b&apos; WHERE id=1;UPDATE t SET x=&apos;c&apos; WHERE id=1; 我们没有使用start transaction来开启一个事务，因此根据MySQL的AUTOCOMMIT机制，每一条SQL语句都被当作一个事务执行，因此一共执行了三个事务，事务的版本号分别为1，2，3。到目前为止，我们知道了数据在MySQL中的组织方式以及Undo记录，上图中Undo记录中每一个数据行被称为一张快照。 事务执行状态的快照–ReadViewMVCC维护了一个被称为READ VIEW的结构，它的基本结构如下。 12345678ReadView&#123; creator_trx_id trx_id_min trx_id_max id1 id2 ...&#125; 该结构包含了当前系统所有活动的事务(未提交的事务)的trx_id。MVCC还维护了最大值(TRX_ID_MAX)和最小值(TRX_ID_MIN)，这表示当前未提交的事务中最年轻事务(最新开启)的ID和最年老事务(最早开启)的ID。ReadView用于进行可见性判断，我们在后面详细说，现在你只需要知道：ReadView是由事务创建的(至于什么时候创建什么时候更新由不同的隔离级别决定)，用于可见性判断。 快照读和当前读在正式介绍四大隔离级别的实现时，我们先介绍两个概念，个人觉得这两个概念对于后面的学习至关重要。 快照读(snapshot read)MVCC中的SELECT操作读取的是快照中的数据，你可以理解为前面图中Undo记录中的数据，并不是B+树的节点。该操作不需要加锁。在提交读和可重复读两种隔离级别下： 1SELECT ? FROM table WHERE ? 这类普通的SELECT语句全部都是快照读！ 当前读MVCC其他修改数据的操作读取的是最新的数据，你可以理解为前面图中B+树的叶子节点。该操作需要加锁，至于加什么锁怎么加锁视情况而定。在提交读和可重复读两种隔离级别下： 12345SELECT ? FROM table WHERE ? FOR SHARE MODE--加共享锁SELECT ? FROM table WHERE ? FOR UPDATEUPDATEINSERTDELETE 除了第一条加共享锁外，其余都加排他锁。 总结不知道你发现没有，MVCC在进行普通SELECT时，读的都是快照中的数据，而在进行修改时，修改的都是B+树叶子节点上的数据(最新的数据)–这一结论仅在提交读和可重复读级别下成立。这很类似于Java中的CopyOnWrite，实现了读写分离。 READ COMMIT-提交读在此隔离级别下，会存在不可重复读的问题。我们来看看此时MVCC是如何工作的 ReadView的创建和更新时机事务每一次快照读(snapshot read)都会创建一个新的ReadView，可以理解为每次SELECT时都会更新ReadView，得到所有当前最新的未提交的事务。 MVCC具体实现–判断可见性在进行普通SELECT操作时，根据数据行快照的trx_id与ReadView中trx_id_min和trx_id_max之间的关系，判断快照是否可用 trx_id==creator_trx_id表示该数据行的快照是当前事务创建的，可以使用。 trx_id&lt;trx_id_min表示该数据行快照在当前所有未提交事务启动之前更改的，因此可以使用(即SELECT读取到该快照)。 trx_id&gt;trx_id_max表示该数据行快照是在事务启动后被修改的，因此不可使用该快照。 trx_id_min&lt;=trx_id&lt;=trx_id_max此时有两种情况 如果该快照的trx_id在ReadView中，说明该快照对应的事务还没有提交，则该快照不可使用 如果该快照的trx_id不在ReadView中，说明该快照对应的事务已提交，在该隔离级别下可以使用。 如果当前数据行快照不可使用，那么沿着db_roll_ptr找到该数据行的下一个快照重复上述步骤。 READ REAPETABLE-可重复读该隔离级别解决了不可重复读的问题，但是会存在幻行。 ReadView的创建和更新时机和提交读不同，在RR级别下，ReadView只创建一次，创建以后不会改变，在事务开始后第一此快照读(snapshot read)时创建。 MVCC具体实现在进行普通SELECT操作时，根据数据行快照的trx_id与ReadView中trx_id_min和trx_id_max之间的关系，判断快照是否可用 trx_id==creator_trx_id表示该数据行的快照是当前事务创建的，可以使用。 trx_id&lt;trx_id_min表示该数据行快照在当前所有未提交事务启动之前更改的，因此可以使用(即SELECT读取到该快照)。 trx_id&gt;trx_id_max表示该数据行快照是在事务启动后被修改的，因此不可使用该快照。 trx_id_min&lt;=trx_id&lt;=trx_id_max所有的快照都不可使用，因为如果可以使用的话，那么就会产生不可重复读的问题。 如果当前数据行快照不可使用，那么沿着db_roll_ptr找到该数据行的下一个快照重复上述步骤。 READ UNCOMMITTED-未提交读在当前隔离级别下，每次读取只会读取最新的数据，不会遍历版本链(Undo记录)，不会进行查找可见版本，因此可能会出现脏读。即读取到其他未提交事务修改的数据。 SERIALIZABLE-可串行化在此隔离级别上，MySQL执行严格两阶段锁(S2PL)并发控制协议，读操作全部是当前读，并且读写都要加锁！ 总结对于MySQL并发事务的读操作，通过本文你应该了解了MVCC是如何进行控制的。我们知道，除非特别指定，MVCC下普通的读都是快照读，写都是要加锁的。那么问题来了，在不同的隔离级别下分别怎么加锁，要加什么锁呢？我会在后面的博客进行介绍。 参考文章来自知乎解答InnoDB存储引擎MVCC实现原理来自个人博客]]></content>
       <categories>
         <category>数据库</category>
       </categories>
@@ -213,9 +226,9 @@
       </categories>
       <tags>
         <tag>读书笔记</tag>
-        <tag>TCP/IP</tag>
         <tag>网络安全</tag>
         <tag>DOS攻击</tag>
+        <tag>TCP/IP</tag>
       </tags>
   </entry>
   <entry>
@@ -424,8 +437,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>LeetCode</tag>
         <tag>位运算</tag>
+        <tag>LeetCode</tag>
       </tags>
   </entry>
   <entry>
@@ -619,8 +632,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>LeetCode</tag>
         <tag>位运算</tag>
+        <tag>LeetCode</tag>
       </tags>
   </entry>
   <entry>
@@ -680,8 +693,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>LeetCode</tag>
         <tag>位运算</tag>
+        <tag>LeetCode</tag>
       </tags>
   </entry>
   <entry>
@@ -739,8 +752,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>LeetCode</tag>
         <tag>位运算</tag>
+        <tag>LeetCode</tag>
         <tag>数组</tag>
       </tags>
   </entry>
@@ -752,8 +765,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>LeetCode</tag>
         <tag>位运算</tag>
+        <tag>LeetCode</tag>
       </tags>
   </entry>
   <entry>
@@ -828,8 +841,8 @@
         <category>算法之美</category>
       </categories>
       <tags>
-        <tag>LeetCode</tag>
         <tag>位运算</tag>
+        <tag>LeetCode</tag>
       </tags>
   </entry>
   <entry>
@@ -1113,8 +1126,8 @@
       </categories>
       <tags>
         <tag>读书笔记</tag>
-        <tag>Java基础</tag>
         <tag>I/O</tag>
+        <tag>Java基础</tag>
       </tags>
   </entry>
   <entry>
@@ -1958,8 +1971,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>BOM</tag>
         <tag>前端</tag>
+        <tag>BOM</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
@@ -2012,19 +2025,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[青蛙跳台阶]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
-      <categories>
-        <category>算法之美</category>
-      </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>动态规划</tag>
-        <tag>斐波那契数列</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[字符流和字节流]]></title>
     <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
     <content type="text"><![CDATA[深入理解字符流编码 首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入 字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码 写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
@@ -2035,6 +2035,19 @@
         <tag>I/O</tag>
         <tag>乱码</tag>
         <tag>字符流/字节流</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[青蛙跳台阶]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>动态规划</tag>
+        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>
