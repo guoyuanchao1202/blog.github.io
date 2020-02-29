@@ -68,7 +68,7 @@
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.png">
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/2.png">
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.jpg">
-<meta property="og:updated_time" content="2020-02-28T15:30:14.410Z">
+<meta property="og:updated_time" content="2020-02-29T15:07:16.568Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="详解MySQL的InnoDB引擎MVCC机制">
 <meta name="twitter:description" content="在前面两篇博客中分别介绍了数据库的四大特性和数据库的四大隔离级别。那么不知道你有没有想过：数据库是怎么实现四大隔离级别的呢？由于不同的数据库实现方法可能不同，我就以我常用的MySQL为例，介绍一下MySQL的InnoDB如何实现数据库四大隔离级别，本文基于Win10环境下MySQL5.5版本。">
@@ -302,7 +302,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-02-28 23:30:14" itemprop="dateModified" datetime="2020-02-28T23:30:14+08:00">2020-02-28</time>
+                <time title="修改时间：2020-02-29 23:07:16" itemprop="dateModified" datetime="2020-02-29T23:07:16+08:00">2020-02-29</time>
               </span>
             
           
@@ -354,8 +354,8 @@
 <h1 id="MySQL索引"><a href="#MySQL索引" class="headerlink" title="MySQL索引"></a>MySQL索引</h1><p>InnoDB中使用B+树索引结构，并且主键所在的索引为<font color="red"><b>聚簇索引</b></font>。索引的每个叶子节点中保存了对应的数据内容。一个表只能有一个主键，所以只能有一个聚簇索引。<font color="red"><b>在MySQL中，聚簇索引只能是主键。</b></font>如果我们在创建表时候没有指定索引，那么对于InnoDB</p>
 <ol>
 <li>如果创建表时定义了主键，那么系统会自动为该主键创建聚簇索引</li>
-<li>如果创建表时没有定义主键，那么<b>指定该表的第一个非空唯一索引为聚簇索引。</b></li>
-<li>如果既没有主键也没有合适的索引，那么InnoDB会生成一个隐藏的主键作为聚簇索引。该隐藏主键6字节，并且自增。</li>
+<li>如果创建表时没有定义主键，<b>则系统会自动选择一个可以唯一标识数据记录的列作为主键。</b></li>
+<li>如果没有满足条件的列，那么InnoDB会生成一个隐藏的主键作为聚簇索引。该隐藏主键6字节，并且自增。</li>
 </ol>
 <p>如果你对B+树有一定的了解，那么到目前为止你应该已经知道了MySQL中数据的组织方式。<font color="red"><b>即一张表就是一个B+树，树的每一个叶子节点就是表中的一条记录。</b></font></p>
 <h1 id="回滚日志-Undo-Log"><a href="#回滚日志-Undo-Log" class="headerlink" title="回滚日志-Undo Log"></a>回滚日志-Undo Log</h1><p>MySQL的InnoDB中存在多种日志，如Redo Log、bin Log以及Undo Log等，而今天要介绍的就是和MVCC相关的Undo Log–回滚日志。当然，这里只是对回滚日志进行极其简单的学习，为后面的学习做准备。Undo Log用于数据的撤回操作，它记录了修改的反向操作，如插入对应删除、修改对应修改为原来的数据，通过Undo Log可以实现事务回滚，并且可以回滚到某个特定版本的数据，实现MVCC。<br>Undo Log分为INSERT和UPDATE两种(DELETE被视为特殊的更新，在记录上修改删除标记)</p>
@@ -559,7 +559,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">167</span>
+          <span class="site-state-item-count">168</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -585,7 +585,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">141</span>
+        <span class="site-state-item-count">142</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
