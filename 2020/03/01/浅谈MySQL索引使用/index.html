@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="在前面一篇我们对MySQL InnoDB/MyISAM 存储引擎索引的实现原理进行了简单的介绍。今天我们就来实际的介绍一下MySQL中索引的种类、不同的索引如何创建使用以及如何让索引发挥更大的作用(优化策略)。本文所有实验演示全部基于Win10环境下MySQL5.5版本(InnoDB)。">
+<meta name="keywords" content="数据库,MySQL,索引">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈MySQL索引使用">
+<meta property="og:url" content="https://HoA-W.github.io/2020/03/01/浅谈MySQL索引使用/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="在前面一篇我们对MySQL InnoDB/MyISAM 存储引擎索引的实现原理进行了简单的介绍。今天我们就来实际的介绍一下MySQL中索引的种类、不同的索引如何创建使用以及如何让索引发挥更大的作用(优化策略)。本文所有实验演示全部基于Win10环境下MySQL5.5版本(InnoDB)。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/1.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/2.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/3.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/4.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/5.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/6.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/17.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/18.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/19.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/7.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/8.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/9.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/10.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/11.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/12.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/13.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/14.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/15.png">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/16.png">
+<meta property="og:updated_time" content="2020-03-01T08:07:11.146Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浅谈MySQL索引使用">
+<meta name="twitter:description" content="在前面一篇我们对MySQL InnoDB/MyISAM 存储引擎索引的实现原理进行了简单的介绍。今天我们就来实际的介绍一下MySQL中索引的种类、不同的索引如何创建使用以及如何让索引发挥更大的作用(优化策略)。本文所有实验演示全部基于Win10环境下MySQL5.5版本(InnoDB)。">
+<meta name="twitter:image" content="https://hoa-w.github.io/2020/03/01/浅谈MySQL索引使用/1.png">
+  <link rel="canonical" href="https://HoA-W.github.io/2020/03/01/浅谈MySQL索引使用/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>浅谈MySQL索引使用 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/03/01/浅谈MySQL索引使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">浅谈MySQL索引使用
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-01 09:11:26 / 修改时间：16:07:11" itemprop="dateCreated datePublished" datetime="2020-03-01T09:11:26+08:00">2020-03-01</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在前面一篇我们对MySQL InnoDB/MyISAM 存储引擎索引的实现原理进行了简单的介绍。今天我们就来实际的介绍一下MySQL中索引的种类、不同的索引如何创建使用以及如何让索引发挥更大的作用(优化策略)。本文所有实验演示全部基于Win10环境下MySQL5.5版本(InnoDB)。</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="MySQL索引的分类"><a href="#MySQL索引的分类" class="headerlink" title="MySQL索引的分类"></a>MySQL索引的分类</h1><p>索引是在存储引擎中实现的，也就是说不同的存储引擎，会使用不同的索引。MyISAM和InnoDB存储引擎只支持BTREE索引，也就是说默认使用BTREE(虽然说是BTree，但实际上使用的是B+Tree结构，这点要注意)。总体来说，MySQL中索引分为一下几种：</p>
+<ol>
+<li><b>普通索引</b><br>最简单的索引，对索引列没有任何要求</li>
+<li><b>唯一索引</b><br>该索引要求索引列必须唯一，但索引列可以存在空值</li>
+<li><b>主键索引</b><br>顾名思义，在主键列上的索引，要求非空且唯一</li>
+<li><b>组合索引</b><br>指多个字段上创建的索引</li>
+<li><b>全文索引</b><br>全文索引，只有在MyISAM引擎上才能使用，只能在CHAR,VARCHAR,TEXT类型字段上使用全文索引</li>
+<li><b>空间索引(了解)</b></li>
+</ol>
+<p>MySQL中的索引大概就是这些，其中<font color="red"><b>只有主键索引是聚簇索引</b></font>。在介绍索引的创建和使用时主要介绍前四种索引。</p>
+<h1 id="MySQL索引的创建和删除"><a href="#MySQL索引的创建和删除" class="headerlink" title="MySQL索引的创建和删除"></a>MySQL索引的创建和删除</h1><p>其实对于不同的索引，创建的方式大同小异，创建的时间也分为几种：创建表时直接创建索引，创建表后添加索引以及删除索引。下面我们创建Index_test表，并以Index_text表为例进行演示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE Index_test(</span><br><span class="line">    ID INT PRIMARY KEY,</span><br><span class="line">    name VARCHAR(16) NOT NULL,</span><br><span class="line">    count INT</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>在介绍如何创建索引之前，先看一条SQL语句</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SHOW INDEX FROM 表名;</span><br></pre></td></tr></table></figure>
+
+<p>该SQL语句能够查看表中已创建的所有索引。介绍这条语句是为了方便我们在测试时能够随时查看索引创建情况。</p>
+<h2 id="CREATE方式创建"><a href="#CREATE方式创建" class="headerlink" title="CREATE方式创建"></a><font sise="5">CREATE方式创建</font></h2><p>这是最直接的创建方式，用于表创建之后添加索引，格式为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CREATE [UNIQUE|FULLTEXT|SPATIAL] INDEX [索引名称]</span><br><span class="line">    ON 表名(字段名) [USING 索引方法]；</span><br></pre></td></tr></table></figure>
+
+<p>我们解释一下各个字段含义</p>
+<ol>
+<li><b>UNIQUE</b>:表示该索引是<b>唯一索引</b>。</li>
+<li><b>FULLTEXT</b>:表示该索引是<b>全文索引</b>。</li>
+<li><b>SPATIAL</b>:表示该索引是<b>空间索引</b>。</li>
+<li>MySQL默认的索引方法为B+Tree。并且InnoDB和MyISAM也只能用B+Tree。</li>
+</ol>
+<ul>
+<li><b>在count列上创建普通索引</b><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CREATE INDEX index_count </span><br><span class="line">    ON Index_test(count);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><img src="/2020/03/01/浅谈MySQL索引使用/1.png" alt><br>如图所示，可以看到我们创建的索引。其Non_unique=1，说明不是唯一的；其NULL=YES，说明可以有空值。</p>
+<ul>
+<li><b>在count列上创建非空索引</b><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">我们先将count列上原来的索引删除(删除语句后面说)</span><br><span class="line">CREATE UNIQUE INDEX index_count </span><br><span class="line">    ON Index_test(count);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><img src="/2020/03/01/浅谈MySQL索引使用/2.png" alt><br>如图所示，可以看到我们创建的索引。其Non_unique=0，说明是唯一索引；其NULL=YES，说明可以有空值。</p>
+<ul>
+<li><p><b>主键索引</b><br>对于主键索引，InnoDB会在创建表时自动在主键上创建该索引。如果创建表时没有定义主键，则InnoDB选择第一个唯一非空的列作为主键并在其上创建主键索引；否则，InnoDB添加一个6字节大小的自增主键(该列称为ROWID)并在其上创建主键索引。在本例中，我们指定ID为主键，因此InnoDB在ID列上创建了主键索引。</p>
+</li>
+<li><p><b>在(name,count)列上创建联合索引</b></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CREATE INDEX index_count </span><br><span class="line">    ON Index_test(name,count);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><img src="/2020/03/01/浅谈MySQL索引使用/3.png" alt><br>如图，我们创建了一个联合索引，由于创建表示约束了name列非空，因此索引中name也不能为NULL。联合索引中列的顺序对索引的性能影响很大，后面我们会说到。</p>
+<h2 id="ALTER方式创建"><a href="#ALTER方式创建" class="headerlink" title="ALTER方式创建"></a><font xise="5">ALTER方式创建</font></h2><p>除了以CREATE的方式直接创建以外，我们还可以使用ALTER操作，以修改表的方式创建索引，其语法格式如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE 表名 </span><br><span class="line">    ADD [UNIQUE|FULLTEXT|SPATIAL] INDEX|KEY [索引名] </span><br><span class="line">    (字段名1[(长度)] [ASC|DESC]) [USING 索引方法]；</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/03/01/浅谈MySQL索引使用/4.png" alt><br>如图，除了创建方式不同以外，创建出来的索引没有任何区别，对于其他索引也一样，这里就不做演示。</p>
+<h2 id="创建表时添加索引"><a href="#创建表时添加索引" class="headerlink" title="创建表时添加索引"></a><font size="5">创建表时添加索引</font></h2><p>我们可以在创建表时直接给相应的列添加索引</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE 表名(</span><br><span class="line">    字段名 数据类型 [完整性约束条件],</span><br><span class="line">    ......</span><br><span class="line">    </span><br><span class="line">    [UNIQUE|FULLTEXT|SPATIAL] INDEX|KEY</span><br><span class="line">    [索引名](字段名1[(长度)] [ASC|DESC]) [USING 索引方法]</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>同样的，创建出来的索引没有什么不同，这里不做演示。</p>
+<h2 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a><font size="5">删除索引</font></h2><p>删除索引也有两种方式，其实和创建很类似，可以对比记忆</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">使用DROP直接删除</span><br><span class="line">DROP INDEX 索引名 ON 表名</span><br><span class="line"></span><br><span class="line">============================</span><br><span class="line"></span><br><span class="line">使用ALTER以修改表的方式删除</span><br><span class="line">ALTER TABLE 表名 DROP INDEX 索引名</span><br></pre></td></tr></table></figure>
+
+<p>这里只演示其中一种即可，我们来使用DROP直接删除索引，如图所示：<br><img src="/2020/03/01/浅谈MySQL索引使用/5.png" alt></p>
+<h1 id="索引的优缺点及使用原则"><a href="#索引的优缺点及使用原则" class="headerlink" title="索引的优缺点及使用原则"></a>索引的优缺点及使用原则</h1><p>了解了如何创建/删除索引，那么我们再来看看索引的优点和缺点，从而进一步学习索引的使用原则：即什么时候创建索引、在哪些列上创建索引以及什么时候不能使用索引等等。</p>
+<h2 id="索引的优点"><a href="#索引的优点" class="headerlink" title="索引的优点"></a><font size="5">索引的优点</font></h2><p>其实这个问题的答案在前面一篇MySQL索引的实现原理已经提到，索引的优点主要有三</p>
+<ol>
+<li>索引大大减少了存储引擎需要扫描的数据量</li>
+<li>索引可以帮助我们进行排序以避免使用临时表</li>
+<li>索引可以把随机I/O变为顺序I/O，大大减少I/O次数，提升插叙速度</li>
+<li>MySQL中，所有的字段类型都可以被索引，即可以给任意字段设置索引</li>
+</ol>
+<h2 id="索引的缺点"><a href="#索引的缺点" class="headerlink" title="索引的缺点"></a><font size="5">索引的缺点</font></h2><p>任何事务都是有两面性的，索引也不例外，索引有这么多的优点，它自然也有一些缺点，其缺点主要有三</p>
+<ol>
+<li>创建索引和维护索引要耗费时间，并且随着数据量的增加所耗费的时间也会增加</li>
+<li>索引也是数据，也需要占空间。我们知道数据表中的数据也会有最大上线设置的，如果我们有大量的索引，索引文件可能会比数据文件更快达到上线值</li>
+<li>当对表中的数据进行增加、删除、修改时，索引也需要动态的维护，降低了数据的维护速度</li>
+</ol>
+<p>知道了索引的优缺点后，在下面一节将介绍一些索引的使用原则。即什么时候使用索引，什么时候不该使用索引。</p>
+<h2 id="索引使用原则"><a href="#索引使用原则" class="headerlink" title="索引使用原则"></a><font size="5">索引使用原则</font></h2><ol>
+<li><font color="red"><b>定义有主键的列一定要建立索引</b></font>(InnoDB自动实现)。因为主键可以加速定位到表中的某行。</li>
+<li><font color="red"><b>定义有外键的列一定要建立索引</b></font>。外键列通常用于表与表之间的连接，在其上创建索引可以加快表间的连接。</li>
+<li><font color="red"><b>对经常查询的数据列最好建立索引</b></font>。<ol>
+<li>对于需要在指定范围内快速或频繁查询的数据列，因为索引已经排序，其指定的范围是连续的，查询可以利用索引的排序，加快查询的时间。</li>
+<li>经常用在where子句中的数据列，将索引建立在where子句的集合过程中，对于需要加速或频繁检索的数据列，可以让这些经常参与查询的数据列按照索引的排序进行查询，加快查询的时间。</li>
+</ol>
+</li>
+<li><font color="red"><b>对经常更新的表就避免对其进行过多的索引</b></font>。因为表的更新会导致索引结构的变化，系统维护索引需要耗费时间。</li>
+<li><font color="red"><b>数据量小的表最好不要使用索引</b></font>。因为由于数据较少，可能查询全部数据花费的时间比遍历索引的时间还要短，索引就可能不会产生优化效果。</li>
+<li><font color="red"><b>在不同值少的列上(字段上)不要建立索引</b></font>，比如在学生表的”性别”字段上只有男，女两个不同值。相反的，<font color="red"><b>在一个字段上不同值较多可以建立索引。</b></font></li>
+</ol>
+<p>索引的使用远不止这些，这里只是简单地总结几点。要想用好索引，最好是通过实际应用来学习，由于我是在校生，所以只能到这里了…</p>
+<h1 id="最左前缀原理与相关优化"><a href="#最左前缀原理与相关优化" class="headerlink" title="最左前缀原理与相关优化"></a>最左前缀原理与相关优化</h1><h2 id="EXPLAIN的使用"><a href="#EXPLAIN的使用" class="headerlink" title="EXPLAIN的使用"></a><font size="5">EXPLAIN的使用</font></h2><p>在开始这部分内容之前，需要再补充一条SQL语句，用好了它对于我们查看索引的使用大有裨益。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN SELECT ....</span><br><span class="line">即在SELECT语句之前添加EXPLAIN字段</span><br></pre></td></tr></table></figure>
+
+<p>使用EXPLAIN关键字可以模拟优化器执行SQL查询语句，从而知道MySQL是如何处理你的SQL语句的。对于EXPLAIN的使用这里不是重点，因此不做赘述。如果你还不了解，文末EXPLAIN的学习博客链接。</p>
+<h2 id="组合索引"><a href="#组合索引" class="headerlink" title="组合索引"></a><font size="5">组合索引</font></h2><p>MySQL中的索引可以以一定顺序引用多个列，这种索引叫做组合索引。一个联合索引是一个有序元组<a1, a2, …, an>，其中各个元素均为数据表的一列。</a1,></p>
+
+<p><font color="red"><b>创建一个组合索引index(rol1,rol2,rol3)，相等于创建了三个索引：index(rol1)，index(rol1,rol2)，index(rol1,rol2,rol3)。</b></font></p>
+<h3 id="选择列的顺序"><a href="#选择列的顺序" class="headerlink" title="选择列的顺序"></a><font size="5">选择列的顺序</font></h3><p>前面说了，使用组合索引时列的顺序对至关重要，那么如何选择列的顺序呢？原则有三</p>
+<ol>
+<li><b>经常被用到的列优先</b></li>
+<li><b>选择性高的列优先</b></li>
+<li><b>宽度小的列优先</b></li>
+</ol>
+<h2 id="覆盖索引-Covering-Indexes"><a href="#覆盖索引-Covering-Indexes" class="headerlink" title="覆盖索引(Covering Indexes)"></a><font size="5">覆盖索引(Covering Indexes)</font></h2><p>索引包含满足查询的所有列(SELECT 后面跟的列)。只需要读取索引而不用读取数据，大大提高查询性能。</p>
+<ol>
+<li><p>索引项通常比记录要小，使得MySQL访问更少的数据</p>
+</li>
+<li><p>索引都按值排序存储，相对于随机访问记录，需要更少的I/O</p>
+</li>
+<li><p>大多数据引擎能更好的缓存索引，比如MyISAM只缓存索引。这样如果使用了覆盖索引，那么就能避免MyISAM表进行系统调用。</p>
+</li>
+<li><p>覆盖索引对于InnoDB表尤其有用，因为InnoDB使用聚集索引组织数据，如果二级索引中包含查询所需的数据，就不再需要在聚集索引中查找了。</p>
+</li>
+<li><p><b>覆盖索引不能是任何索引，只有B-TREE索引存储相应的值。</b>并且并不是所有存储引擎都实现了覆盖索引</p>
+</li>
+<li><p><font color="red"><b>索引覆盖查询(index-covered query)，使用EXPLAIN时可以在Extra列中看到Using index。</b></font>记住这点，后面再演示的时候你会看到什么情况下会使用覆盖索引。</p>
+</li>
+</ol>
+<p><font color="red"><b>不能使用覆盖索引的情况：</b></font></p>
+<ol>
+<li><p>存储引擎不支持覆盖索引</p>
+</li>
+<li><p>查询中使用了太多的列，如果有一个列不在索引中，就不能使用覆盖索引</p>
+</li>
+<li><p>使用了双%的模糊查询 </p>
+</li>
+</ol>
+<h2 id="实战测试"><a href="#实战测试" class="headerlink" title="实战测试"></a><font size="5">实战测试</font></h2><p>我们创建一张表，下面的所有实验都基于该表进行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> CREATE TABLE titles(</span><br><span class="line">    emp_no INT,</span><br><span class="line">    title VARCHAR(50),</span><br><span class="line">    from_date DATE,</span><br><span class="line">    to_date DATE,</span><br><span class="line">    PRIMARY KEY(emp_no,title,from_date)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>我们来看看这张表上有几个索引<br><img src="/2020/03/01/浅谈MySQL索引使用/6.png" alt>如图，由于该表包含一个联合主键，因此该表的主索引是一个组合索引。</p>
+<h3 id="覆盖索引测试"><a href="#覆盖索引测试" class="headerlink" title="覆盖索引测试"></a><font size="5">覆盖索引测试</font></h3><p>为了更好的进行演示，我们在from_date列上创建一个辅助索引，如图所示：<br><img src="/2020/03/01/浅谈MySQL索引使用/17.png" alt> 我们知道，InnoDB中辅助索引存储的是主键的值，那么只要我们要查询的列在(emp_no,title,from_date)之间，就会使用到覆盖索引。</p>
+<p><img src="/2020/03/01/浅谈MySQL索引使用/18.png" alt> 可以看到，Extra中Using Index，使用到了覆盖索引<br><img src="/2020/03/01/浅谈MySQL索引使用/19.png" alt> 在这里，要查询的列包括to_date，因此需要回表查数据，此时不能使用覆盖索引。Extra中是Using Where</p>
+<h3 id="全值匹配"><a href="#全值匹配" class="headerlink" title="全值匹配"></a><font size="5">全值匹配</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/7.png" alt> <font color="red"><b>当按照索引中所有列进行精确匹配（这里精确匹配指“=”或“IN”匹配）时，索引可以被用到。&lt;/b</b></font>这里有一点需要注意，理论上索引对顺序是敏感的，但是由于MySQL的查询优化器会自动调整where子句的条件顺序以使用适合的索引，例如我们将where中的条件顺序颠倒：<br><img src="/2020/03/01/浅谈MySQL索引使用/8.png" alt> 效果是一样的</p>
+<h3 id="最左前缀匹配"><a href="#最左前缀匹配" class="headerlink" title="最左前缀匹配"></a><font size="5">最左前缀匹配</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/9.png" alt> 当查询条件精确匹配索引的左边连续一个或几个列时，如<emp_no>或&lt;emp_no, title&gt;，所以可以被用到，但是只能用到一部分，即条件所组成的最左前缀。上面的查询从分析结果看用到了PRIMARY索引，但是key_len为4，说明只用到了索引的第一列前缀。</emp_no></p>
+<h3 id="精确匹配中间缺少条件"><a href="#精确匹配中间缺少条件" class="headerlink" title="精确匹配中间缺少条件"></a><font size="5">精确匹配中间缺少条件</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/10.png" alt> 此时索引使用情况和情况二相同，因为title未提供，所以<font color="red"><b>查询只用到了索引的第一列</b></font>，而后面的from_date虽然也在索引中，但是由于title不存在而无法和左前缀连接，因此<b>虽然使用到了索引，但需要对结果进行扫描过滤from_date</b>(这里由于emp_no唯一，所以不存在扫描)。</p>
+<h3 id="查询条件未指定索引首列"><a href="#查询条件未指定索引首列" class="headerlink" title="查询条件未指定索引首列"></a><font size="5">查询条件未指定索引首列</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/11.png" alt> 不是最左前缀，因此不会用到索引</p>
+<h3 id="匹配某列的前缀字符串"><a href="#匹配某列的前缀字符串" class="headerlink" title="匹配某列的前缀字符串"></a><font size="5">匹配某列的前缀字符串</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/12.png" alt> 此时可以用到索引原，如果通配符%不出现在开头，则可以用到索引，但根据具体情况不同可能只会用其中一个前缀</p>
+<h3 id="范围查询"><a href="#范围查询" class="headerlink" title="范围查询"></a><font size="5">范围查询</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/13.png" alt> 由于B+树的顺序特点,尤其适合此类查询。<font color="red"><b>范围列可以用到索引(必须是最左前缀)，但是范围列后面的列无法用到索引。</b></font>同时，索引最多用于一个范围列，因此如果查询条件中有两个范围列则无法全用到索引。</p>
+<h3 id="查询条件中含有函数或表达式"><a href="#查询条件中含有函数或表达式" class="headerlink" title="查询条件中含有函数或表达式"></a><font size="5">查询条件中含有函数或表达式</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/14.png" alt> 如果查询条件中含有函数或表达式，则MySQL不会为这列使用索引。虽然图中所示的两个查询的效果是一样的，但是对于第一个查询，不会使用emp_no上的索引。</p>
+<h2 id="B-Tree索引限制"><a href="#B-Tree索引限制" class="headerlink" title="B+Tree索引限制"></a><font size="5">B+Tree索引限制</font></h2><ol>
+<li><p>如果不是按照索引最左列开始查找，无法使用索引</p>
+</li>
+<li><p>使用索引时不能跳过中间的列</p>
+</li>
+<li><p>Not IN和&lt;&gt;操作无法使用索引</p>
+</li>
+<li><p>如果查询中有某个列的范围查询，那么其右边所有的列都无法使用索引</p>
+</li>
+<li><p>OR语句前后没有同时使用索引</p>
+</li>
+<li><p>以%开头的模糊查询</p>
+</li>
+</ol>
+<h1 id="InnoDB的主键选择与插入优化"><a href="#InnoDB的主键选择与插入优化" class="headerlink" title="InnoDB的主键选择与插入优化"></a>InnoDB的主键选择与插入优化</h1><p><font color="red"><b>使用InnoDB存储引擎时，如果没有特别的需要，请永远使用一个与业务无关的自增字段作为主键。</b></font></p>
+<p>InnoDB使用聚集索引，数据记录本身被存于主索引（一颗B+Tree）的叶子节点上。这就要求同一个叶子节点内(大小为一个内存页或磁盘页)的各条数据记录按主键顺序存放。因此<b>每当有一条新的记录插入时，MySQL会根据其主键将其插入适当的节点和位置，如果页面达到装载因子(InnoDB默认为15/16)，则开辟一个新的页(节点)。</b>如果表使用自增主键，那么每次插入新的记录，记录就会顺序添加到当前索引节点的后续位置，当一页写满，就会自动开辟一个新的页。如下图所示：<br><img src="/2020/03/01/浅谈MySQL索引使用/15.png" alt> 这样就会形成一个紧凑的索引结构，近似顺序填满。由于每次插入时也不需要移动已有数据，因此效率很高，也不会增加很多开销在维护索引上。</p>
+<p>如果使用非自增主键（如果身份证号或学号等），由于每次插入主键的值近似于随机，因此每次新纪录都要被插到现有索引页得中间某个位置：<br><img src="/2020/03/01/浅谈MySQL索引使用/16.png" alt><br>此时MySQL不得不为了将新记录插到合适位置而移动数据，甚至目标页面可能已经被回写到磁盘上而从缓存中清掉，此时又要从磁盘上读回来，这增加了很多开销，同时频繁的移动、分页操作造成了大量的碎片，得到了不够紧凑的索引结构，后续不得不通过OPTIMIZE TABLE来重建表并优化填充页面。</p>
+<p>所以说，<font color="red"><b>如果可以，请尽量在InnoDB上采用自增字段做主键。</b></font></p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p>本文参考借鉴了一下几篇博客：<br><a href="https://cloud.tencent.com/developer/article/1125452" target="_blank" rel="noopener">MySQL索引及其实现原理(基于MyISAM及InnoDB引擎)</a><br><a href="https://blog.csdn.net/justry_deng/article/details/81458470" target="_blank" rel="noopener">MySQL索引的创建与使用</a><br><a href="https://blog.csdn.net/why15732625998/article/details/80388236" target="_blank" rel="noopener">MySQL高级-EXPLAIN用法和结果分析</a><br><a href="https://www.cnblogs.com/tuanz/p/11806017.html" target="_blank" rel="noopener">回表查询的说明</a><br><a href="https://www.jianshu.com/p/8991cbca3854" target="_blank" rel="noopener">mysql覆盖索引与回表</a></p>
+<hr>
+
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/数据库/" rel="tag"><i class="fa fa-tag"></i>数据库</a>
+            
+              <a href="/tags/MySQL/" rel="tag"><i class="fa fa-tag"></i>MySQL</a>
+            
+              <a href="/tags/索引/" rel="tag"><i class="fa fa-tag"></i>索引</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/02/29/MySQL索引及其实现原理/" rel="next" title="MySQL索引及其实现原理">
+                  <i class="fa fa-chevron-left"></i> MySQL索引及其实现原理
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL索引的分类"><span class="nav-number">1.</span> <span class="nav-text">MySQL索引的分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL索引的创建和删除"><span class="nav-number">2.</span> <span class="nav-text">MySQL索引的创建和删除</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CREATE方式创建"><span class="nav-number">2.1.</span> <span class="nav-text">CREATE方式创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ALTER方式创建"><span class="nav-number">2.2.</span> <span class="nav-text">ALTER方式创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建表时添加索引"><span class="nav-number">2.3.</span> <span class="nav-text">创建表时添加索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除索引"><span class="nav-number">2.4.</span> <span class="nav-text">删除索引</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引的优缺点及使用原则"><span class="nav-number">3.</span> <span class="nav-text">索引的优缺点及使用原则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#索引的优点"><span class="nav-number">3.1.</span> <span class="nav-text">索引的优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引的缺点"><span class="nav-number">3.2.</span> <span class="nav-text">索引的缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引使用原则"><span class="nav-number">3.3.</span> <span class="nav-text">索引使用原则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#最左前缀原理与相关优化"><span class="nav-number">4.</span> <span class="nav-text">最左前缀原理与相关优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#EXPLAIN的使用"><span class="nav-number">4.1.</span> <span class="nav-text">EXPLAIN的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组合索引"><span class="nav-number">4.2.</span> <span class="nav-text">组合索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#选择列的顺序"><span class="nav-number">4.2.1.</span> <span class="nav-text">选择列的顺序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#覆盖索引-Covering-Indexes"><span class="nav-number">4.3.</span> <span class="nav-text">覆盖索引(Covering Indexes)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实战测试"><span class="nav-number">4.4.</span> <span class="nav-text">实战测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#覆盖索引测试"><span class="nav-number">4.4.1.</span> <span class="nav-text">覆盖索引测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全值匹配"><span class="nav-number">4.4.2.</span> <span class="nav-text">全值匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最左前缀匹配"><span class="nav-number">4.4.3.</span> <span class="nav-text">最左前缀匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#精确匹配中间缺少条件"><span class="nav-number">4.4.4.</span> <span class="nav-text">精确匹配中间缺少条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询条件未指定索引首列"><span class="nav-number">4.4.5.</span> <span class="nav-text">查询条件未指定索引首列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#匹配某列的前缀字符串"><span class="nav-number">4.4.6.</span> <span class="nav-text">匹配某列的前缀字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#范围查询"><span class="nav-number">4.4.7.</span> <span class="nav-text">范围查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询条件中含有函数或表达式"><span class="nav-number">4.4.8.</span> <span class="nav-text">查询条件中含有函数或表达式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-Tree索引限制"><span class="nav-number">4.5.</span> <span class="nav-text">B+Tree索引限制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#InnoDB的主键选择与插入优化"><span class="nav-number">5.</span> <span class="nav-text">InnoDB的主键选择与插入优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文章"><span class="nav-number">6.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">169</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">142</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>

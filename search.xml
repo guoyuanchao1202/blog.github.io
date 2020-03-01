@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>浅谈MySQL索引使用</title>
+      <link href="/2020/03/01/%E6%B5%85%E8%B0%88MySQL%E7%B4%A2%E5%BC%95%E4%BD%BF%E7%94%A8/"/>
+      <url>/2020/03/01/%E6%B5%85%E8%B0%88MySQL%E7%B4%A2%E5%BC%95%E4%BD%BF%E7%94%A8/</url>
+      
+        <content type="html"><![CDATA[<p>在前面一篇我们对MySQL InnoDB/MyISAM 存储引擎索引的实现原理进行了简单的介绍。今天我们就来实际的介绍一下MySQL中索引的种类、不同的索引如何创建使用以及如何让索引发挥更大的作用(优化策略)。本文所有实验演示全部基于Win10环境下MySQL5.5版本(InnoDB)。</p><hr><a id="more"></a><h1 id="MySQL索引的分类"><a href="#MySQL索引的分类" class="headerlink" title="MySQL索引的分类"></a>MySQL索引的分类</h1><p>索引是在存储引擎中实现的，也就是说不同的存储引擎，会使用不同的索引。MyISAM和InnoDB存储引擎只支持BTREE索引，也就是说默认使用BTREE(虽然说是BTree，但实际上使用的是B+Tree结构，这点要注意)。总体来说，MySQL中索引分为一下几种：</p><ol><li><b>普通索引</b><br>最简单的索引，对索引列没有任何要求</li><li><b>唯一索引</b><br>该索引要求索引列必须唯一，但索引列可以存在空值</li><li><b>主键索引</b><br>顾名思义，在主键列上的索引，要求非空且唯一</li><li><b>组合索引</b><br>指多个字段上创建的索引</li><li><b>全文索引</b><br>全文索引，只有在MyISAM引擎上才能使用，只能在CHAR,VARCHAR,TEXT类型字段上使用全文索引</li><li><b>空间索引(了解)</b></li></ol><p>MySQL中的索引大概就是这些，其中<font color="red"><b>只有主键索引是聚簇索引</b></font>。在介绍索引的创建和使用时主要介绍前四种索引。</p><h1 id="MySQL索引的创建和删除"><a href="#MySQL索引的创建和删除" class="headerlink" title="MySQL索引的创建和删除"></a>MySQL索引的创建和删除</h1><p>其实对于不同的索引，创建的方式大同小异，创建的时间也分为几种：创建表时直接创建索引，创建表后添加索引以及删除索引。下面我们创建Index_test表，并以Index_text表为例进行演示。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE Index_test(</span><br><span class="line">    ID INT PRIMARY KEY,</span><br><span class="line">    name VARCHAR(16) NOT NULL,</span><br><span class="line">    count INT</span><br><span class="line">);</span><br></pre></td></tr></table></figure><p>在介绍如何创建索引之前，先看一条SQL语句</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SHOW INDEX FROM 表名;</span><br></pre></td></tr></table></figure><p>该SQL语句能够查看表中已创建的所有索引。介绍这条语句是为了方便我们在测试时能够随时查看索引创建情况。</p><h2 id="CREATE方式创建"><a href="#CREATE方式创建" class="headerlink" title="CREATE方式创建"></a><font sise="5">CREATE方式创建</font></h2><p>这是最直接的创建方式，用于表创建之后添加索引，格式为</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CREATE [UNIQUE|FULLTEXT|SPATIAL] INDEX [索引名称]</span><br><span class="line">    ON 表名(字段名) [USING 索引方法]；</span><br></pre></td></tr></table></figure><p>我们解释一下各个字段含义</p><ol><li><b>UNIQUE</b>:表示该索引是<b>唯一索引</b>。</li><li><b>FULLTEXT</b>:表示该索引是<b>全文索引</b>。</li><li><b>SPATIAL</b>:表示该索引是<b>空间索引</b>。</li><li>MySQL默认的索引方法为B+Tree。并且InnoDB和MyISAM也只能用B+Tree。</li></ol><ul><li><b>在count列上创建普通索引</b><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CREATE INDEX index_count </span><br><span class="line">    ON Index_test(count);</span><br></pre></td></tr></table></figure></li></ul><p><img src="/2020/03/01/浅谈MySQL索引使用/1.png" alt><br>如图所示，可以看到我们创建的索引。其Non_unique=1，说明不是唯一的；其NULL=YES，说明可以有空值。</p><ul><li><b>在count列上创建非空索引</b><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">我们先将count列上原来的索引删除(删除语句后面说)</span><br><span class="line">CREATE UNIQUE INDEX index_count </span><br><span class="line">    ON Index_test(count);</span><br></pre></td></tr></table></figure></li></ul><p><img src="/2020/03/01/浅谈MySQL索引使用/2.png" alt><br>如图所示，可以看到我们创建的索引。其Non_unique=0，说明是唯一索引；其NULL=YES，说明可以有空值。</p><ul><li><p><b>主键索引</b><br>对于主键索引，InnoDB会在创建表时自动在主键上创建该索引。如果创建表时没有定义主键，则InnoDB选择第一个唯一非空的列作为主键并在其上创建主键索引；否则，InnoDB添加一个6字节大小的自增主键(该列称为ROWID)并在其上创建主键索引。在本例中，我们指定ID为主键，因此InnoDB在ID列上创建了主键索引。</p></li><li><p><b>在(name,count)列上创建联合索引</b></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CREATE INDEX index_count </span><br><span class="line">    ON Index_test(name,count);</span><br></pre></td></tr></table></figure></li></ul><p><img src="/2020/03/01/浅谈MySQL索引使用/3.png" alt><br>如图，我们创建了一个联合索引，由于创建表示约束了name列非空，因此索引中name也不能为NULL。联合索引中列的顺序对索引的性能影响很大，后面我们会说到。</p><h2 id="ALTER方式创建"><a href="#ALTER方式创建" class="headerlink" title="ALTER方式创建"></a><font xise="5">ALTER方式创建</font></h2><p>除了以CREATE的方式直接创建以外，我们还可以使用ALTER操作，以修改表的方式创建索引，其语法格式如下。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE 表名 </span><br><span class="line">    ADD [UNIQUE|FULLTEXT|SPATIAL] INDEX|KEY [索引名] </span><br><span class="line">    (字段名1[(长度)] [ASC|DESC]) [USING 索引方法]；</span><br></pre></td></tr></table></figure><p><img src="/2020/03/01/浅谈MySQL索引使用/4.png" alt><br>如图，除了创建方式不同以外，创建出来的索引没有任何区别，对于其他索引也一样，这里就不做演示。</p><h2 id="创建表时添加索引"><a href="#创建表时添加索引" class="headerlink" title="创建表时添加索引"></a><font size="5">创建表时添加索引</font></h2><p>我们可以在创建表时直接给相应的列添加索引</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE 表名(</span><br><span class="line">    字段名 数据类型 [完整性约束条件],</span><br><span class="line">    ......</span><br><span class="line">    </span><br><span class="line">    [UNIQUE|FULLTEXT|SPATIAL] INDEX|KEY</span><br><span class="line">    [索引名](字段名1[(长度)] [ASC|DESC]) [USING 索引方法]</span><br><span class="line">);</span><br></pre></td></tr></table></figure><p>同样的，创建出来的索引没有什么不同，这里不做演示。</p><h2 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a><font size="5">删除索引</font></h2><p>删除索引也有两种方式，其实和创建很类似，可以对比记忆</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">使用DROP直接删除</span><br><span class="line">DROP INDEX 索引名 ON 表名</span><br><span class="line"></span><br><span class="line">============================</span><br><span class="line"></span><br><span class="line">使用ALTER以修改表的方式删除</span><br><span class="line">ALTER TABLE 表名 DROP INDEX 索引名</span><br></pre></td></tr></table></figure><p>这里只演示其中一种即可，我们来使用DROP直接删除索引，如图所示：<br><img src="/2020/03/01/浅谈MySQL索引使用/5.png" alt></p><h1 id="索引的优缺点及使用原则"><a href="#索引的优缺点及使用原则" class="headerlink" title="索引的优缺点及使用原则"></a>索引的优缺点及使用原则</h1><p>了解了如何创建/删除索引，那么我们再来看看索引的优点和缺点，从而进一步学习索引的使用原则：即什么时候创建索引、在哪些列上创建索引以及什么时候不能使用索引等等。</p><h2 id="索引的优点"><a href="#索引的优点" class="headerlink" title="索引的优点"></a><font size="5">索引的优点</font></h2><p>其实这个问题的答案在前面一篇MySQL索引的实现原理已经提到，索引的优点主要有三</p><ol><li>索引大大减少了存储引擎需要扫描的数据量</li><li>索引可以帮助我们进行排序以避免使用临时表</li><li>索引可以把随机I/O变为顺序I/O，大大减少I/O次数，提升插叙速度</li><li>MySQL中，所有的字段类型都可以被索引，即可以给任意字段设置索引</li></ol><h2 id="索引的缺点"><a href="#索引的缺点" class="headerlink" title="索引的缺点"></a><font size="5">索引的缺点</font></h2><p>任何事务都是有两面性的，索引也不例外，索引有这么多的优点，它自然也有一些缺点，其缺点主要有三</p><ol><li>创建索引和维护索引要耗费时间，并且随着数据量的增加所耗费的时间也会增加</li><li>索引也是数据，也需要占空间。我们知道数据表中的数据也会有最大上线设置的，如果我们有大量的索引，索引文件可能会比数据文件更快达到上线值</li><li>当对表中的数据进行增加、删除、修改时，索引也需要动态的维护，降低了数据的维护速度</li></ol><p>知道了索引的优缺点后，在下面一节将介绍一些索引的使用原则。即什么时候使用索引，什么时候不该使用索引。</p><h2 id="索引使用原则"><a href="#索引使用原则" class="headerlink" title="索引使用原则"></a><font size="5">索引使用原则</font></h2><ol><li><font color="red"><b>定义有主键的列一定要建立索引</b></font>(InnoDB自动实现)。因为主键可以加速定位到表中的某行。</li><li><font color="red"><b>定义有外键的列一定要建立索引</b></font>。外键列通常用于表与表之间的连接，在其上创建索引可以加快表间的连接。</li><li><font color="red"><b>对经常查询的数据列最好建立索引</b></font>。<ol><li>对于需要在指定范围内快速或频繁查询的数据列，因为索引已经排序，其指定的范围是连续的，查询可以利用索引的排序，加快查询的时间。</li><li>经常用在where子句中的数据列，将索引建立在where子句的集合过程中，对于需要加速或频繁检索的数据列，可以让这些经常参与查询的数据列按照索引的排序进行查询，加快查询的时间。</li></ol></li><li><font color="red"><b>对经常更新的表就避免对其进行过多的索引</b></font>。因为表的更新会导致索引结构的变化，系统维护索引需要耗费时间。</li><li><font color="red"><b>数据量小的表最好不要使用索引</b></font>。因为由于数据较少，可能查询全部数据花费的时间比遍历索引的时间还要短，索引就可能不会产生优化效果。</li><li><font color="red"><b>在不同值少的列上(字段上)不要建立索引</b></font>，比如在学生表的”性别”字段上只有男，女两个不同值。相反的，<font color="red"><b>在一个字段上不同值较多可以建立索引。</b></font></li></ol><p>索引的使用远不止这些，这里只是简单地总结几点。要想用好索引，最好是通过实际应用来学习，由于我是在校生，所以只能到这里了…</p><h1 id="最左前缀原理与相关优化"><a href="#最左前缀原理与相关优化" class="headerlink" title="最左前缀原理与相关优化"></a>最左前缀原理与相关优化</h1><h2 id="EXPLAIN的使用"><a href="#EXPLAIN的使用" class="headerlink" title="EXPLAIN的使用"></a><font size="5">EXPLAIN的使用</font></h2><p>在开始这部分内容之前，需要再补充一条SQL语句，用好了它对于我们查看索引的使用大有裨益。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN SELECT ....</span><br><span class="line">即在SELECT语句之前添加EXPLAIN字段</span><br></pre></td></tr></table></figure><p>使用EXPLAIN关键字可以模拟优化器执行SQL查询语句，从而知道MySQL是如何处理你的SQL语句的。对于EXPLAIN的使用这里不是重点，因此不做赘述。如果你还不了解，文末EXPLAIN的学习博客链接。</p><h2 id="组合索引"><a href="#组合索引" class="headerlink" title="组合索引"></a><font size="5">组合索引</font></h2><p>MySQL中的索引可以以一定顺序引用多个列，这种索引叫做组合索引。一个联合索引是一个有序元组<a1, a2, …, an>，其中各个元素均为数据表的一列。</a1,></p><p><font color="red"><b>创建一个组合索引index(rol1,rol2,rol3)，相等于创建了三个索引：index(rol1)，index(rol1,rol2)，index(rol1,rol2,rol3)。</b></font></p><h3 id="选择列的顺序"><a href="#选择列的顺序" class="headerlink" title="选择列的顺序"></a><font size="5">选择列的顺序</font></h3><p>前面说了，使用组合索引时列的顺序对至关重要，那么如何选择列的顺序呢？原则有三</p><ol><li><b>经常被用到的列优先</b></li><li><b>选择性高的列优先</b></li><li><b>宽度小的列优先</b></li></ol><h2 id="覆盖索引-Covering-Indexes"><a href="#覆盖索引-Covering-Indexes" class="headerlink" title="覆盖索引(Covering Indexes)"></a><font size="5">覆盖索引(Covering Indexes)</font></h2><p>索引包含满足查询的所有列(SELECT 后面跟的列)。只需要读取索引而不用读取数据，大大提高查询性能。</p><ol><li><p>索引项通常比记录要小，使得MySQL访问更少的数据</p></li><li><p>索引都按值排序存储，相对于随机访问记录，需要更少的I/O</p></li><li><p>大多数据引擎能更好的缓存索引，比如MyISAM只缓存索引。这样如果使用了覆盖索引，那么就能避免MyISAM表进行系统调用。</p></li><li><p>覆盖索引对于InnoDB表尤其有用，因为InnoDB使用聚集索引组织数据，如果二级索引中包含查询所需的数据，就不再需要在聚集索引中查找了。</p></li><li><p><b>覆盖索引不能是任何索引，只有B-TREE索引存储相应的值。</b>并且并不是所有存储引擎都实现了覆盖索引</p></li><li><p><font color="red"><b>索引覆盖查询(index-covered query)，使用EXPLAIN时可以在Extra列中看到Using index。</b></font>记住这点，后面再演示的时候你会看到什么情况下会使用覆盖索引。</p></li></ol><p><font color="red"><b>不能使用覆盖索引的情况：</b></font></p><ol><li><p>存储引擎不支持覆盖索引</p></li><li><p>查询中使用了太多的列，如果有一个列不在索引中，就不能使用覆盖索引</p></li><li><p>使用了双%的模糊查询 </p></li></ol><h2 id="实战测试"><a href="#实战测试" class="headerlink" title="实战测试"></a><font size="5">实战测试</font></h2><p>我们创建一张表，下面的所有实验都基于该表进行。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> CREATE TABLE titles(</span><br><span class="line">    emp_no INT,</span><br><span class="line">    title VARCHAR(50),</span><br><span class="line">    from_date DATE,</span><br><span class="line">    to_date DATE,</span><br><span class="line">    PRIMARY KEY(emp_no,title,from_date)</span><br><span class="line">);</span><br></pre></td></tr></table></figure><p>我们来看看这张表上有几个索引<br><img src="/2020/03/01/浅谈MySQL索引使用/6.png" alt>如图，由于该表包含一个联合主键，因此该表的主索引是一个组合索引。</p><h3 id="覆盖索引测试"><a href="#覆盖索引测试" class="headerlink" title="覆盖索引测试"></a><font size="5">覆盖索引测试</font></h3><p>为了更好的进行演示，我们在from_date列上创建一个辅助索引，如图所示：<br><img src="/2020/03/01/浅谈MySQL索引使用/17.png" alt> 我们知道，InnoDB中辅助索引存储的是主键的值，那么只要我们要查询的列在(emp_no,title,from_date)之间，就会使用到覆盖索引。</p><p><img src="/2020/03/01/浅谈MySQL索引使用/18.png" alt> 可以看到，Extra中Using Index，使用到了覆盖索引<br><img src="/2020/03/01/浅谈MySQL索引使用/19.png" alt> 在这里，要查询的列包括to_date，因此需要回表查数据，此时不能使用覆盖索引。Extra中是Using Where</p><h3 id="全值匹配"><a href="#全值匹配" class="headerlink" title="全值匹配"></a><font size="5">全值匹配</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/7.png" alt> <font color="red"><b>当按照索引中所有列进行精确匹配（这里精确匹配指“=”或“IN”匹配）时，索引可以被用到。&lt;/b</b></font>这里有一点需要注意，理论上索引对顺序是敏感的，但是由于MySQL的查询优化器会自动调整where子句的条件顺序以使用适合的索引，例如我们将where中的条件顺序颠倒：<br><img src="/2020/03/01/浅谈MySQL索引使用/8.png" alt> 效果是一样的</p><h3 id="最左前缀匹配"><a href="#最左前缀匹配" class="headerlink" title="最左前缀匹配"></a><font size="5">最左前缀匹配</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/9.png" alt> 当查询条件精确匹配索引的左边连续一个或几个列时，如<emp_no>或&lt;emp_no, title&gt;，所以可以被用到，但是只能用到一部分，即条件所组成的最左前缀。上面的查询从分析结果看用到了PRIMARY索引，但是key_len为4，说明只用到了索引的第一列前缀。</emp_no></p><h3 id="精确匹配中间缺少条件"><a href="#精确匹配中间缺少条件" class="headerlink" title="精确匹配中间缺少条件"></a><font size="5">精确匹配中间缺少条件</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/10.png" alt> 此时索引使用情况和情况二相同，因为title未提供，所以<font color="red"><b>查询只用到了索引的第一列</b></font>，而后面的from_date虽然也在索引中，但是由于title不存在而无法和左前缀连接，因此<b>虽然使用到了索引，但需要对结果进行扫描过滤from_date</b>(这里由于emp_no唯一，所以不存在扫描)。</p><h3 id="查询条件未指定索引首列"><a href="#查询条件未指定索引首列" class="headerlink" title="查询条件未指定索引首列"></a><font size="5">查询条件未指定索引首列</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/11.png" alt> 不是最左前缀，因此不会用到索引</p><h3 id="匹配某列的前缀字符串"><a href="#匹配某列的前缀字符串" class="headerlink" title="匹配某列的前缀字符串"></a><font size="5">匹配某列的前缀字符串</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/12.png" alt> 此时可以用到索引原，如果通配符%不出现在开头，则可以用到索引，但根据具体情况不同可能只会用其中一个前缀</p><h3 id="范围查询"><a href="#范围查询" class="headerlink" title="范围查询"></a><font size="5">范围查询</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/13.png" alt> 由于B+树的顺序特点,尤其适合此类查询。<font color="red"><b>范围列可以用到索引(必须是最左前缀)，但是范围列后面的列无法用到索引。</b></font>同时，索引最多用于一个范围列，因此如果查询条件中有两个范围列则无法全用到索引。</p><h3 id="查询条件中含有函数或表达式"><a href="#查询条件中含有函数或表达式" class="headerlink" title="查询条件中含有函数或表达式"></a><font size="5">查询条件中含有函数或表达式</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/14.png" alt> 如果查询条件中含有函数或表达式，则MySQL不会为这列使用索引。虽然图中所示的两个查询的效果是一样的，但是对于第一个查询，不会使用emp_no上的索引。</p><h2 id="B-Tree索引限制"><a href="#B-Tree索引限制" class="headerlink" title="B+Tree索引限制"></a><font size="5">B+Tree索引限制</font></h2><ol><li><p>如果不是按照索引最左列开始查找，无法使用索引</p></li><li><p>使用索引时不能跳过中间的列</p></li><li><p>Not IN和&lt;&gt;操作无法使用索引</p></li><li><p>如果查询中有某个列的范围查询，那么其右边所有的列都无法使用索引</p></li><li><p>OR语句前后没有同时使用索引</p></li><li><p>以%开头的模糊查询</p></li></ol><h1 id="InnoDB的主键选择与插入优化"><a href="#InnoDB的主键选择与插入优化" class="headerlink" title="InnoDB的主键选择与插入优化"></a>InnoDB的主键选择与插入优化</h1><p><font color="red"><b>使用InnoDB存储引擎时，如果没有特别的需要，请永远使用一个与业务无关的自增字段作为主键。</b></font></p><p>InnoDB使用聚集索引，数据记录本身被存于主索引（一颗B+Tree）的叶子节点上。这就要求同一个叶子节点内(大小为一个内存页或磁盘页)的各条数据记录按主键顺序存放。因此<b>每当有一条新的记录插入时，MySQL会根据其主键将其插入适当的节点和位置，如果页面达到装载因子(InnoDB默认为15/16)，则开辟一个新的页(节点)。</b>如果表使用自增主键，那么每次插入新的记录，记录就会顺序添加到当前索引节点的后续位置，当一页写满，就会自动开辟一个新的页。如下图所示：<br><img src="/2020/03/01/浅谈MySQL索引使用/15.png" alt> 这样就会形成一个紧凑的索引结构，近似顺序填满。由于每次插入时也不需要移动已有数据，因此效率很高，也不会增加很多开销在维护索引上。</p><p>如果使用非自增主键（如果身份证号或学号等），由于每次插入主键的值近似于随机，因此每次新纪录都要被插到现有索引页得中间某个位置：<br><img src="/2020/03/01/浅谈MySQL索引使用/16.png" alt><br>此时MySQL不得不为了将新记录插到合适位置而移动数据，甚至目标页面可能已经被回写到磁盘上而从缓存中清掉，此时又要从磁盘上读回来，这增加了很多开销，同时频繁的移动、分页操作造成了大量的碎片，得到了不够紧凑的索引结构，后续不得不通过OPTIMIZE TABLE来重建表并优化填充页面。</p><p>所以说，<font color="red"><b>如果可以，请尽量在InnoDB上采用自增字段做主键。</b></font></p><h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p>本文参考借鉴了一下几篇博客：<br><a href="https://cloud.tencent.com/developer/article/1125452" target="_blank" rel="noopener">MySQL索引及其实现原理(基于MyISAM及InnoDB引擎)</a><br><a href="https://blog.csdn.net/justry_deng/article/details/81458470" target="_blank" rel="noopener">MySQL索引的创建与使用</a><br><a href="https://blog.csdn.net/why15732625998/article/details/80388236" target="_blank" rel="noopener">MySQL高级-EXPLAIN用法和结果分析</a><br><a href="https://www.cnblogs.com/tuanz/p/11806017.html" target="_blank" rel="noopener">回表查询的说明</a><br><a href="https://www.jianshu.com/p/8991cbca3854" target="_blank" rel="noopener">mysql覆盖索引与回表</a></p><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 数据库 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 数据库 </tag>
+            
+            <tag> MySQL </tag>
+            
+            <tag> 索引 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>MySQL索引及其实现原理</title>
       <link href="/2020/02/29/MySQL%E7%B4%A2%E5%BC%95%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/"/>
       <url>/2020/02/29/MySQL%E7%B4%A2%E5%BC%95%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/</url>
@@ -1009,9 +1038,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 位运算 </tag>
+            
+            <tag> LeetCode </tag>
             
         </tags>
       
@@ -1447,9 +1476,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 位运算 </tag>
+            
+            <tag> LeetCode </tag>
             
         </tags>
       
@@ -1584,9 +1613,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 位运算 </tag>
+            
+            <tag> LeetCode </tag>
             
         </tags>
       
@@ -1717,9 +1746,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 位运算 </tag>
+            
+            <tag> LeetCode </tag>
             
             <tag> 数组 </tag>
             
@@ -1746,9 +1775,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 位运算 </tag>
+            
+            <tag> LeetCode </tag>
             
         </tags>
       
@@ -1773,9 +1802,9 @@
       
         <tags>
             
-            <tag> 递归 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
             
             <tag> 二叉树 </tag>
             
@@ -1858,11 +1887,11 @@
       
         <tags>
             
+            <tag> LeetCode </tag>
+            
             <tag> AVL树 </tag>
             
             <tag> 递归 </tag>
-            
-            <tag> LeetCode </tag>
             
         </tags>
       
@@ -1916,9 +1945,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 位运算 </tag>
+            
+            <tag> LeetCode </tag>
             
         </tags>
       
@@ -1943,9 +1972,9 @@
       
         <tags>
             
-            <tag> 递归 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
             
             <tag> 二叉树 </tag>
             
@@ -2030,9 +2059,9 @@
       
         <tags>
             
-            <tag> 递归 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
             
             <tag> 二分查找 </tag>
             
@@ -2308,9 +2337,9 @@
       
         <tags>
             
-            <tag> 递归 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
             
             <tag> 快慢指针法 </tag>
             
@@ -2640,9 +2669,9 @@
       
         <tags>
             
-            <tag> 递归 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
             
             <tag> 二叉树 </tag>
             
@@ -2669,9 +2698,9 @@
       
         <tags>
             
-            <tag> 递归 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
             
             <tag> 二叉树 </tag>
             
@@ -2700,11 +2729,11 @@
       
         <tags>
             
+            <tag> LeetCode </tag>
+            
             <tag> AVL树 </tag>
             
             <tag> 递归 </tag>
-            
-            <tag> LeetCode </tag>
             
         </tags>
       
@@ -2729,11 +2758,11 @@
       
         <tags>
             
+            <tag> LeetCode </tag>
+            
             <tag> AVL树 </tag>
             
             <tag> 递归 </tag>
-            
-            <tag> LeetCode </tag>
             
             <tag> 数组 </tag>
             
@@ -2762,9 +2791,9 @@
       
         <tags>
             
-            <tag> 递归 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
             
             <tag> 二叉树 </tag>
             
@@ -2793,9 +2822,9 @@
       
         <tags>
             
-            <tag> 递归 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
             
             <tag> 二叉树 </tag>
             
@@ -2824,9 +2853,9 @@
       
         <tags>
             
-            <tag> 递归 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
             
             <tag> 斐波那契数列 </tag>
             
@@ -2853,9 +2882,9 @@
       
         <tags>
             
-            <tag> 递归 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
             
             <tag> 二分查找 </tag>
             
@@ -2882,9 +2911,9 @@
       
         <tags>
             
-            <tag> 递归 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
             
             <tag> 字符串 </tag>
             
@@ -2911,9 +2940,9 @@
       
         <tags>
             
-            <tag> 递归 </tag>
-            
             <tag> LeetCode </tag>
+            
+            <tag> 递归 </tag>
             
             <tag> 数组 </tag>
             
@@ -4570,11 +4599,11 @@
     
     
     <entry>
-      <title>青蛙跳台阶</title>
-      <link href="/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/"/>
-      <url>/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/</url>
+      <title>二叉树镜像对称</title>
+      <link href="/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/"/>
+      <url>/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/</url>
       
-        <content type="html"><![CDATA[<p><strong>难度： 简单</strong></p><p><img src="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="题目如图"></p><a id="more"></a><p><strong>1、动态规划</strong><br>可以知道，如果要到达第n阶台阶，有两种方式：<br>第一：从n-1阶台阶跨1步<br>第二：从n-2阶台阶跨2步<br>设到达第n阶台阶的方法总数为sum(n)<br>那么由上面可以知道：<strong>sum(n)=sum(n-2)+sum(n-1)</strong></p><p>可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法<br>1、从第1阶台阶跨2步上去<br>2、从第2阶跨1步上去</p><p>相应的，到达第1阶台阶只有一种方法，sum(1)=1；<br>到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；<br>所以sum(3)=3;<br><img src="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><p><strong>2、斐波那契数列</strong><br>通过观察规律可以知道：<br>假设第0阶为1；<br>那么可以得到从第1阶往后分别是：<br><strong>1，2，3，5，8，13…..</strong><br>这是一个很明显的斐波那契数列</p><p>3、递归<br>同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和<br>递归出口：n=0的时候返回1，n&lt;0的时候返回0；<br><img src="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>运行到44个样例的时候栈爆了…..</p>]]></content>
+        <content type="html"><![CDATA[<p><strong>难度–简单</strong><br>题目<br><img src="https://img-blog.csdnimg.cn/2019081919202426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><a id="more"></a><p><strong>分析：</strong><br>    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称<br>    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的</p><h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><pre><code>//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接//快1ms，亲测1、pre(TreeNode tree.left,TreeNode tree.right)        2、如果A.val==B.val    --&gt;return true                3、如果A==null&amp;&amp;B==null    --&gt;return true4、如果A和B不同时为空，说明树是不对称的        --&gt;return false5、遍历A的左子树和B的右子树        //pre(A.left,B.right)6、遍历A的右子树和A的左子树        //pre(A.right,B.left)</code></pre><h2 id="迭代法"><a href="#迭代法" class="headerlink" title="迭代法"></a>迭代法</h2><p>使用队列，比较容易理解，直接上代码(LeetCode官方题解)<br><img src="https://img-blog.csdnimg.cn/20190819195622590.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>]]></content>
       
       
       <categories>
@@ -4588,9 +4617,11 @@
             
             <tag> LeetCode </tag>
             
-            <tag> 动态规划 </tag>
+            <tag> 递归 </tag>
             
-            <tag> 斐波那契数列 </tag>
+            <tag> 迭代法 </tag>
+            
+            <tag> 二叉树 </tag>
             
         </tags>
       
@@ -4628,11 +4659,11 @@
     
     
     <entry>
-      <title>二叉树镜像对称</title>
-      <link href="/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/"/>
-      <url>/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/</url>
+      <title>青蛙跳台阶</title>
+      <link href="/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/"/>
+      <url>/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/</url>
       
-        <content type="html"><![CDATA[<p><strong>难度–简单</strong><br>题目<br><img src="https://img-blog.csdnimg.cn/2019081919202426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><a id="more"></a><p><strong>分析：</strong><br>    通过题目可以知道，这个树镜像对称，那么这棵树关于根节点这条线对称<br>    就是说，将它所有的左子树变成右子树，所有右子树变成左子树，它是不变的</p><h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><pre><code>//这里直接传递tree根节点的左右子树会比pre(TreeNode tree,TreeNode tree)好，因为减少一层递归，LeetCode速度直接//快1ms，亲测1、pre(TreeNode tree.left,TreeNode tree.right)        2、如果A.val==B.val    --&gt;return true                3、如果A==null&amp;&amp;B==null    --&gt;return true4、如果A和B不同时为空，说明树是不对称的        --&gt;return false5、遍历A的左子树和B的右子树        //pre(A.left,B.right)6、遍历A的右子树和A的左子树        //pre(A.right,B.left)</code></pre><h2 id="迭代法"><a href="#迭代法" class="headerlink" title="迭代法"></a>迭代法</h2><p>使用队列，比较容易理解，直接上代码(LeetCode官方题解)<br><img src="https://img-blog.csdnimg.cn/20190819195622590.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>]]></content>
+        <content type="html"><![CDATA[<p><strong>难度： 简单</strong></p><p><img src="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="题目如图"></p><a id="more"></a><p><strong>1、动态规划</strong><br>可以知道，如果要到达第n阶台阶，有两种方式：<br>第一：从n-1阶台阶跨1步<br>第二：从n-2阶台阶跨2步<br>设到达第n阶台阶的方法总数为sum(n)<br>那么由上面可以知道：<strong>sum(n)=sum(n-2)+sum(n-1)</strong></p><p>可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法<br>1、从第1阶台阶跨2步上去<br>2、从第2阶跨1步上去</p><p>相应的，到达第1阶台阶只有一种方法，sum(1)=1；<br>到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；<br>所以sum(3)=3;<br><img src="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><p><strong>2、斐波那契数列</strong><br>通过观察规律可以知道：<br>假设第0阶为1；<br>那么可以得到从第1阶往后分别是：<br><strong>1，2，3，5，8，13…..</strong><br>这是一个很明显的斐波那契数列</p><p>3、递归<br>同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和<br>递归出口：n=0的时候返回1，n&lt;0的时候返回0；<br><img src="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>运行到44个样例的时候栈爆了…..</p>]]></content>
       
       
       <categories>
@@ -4644,13 +4675,11 @@
       
         <tags>
             
-            <tag> 递归 </tag>
-            
             <tag> LeetCode </tag>
             
-            <tag> 迭代法 </tag>
+            <tag> 动态规划 </tag>
             
-            <tag> 二叉树 </tag>
+            <tag> 斐波那契数列 </tag>
             
         </tags>
       
