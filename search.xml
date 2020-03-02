@@ -3,7 +3,7 @@
   <entry>
     <title><![CDATA[详解String.intern()方法]]></title>
     <url>%2F2020%2F03%2F02%2F%E8%AF%A6%E8%A7%A3String-intern-%E6%96%B9%E6%B3%95%2F</url>
-    <content type="text"><![CDATA[最近又重新回顾了一下String的源码。对于其中的interrn()方法还是有点疑惑，因此特意上网再次查了一番，在这里做一下记录方便日后回顾。下面主要介绍一下String.intern()方法。这个方法还是非常有意思的，我们来看一看 new了几个字符串我们来看下面几条语句 123456789101. String str1=new String(&quot;Think In Java&quot;);=====================2. String str2=&quot;我爱学习&quot;;=====================3. String str3=&quot;a&quot;+&quot;b&quot;+&quot;c&quot;+&quot;d&quot;;=====================4. String str4=new String(&quot;a&quot;)+&quot;b&quot;; 你知道这些语句到底创建了几个对象么？我们来分析一下 String str1=new String(“Think In Java”);分情况而定： 如果常量池中没有”Think In Java”，那么会创建两个对象，一个位于常量池，一个位于堆中；并且str1指向堆中的实例。此时创建了两个对象 如果常量池已经存在了该字符串，那么只在堆中创建一个实例，str1指向堆中。此时创建了一个对象 String str2=”我爱学习”;一个对象，当使用””形式创建String实例时，会在字符串常量池中添加该实例，并且str2指向常量池。 String str3=”a”+”b”+”c”+”d”;一个对象。赋值符号右边的”a”、”b”、”c”、”d”、”e”都是常量。对于常量，编译时就直接存储它们的字面值而不是它们的引用，即在编译时就直接讲它们连接的结果提取出来变成了”abcde”。该语句在class文件中就相当于String s = “abcde”我们来看看字节码验证一下： 可以看到，常量池中只有一个字符串常量，那就是”abcde”。 String str4=new String(“a”)+”b”;一共创建了5个对象：其中”a”和”b”放在常量池中、还有一个”a”的实例在堆中、另外创建了一个StringBuilder对象，调用它的append()方法将字符串拼接起来，然后调用toString()方法生成一个新的字符串实例”ab”放在堆中，因此一共是5个对象。但是在JDK9之后情况不一样了(通过字节码发现的，此时没有创建StringBuilder实例，这里我也不清楚具体情况)。 关于intern()方法因为该方法在JDK1.7前后发生了变化，因此在本节我分不同版本的JDK进行介绍。 JDK1.7之前我们看下面两条语句 1234567String ps3 = new String(&quot;Something&quot;);String ps4 = ps3.intern();System.out.println(ps3==ps4);===============Output:false 我们来分析一下原因： 首先第一句分别在常量池和堆上创建了两个实例”Something”，并且ps3指向堆中实例 我们调用ps3.intern方法时，会这样做：首先检查常量池中是否有”Something”实例 如果有，那么直接返回常量池中该实例的引用 如果没有，则在常量池创建该实例，然后返回常量池中该实例的引用 在本例中，常量池中存在”Something”，因此，直接返回引用，此时ps4指向常量池中的”Something” 结论：在JDK1.7之前，调用intern方法时，会先检查常量池中是否存在该实例(调用者的实例)。如果存在，那么直接返回对常量池中该实例的引用；否则，现在常量池中创建该实例，然后再返回常量池中该实例的引用。 JDK1.7之后我们来看下面语句 1234567891011121314String str1 = new String(&quot;1&quot;)+new String(&quot;2&quot;);String str2 = &quot;12&quot;;str1.intern();System.out.println(str1==str2);Output:false==========================String str1 = new String(&quot;1&quot;)+new String(&quot;2&quot;);str1.intern();String str2 = &quot;12&quot;;System.out.println(str1==str2);Output:false 我们看到，上面两个演示，唯一的区别在于intern()方法执行的顺序不同，得到的结果也不同，这是为什么呢？我们来逐个分析 演示一 先不考虑str1的创建到底创建了几个对象，有一点很明确，此时常量池中没有”12”，str1指向堆中”12”实例 创建str2后，常量池中存在”12”实例，并且str2指向该实例 此时由于常量池中已经存在”12”，因此什么也不做，直接返回常量池中该实例的引用 此时str1指向堆中，str2指向常量池中，因此返回false 演示二 这条语句和演示一一样，此时常量池中没有”12”，str1指向堆中实例 这里很关键，调用instern()时，发现常量池中没有”12”，这时候做法和JDK1.7之前不同：它将堆中”12”的引用放到常量池中(不是在常量池中创建一个实例了)。 由于常量池中已经存在”12”(确切的说是存在指向”12”的引用)，所以直接返回该引用。 通过第三步可以发现，此时str1和str2实际上指向同一个对象，即位于堆中的”12”实例。 总结：在JDK1.7之后调用instern()方法，会先检查常量池中是否存在该实例(调用者的实例)。如果存在，那么直接返回对常量池中该实例的引用；否则，而是生成一个指向堆中该对象的引用在常量池中。 总结 jdk1.7之前，如果常量池中存在”12”字符串，则返回常量池中”12”字符串的引用；否则，就将”12”字符串添加到常量池，并返回常量池中”12”字符串的引用。 jdk1.7及之后版本，如果常量池中存在”12”字符串，则返回常量池中”12”字符串的引用(如果常量池中存的是”12”字符串的引用，则返回该引用)。否则，就将Java堆中”12”字符串的引用添加到常量中，并返回该引用。 参考文章：java String的intern方法java.lang.String中intern方法的作用]]></content>
+    <content type="text"><![CDATA[最近又重新回顾了一下String的源码。对于其中的interrn()方法还是有点疑惑，因此特意上网再次查了一番，在这里做一下记录方便日后回顾。下面主要介绍一下String.intern()方法。这个方法还是非常有意思的，我们来看一看 到底有几个对象我们来看下面几条语句 123456789101. String str1=new String(&quot;Think In Java&quot;);=====================2. String str2=&quot;我爱学习&quot;;=====================3. String str3=&quot;a&quot;+&quot;b&quot;+&quot;c&quot;+&quot;d&quot;;=====================4. String str4=new String(&quot;a&quot;)+&quot;b&quot;; 你知道这些语句到底创建了几个对象么？我们来分析一下 String str1=new String(“Think In Java”);分情况而定： 如果常量池中没有”Think In Java”，那么会创建两个对象，一个位于常量池，一个位于堆中；并且str1指向堆中的实例。此时创建了两个对象 如果常量池已经存在了该字符串，那么只在堆中创建一个实例，str1指向堆中。此时创建了一个对象 String str2=”我爱学习”;一个对象，当使用””形式创建String实例时，会在字符串常量池中添加该实例，并且str2指向常量池。 String str3=”a”+”b”+”c”+”d”;一个对象。赋值符号右边的”a”、”b”、”c”、”d”、”e”都是常量。对于常量，编译时就直接存储它们的字面值而不是它们的引用，即在编译时就直接讲它们连接的结果提取出来变成了”abcde”。该语句在class文件中就相当于String s = “abcde”我们来看看字节码验证一下： 可以看到，常量池中只有一个字符串常量，那就是”abcde”。 String str4=new String(“a”)+”b”;一共创建了5个对象：其中”a”和”b”放在常量池中、还有一个”a”的实例在堆中、另外创建了一个StringBuilder对象，调用它的append()方法将字符串拼接起来，然后调用toString()方法生成一个新的字符串实例”ab”放在堆中，因此一共是5个对象。但是在JDK9之后情况不一样了(通过字节码发现的，此时没有创建StringBuilder实例，这里我也不清楚具体情况)。 关于intern()方法因为该方法在JDK1.7前后发生了变化，因此在本节我分不同版本的JDK进行介绍。 JDK1.7之前我们看下面两条语句 1234567String ps3 = new String(&quot;Something&quot;);String ps4 = ps3.intern();System.out.println(ps3==ps4);===============Output:false 我们来分析一下原因： 首先第一句分别在常量池和堆上创建了两个实例”Something”，并且ps3指向堆中实例 我们调用ps3.intern方法时，会这样做：首先检查常量池中是否有”Something”实例 如果有，那么直接返回常量池中该实例的引用 如果没有，则在常量池创建该实例，然后返回常量池中该实例的引用 在本例中，常量池中存在”Something”，因此，直接返回引用，此时ps4指向常量池中的”Something” 结论：在JDK1.7之前，调用intern方法时，会先检查常量池中是否存在该实例(调用者的实例)。如果存在，那么直接返回对常量池中该实例的引用；否则，现在常量池中创建该实例，然后再返回常量池中该实例的引用。 JDK1.7之后我们来看下面语句 1234567891011121314String str1 = new String(&quot;1&quot;)+new String(&quot;2&quot;);String str2 = &quot;12&quot;;str1.intern();System.out.println(str1==str2);Output:false==========================String str1 = new String(&quot;1&quot;)+new String(&quot;2&quot;);str1.intern();String str2 = &quot;12&quot;;System.out.println(str1==str2);Output:false 我们看到，上面两个演示，唯一的区别在于intern()方法执行的顺序不同，得到的结果也不同，这是为什么呢？我们来逐个分析 演示一 先不考虑str1的创建到底创建了几个对象，有一点很明确，此时常量池中没有”12”，str1指向堆中”12”实例 创建str2后，常量池中存在”12”实例，并且str2指向该实例 此时由于常量池中已经存在”12”，因此什么也不做，直接返回常量池中该实例的引用 此时str1指向堆中，str2指向常量池中，因此返回false 演示二 这条语句和演示一一样，此时常量池中没有”12”，str1指向堆中实例 这里很关键，调用instern()时，发现常量池中没有”12”，这时候做法和JDK1.7之前不同：它将堆中”12”的引用放到常量池中(不是在常量池中创建一个实例了)。 由于常量池中已经存在”12”(确切的说是存在指向”12”的引用)，所以直接返回该引用。 通过第三步可以发现，此时str1和str2实际上指向同一个对象，即位于堆中的”12”实例。 总结：在JDK1.7之后调用instern()方法，会先检查常量池中是否存在该实例(调用者的实例)。如果存在，那么直接返回对常量池中该实例的引用；否则，而是生成一个指向堆中该对象的引用在常量池中。 总结 jdk1.7之前，如果常量池中存在”12”字符串，则返回常量池中”12”字符串的引用；否则，就将”12”字符串添加到常量池，并返回常量池中”12”字符串的引用。 jdk1.7及之后版本，如果常量池中存在”12”字符串，则返回常量池中”12”字符串的引用(如果常量池中存的是”12”字符串的引用，则返回该引用)。否则，就将Java堆中”12”字符串的引用添加到常量中，并返回该引用。 参考文章：java String的intern方法java.lang.String中intern方法的作用]]></content>
       <categories>
         <category>JDK源码</category>
       </categories>
@@ -266,9 +266,9 @@
       </categories>
       <tags>
         <tag>读书笔记</tag>
+        <tag>TCP/IP</tag>
         <tag>网络安全</tag>
         <tag>DOS攻击</tag>
-        <tag>TCP/IP</tag>
       </tags>
   </entry>
   <entry>
@@ -1907,8 +1907,8 @@
         <category>JAVAWEB</category>
       </categories>
       <tags>
-        <tag>乱码</tag>
         <tag>Http协议</tag>
+        <tag>乱码</tag>
       </tags>
   </entry>
   <entry>
@@ -2011,8 +2011,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>前端</tag>
         <tag>BOM</tag>
+        <tag>前端</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
