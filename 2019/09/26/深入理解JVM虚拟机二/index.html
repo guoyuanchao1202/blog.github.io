@@ -65,7 +65,7 @@
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="前面说了JVM虚拟机的内存布局和自动内存管理机制，这次就着重记录一下Class文件的结构，毕竟JVM只是工具，而Class文件才是被执行的主体。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-30T10:22:46.718Z">
+<meta property="og:updated_time" content="2020-03-05T14:12:25.052Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入理解JVM虚拟机二">
 <meta name="twitter:description" content="前面说了JVM虚拟机的内存布局和自动内存管理机制，这次就着重记录一下Class文件的结构，毕竟JVM只是工具，而Class文件才是被执行的主体。">
@@ -298,7 +298,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-09-30 18:22:46" itemprop="dateModified" datetime="2019-09-30T18:22:46+08:00">2019-09-30</time>
+                <time title="修改时间：2020-03-05 22:12:25" itemprop="dateModified" datetime="2020-03-05T22:12:25+08:00">2020-03-05</time>
               </span>
             
           
@@ -368,7 +368,7 @@
 <h2 id="类索引、父类索引和索引接口集合"><a href="#类索引、父类索引和索引接口集合" class="headerlink" title="类索引、父类索引和索引接口集合"></a><font size="5">类索引、父类索引和索引接口集合</font></h2><p>紧接着访问标志之后</p>
 <ul>
 <li><font color="bllue"><b>类索引</b></font><br><font color="red">两个字节</font>，用于确定类的全限定名</li>
-<li><font color="bllue"><b>父类索引</b></font><br><font color="red">两个字节</font>，用于确定这个类的父类的全限定名，由于Java不允许多重继承，所以父类索引只有一个</li>
+<li><font color="bllue"><b>父类索引</b></font><br><font color="red">两个字节</font>，用于确定这个类的父类的全限定名，由于Java不允许多重继承，所以父类索引只有一个。如果没有显式的继承，那么此处父类字段为Object</li>
 <li><font color="bllue"><b>接口索引集合</b></font><ul>
 <li><font color="red">两个字节</font>，接口计数器。表示类实现的接口数</li>
 <li>每一组都是<font color="red">2个字节</font>，用于确定类实现了哪些接口。如果接口计数器为0，那么一组都没有。</li>
@@ -385,7 +385,7 @@
 <li><b>access_flags(访问标志)</b><br><font color="red">两个字节</font>，同类的访问标志一样，描述字段的信息(书P176)</li>
 <li><b>name_index(名称索引)</b><br><font color="red">两个字节</font>，对常量池的引用，代表字段的简单名称(不包括类名包名等…)</li>
 <li><b>descriptor_index(描述索引)</b><br><font color="red">两个字节</font>，对常量池的引用，字段的描述符(描述符含义表书P177)</li>
-<li><b>属性表集合</b><br>用于存储额外信息，字段可以有0至多项额外信息。例如一个常量字段，额外信息中就包含一项ConstantValue属性，其值指向常量值</li>
+<li><b>属性表集合</b><br>用于存储额外信息，字段可以有0至多项额外信息。例如一个final修饰的字段，额外信息中就可能(注意是可能！)包含一项ConstantValue属性，指向了该字段的值。</li>
 </ul>
 </li>
 </ul>
@@ -469,14 +469,15 @@
 <li><b>该局部变量在栈帧局部变量表中Slot位置，如果变量为64位，那么它占用的Slot为index和index+1。</b></li>
 </ul>
 </li>
-<li><p><font color="bllue"><b>ConstantValue属性</b></font><br><font color="blue">通知虚拟机自动为静态变量赋值。只有被static修饰的变量才可以使用这项属性。</font></p>
+<li><p><font color="bllue"><b>ConstantValue属性</b></font><br><font color="blue">通知虚拟机自动为静态变量赋值。只有被final修饰的变量并且满足一定的条件才可以使用这项属性。</font></p>
 <ul>
 <li>对于实例变量，在实例构造器(&lt; init&gt;)方法中进行赋值</li>
-<li>对于类变量，可以在类构造器(&lt; clinit&gt;)中进行赋值，也可以使用ConstantValue属性进行赋值。<ul>
-<li>如果同时使用了final和static修饰、并且该变量数据类型为基本类型或String，就生成ConstantValue属性进行初始化</li>
+<li>对于类变量(静态变量)，可以在类构造器(&lt; clinit&gt;)中进行赋值，也可以使用ConstantValue属性进行赋值。<ul>
+<li>如果同时也使用了final修饰、该变量数据类型为基本类型或String并且在定义时赋值，就生成ConstantValue属性。在编译期为该变量赋值</li>
 <li>否则，在类构造器中进行赋值</li>
 </ul>
 </li>
+<li>对于final修饰的变量，该变量数据类型为基本类型或String并且在定义时赋值，就生成ConstantValue属性。在编译期为该变量赋值。</li>
 </ul>
 </li>
 <li><p><font color="bllue"><b>Signature属性</b></font><br>可以用在类/接口、方法表、字段表上。在Java中，任何类、接口、初始化方法或成员如果使用了泛型，则该属性会记录泛型的类型(在Java的语法糖中会详细说到)。</p>
@@ -486,7 +487,7 @@
 </ul>
 </li>
 </ul>
-<p>可以出现在类、字段表和方法表结构的属性表中，可选属性。在Java中的泛型采用的是擦除机制，在Code属性中，泛型信息编译的(类型变量，参数化类型)之后都统统被擦除掉。好处是实现简单、运行期节省一些类型所占的空间。但坏处是无法将泛型类型和用户定义的普通类型同等对待。例如运行期反射无法获取到反省信息。<br>该属性就是为了弥补这个缺陷设计，<font color="bllue">Java反射API能够获取泛型类型，最终数据来源就是这个属性</font>。</p>
+<p>可以出现在类、字段表和方法表结构的属性表中，可选属性。在Java中的泛型采用的是擦除机制，在Code属性中，泛型信息编译的(类型变量，参数化类型)之后都统统被擦除掉。好处是实现简单、运行期节省一些类型所占的空间。但坏处是无法将泛型类型和用户定义的普通类型同等对待。例如运行期反射无法获取到泛型信息。<br>该属性就是为了弥补这个缺陷设计，<font color="bllue">Java反射API能够获取泛型类型，最终数据来源就是这个属性</font>。</p>
 <hr>
 属性表还有很多其他属性，就不多记录了。Class文件结构就记录到这里。
 
