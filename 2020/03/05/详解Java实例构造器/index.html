@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="说到构造方法，学习Java的人应该都使用过，通过构造方法我们能得到一个类的实例。但是你真的了解构造方法么？下面我将对构造方法进行一个详细全面的介绍。">
+<meta name="keywords" content="Java基础,构造方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详解Java实例构造器">
+<meta property="og:url" content="https://HoA-W.github.io/2020/03/05/详解Java实例构造器/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="说到构造方法，学习Java的人应该都使用过，通过构造方法我们能得到一个类的实例。但是你真的了解构造方法么？下面我将对构造方法进行一个详细全面的介绍。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-03-05T15:46:41.973Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="详解Java实例构造器">
+<meta name="twitter:description" content="说到构造方法，学习Java的人应该都使用过，通过构造方法我们能得到一个类的实例。但是你真的了解构造方法么？下面我将对构造方法进行一个详细全面的介绍。">
+  <link rel="canonical" href="https://HoA-W.github.io/2020/03/05/详解Java实例构造器/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>详解Java实例构造器 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/03/05/详解Java实例构造器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">详解Java实例构造器
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-05 22:38:17 / 修改时间：23:46:41" itemprop="dateCreated datePublished" datetime="2020-03-05T22:38:17+08:00">2020-03-05</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java编程思想/" itemprop="url" rel="index"><span itemprop="name">Java编程思想</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>说到构造方法，学习Java的人应该都使用过，通过构造方法我们能得到一个类的实例。但是你真的了解构造方法么？下面我将对构造方法进行一个详细全面的介绍。</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="构造方法的使用"><a href="#构造方法的使用" class="headerlink" title="构造方法的使用"></a>构造方法的使用</h1><p>在Java中，每个类都必须有构造方法，如果你没有写构造方法，那么编译器会自动添加一个空参数构造方法。但是如果写了构造方法，那么编译器不会自动添加空参构造方法。</p>
+
+<p>在调用子类构造方法时，如果没有显式的在第一行使用super(...)调用父类构造方法，那么会自动调用父类的空参构造方法。因此我们在编写Java类时，一定要手动写一个空参构造方法(哪怕该方法什么都不执行)。如果不这样做，一旦有类继承了该类，那么子类执行构造方法时有可能会调用父类空参构造方法，此时会报错。</p>
+
+<hr>
+
+<h2 id="在构造方法中调用构造方法"><a href="#在构造方法中调用构造方法" class="headerlink" title="在构造方法中调用构造方法"></a><font size="5">在构造方法中调用构造方法</font></h2><ol>
+<li><p><font color="red"><b>调用其他构造器</b></font><br>我们可以在一个构造方法中调用该类的其他构造方法，使用this(…)进行调用，并且该this()语句必须是第一条语句，否则编译器会报错。</p>
+</li>
+<li><p><font color="red"><b>调用父类构造器</b></font><br>前面说过，如果没有显式调用，那么子类构造方法可以自动调用父类的无参构造方法，其实我们也可以使用super(…)显式的调用父类的构造方法。同样的，该语句必须是第一条语句，否则会报错。</p>
+</li>
+<li><p><font color="red"><b>总结</b></font><br>不知道你发现没有，this(…)和super(….)都必须是构造器中的第一行语句。那么这就意味着：如果你要调用该类的其他构造方法，那么就不能显式的调用父类的构造方法，反之亦然。即this(…)和super(…)只能二选一。</p>
+</li>
+<li><p><font color="red"><b>疑问</b></font><br>前面说过，在子类构造方法中如果不显式调用，则会默认调用父类的无参数构造方法。那么我们如果在构造方法中调用了子类其他构造方法，那么此时还会调用父类的无参构造方法么？如果会，两者谁先被调用呢？我们来演示一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">class father&#123;</span><br><span class="line">    father() &#123;</span><br><span class="line">        System.out.println(&quot;father&apos;s constructor()&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class Son extends father&#123;</span><br><span class="line">    int x;</span><br><span class="line"></span><br><span class="line">    Son() &#123;</span><br><span class="line">        this(1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Son(int x) &#123;</span><br><span class="line">        System.out.println(&quot;Son&apos;s constructor&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Son son = new Son();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">=====================</span><br><span class="line">Output:</span><br><span class="line">father&apos;s constructor()</span><br><span class="line">Son&apos;s constructor</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>通过实验可以发现，此时仍会调用父类无参构造方法，并且先于this(…)执行。即：<font color="red"><b>子类构造器在执行的时候一定会最先执行父类的构造方法，如果在子类构造方法中使用了this(…)调用子类的其他构造方法，那么就不能使用super(…)，只能自动地调用父类无参构造方法。</b></font></p>
+<hr>
+
+<h1 id="构造方法的作用"><a href="#构造方法的作用" class="headerlink" title="构造方法的作用"></a>构造方法的作用</h1><h2 id="构造方法执行过程"><a href="#构造方法执行过程" class="headerlink" title="构造方法执行过程"></a><font size="5">构造方法执行过程</font></h2><p>看到这里你可能会觉得奇怪，构造方法不就是创建实例的么？还能有什么作用？如果你这样认为，那就大错特错了。让我们接着往下看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">还是上面的例子，我们创建一个对象</span><br><span class="line">Son son = new Son(1);</span><br><span class="line"></span><br><span class="line">=================</span><br><span class="line">查看编译后的字节码文件</span><br><span class="line">0: new           #6      // class jvmtest/Son</span><br><span class="line">3: dup</span><br><span class="line">4: iconst_1</span><br><span class="line">5: invokespecial #1      // Method &quot;&lt;init&gt;&quot;:(I)V</span><br><span class="line">8: astore_1</span><br></pre></td></tr></table></figure>
+
+<p>以上5条指令创建了一个Son实例，来分析一下这5条指令</p>
+<ol>
+<li>通过new指令可以创建出一个空对象(这里的空对象是指实例数据为空，不是null)，该对象除了对象头以外都是初始化值。(参见我的博客<a href="http://www.bytes.xin/2019/09/24/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%80/" target="_blank" rel="noopener">深入理解JVM虚拟机一</a>) 。此时，创建出来的空对象位于堆中，栈顶保存的是该空对象的引用。</li>
+<li>dup指令复制栈顶内容并压会栈顶，那么此时栈顶和次栈顶都是空对象的引用。</li>
+<li>iconst_1指令将int型常量1压倒栈顶</li>
+<li>此时执行&lt; init&gt;方法，到这里才开始执行构造方法。通过查看元数据得知，该方法需要两个参数：this(隐式传入)和int型变量；因此从栈顶弹出两个值执行构造方法。</li>
+<li>构造方法执行完毕后，才创建出我们想要创建的对象，此时栈顶元素还是对象的引用。</li>
+<li>astore_1指令将栈顶的引用存入局部变量表，到此为止。</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><font size="5">总结</font></h2><p>通过上述构造方法的执行过程，可以发现：<font color="red"><b>构造方法的作用仅仅是初始化对象，不负责创建对象，new关键字用来创建对象。并且构造方法只能在new表达式(或其他构造方法)中被调用，这保证了对象的创建和初始化是一起的不能被分开。并且调用构造方法时会自动传入this参数。</b></font></p>
+<hr>
+
+<h1 id="构造方法是静态方法么"><a href="#构造方法是静态方法么" class="headerlink" title="构造方法是静态方法么"></a>构造方法是静态方法么</h1><h2 id="静态方法"><a href="#静态方法" class="headerlink" title="静态方法"></a><font size="5">静态方法</font></h2><p>我们先解释一下什么是静态方法，静态方法有哪些特征</p>
+<ol>
+<li>被static修饰的方法</li>
+<li>静态方法属于类，不属于对象，因此不能被重写</li>
+<li>静态方法中没有this隐式参数。这很好理解，因为静态方法不和对象绑定</li>
+<li>因为不会产生多态，所以静态方法在类加载时就被解析，属于静态绑定。</li>
+<li>调用静态方法时使用invokestatic指令</li>
+</ol>
+<p>对于静态方法的特点大致就这么多，和静态方法相对的就是实例方法，下面来介绍一下实例方法。</p>
+<h2 id="实例方法"><a href="#实例方法" class="headerlink" title="实例方法"></a><font size="5">实例方法</font></h2><ol>
+<li>实例方法分为两种：虚方法和非虚方法</li>
+<li>对于final或者private修饰的方法(非虚方法)，无法被重写进而不会产生多态，因此在类加载时被解析，属于静态绑定</li>
+<li>对于虚方法，可能会产生多态，一般需要等到运行时根据调用者的实际类型来选择调用哪个版本的方法，属于运行时绑定</li>
+<li>调用虚方法时使用invokevirtual指令</li>
+<li>调用实例构造器、显式父类实例构造器(super)、final方法和private方法时使用invokespecial指令</li>
+<li>实例方法调用时都会隐式添加this参数</li>
+</ol>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a><font size="5">结论</font></h2><p>实例构造器无法被重写不参与多态，因而可以是静态绑定，从这种意义上可以称实例构造器是”静态的“，但并不能说实例构造器是一个静态方法。前面对静态方法和实例方法的介绍可以得出结论：实例构造器不是静态方法！</p>
+<hr>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>参考书籍：《深入理解JVM虚拟机》<br>参考文章：<a href="https://www.iteye.com/blog/rednaxelafx-652719" target="_blank" rel="noopener">构造方法是静态方法么</a></p>
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Java基础/" rel="tag"><i class="fa fa-tag"></i>Java基础</a>
+            
+              <a href="/tags/构造方法/" rel="tag"><i class="fa fa-tag"></i>构造方法</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/03/05/详解Java的直接引用与符号引用/" rel="next" title="详解Java的直接引用与符号引用">
+                  <i class="fa fa-chevron-left"></i> 详解Java的直接引用与符号引用
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#构造方法的使用"><span class="nav-number">1.</span> <span class="nav-text">构造方法的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#在构造方法中调用构造方法"><span class="nav-number">1.1.</span> <span class="nav-text">在构造方法中调用构造方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构造方法的作用"><span class="nav-number">2.</span> <span class="nav-text">构造方法的作用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#构造方法执行过程"><span class="nav-number">2.1.</span> <span class="nav-text">构造方法执行过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">2.2.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构造方法是静态方法么"><span class="nav-number">3.</span> <span class="nav-text">构造方法是静态方法么</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#静态方法"><span class="nav-number">3.1.</span> <span class="nav-text">静态方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例方法"><span class="nav-number">3.2.</span> <span class="nav-text">实例方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">3.3.</span> <span class="nav-text">结论</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">174</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">145</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
