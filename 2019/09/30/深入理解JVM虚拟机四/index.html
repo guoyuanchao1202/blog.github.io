@@ -67,7 +67,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://hoa-w.github.io/2019/09/30/深入理解JVM虚拟机四/1.png">
 <meta property="og:image" content="https://hoa-w.github.io/2019/09/30/深入理解JVM虚拟机四/2.png">
-<meta property="og:updated_time" content="2019-09-30T09:36:04.166Z">
+<meta property="og:updated_time" content="2020-03-07T01:34:27.079Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入理解JVM虚拟机四">
 <meta name="twitter:description" content="这一节主要介绍一下虚拟机是怎么执行Class文件的字节码以及《深入理解JVM虚拟机》后面一些知识，因为后面很多都不是很理解，所以结合在一起记录，如果以后再次翻看弄懂了一些，就再另外记录吧。">
@@ -266,7 +266,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="买太平湖底陈年水墨">
-      <meta itemprop="description" content="欲买桂花同载酒，终不似，少年游...">
+      <meta itemprop="description" content="前路坎坷，人得自个儿成全自个儿">
       <meta itemprop="image" content="/images/pic.jpg">
     </span>
 
@@ -290,11 +290,19 @@
                 
               
 
-              <time title="创建时间：2019-09-30 11:03:29 / 修改时间：17:36:04" itemprop="dateCreated datePublished" datetime="2019-09-30T11:03:29+08:00">2019-09-30</time>
+              <time title="创建时间：2019-09-30 11:03:29" itemprop="dateCreated datePublished" datetime="2019-09-30T11:03:29+08:00">2019-09-30</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-07 09:34:27" itemprop="dateModified" datetime="2020-03-07T09:34:27+08:00">2020-03-07</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -342,7 +350,7 @@
 </ul>
 <p>另外前面说到过，在编译阶段，局部变量表和操作数栈的大小都已经确定并写在Code属性中，因此<font color="bllue">一个栈桢分配多少内存不会受到运行时数据的影响。</font><br>对于执行引擎来说，只有线程栈顶的栈帧才是有效的，称为当前栈帧，与栈帧相关联的方法称为当前方法。<br>虚拟机使用<font color="bllue">局部变量表完成参数值到参数列表的传递过程</font>，如果是一个实例方法，那局部变量表第0位索引的Slot默认用于传递方法所属对象实例的引用，在方法中可以通过this关键字来访问这个隐含的参数。其余参数按照参数表顺序排列，占用从1开始的Slot。参数表分配完毕后再根据方法体内定义变量的顺序和作用域分配其余Slot。<br><font color="blue">局部变量表的Slot是可以重用的，如果当前字节码PC计数器已经超过了方法体中的某个变量的作用域，那么该变量对应的Slot就可以交给其他变量使用。</font></p>
 <ol>
-<li>对于类变量(sttaic)，会有两次赋值<ul>
+<li>对于类变量(static)，会有两次赋值<ul>
 <li><b>一次是在准备阶段赋初始值</b></li>
 <li><b>一次是在初始化阶段赋予程序设置的值</b><br>因此<font color="red">初始化阶段不为类类变量赋值也可以直接使用。</font></li>
 </ul>
@@ -546,14 +554,14 @@
       src="/images/pic.jpg"
       alt="买太平湖底陈年水墨">
   <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
-  <div class="site-description" itemprop="description">欲买桂花同载酒，终不似，少年游...</div>
+  <div class="site-description" itemprop="description">前路坎坷，人得自个儿成全自个儿</div>
 </div>
   <nav class="site-state motion-element">
       <div class="site-state-item site-state-posts">
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">174</span>
+          <span class="site-state-item-count">175</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -579,7 +587,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">145</span>
+        <span class="site-state-item-count">146</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
