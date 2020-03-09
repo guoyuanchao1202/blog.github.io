@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Web基础之Request获取Http请求消息]]></title>
+    <url>%2F2020%2F03%2F09%2FWeb%E5%9F%BA%E7%A1%80%E4%B9%8BRequest%E8%8E%B7%E5%8F%96Http%E8%AF%B7%E6%B1%82%E6%B6%88%E6%81%AF%2F</url>
+    <content type="text"><![CDATA[本文主要介绍Http协议的请求消息格式，以及如何通过Request对象获取Http请求消息的内容。 Http 请求消息格式如下所示是一个简单地Http请求消息，以这个请求消息为例对Http请求消息格式进行介绍 123456789101112131415161718192021请求头POST /login.html HTTP/1.1===========================请求行Host: localhostUser-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2Accept-Encoding: gzip, deflateReferer: http://localhost/login.htmlConnection: keep-aliveUpgrade-Insecure-Requests: 1================================请求空行=======================请求体username=zhangsan 请求行请求方式 请求url 请求协议/版本GET /login.html HTTP/1.1 HTTP协议有7中请求方式，常用的有2种 GET：请求参数在请求行中，在url后，并且请求的url长度有限制的，不太安全。 POST：请求参数在请求体中，请求的url长度没有限制的，相对安全。 请求头：客户端浏览器告诉服务器一些信息请求头名称: 请求头值(键值对形式) 常见的请求头有： User-Agent：浏览器告诉服务器，我访问你使用的浏览器版本信息。可以在服务器端获取该头的信息，解决浏览器的兼容性问题 Referer：http:/ /localhost/login.html。告诉服务器，我(当前请求)从哪里来？能够防盗链和进行统计工作。 请求空行空行，就是用于分割POST请求的请求头，和请求体的。 请求体(正文)封装POST请求消息的请求参数的，GET方式请求体为空 Request对象 request对象和response对象的原理它们都是由服务器创建的，我们只是使用它。request对象是来获取请求消息，response对象是来设置响应消息 request对象继承体系结构： ServletRequest – 接口 | 继承 HttpServletRequest – 接口 | 实现 org.apache.catalina.connector.RequestFacade 类(tomcat) request功能 获取请求消息数据 获取请求行数据 获取请求方式:String getMethod() 获取虚拟目录(常用):String getContextPath() 获取Servlet路径:String getServletPath() 获取get方式请求参数String getQueryString() 获取请求URI(常用):String getRequestURI()StringBuffer getRequestURL() 获取协议及版本:String getProtocol() 获取客户机的IP地址:String getRemoteAddr() 获取请求头数据String getHeader(String name)(常用):通过请求头的名称获取请求头的值Enumeration getHeaderNames():获取所有的请求头名称 获取请求体数据: 获取流对象 BufferedReader getReader()：获取字符输入流，只能操作字符数据 ServletInputStream getInputStream()：获取字节输入流，可以操作所有类型数据 再从流对象中拿数据 其他功能 获取请求参数通用方式：不论get还是post请求方式都可以使用下列方法来获取请求参数 String getParameter(String name):根据参数名称获取参数值 String[] getParameterValues(String name):根据参数名称获取参数值的数组 Enumeration getParameterNames():获取所有请求的参数名称 Map&lt;String,String[]&gt; getParameterMap():获取所有参数的map集合 中文乱码问题get方式：tomcat 8 已经将get方式乱码问题解决了post方式：会乱码。获取参数前，设置request编码request.setCharacterEncoding(“utf-8”);]]></content>
+      <categories>
+        <category>JAVAWEB</category>
+      </categories>
+      <tags>
+        <tag>Request</tag>
+        <tag>Http请求消息格式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Web基础之Druid数据库连接池]]></title>
     <url>%2F2020%2F03%2F09%2FWeb%E5%9F%BA%E7%A1%80%E4%B9%8BDruid%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0%2F</url>
     <content type="text"><![CDATA[最近在学习Java Web基础知识，为了防止遗忘，因此准备边学习边记录，方便后期回顾，今天就来介绍一款国产的性能优良的数据库连接池技术–Druid(本文基于MySQL5.5和Tomcat 8.5.31版本，在IDEA IDE下)。本文仅为自己复习用，其中依赖jar包具体名称均未说明。 JDBC我们通过JDBC可以用Java操作数据库，那么什么时JDBC呢？JDBC–Java DataBase Conectivity，即Java 数据库连接。这是一套由Sun公司定义的接口集，各个数据库厂商实现该接口，我们就可以通过这些接口来操作数据库。下面我以MySQL为例，介绍一下如何通过JDBC来操作MySQL。 基本流程我们有以下步骤 导入驱动jar包(很重要)复制mysql-connector-java-5.1.37-bin.jar到WEB-INF/libs目录下，右键–&gt;Add As Library 注册驱动 获取数据库连接对象 Connection 代码演示 12345678910111213141516//1. 导入驱动jar包//2.注册驱动Class.forName(&quot;com.mysql.jdbc.Driver&quot;);//3.获取数据库连接对象Connection conn = DriverManager.getConnection(&quot;jdbc:mysql://localhost:3306/db3&quot;, [数据库用户名], [数据库密码]);//4.定义sql语句String sql = &quot;update account set balance = 500 where id = 1&quot;;//5.获取执行sql的对象 StatementStatement stmt = conn.createStatement();//6.执行sqlint count = stmt.executeUpdate(sql);//7.处理结果System.out.println(count);//8.释放资源stmt.close();conn.close(); 类介绍下面我们来介绍一下JDBC中几个常用的类 Connection(数据库连接对象) 获取执行sql的对象 Statement createStatement() PreparedStatement prepareStatement(String sql) 管理事务 开启事务：setAutoCommit(boolean autoCommit) ：调用该方法设置参数为false，即开启事务 提交事务：commit() 回滚事务：rollback() Statement(执行sql的对象) boolean execute(String sql)：可以执行任意的sql(了解，一般不用) int executeUpdate(String sql)：执行DML（insert、update、delete）语句、DDL(create，alter、drop)语句 返回值：影响的行数，可以通过这个影响的行数判断DML语句是否执行成功 返回值&gt;0的则执行成功，反之，则失败。 ResultSet executeQuery(String sql)：执行DQL（select)语句，返回一个结果集对象 ResultSet(结果集对象,封装查询结果) boolean next()(初始时游标指向第一行数据的前一行)游标向下移动一行，判断当前行是否是最后一行末尾(是否有数据)，如果是，则返回false，如果不是则返回true getXxx(int colIndex/String colName)获取数据 PreparedStatement：执行sql的对象(用于解决SQL注入问题) SQL注入问题：在拼接sql时，有一些sql的特殊关键字参与字符串的拼接。会造成安全性问题 输入用户随便，输入密码：a’ or ‘a’ = ‘a sql：select * from user where username = ‘fhdsjkf’ and password = ‘a’ or ‘a’ = ‘a’ 解决sql注入问题：使用PreparedStatement对象来解决 预编译的SQL：参数使用?作为占位符 获取执行sql语句的对象 PreparedStatement Connection.prepareStatement(String sql) 使用setXxx(index，value)给？赋值： index:？的位置编号 从1 开始 value:？的值 执行sql，接受返回结果，不需要传递sql语句。 注意：后期都会使用PreparedStatement来完成增删改查的所有操作，它可以可以防止SQL注入并且效率更高 数据库连接池在使用JBDC创建数据库连接对象Connection时，我们每次使用过后都会关掉连接，在下一次执行SQL时再重新创建，这样会消耗时间，因此我们使用数据库连接池技术：一个数据库连接池中包含多个数据库连接，当查询使用完连接后并不会关掉该连接，而是将其归还给数据库连接池，以便复用该连接。我们这里主要介绍Druid数据库连接池。 Druid连接池 导入jar包druid-1.0.9.jar，和前面JDBC一样。 定义配置文件：properties形式的，可以叫任意名称(假设就叫druid.properties)，可以放在任意目录下 加载配置文件：Properties 123Properties pro = new Properties();InputStream is = 类名.class.getClassLoader().getResourceAsStream(&quot;druid.properties&quot;);pro.load(is); 获取数据库连接池对象：通过工厂来来获取 DruidDataSourceFactory 1DataSource ds = DruidDataSourceFactory.createDataSource(pro); 获取连接：getConnection 1Connection conn = ds.getConnection(); JDBCTemplate我们使用数据库连接池后，能够避免频繁的创建数据库连接，但是我们在执行SQL语句时，还是比较麻烦：要获取连接对象，获取执行对象，要定义SQL，要处理结果(将查询到的语句封装成对象)，要释放资源…这些都很麻烦并且是体力活。因此，Spring框架对JDBC的简单封装。提供了一个JDBCTemplate对象简化JDBC的开发 使用步骤 导入jar包，和前面的操作一样 创建JdbcTemplate对象。依赖于数据源DataSource JdbcTemplate template = new JdbcTemplate(ds); 调用JdbcTemplate的方法来完成CRUD的操作 update():执行DML语句。增、删、改语句 queryForMap():查询结果将结果集封装为map集合，将列名作为key，将值作为value 将这条记录封装为一个map集合，该方法最多只能返回一条记录并将该记录封装为Map集合。 queryForList():查询结果将结果集封装为list集合，将每一条记录封装为一个Map集合，再将Map集合装载到List集合中 query():查询结果，将结果封装为JavaBean对象 query的参数：RowMapper 一般我们使用BeanPropertyRowMapper实现类。可以完成数据到JavaBean的自动封装 new BeanPropertyRowMapper&lt;类型&gt;(类型.class) queryForObject：查询结果，将结果封装为对象 一般用于聚合函数的查询 JavaBean对象 JavaBean：标准的Java类 要求： 类必须被public修饰 必须提供空参的构造器 成员变量必须使用private修饰 提供公共setter和getter方法 功能：封装数据 同样的，使用BeanUtils工具类需要导入依赖jar包 我们使用BeanUtils工具类来将获取的数据封装为一个JavaBean对象 我们通过request.getParameterMap()方法能够获取到记录返回一个Map&lt;String,String[])集合 我们使用BeanUtils的populate(Object obj , Map map)方法，将map集合的键值对信息，封装到对应的JavaBean对象中]]></content>
@@ -340,9 +352,9 @@
       </categories>
       <tags>
         <tag>读书笔记</tag>
+        <tag>TCP/IP</tag>
         <tag>网络安全</tag>
         <tag>DOS攻击</tag>
-        <tag>TCP/IP</tag>
       </tags>
   </entry>
   <entry>
@@ -2085,8 +2097,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>BOM</tag>
         <tag>前端</tag>
+        <tag>BOM</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
@@ -2139,19 +2151,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[青蛙跳台阶]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
-      <categories>
-        <category>算法之美</category>
-      </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>动态规划</tag>
-        <tag>斐波那契数列</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[字符流和字节流]]></title>
     <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
     <content type="text"><![CDATA[深入理解字符流编码 首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入 字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码 写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
@@ -2176,6 +2175,19 @@
         <tag>递归</tag>
         <tag>迭代法</tag>
         <tag>二叉树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[青蛙跳台阶]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>动态规划</tag>
+        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>
