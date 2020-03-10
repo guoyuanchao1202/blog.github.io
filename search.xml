@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Web基础之会话技术]]></title>
+    <url>%2F2020%2F03%2F10%2FWeb%E5%9F%BA%E7%A1%80%E4%B9%8B%E4%BC%9A%E8%AF%9D%E6%8A%80%E6%9C%AF%2F</url>
+    <content type="text"><![CDATA[会话：一次会话中包含多次请求和响应。在一次会话中，浏览器第一次给服务器资源发送请求，会话建立，直到有一方断开为止会话技术能够在一次会话的多次请求响应间共享数据 会话技术的实现方式 客户端会话技术：Cookie 服务器端会话技术：Session 客户端会话技术–CookieCookie使用步骤 创建Cookie对象，绑定数据:new Cookie(String name, String value) 发送Cookie对象::response.addCookie(Cookie cookie) 获取Cookie，拿到数据:Cookie[] request.getCookies() Cookie实现原理基于响应头set-cookie和请求头cookie实现 客户端和服务器第一次请求响应：服务器创建Cookie对象，并在set-cookie响应头将Cookie响应给浏览器 浏览器接收到服务器带有set-cookie头的响应后，将Cookie存储在浏览器中，当下一次浏览器向服务器发送请求时，会在请求头cookie头中附带这cookie 这样就实现了多次请求响应之间的数据共享 Cookie的细节 一次可以发送多个cookie：在服务器端创建多个Cookie对象，多次调用response的addCookie方法将多个Cookie对象发送，但是如果两个Cookie的值相同，那么后加入的Cookie值会覆盖前面的值 cookie在浏览器中保存时间 默认情况下，当浏览器关闭后，Cookie数据被销毁(服务器关闭，Cookie仍然存在，因为Cookie存储在浏览器中) 持久化存储：调用Cookie对象的setMaxAge(int seconds)方法实现 参数取值情况： 正数：将Cookie数据写到硬盘的文件中。持久化存储。并指定cookie存活时间，时间到后，cookie文件自动失效 负数：默认值，即浏览器关闭后Cookie被销毁 零：删除cookie信息 cookie存储中文问题:在tomcat 8 之前 cookie中不能直接存储中文数据。但是在tomcat8之后，支持直接存储中文，但是对于一些特殊字符(如空格等)，仍不能直接存储，需要借助URL编码才行(具体步骤下一篇文章说到) cookie的共享 在一个tomcat服务器中部署了多个项目，在默认情况下，这些项目之间的Cookie是不能共享的但是可以通过Cookie对象的setPath(String path)方法来设置Cookie的共享范围 默认情况下，设置的是当前项目的虚拟目录 如果要在多个项目之间共享，则可以将path设置为"/"(“/”为服务器路径) 不同服务器之间Cookie的共享 setDomain(String path):如果设置一级域名相同，那么多个服务器之间cookie可以共享 例如：设置path为".baidu.com"，那么tieba.baidu.com和news.baidu.com两个不同的服务器之间可以共享数据，因为它们的一级域名是.baidu.com Cookie的特点和作用 特点 cookie存储数据在客户端浏览器 浏览器对于单个cookie 的大小有限制(4kb) 以及 对同一个域名下的总cookie数量也有限制(20个) Cookie存储的键值对都是String类型 作用 cookie一般用于存出少量的不太敏感的数据，这是因为Cookie的存储位置决定的，存储在客户端容易丢失和被篡改。 在不登录的情况下，完成服务器对客户端的身份识别 服务器端会话技术–SessionSession使用步骤 通过resquest获取Session对象：request.getSession() 调用Session对象的方法存储数据(和request请求转发方法一样) Object getAttribute(String name)：通过键获取值 void setAttribute(String name, Object value)：将数据存储进Session对象 void removeAttribute(String name)：通过键移除相应的键值对 Session实现原理Session的实现是依赖于Cookie的。 客户端第一次向服务器发送请求，服务器在服务器内部开辟一块内存空间，存放Session对象，并给该内存空间指定一个id 服务器在响应头set-cookie中设置JSESSIONID=id这个键值对发送给客户端 客户端接收到服务器的相应后，会将保存着Sessionid的Cookie对象保存在浏览器内存 当客户端下一次向服务器发送请求的时候，会带着Cookie一起(在请求头cookie中有JSESSIONID=id键值对) 服务器接收到请求后，得到JSESSIONID=id键值对的id后，会在内存中找到对应id的Session对象 这就是为什么说Session依赖于Cookie的原因以及多次请求响应之间共享数据的原理 Session细节 当客户端关闭后，服务器不关闭，两次获取session不是同一个：前面说到过，Session是依赖于Cookie的，Cookie在默认情况下当客户端浏览器关闭后是自动销毁的，因此Cookie中的键值对自然也就销毁了，所以两次获取的Session不是同一个，如果需要两次的Cookie是同一个 创建一个Cookie对象，设置cookie的键为JSESSIONID，值为session对象的id 设置cookie的存活时间 那么在cookie存活时间内，服务器通过cookie请求头拿到session的id都是一样的，这样通过id找到的Session对象自然也是同一个 客户端不关闭，服务器关闭后，两次获取的session不是同一个，因为服务器关闭后相应内存会被释放，Session自然也会被释放 但是一般我们需要获取到的Session对象是同一个，确保数据不丢失，tomcat会自动完成Session的钝化和活化 Session的钝化：在服务器正常关闭之前，将session对象序列化到硬盘上 Session的活化：在服务器启动后，将session文件转化为内存中的session对象。 Session被销毁 服务器关闭 session对象调用invalidate() 自杀 session默认失效时间 30分钟,可以tomcat服务器的web.xml配置文件中session-config设置所有项目的失效时间,也可以在项目的wen.xml配置文件单独配置项目的失效时间 Session的特点 用于一次会话的多次请求间共享数据，存储在服务器端 session可以存储任意类型，任意大小的数据]]></content>
+      <categories>
+        <category>JAVAWEB</category>
+      </categories>
+      <tags>
+        <tag>会话技术</tag>
+        <tag>Cookie</tag>
+        <tag>Session</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Web基础之Response发送Http响应消息]]></title>
     <url>%2F2020%2F03%2F10%2FWeb%E5%9F%BA%E7%A1%80%E4%B9%8BResponse%E5%8F%91%E9%80%81Http%E5%93%8D%E5%BA%94%E6%B6%88%E6%81%AF%2F</url>
     <content type="text"><![CDATA[在前面一节中，对Servlet的Requset如何获取Http请求消息进行了介绍。因为Http基于请求响应模型，那么这里就介绍一下Servlet的另一个对象–Response，该对象用于发送Http响应消息。 Http响应消息格式可以类比Http请求消息格式，Http的响应消息格式也分为四部分 响应行 响应头 响应空行 响应体 下面分别介绍一下这几部分 响应行响应行格式：协议/版本 响应状态码 状态码描述 协议/版本字段和请求消息格式一样 响应状态码(3位数字)：服务器告诉客户端浏览器本次请求和响应的一个状态。主要分为5类：1. 1xx：服务器就收客户端消息，但没有接受完成，等待一段时间后，发送1xx多状态码 2. 2xx：成功。代表：200 3. 3xx：重定向。代表：302(重定向)，304(访问缓存) 4. 4xx：客户端错误。(404：请求路径没有对应的资源；405：请求方式没有对象的doXXX方法) 5. 5xx：服务器端错误。代表：500(服务器内部出现异常) 响应头和请求头一样，响应头也是键值对的形式，这里主要介绍两种常见的响应头： Content-Type：服务器告诉客户端本次响应体数据格式以及编码格式 Content-disposition：服务器告诉客户端以什么格式打开响应体数据，该头可以设置两个值 in-line:默认值,在当前页面内打开 attachment;filename=xxx：以附件形式打开响应体。文件下载 响应空行和响应体响应空行用于分割，就是个空行，没有实际意义。而响应体则是服务器给客户端发送的数据，如html页面等。 Response对象Response对象方法该对象用于设置响应消息，下面介绍几种方法： 设置响应行 格式：HTTP/1.1 200 ok 设置状态码：setStatus(int sc) 设置响应头 setHeader(String name, String value) 设置响应体使用步骤如下： 获取输出流 字符输出流：PrintWriter getWriter() 字节输出流：ServletOutputStream getOutputStream() 使用输出流，将数据输出到客户端浏览器 但是要注意，因为tomcat默认使用iso8859-1编码，而浏览器默认使用操作系统的编码方式(GBK)，因此将中文数据输出到浏览器时会出现乱码情况。我们要再获取流之前，我们使用response.setContentType(“text/html;charset=utf-8”);设置流的编码，并通知服务器使用相同的格式解码。 重定向前面介绍Request对象时说过，该对象可以进行请求转发，并且也说过请求转发的特点，那么这里介绍一下Response对象的重定向功能以及和请求转发的区别。重定向是一种资源跳转的方式 代码实现 设置状态码为302response.setStatus(302); 设置响应头location response.setHeader(“location”,新的资源的路径); 简单的重定向方法response.sendRedirect(“新的资源的路径”); 重定向原理如图所示，重定向的原理和请求转发有所不同 重定向和请求转发的区别 重定向的特点:redirect 地址栏发生变化 重定向可以访问其他站点(服务器)的资源 重定向是两次请求。不能使用request对象来共享数据 请求转发的特点：forward 转发地址栏路径不变 转发只能访问当前服务器下的资源 转发是一次请求，可以使用request对象来共享数据 ServletContext对象前面在介绍Request对象时说过，通过Request的getServletContext()方法可以获取到该对象。那么该对象是什么呢？该对象代表整个web应用，可以和程序的容器(服务器)来通信。下面简单介绍一下该对象的功能： 获取MIME类型 MIME类型:在互联网通信过程中定义的一种文件数据类型格式： 大类型/小类型 text/html image/jpeg 获取：String getMimeType(String file) 域对象：共享数据由于ServletContext代表整个Web容器，并且随着Web的启动而创建，随着Web的停止而销毁，因此这里的共享数据和Request对象的共享数据不同。使用Request对象共享数据时，仅在一次请求周期内可以使用，而使用ServletContext对象共享的数据，在整个Web存活周期内，所有的资源都可以共享该数据。因此要谨慎使用。 setAttribute(String name,Object value) getAttribute(String name) removeAttribute(String name) 获取文件的真实(服务器)路径当我们要将服务器上的一个资源(比如说txt文件发送给浏览器时)发送给浏览器时，需要先将txt加载进内存。此时需要获取资源的真实路径用于创建流对象。我们使用String getRealPath(String path)方法获取资源的真实路径。 对于我们的IDEA项目，获取不同目录下的资源时，getRealPath方法传递的参数不同 web目录下资源访问String path = context.getRealPath(“/资源名称”); WEB-INF目录下的资源访问String path = context.getRealPath(“/WEB-INF/资源名称”); src目录下的资源访问String path = context.getRealPath(“/WEB-INF/classes/资源路径”); 总结对于Response对象的简单介绍到此为止，其实可以发现，该对象主要用和服务器向浏览器响应消息。除此之外还介绍了Response相关的重定向方法以及和请求转发的不同；最后简单地介绍了一下ServletContext对象的简单使用。]]></content>
@@ -1955,17 +1968,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[会话技术--Cookie&Session]]></title>
-    <url>%2F2019%2F09%2F08%2F%E4%BC%9A%E8%AF%9D%E6%8A%80%E6%9C%AF-Cookie-Session%2F</url>
-    <content type="text"><![CDATA[会话：一次会话中包含多次请求和响应。在一次会话中，浏览器第一次给服务器资源发送请求，会话建立，直到有一方断开为止会话技术能够在一次会话的多次请求响应间共享数据 会话技术的实现方式 客户端会话技术：Cookie 服务器端会话技术：Session 客户端会话技术–CookieCookie使用步骤 创建Cookie对象，绑定数据:new Cookie(String name, String value) 发送Cookie对象::response.addCookie(Cookie cookie) 获取Cookie，拿到数据:Cookie[] request.getCookies() Cookie实现原理基于响应头set-cookie和请求头cookie实现 客户端和服务器第一次请求响应：服务器创建Cookie对象，并在set-cookie响应头将Cookie响应给浏览器 浏览器接收到服务器带有set-cookie头的响应后，将Cookie存储在浏览器中，当下一次浏览器向服务器发送请求时，会在请求头cookie头中附带这cookie 这样就实现了多次请求响应之间的数据共享 Cookie的细节 一次可以发送多个cookie：在服务器端创建多个Cookie对象，多次调用response的addCookie方法将多个Cookie对象发送，但是如果两个Cookie的值相同，那么后加入的Cookie值会覆盖前面的值 cookie在浏览器中保存时间 默认情况下，当浏览器关闭后，Cookie数据被销毁(服务器关闭，Cookie仍然存在，因为Cookie存储在浏览器中) 持久化存储：调用Cookie对象的setMaxAge(int seconds)方法实现 参数取值情况： 正数：将Cookie数据写到硬盘的文件中。持久化存储。并指定cookie存活时间，时间到后，cookie文件自动失效 负数：默认值，即浏览器关闭后Cookie被销毁 零：删除cookie信息 cookie存储中文问题:在tomcat 8 之前 cookie中不能直接存储中文数据。但是在tomcat8之后，支持直接存储中文，但是对于一些特殊字符(如空格等)，仍不能直接存储，需要借助URL编码才行(具体步骤下一篇文章说到) cookie的共享 在一个tomcat服务器中部署了多个项目，在默认情况下，这些项目之间的Cookie是不能共享的但是可以通过Cookie对象的setPath(String path)方法来设置Cookie的共享范围 默认情况下，设置的是当前项目的虚拟目录 如果要在多个项目之间共享，则可以将path设置为"/"(“/”为服务器路径) 不同服务器之间Cookie的共享 setDomain(String path):如果设置一级域名相同，那么多个服务器之间cookie可以共享 例如：设置path为".baidu.com"，那么tieba.baidu.com和news.baidu.com两个不同的服务器之间可以共享数据，因为它们的一级域名是.baidu.com Cookie的特点和作用 特点 cookie存储数据在客户端浏览器 浏览器对于单个cookie 的大小有限制(4kb) 以及 对同一个域名下的总cookie数量也有限制(20个) Cookie存储的键值对都是String类型 作用 cookie一般用于存出少量的不太敏感的数据，这是因为Cookie的存储位置决定的，存储在客户端容易丢失和被篡改。 在不登录的情况下，完成服务器对客户端的身份识别 服务器端会话技术–SessionSession使用步骤 通过resquest获取Session对象：request.getSession() 调用Session对象的方法存储数据(和request请求转发方法一样) Object getAttribute(String name)：通过键获取值 void setAttribute(String name, Object value)：将数据存储进Session对象 void removeAttribute(String name)：通过键移除相应的键值对 Session实现原理Session的实现是依赖于Cookie的。 客户端第一次向服务器发送请求，服务器在服务器内部开辟一块内存空间，存放Session对象，并给该内存空间指定一个id 服务器在响应头set-cookie中设置JSESSIONID=id这个键值对发送给客户端 客户端接收到服务器的相应后，会将保存着Sessionid的Cookie对象保存在浏览器内存 当客户端下一次向服务器发送请求的时候，会带着Cookie一起(在请求头cookie中有JSESSIONID=id键值对) 服务器接收到请求后，得到JSESSIONID=id键值对的id后，会在内存中找到对应id的Session对象 这就是为什么说Session依赖于Cookie的原因以及多次请求响应之间共享数据的原理 Session细节 当客户端关闭后，服务器不关闭，两次获取session不是同一个：前面说到过，Session是依赖于Cookie的，Cookie在默认情况下当客户端浏览器关闭后是自动销毁的，因此Cookie中的键值对自然也就销毁了，所以两次获取的Session不是同一个，如果需要两次的Cookie是同一个 创建一个Cookie对象，设置cookie的键为JSESSIONID，值为session对象的id 设置cookie的存活时间 那么在cookie存活时间内，服务器通过cookie请求头拿到session的id都是一样的，这样通过id找到的Session对象自然也是同一个 客户端不关闭，服务器关闭后，两次获取的session不是同一个，因为服务器关闭后相应内存会被释放，Session自然也会被释放 但是一般我们需要获取到的Session对象是同一个，确保数据不丢失，tomcat会自动完成Session的钝化和活化 Session的钝化：在服务器正常关闭之前，将session对象序列化到硬盘上 Session的活化：在服务器启动后，将session文件转化为内存中的session对象。 Session被销毁 服务器关闭 session对象调用invalidate() 自杀 session默认失效时间 30分钟,可以tomcat服务器的web.xml配置文件中session-config设置所有项目的失效时间,也可以在项目的wen.xml配置文件单独配置项目的失效时间 Session的特点 用于一次会话的多次请求间共享数据，存储在服务器端 session可以存储任意类型，任意大小的数据]]></content>
-      <categories>
-        <category>JAVAWEB</category>
-      </categories>
-      <tags>
-        <tag>会话技术</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[服务器中的四种路径]]></title>
     <url>%2F2019%2F09%2F08%2F%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E8%B7%AF%E5%BE%84%2F</url>
     <content type="text"><![CDATA[在Web开发中，会很频繁的用到各种路径，路径又大致分为四种，分别是相对路径、绝对路径、虚拟路径、资源路径 # 相对路径 通过相对路径不能确定唯一资源 例如：./index.html ## 相对路径的使用规则 以"./"开头, 在使用时先确定当前资源和目标资源的之间的相对位置关系 如果两资源位于同一级目录：./+目标资源名称 ./可以不加，默认有./ 如果目标资源位于上一级目录：../+目标资源名称 如何确定当前资源和目标资源的关系 对于src目录下的资源，可以用request.getRequestURL()来得到该资源的位置src下的java资源的URI都是虚拟路径+资源名称无论该java文件位于src下的哪一级目录，只要在src目录里，都是这个形式。这里说的资源名称并不是实际的java类名，而是@WebServlet中的资源名称，服务器通过这个资源名称找到实际的类。 对于web目录下的资源，如果直接在web目录下，那么资源的URI就是虚拟路径+/文件名称如果在web目录下的其他目录，那么资源的URI就是虚拟路径+/目录名称+/文件名称，有几级目录写几级目录。 绝对路径通过绝对路径确定唯一资源例如：http://localhost/response/responseDemo2或者/response/responseDemo2协议名+ip地址+端口号+虚拟路径+文件资源 两种路径使用规则规则：判断要定义的路径是给谁用的，即判断请求将来从哪发出 给客户端浏览器使用 需要加虚拟目录(项目的访问路径,查看项目的xml配置文件) 例如：&lt;\a&gt;标签，&lt;\form&gt;，重定向等从浏览器发出，需要加虚拟路径 给服务器使用不需要加虚拟目录例如：请求转发就是服务器内部的资源跳转，不需要加虚拟路径，直接写资源名称就可以了 虚拟路径虚拟路径代表的是项目实际部署的位置，服务器通过虚拟路径能够映射到项目实际部署的位置通过查看项目的xml文件可以发现:&lt;\Context path=”虚拟路径” docBase=”资源在电脑上存储的位置” /&gt;这就是配置文件的内容，我们在浏览器输入的是Contextpath，也就是项目的虚拟路径，服务器就通过该虚拟目录映射到后面项目部署的真实目录 虚拟路径的好处 虚拟目录的名称通常要比物理目录的名称易记，因此更便于用户访问。 使用虚拟目录可以提高安全性，因为客户端并不知道文件在服务器上的实际物理位置，所以无法使用该信息来修改服务器中的目标文件。 使用虚拟目录可以更方便地移动网站中的目录，只需更改虚拟目录物理位置之间的映射，无需更改目录的URL。 使用虚拟目录可以发布多个目录下的内容，并可以单独控制每个虚拟目录的访问权限。 使用虚拟目录可以均衡Web服务器的负载，因为网站中资源来自于多个不同的服务器，从而避免单一服务器负载过重，响应缓慢。 资源路径资源路径也不是文件的真实路径，它和真是路径之间存在着映射关系，服务器可以通过资源路径找到文件link这篇文章提到了配置Servlet的方法，一种是通过web.xml来配置，通过这种方法很容易理解资源路径和文件路径的映射关系，服务器通过资源路径映射到实际文件，通过@WebServlet配置原理一样 我们在浏览器输入的是项目的URL是由协议名+ip地址+端口号+虚拟路径+文件资源组成，服务器会通过虚拟路径找到项目在电脑上部署的位置，通过文件资源路径找到文件在电脑上的实际位置]]></content>
@@ -2110,8 +2112,8 @@
         <category>前端基础</category>
       </categories>
       <tags>
-        <tag>前端</tag>
         <tag>BOM</tag>
+        <tag>前端</tag>
         <tag>JavaScript</tag>
       </tags>
   </entry>
@@ -2164,6 +2166,19 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[青蛙跳台阶]]></title>
+    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
+      <categories>
+        <category>算法之美</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>动态规划</tag>
+        <tag>斐波那契数列</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[字符流和字节流]]></title>
     <url>%2F2019%2F09%2F07%2FJAVA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81-%E5%AD%97%E7%AC%A6%E6%B5%81%E5%92%8C%E5%AD%97%E8%8A%82%E6%B5%81%E8%AF%A6%E8%A7%A3%2F</url>
     <content type="text"><![CDATA[深入理解字符流编码 首先要理解字符流输入的原理：字符流输入其实底层也是字节流输入 字符–&gt;计算机二进制数字（字节）：编码字节(计算机二进制数字)–&gt;字符：解码 写入时：1、当使用字符流的write方法向文件写入数据的时候，数据会先写进内存缓冲区中， 2、内存缓冲区会先字符对比着系统码表编码(中文系统是GBK)为对应的字节：字符--&gt;数字 3、调用了flush方法或者是close方法后，内存缓冲区中编码为字节(数字)会写入到文件中读取时：使用read方法读取文件的时候，文建会先将存储在计算机中的二进制对照系统码表解码成相应的字符，读入程序图片不能用字符流的原因因为图片是字节文件，计算机中存储的也是字节数字，所以用字节流输入的时候不需要编码解码的过程，直接将计算机中的字节读取写入就可以了 但是用字符流读取的时候，一次读取两个字节，然后将这两个字节按照码表解码成相应的字符，当读取图片的时候，将两个字节拼在一起对比码表解码，码表中可能没有相应的字符，就会将此二进制数据标记为未知字符， 在写入的时候，会将未知字符丢掉，所以图片拷贝不成功 因为原图片和你拷贝的“图片”在计算机中的字节都是不一样的 拷贝的“图片”丢失了很多 **解码后**被标记为“未知字符”的**字节** 举个例子：一个图片在计算机中存储的字节是：-121，34，124，53，-65，-43，1.... 使用字节流读取的时候，一次读取一个字节，会原封不动的读取出来：-121，34，124，53，-65，-43，1.... 但是当使用字符流读取的时候，一次读两个字节-12134，12453....然后将每次读取到的两个字节对照系统码表解码成相应的字符，但是码表中可能没有相应的字符； 例如没有和-12134对应的字符，就会将此二进制数据标记为未知字符(假设标记为￥)； 在写入的时候，就会将￥字符给丢掉，所以**最后实际写入的数据为**124，53，-65，-43，1.... 这样拷贝自然就失败了关于写入字符到文件中，打开文件查看乱码的原因，参考上面链接**最后**：字符流因为解码编码等原因，比字节流慢很多 字符流一般用于传输纯文本文件，尤其是中文文档，不能用于视频，图片等传输 图片等视频音频文件要用字节流]]></content>
@@ -2188,19 +2203,6 @@
         <tag>递归</tag>
         <tag>迭代法</tag>
         <tag>二叉树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[青蛙跳台阶]]></title>
-    <url>%2F2019%2F09%2F07%2FLeetCode-%E7%AC%AC70%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[难度： 简单 1、动态规划可以知道，如果要到达第n阶台阶，有两种方式：第一：从n-1阶台阶跨1步第二：从n-2阶台阶跨2步设到达第n阶台阶的方法总数为sum(n)那么由上面可以知道：sum(n)=sum(n-2)+sum(n-1) 可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法1、从第1阶台阶跨2步上去2、从第2阶跨1步上去 相应的，到达第1阶台阶只有一种方法，sum(1)=1；到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；所以sum(3)=3; 2、斐波那契数列通过观察规律可以知道：假设第0阶为1；那么可以得到从第1阶往后分别是：1，2，3，5，8，13…..这是一个很明显的斐波那契数列 3、递归同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和递归出口：n=0的时候返回1，n&lt;0的时候返回0；运行到44个样例的时候栈爆了…..]]></content>
-      <categories>
-        <category>算法之美</category>
-      </categories>
-      <tags>
-        <tag>LeetCode</tag>
-        <tag>动态规划</tag>
-        <tag>斐波那契数列</tag>
       </tags>
   </entry>
   <entry>
