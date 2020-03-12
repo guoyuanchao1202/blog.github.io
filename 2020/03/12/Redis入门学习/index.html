@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="Redis是一款高性能的NOSQL系列的非关系型数据库。它是一种支持Key-Value等多种数据结构的存储系统。可用于缓存，事件发布或订阅，高速队列等场景。该数据库使用ANSI C语言编写，支持网络，提供字符串，哈希，列表，队列，集合结构直接存取，基于内存，可持久化。今天就对Redis进行一个入门的学习。">
+<meta name="keywords" content="数据库,NOSQL,Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis入门学习">
+<meta property="og:url" content="https://HoA-W.github.io/2020/03/12/Redis入门学习/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="Redis是一款高性能的NOSQL系列的非关系型数据库。它是一种支持Key-Value等多种数据结构的存储系统。可用于缓存，事件发布或订阅，高速队列等场景。该数据库使用ANSI C语言编写，支持网络，提供字符串，哈希，列表，队列，集合结构直接存取，基于内存，可持久化。今天就对Redis进行一个入门的学习。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-03-12T03:09:51.293Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis入门学习">
+<meta name="twitter:description" content="Redis是一款高性能的NOSQL系列的非关系型数据库。它是一种支持Key-Value等多种数据结构的存储系统。可用于缓存，事件发布或订阅，高速队列等场景。该数据库使用ANSI C语言编写，支持网络，提供字符串，哈希，列表，队列，集合结构直接存取，基于内存，可持久化。今天就对Redis进行一个入门的学习。">
+  <link rel="canonical" href="https://HoA-W.github.io/2020/03/12/Redis入门学习/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Redis入门学习 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/03/12/Redis入门学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="前路坎坷，人得自个儿成全自个儿">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Redis入门学习
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-12 10:00:29 / 修改时间：11:09:51" itemprop="dateCreated datePublished" datetime="2020-03-12T10:00:29+08:00">2020-03-12</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Redis是一款高性能的NOSQL系列的非关系型数据库。它是一种支持Key-Value等多种数据结构的存储系统。可用于缓存，事件发布或订阅，高速队列等场景。该数据库使用ANSI C语言编写，支持网络，提供字符串，哈希，列表，队列，集合结构直接存取，基于内存，可持久化。今天就对Redis进行一个入门的学习。</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="什么是Redis"><a href="#什么是Redis" class="headerlink" title="什么是Redis"></a>什么是Redis</h1><p>前面说了，Redis是一款非关系型数据库，和传统的关系型数据库不同，它采用key-value的方式存储数据，将数据存储在内存中(适当的时候可以持久化到磁盘上)。和传统的关系型数据库相比，Redis具有以下优点：</p>
+<ol>
+<li>成本低：NOSQL数据库简单易部署，基本都是开源软件，不需要像使用oracle那样花费大量成本购买使用，相比关系型数据库价格便宜。</li>
+<li>查询速度：NOSQL数据库将数据存储于缓存之中，关系型数据库将数据存储在硬盘中，自然查询速度远不及NOSQL数据库。</li>
+<li>存储数据的格式：NOSQL的存储格式是key,value形式、文档形式、图片形式等等，所以可以存储基础类型以及对象或者是集合等各种格式，而数据库则只支持基础类型。</li>
+<li>扩展性：关系型数据库有类似join这样的多表查询机制的限制导致扩展很艰难。</li>
+</ol>
+<p>相应的，NOSQL系列数据库也有一些缺点</p>
+<ol>
+<li>维护的工具和资料有限，因为NOSQL是属于新的技术，不能和关系型数据库10几年的技术同日而语。</li>
+<li>不同的NOSQL数据库操作不一样，学习和使用成本高。</li>
+<li>不提供关系型数据库对事务的处理(Redis支持事务操作)。</li>
+</ol>
+<h1 id="为什么使用Redis"><a href="#为什么使用Redis" class="headerlink" title="为什么使用Redis"></a>为什么使用Redis</h1><p>随着互联网web2.0网站的兴起，传统的关系数据库在应付web2.0网站，特别是超大规模和高并发的SNS类型的web2.0纯动态网站已经显得力不从心，因为传统的关系型数据库需要进行磁盘操作，查询速度较慢。NOSQL数据库的产生就是为了解决大规模数据集合多重数据种类带来的挑战，尤其是大数据应用难题。一般来说，我们将Redis和传统的关系型数据库搭配使用，<font color="red"><b>将数据存储在关系型数据库中，在nosql数据库中备份存储关系型数据库的数据</b></font>。在需要数据库查询时，如果NOSQL里面有，那么就不需要进行磁盘操作只需要从内存读取，这样速度就会快很多。</p>
+<h1 id="Redis简单操作"><a href="#Redis简单操作" class="headerlink" title="Redis简单操作"></a>Redis简单操作</h1><p>Redis是以键值对的形式存储数据，并且Redis的键只能是String类型，但是它的<font color="red"><b>值有5种类型</b></font>：</p>
+<ol>
+<li>String类型</li>
+<li>hash类型</li>
+<li>list类型</li>
+<li>set类型</li>
+<li>sortedset类型</li>
+</ol>
+<p>下面就分别介绍一下这几种类型以及相应的操作</p>
+<h2 id="String类型"><a href="#String类型" class="headerlink" title="String类型"></a><font size="5">String类型</font></h2><p>字符串类型是redis中最基本的数据类型，它能存储任何形式的字符串，包括二进制数据。你可以用它存储用户的邮箱、json化的对象甚至是图片。一个字符类型允许存储的最大容量是512M。</p>
+<ol>
+<li><p><b>添加/修改操作</b><br><font color="red"><b>set 键名</b></font>:向数据库种添加键值对。如果键值对不存在，那么添加进去，如果键值对存在，则修改键值对的值</p>
+</li>
+<li><p><b>获取操作</b><br><font color="red"><b>get 键名</b></font>:获取指定键对应的值，如果不存在返回空</p>
+</li>
+<li><p><b>删除操作</b><br><font color="red"><b>del 键名</b></font>:删除指定键对应的值</p>
+</li>
+</ol>
+<h2 id="hash类型"><a href="#hash类型" class="headerlink" title="hash类型"></a><font size="5">hash类型</font></h2><p>类似于Java中的hashmap，是一个key+(key-value)的数据结构，对于值为hash类型的键值对，每一个键对应一个hashmap。</p>
+<ol>
+<li><p><b>添加/修改操作</b><br><font color="red"><b>hset 键名 key value</b></font>:向数据库种添加hash值类型的键值对，并向值得hashmap种添加一个键值对。如果该键值对存在则覆盖原来的值</p>
+</li>
+<li><p><b>获取操作</b></p>
+<ul>
+<li><font color="red"><b>hget 键名 key</b></font>:获取指定键值对得值(hashmap)，在从该值中获取指定key得value</li>
+<li><font color="red"><b>hgetall 键名</b></font>:获取该键值对得值(hashmap)，并获取该值中所有的key-value</li>
+</ul>
+</li>
+<li><p><b>删除操作</b><br><font color="red"><b>hdel 键名 key</b></font>:类似的，删除指定键值对中值的指定键值对。</p>
+</li>
+</ol>
+<h2 id="list类型"><a href="#list类型" class="headerlink" title="list类型"></a><font size="5">list类型</font></h2><p>该类型可以存储一个有序的字符串列表，允许存储重复元素。常用的操作是向列表两端添加元素或者获得列表的某一个片段。列表类型内部使用双向链表实现，所以向列表两端添加元素的时间复杂度为O(1), 获取越接近两端的元素速度就越快。这意味着即使是一个有几千万个元素的列表，获取头部或尾部的10条记录也是很快的。</p>
+<ol>
+<li><p><b>添加</b></p>
+<ul>
+<li><font color="red"><b>lpush key value</b></font>: 将元素加入列表左表</li>
+<li><font color="red"><b>rpush key value</b></font>：将元素加入列表右边</li>
+</ul>
+</li>
+<li><p><b>获取</b><br><font color="red"><b>lrange 键名 start end</b></font>：范围获取。如果start=0 end=-1，那么表示获取list的所有元素</p>
+</li>
+<li><p><b>删除</b></p>
+<ul>
+<li><font color="red"><b>lpop 键名</b></font>:删除列表最左边的元素，并将元素返回</li>
+<li><font color="red"><b>rpop 键名</b></font>:删除列表最右边的元素，并将元素返回    </li>
+</ul>
+</li>
+</ol>
+<h2 id="set类型"><a href="#set类型" class="headerlink" title="set类型"></a><font size="5">set类型</font></h2><p>是一个集合类型，和list类型不同，它不允许存储重复元素。同时集合类型中的数据是无序的。一个集合类型值可以存储至多232-1个数据。集合类型和列表类型的最大的区别是<font color="red"><b>有序性和唯一性</b></font>。集合类型的常用操作是向集合中加入或删除元素、判断某个元素是否存在。由于集合类型在redis内部是使用的值为空的散列表(hash table)，所以这些操作的时间复杂度都是O(1)。</p>
+<ol>
+<li><p><b>存储</b><br><font color="red"><b>sadd 键名 value</b></font>:向指定键值对的值中添加元素</p>
+</li>
+<li><p><b>获取</b><br><font color="red"><b>smembers 键名</b></font>:获取指定键值对的值中set集合的所有元素</p>
+</li>
+<li><p><b>删除</b><br><font color="red"><b>srem 键名 value</b></font>:删除指定键值对中值的set集合的某个元素    </p>
+</li>
+</ol>
+<h2 id="sortedset类型"><a href="#sortedset类型" class="headerlink" title="sortedset类型"></a><font size="5">sortedset类型</font></h2><p>和前面讲的集合类型的区别就是多了有序的功能。在集合类型的基础上，有序集合类型为集合中的每个元素都关联了一个double类型分数，Redis正是通过分数来为集合中的成员进行从小到大的排序。这使得我们不仅可以完成插入、删除和判断元素是否存在等集合类型支持的操作，还能获得分数最高(或最低)的前N个元素、获得指定分数范围内的元素等与分数有关的操作。虽然集合中每个元素都是不同的，但是他们的分数却可以相同。</p>
+<ol>
+<li><p><b>存储</b><br><font color="red"><b>zadd 键名 score value</b></font>:向指定键值对的值的sortde集合中添加一个元素，并为该元素关联一个source</p>
+</li>
+<li><p><b>获取</b><br><font color="red"><b>zrange key start end [withscores]</b></font>:从指定键值对的值的有序集合中获取指定范围内元素，如果start=0，end=-1则获取所有元素。如果加上withscores还可以获取每个值对应的source。</p>
+</li>
+<li><p><b>删除</b><br><font color="red"><b>zrem key value</b></font>:删除指定键值对值得集合中的指定元素。</p>
+</li>
+</ol>
+<h2 id="通用命令"><a href="#通用命令" class="headerlink" title="通用命令"></a><font size="5">通用命令</font></h2><p>下面介绍三个命令对于所有的数据类型通用</p>
+<ol>
+<li>keys * : 查询所有的键</li>
+<li>type key ： 获取键对应的value的类型</li>
+<li>del key：删除指定的key value</li>
+</ol>
+<h1 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h1><p>前面我们说过，Redis将数据存储在内存中，那我们都知道内存断电后数据会消失，因此Redis还提供了持久化机制。它能够将数据库中的数据持久化到磁盘上，下次启动时重新加载进内存。Redis提供了两种持久化机制：</p>
+<ol>
+<li><b>RBD</b></li>
+<li><b>AOF</b></li>
+</ol>
+<p>下面对这两种持久化机制做一个简单地介绍。</p>
+<h2 id="RBD"><a href="#RBD" class="headerlink" title="RBD"></a><font size="5">RBD</font></h2><p>该方式是Redis的默认方式，不需要进行配置，默认就使用这种机制。RBD方式在一定的间隔时间中，检测key的变化情况，然后持久化数据。这就意味着可能会引起数据的丢失。通过修改redis.windows.conf配置文件中的save字段我们可以设置持久化条件，Redis默认设置如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//如果15分钟内至少有一条数据发生改变，则进行持久化</span><br><span class="line">save 900 1</span><br><span class="line"></span><br><span class="line">//如果5分钟内至少有10条记录发生改变，则进行持久化</span><br><span class="line">save 300 10</span><br><span class="line"></span><br><span class="line">//如果1分钟内至少有10000条记录发生改变，则进行持久化</span><br><span class="line">save 60 10000</span><br></pre></td></tr></table></figure>
+
+<h2 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a><font size="5">AOF</font></h2><p>日志记录的方式，可以记录每一条命令的操作。可以每一次命令操作后，持久化数据。我们编辑redis.windwos.conf文件，设置appendonly字段为yes开启AOF持久化。同时AOF下也有三种方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">appendfsync always：每一次操作都进行持久化</span><br><span class="line">appendfsync everysec：每隔一秒进行一次持久化(AOF默认方式)</span><br><span class="line">appendfsync no：不进行持久化</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>对于Redis的入门学习就到这里，Redis还有许许多多的操作，留到后面慢慢学习。另外Redis的一些实现原理，底层结构后续也会慢慢介绍。</p>
+<hr>
+
+
+
+
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/数据库/" rel="tag"><i class="fa fa-tag"></i>数据库</a>
+            
+              <a href="/tags/NOSQL/" rel="tag"><i class="fa fa-tag"></i>NOSQL</a>
+            
+              <a href="/tags/Redis/" rel="tag"><i class="fa fa-tag"></i>Redis</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/03/11/Web基础之Ajax和JSON/" rel="next" title="Web基础之Ajax和JSON">
+                  <i class="fa fa-chevron-left"></i> Web基础之Ajax和JSON
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是Redis"><span class="nav-number">1.</span> <span class="nav-text">什么是Redis</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么使用Redis"><span class="nav-number">2.</span> <span class="nav-text">为什么使用Redis</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis简单操作"><span class="nav-number">3.</span> <span class="nav-text">Redis简单操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#String类型"><span class="nav-number">3.1.</span> <span class="nav-text">String类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hash类型"><span class="nav-number">3.2.</span> <span class="nav-text">hash类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#list类型"><span class="nav-number">3.3.</span> <span class="nav-text">list类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#set类型"><span class="nav-number">3.4.</span> <span class="nav-text">set类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sortedset类型"><span class="nav-number">3.5.</span> <span class="nav-text">sortedset类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通用命令"><span class="nav-number">3.6.</span> <span class="nav-text">通用命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis持久化"><span class="nav-number">4.</span> <span class="nav-text">Redis持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RBD"><span class="nav-number">4.1.</span> <span class="nav-text">RBD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF"><span class="nav-number">4.2.</span> <span class="nav-text">AOF</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">前路坎坷，人得自个儿成全自个儿</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">160</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
