@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="我们都知道数据库有ACID四大特性，分别是原子性、隔离性、一致性和持久性，那么数据库是通过什么手段来实现原子性的呢？又是通过什么手段来实现持久性的呢？答案就是日志。下面让我们来看一看MySQL InnoDB的三种日志：Redo log、Undo log、bin log。">
+<meta name="keywords" content="MySQL,日志,Redo,Undo,bin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈MySQL三种日志">
+<meta property="og:url" content="https://HoA-W.github.io/2020/03/15/浅谈MySQL三种日志/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="我们都知道数据库有ACID四大特性，分别是原子性、隔离性、一致性和持久性，那么数据库是通过什么手段来实现原子性的呢？又是通过什么手段来实现持久性的呢？答案就是日志。下面让我们来看一看MySQL InnoDB的三种日志：Redo log、Undo log、bin log。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-03-15T00:23:01.316Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浅谈MySQL三种日志">
+<meta name="twitter:description" content="我们都知道数据库有ACID四大特性，分别是原子性、隔离性、一致性和持久性，那么数据库是通过什么手段来实现原子性的呢？又是通过什么手段来实现持久性的呢？答案就是日志。下面让我们来看一看MySQL InnoDB的三种日志：Redo log、Undo log、bin log。">
+  <link rel="canonical" href="https://HoA-W.github.io/2020/03/15/浅谈MySQL三种日志/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>浅谈MySQL三种日志 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/03/15/浅谈MySQL三种日志/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="前路坎坷，人得自个儿成全自个儿">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">浅谈MySQL三种日志
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-15 07:46:42 / 修改时间：08:23:01" itemprop="dateCreated datePublished" datetime="2020-03-15T07:46:42+08:00">2020-03-15</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>我们都知道数据库有ACID四大特性，分别是原子性、隔离性、一致性和持久性，那么数据库是通过什么手段来实现原子性的呢？又是通过什么手段来实现持久性的呢？答案就是日志。下面让我们来看一看MySQL InnoDB的三种日志：Redo log、Undo log、bin log。</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="Redo-log"><a href="#Redo-log" class="headerlink" title="Redo log"></a>Redo log</h1><p>Redo log是MySQL InnoDB引擎所产生的。<b>当事务开始时，就开始记录每次变更信息。</b>现在我们假设下面一条语句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">update table set name=&quot;tom&quot; where id=3;</span><br></pre></td></tr></table></figure>
+
+<p>MySQL执行这条语句时，先把id=3的记录查出来然后将name字段给改掉。我们知道MySQL InnDB 的基本存储结构是页(每个树节点一页)，所以MySQL先把对应的页加载进内存，然后修改相应的记录。那么这就有一个问题：如果在内存中把数据改了，该没来得及往磁盘上写，数据库就挂了，这怎么办？这可能会违反一致性。但是如果每次请求都将数据立马写入磁盘，那么速度就会很慢。因此MySQL InnoDB引入了Redo log。</p>
+
+<p>当内存写完了，就会写一份Redo log，这份log记录的是这次在某个页(物理位置)上做了什么修改，其实在写Redo log时也会先写如缓冲区，至于什么时候写入内存，可以自行配置。写Redo log也是需要写入磁盘的，但是它是顺序I/O，要比随机I/O快很多。因此Redo log的存在是为了：当我们修改时，写完内存但数据还没有写入磁盘中，此时数据库挂了，我们可以用Redo来进行数据恢复。Redo log顺序I/O，写入速度快，并且文件体积小，恢复速度快。</p>
+
+<h1 id="bin-log"><a href="#bin-log" class="headerlink" title="bin log"></a>bin log</h1><p>bin log是所有数据库都有的一种日志。和Redo log不同的是，bin log是在事务提交的时候才记录。bin log记录了数据库表结构和表数据的变更，例如update/delete/insert/drop等，他不会记录select语句。对于bin log，我们可以理解为：存储着每条变更的SQL语句，在什么时间、什么事务(事务ID)执行了什么SQL语句。</p>
+
+<p>bin log主要用来复制和恢复数据，其实这也很好理解，bin log记录着每条改变数据库表结构和数据的语句，那么我们将这些语句再执行一遍，不就可以得到一个一样的数据库了么？</p>
+
+<h1 id="bin-log和Redo-log"><a href="#bin-log和Redo-log" class="headerlink" title="bin log和Redo log"></a>bin log和Redo log</h1><p>到这里你可能会有疑惑，Redo log和bin log好像很相似，其实它们的区别还是挺大的，我们来看看：</p>
+<h2 id="存储内容"><a href="#存储内容" class="headerlink" title="存储内容"></a><font size="5">存储内容</font></h2><p>前面说过，Redo记录的是磁盘的那一页修改了什么内容，是实际的物理变化。而bin log记录的是什么事务在什么时间执行了什么SQL语句，并不对应着磁盘的位置，是一个逻辑变化</p>
+<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a><font size="5">功能</font></h2><p>Redo log的作用是为了持久化而生的，写完内存后如果数据库挂了，Redo log能够保证更新的数据能够持久化到磁盘上。而bin log的作用是复制和恢复。还有一点：Redo log存储的是物理数据的变更，如果我们已经将数据刷到了磁盘上，那么Redo log就失效了。</p>
+<h1 id="Redo-log和bin-log写入细节"><a href="#Redo-log和bin-log写入细节" class="headerlink" title="Redo log和bin log写入细节"></a>Redo log和bin log写入细节</h1><p>到这你可能会想，这两种log的写入顺序又是什么样的呢？前面说了，Redo log在事务开始的时候就开始记录变更信息，而bin log在事务提交时才记录。那么现在有一个问题：我写其中某一个log，失败了该怎么办？现在假设我们先写Redo log再写bin log</p>
+<ol>
+<li>如果Redo log失败了，那么我们就会滚这次事务，不再写bin log</li>
+<li>如果Redo log成功了，但是bin log写了一半失败了，此时我们还是会对数据库进行回滚(撤销Redo log的影响)，将无效的bin log删除。</li>
+<li>只有两者都写成功了，事务才算是真正成功了。</li>
+</ol>
+<h1 id="两阶段提交"><a href="#两阶段提交" class="headerlink" title="两阶段提交"></a>两阶段提交</h1><p>简单地说：MySQL需要保证Redo log和bin log的数据是一致的，为了保证这种一致性，MySQL使用了两阶段提交</p>
+<ol>
+<li>阶段一<br>InnDB Redo log写入磁盘，事务进入prepare状态</li>
+<li>阶段二<br>bin log写入磁盘，InnoDB事务进入commit状态</li>
+<li>每个bin log的末尾，都会记录一个XID event，标志着事务是否提交成功。也就是说，在恢复时，bin log最后一个XID event之后的内容都应该被清除。</li>
+</ol>
+<h1 id="Undo-log"><a href="#Undo-log" class="headerlink" title="Undo log"></a>Undo log</h1><p>其实Undo log我们在MVCC时就已经介绍过了，它主要有两个作用：回滚和MVCC。前面说过，在数据修改时，不仅记录了Redo log还记录了Undo log。如果因为某些原因导致事务失败或者回滚，可以用Undo log进行回滚。</p>
+<p>Undo log主要存储逻辑日志，比如我现在insert了一条语句，那么Undo log会记录一条delete语句，这很好理解，因为回滚时就是要做相反的操作嘛。Undo log保证了事务地原子性，一个事务要么全部完成要么什么都不做。这个"什么都不做"就是通过Undo log回滚实现的。</p>
+
+<hr>
+
+<p>参考文章：<br><a href="https://mp.weixin.qq.com/s/0z6GmUp0Lb1hDUo0EyYiUg" target="_blank" rel="noopener">微信公众号</a></p>
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/MySQL/" rel="tag"><i class="fa fa-tag"></i>MySQL</a>
+            
+              <a href="/tags/日志/" rel="tag"><i class="fa fa-tag"></i>日志</a>
+            
+              <a href="/tags/Redo/" rel="tag"><i class="fa fa-tag"></i>Redo</a>
+            
+              <a href="/tags/Undo/" rel="tag"><i class="fa fa-tag"></i>Undo</a>
+            
+              <a href="/tags/bin/" rel="tag"><i class="fa fa-tag"></i>bin</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/03/13/IDEA快捷配置Maven插件方式/" rel="next" title="IDEA快捷配置Maven插件方式">
+                  <i class="fa fa-chevron-left"></i> IDEA快捷配置Maven插件方式
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2020/03/20/深入浅出Https/" rel="prev" title="深入浅出Https">
+                  深入浅出Https <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redo-log"><span class="nav-number">1.</span> <span class="nav-text">Redo log</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#bin-log"><span class="nav-number">2.</span> <span class="nav-text">bin log</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#bin-log和Redo-log"><span class="nav-number">3.</span> <span class="nav-text">bin log和Redo log</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#存储内容"><span class="nav-number">3.1.</span> <span class="nav-text">存储内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#功能"><span class="nav-number">3.2.</span> <span class="nav-text">功能</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redo-log和bin-log写入细节"><span class="nav-number">4.</span> <span class="nav-text">Redo log和bin log写入细节</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#两阶段提交"><span class="nav-number">5.</span> <span class="nav-text">两阶段提交</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Undo-log"><span class="nav-number">6.</span> <span class="nav-text">Undo log</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">前路坎坷，人得自个儿成全自个儿</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">187</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">168</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>

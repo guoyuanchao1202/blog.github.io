@@ -4,6 +4,66 @@
   
     
     <entry>
+      <title>深入浅出Https</title>
+      <link href="/2020/03/20/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHttps/"/>
+      <url>/2020/03/20/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHttps/</url>
+      
+        <content type="html"><![CDATA[<p>本文对于基本的Http协议不再做赘述(如果对Http协议不了解的建议先学习一下Http协议)。在本文中，首先指出Http协议的缺陷，紧接着提出各种解决方法，最后剖析一下Https协议的实现原理。最后对比Http协议和Https协议，分别介绍它们的优缺点。</p><hr><a id="more"></a><h1 id="Http协议存在的问题"><a href="#Http协议存在的问题" class="headerlink" title="Http协议存在的问题"></a>Http协议存在的问题</h1><p>我们知道，Http协议是基于请求响应模型，客户端发送请求，服务器回送响应。这里的关键在于，无论是客户端发送的请求还是服务器回送的响应，都是没有加密的，也就是<font color="red"><b>明文传输</b></font>。由于Http协议是明文传输，因此会造成安全性问题。<br><img src="/2020/03/20/深入浅出Https/1.png" alt><br>如图，当你使用http协议上网时，你在浏览什么网站，你的隐私等等，别人都能够轻而易举地获取，这无疑是很不安全的。</p><h1 id="对称加密传输"><a href="#对称加密传输" class="headerlink" title="对称加密传输"></a>对称加密传输</h1><p>当出现了上面的问题，人们就像，我能不能在发送方对数据进行加密，在接收方对数据进行解密，这样不就安全了么。我们发送方和接收方只需要在交换数据之前，先约定一下加密解密的方法(秘钥)，这样发送方发送数据时先对数据进行加密，然后接收方接收到数据后用对应的解密方法对数据解密。这种加密传输看起来是安全的，但实际上毫无作用，我们来看一下。<br><img src="/2020/03/20/深入浅出Https/2.png" alt><br>就像图中说的，虽然客户端和服务器对数据进行加密传输，但是由于<font color="red"><b>它们的密钥能够被其他人获取到</b></font>，所以这种对称加密方法和明问传输无异。</p><h1 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h1><p>为了解决对称加密出现的问题(密钥能够被第三方获取到)，人们又想出了非对称加密算法。对于非对称加密算法：有一对密钥，一个是公钥、一个是私钥。<font color="red"><b>公钥加密的数据只能用私钥解密，而私钥加密的数据只能用公钥解密</b></font>(至于原理不用深究，只需要知道这一点就足够)。其中私钥是服务器私有的，只有服务器知道，而公钥是发送给客户端的(这就意味着公钥是很容易获取到的)。让我们来看看非对称加密算法能不能解决问题，它又存在哪些问题<br><img src="/2020/03/20/深入浅出Https/3.png" alt><br>从图中可以看到，使用了非对称加密后，客户端发往服务器的数据安全能够得到保障，但是服务器发送给客户端的数据却能够轻易的被他人获取，这仍然是不安全的。那么怎么解决呢？我们继续往下看</p><h1 id="非对称加密-对称加密"><a href="#非对称加密-对称加密" class="headerlink" title="非对称加密+对称加密"></a>非对称加密+对称加密</h1><p>我们可以看到，无论是对称加密还是非对称加密，都存在安全问题，于是人们又想出了一种办法：将对称加密和非对称加密结合使用。它的大致思路是这样的：</p><ol><li>客户端先获取服务器的公钥，然后自己生成一个密钥(这里假设是K)。</li><li>客户端使用公钥对该密钥K进行加密，注意是对密钥K加密而不是对数据加密(由于这一步是安全的，因此黑客无法获取到该密钥K)</li><li>服务器收到加密数据后，使用私钥解密数据得到客户端的密钥K。</li><li>然后客户端和服务器使用该密钥K对数据进行加密解密(对称加密)</li></ol><p><img src="/2020/03/20/深入浅出Https/4.png" alt><br>我们可以看到，客户端和服务器使用非对称加密算法保证密钥K的安全，然后使用对称加密算法对数据进行加密。但是这样就万无一失了么？我们看看这样会存在什么问题？<br><img src="/2020/03/20/深入浅出Https/5.png" alt><br>通过分析我们发现，使用非对称加密+对称加密算法后，黑客仍然能够获取到对称加密的密钥，从而获取篡改数据，这种方法也不是万无一失的。</p><h1 id="CA认证"><a href="#CA认证" class="headerlink" title="CA认证"></a>CA认证</h1><p>通过分析我们可以发现，使用非对称+对称加密时之所以会出现问题，是因为客户端无法辨别服务器的身份，换句话说，就是它<font color="red"><b>不知道它收到的公钥是来自服务器还是来自客户端。</b></font>既然知道了问题所在，那我们就来解决。于是CA机构就出现了。</p>什么是CA认证呢？我们来打个比方：现在有两个人A、B和C，它们互相都不认识。当A和B想要进行交流时，C插入进来，C对A说它是B，然后对B说它是A。由于A、B互相不认识并且都不认识C，因此它们并不会怀疑C的身份，于是它们就开始交流。这样A和B交流的所有内容都被C得知，并且C还可以改变它们对对方说的话。而CA机构就像一个警察，它认识A、B和C，并且<font color="red"><b>三者都信任他</b></font>。当C对A说它是B时，警察就告诉A：他不是B，它是C...这样以来，A就知道C是伪装的，C就无法窃取数据了。![](/深入浅出Https/6.png) 如图，由于网络中的计算机都是信任CA机构的，因此借助CA机构，在非对称加密阶段，客户端就能够识别出它收到的公钥是来自黑客还是来自服务器，这样就能够保证安全。<h1 id="CA证书"><a href="#CA证书" class="headerlink" title="CA证书"></a>CA证书</h1><p>CA证书是网站向CA机构申请认证，然后CA机构向网站颁发的能够标识网站身份的电子证书(可以理解为网站的身份证，不同的网站CA证书是不同的)。当网站向CA机构申请认证时，需要将自己的公钥、域名、等等信息提交给CA认证(不同级别的认证提交的信息不同)。CA机构<font color="red"><b>对网站提交的域名、公钥等明文信息使用hash算法(MD5)生成数字数字摘要。最后，CA机构使用自己的私钥对数字摘要进行加密，就得到了数字签名。最后的CA证书中包含了明文和由明文生成的数字签名</b></font><br><img src="/2020/03/20/深入浅出Https/7.png" alt> </p><h1 id="CA认证-非对称加密-对称加密"><a href="#CA认证-非对称加密-对称加密" class="headerlink" title="CA认证+非对称加密+对称加密"></a>CA认证+非对称加密+对称加密</h1><p>下面就介绍一下CA机构+非堆成加密+对称加密是如何保证数据安全的。</p><ol><li>客户端向服务器请求服务器公钥，服务器将自己的CA证书发送给客户端</li><li>客户端收到服务器的CA证书后，使用操作系统的对应的CA机构的公钥解密CA证书的数字签名，获取数字摘要</li><li>这里是关键的一步：客户端使用相同的哈希算法(如MD5)对CA证书的明文部分进行哈希运算，得到网站的数字摘要，然后将生成的数字摘要和解密出的CA证书的数字摘要对比，如果相同，说明该CA证书没有被篡改过</li><li>如果CA证书没有被篡改过，客户端又会根据域名判断该证书是否被掉包</li><li>如果CA证书是真的且没有被掉包，也就是说客户端已经能够确认收到的公钥是服务器的公钥</li><li>客户端生成一个密钥，并使用hash算法对密钥进行hash，将密钥原文和得到的hash值一起使用公钥加密后发送给服务器</li><li>服务器收到后使用私钥解密，并对密钥原文使用同样的hash算法进行hash，如果和客户端发来的哈希值相同，则说明没有被篡改</li><li>此后客户端和服务器通信使用该密钥对称加密。</li></ol><h1 id="Https和Http区别"><a href="#Https和Http区别" class="headerlink" title="Https和Http区别"></a>Https和Http区别</h1><p>Https实际上是Http+TLS/SSL，它并不是一个新的协议，而是在TCP之上，Http之下加了一个TLS/SSL安全套接字。</p><ol><li>它们的端口号不同，Http为80而Https为443</li><li>Http明文传输数据，而Https加密传输数据，安全性更高</li><li>Https需要CA证书，安全性越高的证书费用越高</li><li>Https协议比Http协议耗时开销大。</li></ol><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 计算机网络 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Https </tag>
+            
+            <tag> 应用层 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>浅谈MySQL三种日志</title>
+      <link href="/2020/03/15/%E6%B5%85%E8%B0%88MySQL%E4%B8%89%E7%A7%8D%E6%97%A5%E5%BF%97/"/>
+      <url>/2020/03/15/%E6%B5%85%E8%B0%88MySQL%E4%B8%89%E7%A7%8D%E6%97%A5%E5%BF%97/</url>
+      
+        <content type="html"><![CDATA[<p>我们都知道数据库有ACID四大特性，分别是原子性、隔离性、一致性和持久性，那么数据库是通过什么手段来实现原子性的呢？又是通过什么手段来实现持久性的呢？答案就是日志。下面让我们来看一看MySQL InnoDB的三种日志：Redo log、Undo log、bin log。</p><hr><a id="more"></a><h1 id="Redo-log"><a href="#Redo-log" class="headerlink" title="Redo log"></a>Redo log</h1><p>Redo log是MySQL InnoDB引擎所产生的。<b>当事务开始时，就开始记录每次变更信息。</b>现在我们假设下面一条语句：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">update table set name=&quot;tom&quot; where id=3;</span><br></pre></td></tr></table></figure><p>MySQL执行这条语句时，先把id=3的记录查出来然后将name字段给改掉。我们知道MySQL InnDB 的基本存储结构是页(每个树节点一页)，所以MySQL先把对应的页加载进内存，然后修改相应的记录。那么这就有一个问题：如果在内存中把数据改了，该没来得及往磁盘上写，数据库就挂了，这怎么办？这可能会违反一致性。但是如果每次请求都将数据立马写入磁盘，那么速度就会很慢。因此MySQL InnoDB引入了Redo log。</p><p>当内存写完了，就会写一份Redo log，这份log记录的是这次在某个页(物理位置)上做了什么修改，其实在写Redo log时也会先写如缓冲区，至于什么时候写入内存，可以自行配置。写Redo log也是需要写入磁盘的，但是它是顺序I/O，要比随机I/O快很多。因此Redo log的存在是为了：当我们修改时，写完内存但数据还没有写入磁盘中，此时数据库挂了，我们可以用Redo来进行数据恢复。Redo log顺序I/O，写入速度快，并且文件体积小，恢复速度快。</p><h1 id="bin-log"><a href="#bin-log" class="headerlink" title="bin log"></a>bin log</h1><p>bin log是所有数据库都有的一种日志。和Redo log不同的是，bin log是在事务提交的时候才记录。bin log记录了数据库表结构和表数据的变更，例如update/delete/insert/drop等，他不会记录select语句。对于bin log，我们可以理解为：存储着每条变更的SQL语句，在什么时间、什么事务(事务ID)执行了什么SQL语句。</p><p>bin log主要用来复制和恢复数据，其实这也很好理解，bin log记录着每条改变数据库表结构和数据的语句，那么我们将这些语句再执行一遍，不就可以得到一个一样的数据库了么？</p><h1 id="bin-log和Redo-log"><a href="#bin-log和Redo-log" class="headerlink" title="bin log和Redo log"></a>bin log和Redo log</h1><p>到这里你可能会有疑惑，Redo log和bin log好像很相似，其实它们的区别还是挺大的，我们来看看：</p><h2 id="存储内容"><a href="#存储内容" class="headerlink" title="存储内容"></a><font size="5">存储内容</font></h2><p>前面说过，Redo记录的是磁盘的那一页修改了什么内容，是实际的物理变化。而bin log记录的是什么事务在什么时间执行了什么SQL语句，并不对应着磁盘的位置，是一个逻辑变化</p><h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a><font size="5">功能</font></h2><p>Redo log的作用是为了持久化而生的，写完内存后如果数据库挂了，Redo log能够保证更新的数据能够持久化到磁盘上。而bin log的作用是复制和恢复。还有一点：Redo log存储的是物理数据的变更，如果我们已经将数据刷到了磁盘上，那么Redo log就失效了。</p><h1 id="Redo-log和bin-log写入细节"><a href="#Redo-log和bin-log写入细节" class="headerlink" title="Redo log和bin log写入细节"></a>Redo log和bin log写入细节</h1><p>到这你可能会想，这两种log的写入顺序又是什么样的呢？前面说了，Redo log在事务开始的时候就开始记录变更信息，而bin log在事务提交时才记录。那么现在有一个问题：我写其中某一个log，失败了该怎么办？现在假设我们先写Redo log再写bin log</p><ol><li>如果Redo log失败了，那么我们就会滚这次事务，不再写bin log</li><li>如果Redo log成功了，但是bin log写了一半失败了，此时我们还是会对数据库进行回滚(撤销Redo log的影响)，将无效的bin log删除。</li><li>只有两者都写成功了，事务才算是真正成功了。</li></ol><h1 id="两阶段提交"><a href="#两阶段提交" class="headerlink" title="两阶段提交"></a>两阶段提交</h1><p>简单地说：MySQL需要保证Redo log和bin log的数据是一致的，为了保证这种一致性，MySQL使用了两阶段提交</p><ol><li>阶段一<br>InnDB Redo log写入磁盘，事务进入prepare状态</li><li>阶段二<br>bin log写入磁盘，InnoDB事务进入commit状态</li><li>每个bin log的末尾，都会记录一个XID event，标志着事务是否提交成功。也就是说，在恢复时，bin log最后一个XID event之后的内容都应该被清除。</li></ol><h1 id="Undo-log"><a href="#Undo-log" class="headerlink" title="Undo log"></a>Undo log</h1><p>其实Undo log我们在MVCC时就已经介绍过了，它主要有两个作用：回滚和MVCC。前面说过，在数据修改时，不仅记录了Redo log还记录了Undo log。如果因为某些原因导致事务失败或者回滚，可以用Undo log进行回滚。</p><p>Undo log主要存储逻辑日志，比如我现在insert了一条语句，那么Undo log会记录一条delete语句，这很好理解，因为回滚时就是要做相反的操作嘛。Undo log保证了事务地原子性，一个事务要么全部完成要么什么都不做。这个"什么都不做"就是通过Undo log回滚实现的。</p><hr><p>参考文章：<br><a href="https://mp.weixin.qq.com/s/0z6GmUp0Lb1hDUo0EyYiUg" target="_blank" rel="noopener">微信公众号</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 数据库 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> MySQL </tag>
+            
+            <tag> 日志 </tag>
+            
+            <tag> Redo </tag>
+            
+            <tag> Undo </tag>
+            
+            <tag> bin </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>IDEA快捷配置Maven插件方式</title>
       <link href="/2020/03/13/IDEA%E5%BF%AB%E6%8D%B7%E9%85%8D%E7%BD%AEMaven%E6%8F%92%E4%BB%B6%E6%96%B9%E5%BC%8F/"/>
       <url>/2020/03/13/IDEA%E5%BF%AB%E6%8D%B7%E9%85%8D%E7%BD%AEMaven%E6%8F%92%E4%BB%B6%E6%96%B9%E5%BC%8F/</url>
@@ -5072,35 +5132,6 @@
     
     
     <entry>
-      <title>青蛙跳台阶</title>
-      <link href="/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/"/>
-      <url>/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/</url>
-      
-        <content type="html"><![CDATA[<p><strong>难度： 简单</strong></p><p><img src="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="题目如图"></p><a id="more"></a><p><strong>1、动态规划</strong><br>可以知道，如果要到达第n阶台阶，有两种方式：<br>第一：从n-1阶台阶跨1步<br>第二：从n-2阶台阶跨2步<br>设到达第n阶台阶的方法总数为sum(n)<br>那么由上面可以知道：<strong>sum(n)=sum(n-2)+sum(n-1)</strong></p><p>可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法<br>1、从第1阶台阶跨2步上去<br>2、从第2阶跨1步上去</p><p>相应的，到达第1阶台阶只有一种方法，sum(1)=1；<br>到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；<br>所以sum(3)=3;<br><img src="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><p><strong>2、斐波那契数列</strong><br>通过观察规律可以知道：<br>假设第0阶为1；<br>那么可以得到从第1阶往后分别是：<br><strong>1，2，3，5，8，13…..</strong><br>这是一个很明显的斐波那契数列</p><p>3、递归<br>同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和<br>递归出口：n=0的时候返回1，n&lt;0的时候返回0；<br><img src="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>运行到44个样例的时候栈爆了…..</p>]]></content>
-      
-      
-      <categories>
-          
-          <category> 算法之美 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> LeetCode </tag>
-            
-            <tag> 动态规划 </tag>
-            
-            <tag> 斐波那契数列 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>二叉树镜像对称</title>
       <link href="/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/"/>
       <url>/2019/09/07/LeetCode-%E7%AC%AC101%E9%A2%98/</url>
@@ -5124,6 +5155,35 @@
             <tag> 迭代法 </tag>
             
             <tag> 二叉树 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>青蛙跳台阶</title>
+      <link href="/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/"/>
+      <url>/2019/09/07/LeetCode-%E7%AC%AC70%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<p><strong>难度： 简单</strong></p><p><img src="https://img-blog.csdnimg.cn/20190816200841350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="题目如图"></p><a id="more"></a><p><strong>1、动态规划</strong><br>可以知道，如果要到达第n阶台阶，有两种方式：<br>第一：从n-1阶台阶跨1步<br>第二：从n-2阶台阶跨2步<br>设到达第n阶台阶的方法总数为sum(n)<br>那么由上面可以知道：<strong>sum(n)=sum(n-2)+sum(n-1)</strong></p><p>可以举例假设一下假设n等于3，那么到达第3阶台阶由两种方法<br>1、从第1阶台阶跨2步上去<br>2、从第2阶跨1步上去</p><p>相应的，到达第1阶台阶只有一种方法，sum(1)=1；<br>到达第2阶台阶也有两种方法：从起始位置跨2步，和先跨1步再跨1步，sum(2)=2；<br>所以sum(3)=3;<br><img src="https://img-blog.csdnimg.cn/20190816202224968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><p><strong>2、斐波那契数列</strong><br>通过观察规律可以知道：<br>假设第0阶为1；<br>那么可以得到从第1阶往后分别是：<br><strong>1，2，3，5，8，13…..</strong><br>这是一个很明显的斐波那契数列</p><p>3、递归<br>同样的思路，爬第n阶台阶的方法和等于爬上第n-1阶台阶和爬上第n-2阶台阶方法之和<br>递归出口：n=0的时候返回1，n&lt;0的时候返回0；<br><img src="https://img-blog.csdnimg.cn/20190816202100472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjM4NzQxMQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>运行到44个样例的时候栈爆了…..</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法之美 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> LeetCode </tag>
+            
+            <tag> 动态规划 </tag>
+            
+            <tag> 斐波那契数列 </tag>
             
         </tags>
       
