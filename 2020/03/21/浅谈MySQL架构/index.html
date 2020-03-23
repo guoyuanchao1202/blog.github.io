@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="一直以来都在学习MySQL，学了MySQL的事务、事务的四大特性及实现原理、索引的使用和实现等等一些MySQL相关的知识，但是对于MySQL的架构，或者通俗的说，MySQL是由哪几部分组成的却忽略了，实际上这是很不应该的，因为只有对MySQL的架构有了一个了解，才能对于SQL语句的执行流程有一个认识，从而能够进行更好的优化。今天就来简单地学习一个MySQL的架构，本文基于MySQL5.5版本。">
+<meta name="keywords" content="MySQL,索引,MySQL架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈MySQL架构">
+<meta property="og:url" content="https://HoA-W.github.io/2020/03/21/浅谈MySQL架构/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="一直以来都在学习MySQL，学了MySQL的事务、事务的四大特性及实现原理、索引的使用和实现等等一些MySQL相关的知识，但是对于MySQL的架构，或者通俗的说，MySQL是由哪几部分组成的却忽略了，实际上这是很不应该的，因为只有对MySQL的架构有了一个了解，才能对于SQL语句的执行流程有一个认识，从而能够进行更好的优化。今天就来简单地学习一个MySQL的架构，本文基于MySQL5.5版本。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://hoa-w.github.io/2020/03/21/浅谈MySQL架构/1.jpg">
+<meta property="og:updated_time" content="2020-03-23T08:27:36.046Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浅谈MySQL架构">
+<meta name="twitter:description" content="一直以来都在学习MySQL，学了MySQL的事务、事务的四大特性及实现原理、索引的使用和实现等等一些MySQL相关的知识，但是对于MySQL的架构，或者通俗的说，MySQL是由哪几部分组成的却忽略了，实际上这是很不应该的，因为只有对MySQL的架构有了一个了解，才能对于SQL语句的执行流程有一个认识，从而能够进行更好的优化。今天就来简单地学习一个MySQL的架构，本文基于MySQL5.5版本。">
+<meta name="twitter:image" content="https://hoa-w.github.io/2020/03/21/浅谈MySQL架构/1.jpg">
+  <link rel="canonical" href="https://HoA-W.github.io/2020/03/21/浅谈MySQL架构/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>浅谈MySQL架构 | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/03/21/浅谈MySQL架构/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="前路坎坷，人得自个儿成全自个儿">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">浅谈MySQL架构
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-21 23:04:57" itemprop="dateCreated datePublished" datetime="2020-03-21T23:04:57+08:00">2020-03-21</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-23 16:27:36" itemprop="dateModified" datetime="2020-03-23T16:27:36+08:00">2020-03-23</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>一直以来都在学习MySQL，学了MySQL的事务、事务的四大特性及实现原理、索引的使用和实现等等一些MySQL相关的知识，但是对于MySQL的架构，或者通俗的说，MySQL是由哪几部分组成的却忽略了，实际上这是很不应该的，因为只有对MySQL的架构有了一个了解，才能对于SQL语句的执行流程有一个认识，从而能够进行更好的优化。今天就来简单地学习一个MySQL的架构，本文基于MySQL5.5版本。</p>
+<hr>
+<a id="more"></a>
+
+<h1 id="总体架构"><a href="#总体架构" class="headerlink" title="总体架构"></a>总体架构</h1><p><img src="/2020/03/21/浅谈MySQL架构/1.jpg" alt> 如图，这就是MySQL的基础架构，可以看到MySQL总体上可以分为三层</p>
+<ol>
+<li>客户层</li>
+<li>Server层</li>
+<li>存储引擎层</li>
+</ol>
+<p>下面我将会对每个部分进行一个简单地介绍</p>
+<h1 id="客户层"><a href="#客户层" class="headerlink" title="客户层"></a>客户层</h1><p>客户层用于向MySQL数据库发送请求，比如我们用的JDBC、以及一些可视化工具如sqlyog和我们使用MySQL的客户端，都属于客户层。客户端发送的请求交给下层的Server层。</p>
+<h1 id="Server层"><a href="#Server层" class="headerlink" title="Server层"></a>Server层</h1><p>这一层比较重要，从上面图中可以看到，这一层分了很多个组件：</p>
+<ol>
+<li>连接器</li>
+<li>分析器</li>
+<li>优化器</li>
+<li>执行器</li>
+<li>缓存</li>
+</ol>
+<p>下面分别对这几个组件进行简单地介绍</p>
+<h2 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a><font size="5">连接器</font></h2><p>我们在登陆时，需要输入用户名，输入密码；在远程登陆时还要输入主机的ip地址以及端口号，从而和MySQL建立连接。这些功能都是由连接器完成。当我们登录MySQL的时候，连接器会建立客户端和服务器的连接(TCP/IP协议)，建立好连接后会验证输入的用户名和密码是否正确。因此连接器主要用于<font color="red"><b>管理连接，进行相关权限的认证</b></font>。我们可以使用<b>show processlist;</b>命令查看服务器的连接。</p>
+<h2 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a><font size="5">分析器</font></h2><p>我们知道，SQL语句是用来操作数据库的，但是我们写的SQL语句服务器是看不懂的，SQL语句是为了方便我们学习使用而发明的。服务器会将我们写的SQL语句编译为它能够看懂的语言(选择投影连接)。分析器会对我们的SQL语句进行</p>
+<ol>
+<li>词法分析，判断我们写的SQL语句中是否有无法识别的词</li>
+<li>语法分析，判断我们的SQL语句是否存在语法错误。比如，我写了SELECT却没有写FROM，这就不能通过语法分析</li>
+<li>生成抽象语法树，这一步主要是方便后面优化器对我们的SQL语句进行优化</li>
+</ol>
+<h2 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a><font size="5">优化器</font></h2><p>这一组件会根据我们前面生成的抽象语法树对我们的SQL语句做一个优化。我们写一条SQL语句，他可能有很多执行的方式，优化器会对其进行优化，选择比较好的方式执行该SQL语句。优化器非常复杂，这里简单的说几点可能的优化手段：</p>
+<ol>
+<li>重新定义表的关联顺序 (多张表关联查询时，并不一定按照 SQL 中指定的顺序进行，但有一些技巧可以指定关联顺序)</li>
+<li>优化 MIN() 和 MAX()函数 (找某列的最小值，如果该列有索引，只需要查找 B+Tree索引 最左端，反之则可以找到最大值)</li>
+<li>提前终止查询 (比如 : 使用 Limit 时，查找到满足数量的结果集后会立即终止查询)</li>
+<li>优化排序 (在老版本 MySQL 会使用两次传输排序，即先读取行指针和需要排序的字段在内存中对其排序，然后再根据排序结果去读取数据行，而新版本采用的是单次传输排序，也就是一次读取所有的数据行，然后根据给定的列排序。对于I/O密集型应用，效率会高很多)</li>
+</ol>
+<h2 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a><font size="5">执行器</font></h2><p>执行器是直接跟我们的存储引擎进行数据交互的，数据交互就涉及到I/O的问题。我们常听说的一条优化手段是尽量不要使用SELECT * ，这是什么原因呢？如果我们在本地操作数据库，很重要的一点就是I/O，我们常说的优化优化，其实就是减少I/O的次数，减少每次的I/O量，当我们使用SELECT *的时候，会取出一些不必要的字段，加大了I/O。因此我们要养成用什么就取什么的习惯。再回来说说执行器吧，当我们对SQL进行优化后，就得到了最终的执行计划，执行器就会根据该执行计划调用存储引擎查询数据。</p>
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a><font size="5">缓存</font></h2><p>这一组件已经在后续版本被移除，当时我正在使用的MySQL5.5仍然存在该组件。简单地说，当我们执行SQL语句后，会将查询的结果放入缓存中，如果我们下次仍执行这条SQL语句，那么这时就会直接查询缓存直接返回数据。但是有一点要明确：并不是执行所有SQL语句后都会放入缓存。但是该缓存的效率是不高的，这是因为：<br>我们一般不会执行一条SQL语句多次，并且当我们输入不同的SQL语句时，还会对缓存进行更新。由于缓存命中率低，并且占用内存空间，所以在MySQL8时被移除。</p>
+<h1 id="存储引擎层"><a href="#存储引擎层" class="headerlink" title="存储引擎层"></a>存储引擎层</h1><p>存储引擎是我们听过最多的MySQL的部分了，存储引擎用于管理和组织我们的数据文件，它是数据库中非常重要的组件。<font color="red"><b>存储引擎是表级别的，不是库级别的，我们在创建表时可以为不同的表使用不同的存储引擎</b></font>。MySQL有很多不同的存储引擎，我们可以使用<b>show engines;</b>命令查看MySQL的存储引擎。MySQL有一个非常好的设计，MySQL是一个可插拔的存储引擎系统，也就是说，如果我们自己实现了一个符合规范的存储引擎，我们就可以将自己实现的存储引擎插到MySQL中使用。<br>MySQL的存储引擎种类很多，主要说的就两个：InnoDB和MyISAM存储引擎，不同的存储引擎差别较大，因此我们在说存储引擎的时候，一定要说明是哪一种存储引擎。</p>
+<h2 id="InnoDB存储引擎"><a href="#InnoDB存储引擎" class="headerlink" title="InnoDB存储引擎"></a><font size="5">InnoDB存储引擎</font></h2><h3 id="文件格式"><a href="#文件格式" class="headerlink" title="文件格式"></a><font size="5">文件格式</font></h3><p>使用InnoDB存储引擎的表，有两种不同后缀的文件</p>
+<ol>
+<li>.frm文件，存储表的结构(可以理解为创建表语句)</li>
+<li>.ibd文件，存储表的索引</li>
+</ol>
+<h3 id="索引结构"><a href="#索引结构" class="headerlink" title="索引结构"></a><font size="5">索引结构</font></h3><ol>
+<li><p>InnoDB的数据表是以索引的形式存在的，表的主键就是一个聚簇索引。索引采用B+树的结构，B+树的每个叶子节点存储着表的记录。InnoDB内部可能会使用哈希索引，但这是我们无法干预的。</p>
+</li>
+<li><p>InnoDB的辅助索引，同样使用B+树结构，辅助索引的叶子节点存储的是对应的主键的值</p>
+</li>
+<li><p>InnoDB不支持全文索引，5.7以后InnoDB已经支持</p>
+<h3 id="加锁"><a href="#加锁" class="headerlink" title="加锁"></a><font size="5">加锁</font></h3><p>InnoDB支持表锁和行锁两种锁，并且InnoDB的锁锁的是索引，因为前面说过，InnoDB的表本身就是一个索引文件。如果我们的访问命中了索引，那么会使用行锁索引相应的记录行，如果没有命中索引，则会使用表锁锁全表。因此创建合适的索引并编写合适的SQL语句对于提高查询性能至关重要</p>
+</li>
+</ol>
+<h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a><font size="5">事务</font></h3><p>InnoDB是支持事务的，对于InnoDB，每一条SQL语句都默认封装成事务，自动提交(set autocomit=0关闭自动提交)。</p>
+<h3 id="其它"><a href="#其它" class="headerlink" title="其它"></a><font size="5">其它</font></h3><ol>
+<li>InnoDB支持外键，这个我们平常也经常使用</li>
+<li>InnoDB不保存表的具体行数，当执行select count(*)时，需要进行全表扫描</li>
+</ol>
+<h2 id="MyISAM存储引擎"><a href="#MyISAM存储引擎" class="headerlink" title="MyISAM存储引擎"></a><font size="5">MyISAM存储引擎</font></h2><h3 id="文件格式-1"><a href="#文件格式-1" class="headerlink" title="文件格式"></a><font size="5">文件格式</font></h3><p>使用MyISAM存储引擎的表，有三种不同后缀的文件</p>
+<ol>
+<li>.frm文件，存储表的结构(可以理解为创建表语句)</li>
+<li>.MYD文件，存储表的数据</li>
+<li>.MYI文件，存储表的索引</li>
+</ol>
+<p>MyISAM同样使用B+树结构的索引，但是和InnoDB不同的是，MyISAM不支持聚簇索引。通过上面文件格式也可以发现，MyISAM中索引和数据是分离的。B+树索引的叶子节点存储的是对应记录的地址。</p>
+<h3 id="索引结构-1"><a href="#索引结构-1" class="headerlink" title="索引结构"></a><font size="5">索引结构</font></h3><h3 id="加锁-1"><a href="#加锁-1" class="headerlink" title="加锁"></a><font size="5">加锁</font></h3><p>MyISAM只支持表锁，并且锁的是数据文件，那么为什么MyISAM不支持行锁呢？这点我上网了解了一下，表锁虽然在高并发下性能低，但是它开销小锁表快，可能是以前对于并发要求并不高，于是MyISAM也并不需要使用行锁。</p>
+<h3 id="事务-1"><a href="#事务-1" class="headerlink" title="事务"></a><font size="5">事务</font></h3><p>MyISAM是不支持事务的，因此它的故障恢复能力较差。</p>
+<h3 id="其它-1"><a href="#其它-1" class="headerlink" title="其它"></a><font size="5">其它</font></h3><ol>
+<li>MyISAM不支持外键</li>
+<li>MyISAM中有一个变量保存了整个表的行数，执行COUNT(*)时速度很快，只需要读出该变量即可。</li>
+</ol>
+<p>那么为什么InnoDB中不使用该变量呢？<br>这是因为，由于InnoDB事务的特性，在同一时刻表中的行数对于不同的事务来说是不一样的，因此count(*)会统计对于当前事务来说可以统计到的行数。</p>
+<hr>
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/MySQL/" rel="tag"><i class="fa fa-tag"></i>MySQL</a>
+            
+              <a href="/tags/索引/" rel="tag"><i class="fa fa-tag"></i>索引</a>
+            
+              <a href="/tags/MySQL架构/" rel="tag"><i class="fa fa-tag"></i>MySQL架构</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/03/20/深入浅出Https/" rel="next" title="深入浅出Https">
+                  <i class="fa fa-chevron-left"></i> 深入浅出Https
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#总体架构"><span class="nav-number">1.</span> <span class="nav-text">总体架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#客户层"><span class="nav-number">2.</span> <span class="nav-text">客户层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Server层"><span class="nav-number">3.</span> <span class="nav-text">Server层</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#连接器"><span class="nav-number">3.1.</span> <span class="nav-text">连接器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析器"><span class="nav-number">3.2.</span> <span class="nav-text">分析器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化器"><span class="nav-number">3.3.</span> <span class="nav-text">优化器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行器"><span class="nav-number">3.4.</span> <span class="nav-text">执行器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存"><span class="nav-number">3.5.</span> <span class="nav-text">缓存</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#存储引擎层"><span class="nav-number">4.</span> <span class="nav-text">存储引擎层</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB存储引擎"><span class="nav-number">4.1.</span> <span class="nav-text">InnoDB存储引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#文件格式"><span class="nav-number">4.1.1.</span> <span class="nav-text">文件格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引结构"><span class="nav-number">4.1.2.</span> <span class="nav-text">索引结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加锁"><span class="nav-number">4.1.3.</span> <span class="nav-text">加锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务"><span class="nav-number">4.1.4.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其它"><span class="nav-number">4.1.5.</span> <span class="nav-text">其它</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MyISAM存储引擎"><span class="nav-number">4.2.</span> <span class="nav-text">MyISAM存储引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#文件格式-1"><span class="nav-number">4.2.1.</span> <span class="nav-text">文件格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引结构-1"><span class="nav-number">4.2.2.</span> <span class="nav-text">索引结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加锁-1"><span class="nav-number">4.2.3.</span> <span class="nav-text">加锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务-1"><span class="nav-number">4.2.4.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其它-1"><span class="nav-number">4.2.5.</span> <span class="nav-text">其它</span></a></li></ol></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">前路坎坷，人得自个儿成全自个儿</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">188</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">169</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>

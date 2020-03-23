@@ -76,7 +76,7 @@
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/29/MySQL索引及其实现原理/9.png">
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/29/MySQL索引及其实现原理/10.png">
 <meta property="og:image" content="https://hoa-w.github.io/2020/02/29/MySQL索引及其实现原理/11.png">
-<meta property="og:updated_time" content="2020-02-29T15:16:01.889Z">
+<meta property="og:updated_time" content="2020-03-21T15:04:20.932Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL索引及其实现原理">
 <meta name="twitter:description" content="前面在介绍MySQL加锁处理的时候，多次的提到了索引，也简单地对MySQL InnoDB的索引进行了介绍，索引在数据库中有着至关重要的作用，通过索引能够大大提高我们的查询速度。那么索引到底是什么？今天我们就对索引进行详细的介绍。">
@@ -299,11 +299,19 @@
                 
               
 
-              <time title="创建时间：2020-02-29 18:09:25 / 修改时间：23:16:01" itemprop="dateCreated datePublished" datetime="2020-02-29T18:09:25+08:00">2020-02-29</time>
+              <time title="创建时间：2020-02-29 18:09:25" itemprop="dateCreated datePublished" datetime="2020-02-29T18:09:25+08:00">2020-02-29</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-21 23:04:20" itemprop="dateModified" datetime="2020-03-21T23:04:20+08:00">2020-03-21</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -400,9 +408,9 @@
 </li>
 <li><p><font color="red"><b>在InnoDB中，表数据文件本身就是按B+Tree组织的一个索引结构，这棵树的叶节点data域保存了完整的数据记录。</b></font>这个索引的key是数据表的主键，<font color="red"><b>InnoDB表数据文件本身就是主索引</b></font></p>
 </li>
-<li><p><b>主索引(辅助索引)</b><br><img src="/2020/02/29/MySQL索引及其实现原理/10.png" alt><br>InnoDB主索引(同时也是数据文件)的示意图<br>可以看到叶节点包含了完整的数据记录，这种索引叫做聚集索引。因为InnoDB的数据文件本身要按主键聚集，所以<b>InnoDB要求表必须有主键(MyISAM可以没有)</b>，如果没有显式指定，则MySQL系统会自动选择一个可以唯一标识数据记录的列作为主键，如果不存在这种列，则MySQL自动为InnoDB表生成一个隐含字段作为主键，这个字段长度为6个字节，类型为长整形。</p>
+<li><p><b>主索引(辅助索引)</b><br><img src="/2020/02/29/MySQL索引及其实现原理/10.png" alt><br>InnoDB主索引(同时也是数据文件)的示意图<br>可以看到叶节点包含了完整的数据记录，这种索引叫做聚集索引。因为InnoDB的数据文件本身要按主键聚集，所以<b>InnoDB要求表必须有主键(MyISAM可以没有)</b>，如果没有显式指定，则MySQL系统会自动选择一个<font color="red"><b>唯一非空列</b></font>作为主键，如果不存在这种列，则MySQL自动为InnoDB表生成一个隐含字段作为主键，这个字段长度为6个字节，类型为长整形。</p>
 </li>
-<li><p><b>辅助索引</b><br>InnoDB的辅助索引和MyISAM也不一样。<font color="red"><b>InnoDB的辅索引data域存储相应记录主键的值而不是地址。换句话说，InnoDB的所有辅助索引都引用主键作为data域。</b></font><br><img src="/2020/02/29/MySQL索引及其实现原理/11.png" alt><br>聚集索引这种实现方式使得按主键的搜索十分高效，但是辅助索引搜索需要检索两遍索引：<b>首先检索辅助索引获得主键，然后用主键到主索引中检索获得记录。</b></p>
+<li><p><b>辅助索引</b><br>InnoDB的辅助索引和MyISAM也不一样。<font color="red"><b>InnoDB的辅索引data域存储相应记录主键的值而不是地址。换句话说，InnoDB的所有辅助索引都引用主键作为data域。</b></font>并且当我们创建表时，InnoDB会自动为表中的唯一列(unique约束)创建唯一索引<br><img src="/2020/02/29/MySQL索引及其实现原理/11.png" alt><br>聚集索引这种实现方式使得按主键的搜索十分高效，但是辅助索引搜索需要检索两遍索引：<b>首先检索辅助索引获得主键，然后用主键到主索引中检索获得记录。</b></p>
 </li>
 </ol>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>了解不同存储引擎的索引实现方式对于正确使用和优化索引都非常有帮助。例如</p>
@@ -560,7 +568,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">187</span>
+          <span class="site-state-item-count">188</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -586,7 +594,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">168</span>
+        <span class="site-state-item-count">169</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
