@@ -4,6 +4,62 @@
   
     
     <entry>
+      <title>深入剖析局部类与final关键字</title>
+      <link href="/2020/03/24/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90%E5%B1%80%E9%83%A8%E7%B1%BB%E4%B8%8Efinal%E5%85%B3%E9%94%AE%E5%AD%97/"/>
+      <url>/2020/03/24/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90%E5%B1%80%E9%83%A8%E7%B1%BB%E4%B8%8Efinal%E5%85%B3%E9%94%AE%E5%AD%97/</url>
+      
+        <content type="html"><![CDATA[<p>Java中有一种神奇的类，那就是局部内部类。定义在方法或某个作用域内的类，就是局部内部类。而匿名内部类就是一种局部内部类。关于局部内部类，我一直很疑惑为什么它只能访问final修饰的局部变量？它访问成员变量时需要加final修饰么？我上网查阅，网上给出的答案五花八门让人无法分辨真假，于是我花了点儿时间，自己动手一个一个的实验，终于整理出了头绪，特此来记录一下。</p><hr><a id="more"></a><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>在文章的开头，先给出结论(本结论基于JDK1.8版本)：<font color="red"><b>局部内部类访问只能访问final修饰的局部变量，可以访问非final修饰的局部内部类所属类的成员属性。</b></font>至于原因，我在演示后在文章的末尾进行总结。</p><h1 id="局部内部类访问局部变量"><a href="#局部内部类访问局部变量" class="headerlink" title="局部内部类访问局部变量"></a>局部内部类访问局部变量</h1><p>在本节中，我将在方法内部定义一个局部内部类，让其访问方法的局部变量，通过反汇编查看编译后的字节码文件</p><h2 id="演示"><a href="#演示" class="headerlink" title="演示"></a><font size="5">演示</font></h2><ol><li><p>在方法内部定义一个局部内部类，并在内部类中使用内部类所述方法的User类型的变量。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">class Outter&#123;</span><br><span class="line">    public static void test(User user)&#123;</span><br><span class="line">        user.name=&quot;hello &quot;;</span><br><span class="line">        class Inner&#123;</span><br><span class="line">        public void show()&#123;</span><br><span class="line">            System.out.println(user.name);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    new Inner().show();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        test(new User());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//定义一个类</span><br><span class="line">class User&#123;</span><br><span class="line">  public int id;</span><br><span class="line">  public String name;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li><li><p>使用javac Outter.java编译该类，会得到两个class文件(不考虑User.class)<br><img src="/2020/03/24/深入剖析局部类与final关键字/1.png" alt> </p></li><li><p>其中一个和外围类(Outter)的名字相同，另外一个应该是局部内部类的class文件，我们来反编译一下Outter.class<br><img src="/2020/03/24/深入剖析局部类与final关键字/2.png" alt> 查看Outter反编译后的代码，我们发现，它test方法中的参数竟然是final的，我们写的代码中明明没有final啊，这是为什么呢？原来，在以前，我们是需要显式的用final修饰该局部变量的，但是后来，Java使用了语法糖，不用我们去加final了，它在编译时会自动加上final。</p></li><li><p>我们再来反编译下局部内部类Inner的字节码文件Outter$1Inner.class<br><img src="/2020/03/24/深入剖析局部类与final关键字/3.png" alt> 通过查看反编译的代码，我们发现，当我们的局部内部类使用局部变量时，会将该局部变量当作自己的成员变量使用(在构造方法中赋值)。</p></li></ol><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><font size="5">总结</font></h2><p>通过演示，我们可以得出结论：<font color="red"><b>在方法内部定义局部内部类时，如果局部内部类使用了局部变量，即使我们没有将该局部变量显式的声明为final，JVM在编译会自动将该局部变量加上final修饰。并且局部内部类会将该局部变量当作自己的成员属性使用。</b></font></p><h1 id="局部内部类访问成员变量"><a href="#局部内部类访问成员变量" class="headerlink" title="局部内部类访问成员变量"></a>局部内部类访问成员变量</h1><p>在本节中，我将定义一个方法，在方法中定义一个局部内部类，并在局部内部类中访问其所属方法所属的类的成员属性，通过反汇编查看编译后的字节码文件</p><h2 id="演示-1"><a href="#演示-1" class="headerlink" title="演示"></a><font size="5">演示</font></h2><ol><li><p>定义一个方法，在方法中定义一个局部内部类，内部类中访问外围类的成员属性</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public class Outter &#123;</span><br><span class="line">    //定义一个外围类的成员属性</span><br><span class="line">    private User OutterUser = new User();</span><br><span class="line">    </span><br><span class="line">    public void show() &#123;</span><br><span class="line">        this.OutterUser.name = &quot;Outter&quot;;</span><br><span class="line">        //定义一个方法的局部内部类</span><br><span class="line">        class Inner&#123;</span><br><span class="line">            public void InnerMethod() &#123;</span><br><span class="line">                //局部内部类访问外围类的成员属性</span><br><span class="line">                System.out.println(OutterUser.name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        //修改成员属性，使其指向新的User对象</span><br><span class="line">        this.OutterUser=new User();</span><br><span class="line">        //执行局部类的方法</span><br><span class="line">        new Inner().InnerMethod();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        //调用show()方法</span><br><span class="line">        new Outter().show();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class User&#123;</span><br><span class="line">    public int id;</span><br><span class="line">    public String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li><li><p>我们使用javac Outter.java编译java文件，除去User.class，我们仍得到两个class文件<br><img src="/2020/03/24/深入剖析局部类与final关键字/4.png" alt> </p></li><li><p>我们通过反汇编查看Outter.class文件<br><img src="/2020/03/24/深入剖析局部类与final关键字/5.png" alt> 这里我们发现了，<font color="red"><b>此时成员属性并没有被final修饰。方法执行时使用Outter.this调用外围类的成员属性。</b></font>这里有个小细节需要特别注意：<font color="red"><b>我们在代码中，修改成员属性的动作写在定义局部内部类之后，但是反编译后，该动作被提到了前面执行，这也就意味着我们InnerMethod()方法时，打印的不是Outter，而是null。</b></font>我经过测试发现结果确实是这样。</p></li><li><p>我们再来看看局部内部类的class文件<br><img src="/2020/03/24/深入剖析局部类与final关键字/6.png" alt> 在局部内部类中，此时和前面的不同，此时直接将外围类的引用传递了进来，这也就意味着局部内部类可以访问外围类的任何东西。</p></li></ol><h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a><font size="5">总结</font></h2><p>通过演示，我们可以得出结论：<font color="red"><b>当局部内部类使用外围类的成员属性时，局部内部类在构造方法中会传入外围类的引用，当需要访问外围类的成员属性时，直接使用该引用调用。</b></font></p><h1 id="匿名内部类"><a href="#匿名内部类" class="headerlink" title="匿名内部类"></a>匿名内部类</h1><p>匿名内部类是一种特殊的局部内部类，区别只是在于它没有名字而已，我在本地演示过，和局部内部类的规则一摸一样，这里就不演示了。</p><h1 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h1><ol><li><p>访问局部变量<br>通过演示可以发现，确实如网上有些答案所说，局部内部类只能访问final修饰的局部变量，那么这是什么原因呢？这要从Java的特点说起了，我们知道Java中采用的是值传递。也就是说，当传递一个基本类型时，方法内部会复制一份，方法中对该基本类型的任何修改都不会影响到外部变量本身；当传递一个引用类型时，方法内部会复制一份引用，方法内如果引用发生了变化，同样不会影响到外部变量。<font color="red"><b>当一个局部变量被局部内部类使用时，局部内部类会拷贝一份(如果是引用类型拷贝引用)作为自己的成员属性使用，因此无论是方法或者是类谁对它做了修改，都不会影响到另一方….为了避免这种尴尬的情况，保持一致性。因此简单粗暴的将局部变量设置为final，既然不能同步，那我们大家都不要修改咯。</b></font>这也就是只能访问final修饰的局部变量的原因。</p></li><li><p>访问成员属性<br>在访问成员属性时有所不同，<font color="red"><b>此时局部内部类并不会拷贝一份变量作为自己的成员属性，而是将外围类的引用传递进来(更加霸道..)，此时成员属性仍然只有一份，因此就不会出现不一致的情况了。</b></font></p></li><li><p>辟谣<br>关于网上说的延长生命周期一说，纯属无稽之谈，不知道从谁那里传过来的，真的是害人不浅！！！</p></li><li><p>最后疑问<br>当访问成员属性时，会将外围类的引用传递进来，那么有的同学可能会问了：既然是值传递，如果外围类对象的引用改变了不同样会造成不一致么？这个问题其实很简单，局部内部类定义在方法中，而方法属于外围类对象，当外围类对象引用改变了，那么当前对象就成了垃圾对象，还有存在的必要么？</p></li></ol><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> Java编程思想 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 局部内部类 </tag>
+            
+            <tag> final关键字 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Lambda表达式的底层实现</title>
+      <link href="/2020/03/23/Lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0/"/>
+      <url>/2020/03/23/Lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0/</url>
+      
+        <content type="html"><![CDATA[<p>今天写多线程代码时，用到了Lambda表达式实现Runnable接口，于是我突然想到一个问题：Lambda是Jdk8的新特性，那么Lambda表达式到底是怎么实现的呢？于是我进行了一番测试和上网查找，终于弄明白了Lambda的底层实现，所以特此来记录一下。</p><hr><a id="more"></a><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Lambda表达式是JDK1.8出现的新特性，能够大大的简化我们的代码，并且Lambda经常和函数式接口一同搭配使用，这是由函数式接口的特点决定的：函数式接口(@FunctionalInterface)只允许有一个抽象方法(静态方法和默认方法不做要求，如果要将Object类的方法变成抽象方法，那么抽象方法也不做要求)。这样在实现函数式接口时，就可以直接使用Lambda表达式来实现。极其方便快捷。但有一点需要注意：Lambda表达式无法处理重载方法</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">public class LambdaTest &#123;</span><br><span class="line">    //方法的重载版本：接收InterTest1接口的参数</span><br><span class="line">    public static void method(InterTest1 interTest1) &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //方法的重载版本：接收InterTest2接口的参数</span><br><span class="line">    public static void method(InterTest2 interTest2) &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">     //这里无法使用Lambda表达式，因为无法判断出该方法需要接受哪个接口作为参数  </span><br><span class="line">        method(()-&gt;&#123; </span><br><span class="line">            </span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">两个函数式接口</span><br><span class="line">@FunctionalInterface</span><br><span class="line">interface InterTest1 &#123;</span><br><span class="line">    void test(String msg);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@FunctionalInterface</span><br><span class="line">interface InterTest2 &#123;</span><br><span class="line">    void test(String msg);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>从上面的测试可以看出，当出现方法重载时，我们还是要使用匿名内部类的方式。</p><h1 id="演示Lambda表达式底层原理"><a href="#演示Lambda表达式底层原理" class="headerlink" title="演示Lambda表达式底层原理"></a>演示Lambda表达式底层原理</h1><ol><li><p>我们写一个使用Lambda表达式的类，如下所示</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class App&#123;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        //使用Lambda表达式创建一个接口实现类</span><br><span class="line">        IMarkUp mu=(msg)-&gt;System.out.println(msg);</span><br><span class="line">        //调用该接口方法</span><br><span class="line">        mu.test(&quot;lambda&quot;);</span><br><span class="line">    </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">interface IMarkUp&#123;</span><br><span class="line">    void test(String msg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li><li><p>在cmd窗口，使用javac App.java 命令编译该App类，会发现得到了两个Class文件<br><img src="/2020/03/23/Lambda表达式的底层实现/1.png" alt></p></li><li><p>我们使用javap -p App命令反编译一下App类<br><img src="/2020/03/23/Lambda表达式的底层实现/2.png" alt> 通过反编译我们发现，反编译后出现了一个私有静态方法，并且该方法是我们的java源码中不存在的，它接受一个String类型作为参数</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">private static void lambda$main$0(java.lang.String)&#123;</span><br><span class="line">    //该方法的方法体就是我们Lambda表达式的内容</span><br><span class="line">    System.out.println(msg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li><li><p>使用java -Djdk.internal.lambda.dumpProxyClasses App来查看接口的实现类，但是我电脑上该命令执行不出来，于是我在IDEA上将前面的命令配置成参数执行，得到了JVM生成的接口的实现类</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import java.lang.invoke.LambdaForm.Hidden;</span><br><span class="line"></span><br><span class="line">//该实现类是JVM创建的，继承了我们的函数式接口</span><br><span class="line">final class LambdaTest$$Lambda$1 implements InterTest &#123;</span><br><span class="line">    //私有的构造方法</span><br><span class="line">    private LambdaTest$$Lambda$1() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //实现了接口中的抽象方法</span><br><span class="line">    @Hidden</span><br><span class="line">    public void test(String var1) &#123;</span><br><span class="line">        //通过调用前面的私有静态方法完成功能</span><br><span class="line">        LambdaTest.lambda$main$0(var1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li></ol><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>最后我们可以总结JDK1.8下Lambda表达式的底层原理：JVM仍然会生成接口的一个实现类，并在调用方法类中生成一个私有的静态方法，在实现类的方法中调用该方法。可以发现，Lambda只是简化了我们的书写，但是它还是通过实现类完成的。</p><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> Java编程思想 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Java基础 </tag>
+            
+            <tag> Lambda表达式 </tag>
+            
+            <tag> 底层实现 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>浅谈MySQL架构</title>
       <link href="/2020/03/21/%E6%B5%85%E8%B0%88MySQL%E6%9E%B6%E6%9E%84/"/>
       <url>/2020/03/21/%E6%B5%85%E8%B0%88MySQL%E6%9E%B6%E6%9E%84/</url>
@@ -878,11 +934,11 @@
             
             <tag> 读书笔记 </tag>
             
-            <tag> TCP/IP </tag>
-            
             <tag> 网络安全 </tag>
             
             <tag> DOS攻击 </tag>
+            
+            <tag> TCP/IP </tag>
             
         </tags>
       
@@ -1378,9 +1434,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 位运算 </tag>
+            
+            <tag> LeetCode </tag>
             
         </tags>
       
@@ -1816,9 +1872,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 位运算 </tag>
+            
+            <tag> LeetCode </tag>
             
         </tags>
       
@@ -1953,9 +2009,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 位运算 </tag>
+            
+            <tag> LeetCode </tag>
             
         </tags>
       
@@ -2086,9 +2142,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 位运算 </tag>
+            
+            <tag> LeetCode </tag>
             
             <tag> 数组 </tag>
             
@@ -2115,9 +2171,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 位运算 </tag>
+            
+            <tag> LeetCode </tag>
             
         </tags>
       
@@ -2285,9 +2341,9 @@
       
         <tags>
             
-            <tag> LeetCode </tag>
-            
             <tag> 位运算 </tag>
+            
+            <tag> LeetCode </tag>
             
         </tags>
       
