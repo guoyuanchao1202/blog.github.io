@@ -66,7 +66,7 @@
 <meta property="og:description" content="一直以来都在学习MySQL，学了MySQL的事务、事务的四大特性及实现原理、索引的使用和实现等等一些MySQL相关的知识，但是对于MySQL的架构，或者通俗的说，MySQL是由哪几部分组成的却忽略了，实际上这是很不应该的，因为只有对MySQL的架构有了一个了解，才能对于SQL语句的执行流程有一个认识，从而能够进行更好的优化。今天就来简单地学习一个MySQL的架构，本文基于MySQL5.5版本。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://hoa-w.github.io/2020/03/21/浅谈MySQL架构/1.jpg">
-<meta property="og:updated_time" content="2020-03-23T08:27:36.046Z">
+<meta property="og:updated_time" content="2020-10-12T02:28:52.936Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="浅谈MySQL架构">
 <meta name="twitter:description" content="一直以来都在学习MySQL，学了MySQL的事务、事务的四大特性及实现原理、索引的使用和实现等等一些MySQL相关的知识，但是对于MySQL的架构，或者通俗的说，MySQL是由哪几部分组成的却忽略了，实际上这是很不应该的，因为只有对MySQL的架构有了一个了解，才能对于SQL语句的执行流程有一个认识，从而能够进行更好的优化。今天就来简单地学习一个MySQL的架构，本文基于MySQL5.5版本。">
@@ -300,7 +300,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-23 16:27:36" itemprop="dateModified" datetime="2020-03-23T16:27:36+08:00">2020-03-23</time>
+                <time title="修改时间：2020-10-12 10:28:52" itemprop="dateModified" datetime="2020-10-12T10:28:52+08:00">2020-10-12</time>
               </span>
             
           
@@ -401,6 +401,7 @@
 </ol>
 <p>那么为什么InnoDB中不使用该变量呢？<br>这是因为，由于InnoDB事务的特性，在同一时刻表中的行数对于不同的事务来说是不一样的，因此count(*)会统计对于当前事务来说可以统计到的行数。</p>
 <hr>
+
 
     </div>
 
@@ -541,7 +542,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">190</span>
+          <span class="site-state-item-count">191</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -567,7 +568,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">173</span>
+        <span class="site-state-item-count">175</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
@@ -636,7 +637,7 @@
     <footer id="footer" class="footer">
       <div class="footer-inner">
         <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
