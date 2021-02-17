@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="在深入剖析Java抽象队列同步器AQS一文中对AQS的实现原理进行详细介绍，这里就来介绍Java类库中基于AQS实现的互斥锁(也叫可重入锁)ReentrantLock。有了前面AQS的基础，学习ReentrantLock就会变得非常容易。">
+<meta name="keywords" content="源码,ReentrantLock,AQS,Java并发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入剖析基于AQS互斥锁ReentrantLock">
+<meta property="og:url" content="https://HoA-W.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/index.html">
+<meta property="og:site_name" content="CommonGuy">
+<meta property="og:description" content="在深入剖析Java抽象队列同步器AQS一文中对AQS的实现原理进行详细介绍，这里就来介绍Java类库中基于AQS实现的互斥锁(也叫可重入锁)ReentrantLock。有了前面AQS的基础，学习ReentrantLock就会变得非常容易。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://hoa-w.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/1.png">
+<meta property="og:image" content="https://hoa-w.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/2.png">
+<meta property="og:image" content="https://hoa-w.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/3.png">
+<meta property="og:image" content="https://hoa-w.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/4.png">
+<meta property="og:image" content="https://hoa-w.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/5.png">
+<meta property="og:image" content="https://hoa-w.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/6.png">
+<meta property="og:image" content="https://hoa-w.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/7.png">
+<meta property="og:image" content="https://hoa-w.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/8.png">
+<meta property="og:image" content="https://hoa-w.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/9.png">
+<meta property="og:image" content="https://hoa-w.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/10.png">
+<meta property="og:updated_time" content="2021-02-17T08:49:12.968Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入剖析基于AQS互斥锁ReentrantLock">
+<meta name="twitter:description" content="在深入剖析Java抽象队列同步器AQS一文中对AQS的实现原理进行详细介绍，这里就来介绍Java类库中基于AQS实现的互斥锁(也叫可重入锁)ReentrantLock。有了前面AQS的基础，学习ReentrantLock就会变得非常容易。">
+<meta name="twitter:image" content="https://hoa-w.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/1.png">
+  <link rel="canonical" href="https://HoA-W.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>深入剖析基于AQS互斥锁ReentrantLock | CommonGuy</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a href="https://github.com/HoA-W" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CommonGuy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="买太平湖底陈年水墨">
+      <meta itemprop="description" content="前路坎坷，人得自个儿成全自个儿">
+      <meta itemprop="image" content="/images/pic.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CommonGuy">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">深入剖析基于AQS互斥锁ReentrantLock
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2021-02-17 09:39:30 / 修改时间：16:49:12" itemprop="dateCreated datePublished" datetime="2021-02-17T09:39:30+08:00">2021-02-17</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java并发编程/" itemprop="url" rel="index"><span itemprop="name">Java并发编程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在<a href="http://www.bytes.xin/2021/02/16/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90Java%E6%8A%BD%E8%B1%A1%E9%98%9F%E5%88%97%E5%90%8C%E6%AD%A5%E5%99%A8AQS/#more" target="_blank" rel="noopener">深入剖析Java抽象队列同步器AQS</a>一文中对AQS的实现原理进行详细介绍，这里就来介绍Java类库中基于AQS实现的互斥锁(也叫可重入锁)ReentrantLock。有了前面AQS的基础，学习ReentrantLock就会变得非常容易。</p>
+<hr>
+<a id="more"></a>
+
+<h2 id="ReentrantLock简介"><a href="#ReentrantLock简介" class="headerlink" title="ReentrantLock简介"></a>ReentrantLock简介</h2><p>ReentranLock是Java提供的锁机制，它能够实现比synchronized更加丰富的功能。我们直到synchronized是不支持中断的，如果线程无法获取到锁就只能一直阻塞，而ReentrantLock提供了可以响应中断的方法，在线程因获取不到锁而阻塞时，可以响应外部中断；并且synchronized是非公平锁，ReentrantLock支持公平锁和非公平锁两种机制。</p>
+<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/1.png" alt></p>
+<p>ReentrantLock的内部架构如上图所示，可以看到ReentrantLock内部有三个类：Sync、NonFairSync、FairSync。顾名思义，NonFairSync用来实现非公平锁，FairSync用来实现公平锁，这两者都是继承自Sync，而Sync又是继承自前面说过的AQS，从图中我们可以很清楚的看到ReentrantLock是基于AQS实现。</p>
+<h2 id="Sync类"><a href="#Sync类" class="headerlink" title="Sync类"></a>Sync类</h2><p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/2.png" alt></p>
+<p>如图，Sync是一个抽象类，继承自AQS。并重写了父类的tryRelease和isHeldExclusively方法，如果你看过前一篇文章并且还有印象的话，那么你一定记得这两个方法正式AQS提供给子类实现的模板方法。此外，Sync还提供了一个抽象方法lock。对于Sync的成员方法将会在介绍lock/unlock时，再对相关的方法进行介绍</p>
+<h2 id="NonFairSync类"><a href="#NonFairSync类" class="headerlink" title="NonFairSync类"></a>NonFairSync类</h2><p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/3.png" alt></p>
+<p>NonFairSync用于实现非公平锁，继承自Sync并且是实现了父类的lock方法，同时还实现了AQS的模板方法tryAcquire方法。该类的成员方法非常简单，我们留到介绍lock/unlock时展开</p>
+<h2 id="FairSync类"><a href="#FairSync类" class="headerlink" title="FairSync类"></a>FairSync类</h2><p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/4.png" alt></p>
+<p>FairSync用于实现公平锁，继承体系和NonFairSync一样，并且同样实现了lock方法和AQS的模板方法tryAcquire方法。通过对比我们不难发现，公平锁和非公平锁的区别就在lock和tryAcquire中。具体细节后面介绍</p>
+<h2 id="ReentrantLock类"><a href="#ReentrantLock类" class="headerlink" title="ReentrantLock类"></a>ReentrantLock类</h2><p>介绍完ReentrantLock的三个内部类的大体架构，现在正式开始介绍ReentrantLock的成员属性、构造方法以及几个主要的成员方法。</p>
+<h3 id="ReentrantLock成员属性"><a href="#ReentrantLock成员属性" class="headerlink" title="ReentrantLock成员属性"></a>ReentrantLock成员属性</h3><p>ReentrantLock的成员属性非常简单(还有一个序列化ID，和本文无关)，就是一个Sync对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Sync sync;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ReentrantLock构造方法"><a href="#ReentrantLock构造方法" class="headerlink" title="ReentrantLock构造方法"></a>ReentrantLock构造方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 无参构造方法，非公平锁</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    sync = <span class="keyword">new</span> NonfairSync();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 带参构造方法，可以创建公平锁/非公平锁</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">(<span class="keyword">boolean</span> fair)</span> </span>&#123;</span><br><span class="line">    sync = fair ? <span class="keyword">new</span> FairSync() : <span class="keyword">new</span> NonfairSync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ReentrantLock成员方法"><a href="#ReentrantLock成员方法" class="headerlink" title="ReentrantLock成员方法"></a>ReentrantLock成员方法</h3><h4 id="lock-–非公平锁"><a href="#lock-–非公平锁" class="headerlink" title="lock()–非公平锁"></a>lock()–非公平锁</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    sync.lock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，lock的实现非常简单，就是调用sync的lock方法，通过前面的构造方法可以看出，公平锁和非公平锁它们的sync的实现是不同的，一个是NonFairSync一个是FairSync；而对于这两个子类，它们对于lock的实现也是不同的，我们就以非公平锁为例，来具体看看它的实现</p>
+<h4 id="NonFairSync-lock"><a href="#NonFairSync-lock" class="headerlink" title="NonFairSync.lock()"></a>NonFairSync.lock()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 使用CAS来设置同步状态</span></span><br><span class="line">    <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">        <span class="comment">// 如果设置成功，当前线程获取锁</span></span><br><span class="line">        setExclusiveOwnerThread(Thread.currentThread());</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="comment">// 如果获取失败，调用acquire方法</span></span><br><span class="line">        acquire(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="acquire-int-arg"><a href="#acquire-int-arg" class="headerlink" title="acquire(int arg)"></a>acquire(int arg)</h4><p>在上一篇介绍AQS时我们介绍过这个方法，acquire是AQS的一个成员方法，并且还说道其中的tryAcquire()方法是AQS提供的模板方法，由子类进行重写。通过前面NonFairSync的架构图我们可以看到，NonFairSync确实重写了tryAcquire方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="NonFairSync-tryAcquire-int-arg"><a href="#NonFairSync-tryAcquire-int-arg" class="headerlink" title="NonFairSync.tryAcquire(int arg)"></a>NonFairSync.tryAcquire(int arg)</h4><p>可以看到NonFairSync在tryAcquire中调用了父类Sync的nonfairTryAcquire方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// NonFairSync重写AQS的模板方法tryAcquire</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 调用父类Sync的成员方法nonfairTryAcquire</span></span><br><span class="line">    <span class="keyword">return</span> nonfairTryAcquire(acquires);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Sync-nonfairTryAcquire-int-acquires"><a href="#Sync-nonfairTryAcquire-int-acquires" class="headerlink" title="Sync.nonfairTryAcquire(int acquires)"></a>Sync.nonfairTryAcquire(int acquires)</h4><p>子类基于AQS实现lock的核心逻辑</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">nonfairTryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取当前线程</span></span><br><span class="line">    <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">    <span class="comment">// 获取当前锁状态</span></span><br><span class="line">    <span class="keyword">int</span> c = getState();</span><br><span class="line">    <span class="comment">// 如果是0，说明没有线程持有锁</span></span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 使用CAS修改锁状态</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">            <span class="comment">// 如果修改成功则当前线程获取锁，调用AQS的父类方法</span></span><br><span class="line">            setExclusiveOwnerThread(current);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果不是0，说明已经有线程获取到了锁，判断是否是当前线程</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">        <span class="comment">// 如果是当前线程，则表明当前线程重入了锁</span></span><br><span class="line">        <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">        <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>) <span class="comment">// overflow</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</span><br><span class="line">        <span class="comment">// 修改锁状态</span></span><br><span class="line">        setState(nextc);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="lock-方法总结"><a href="#lock-方法总结" class="headerlink" title="lock()方法总结"></a>lock()方法总结</h4><p>对于非公平锁的lock方法到这里就介绍完毕了，其中涉及到了ReentrantLock、Sync、NonFairSync、AQS、AQS父类之间的方法调用，你可能已经迷糊了，不过没有关系，我总结了lock非公平锁的调用关系图，通过这个图，再结合前面的介绍，相信你能够把lock方法的来龙去脉梳理清楚</p>
+<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/5.png" alt></p>
+<p>如图，就是ReentrantLock的lock实现，可以看到ReentrantLock主要是通过重写AQS的tryAcquire方法来实现，并且根据锁类型不同(公平锁或非公平锁)，进行不同的重写</p>
+<h4 id="lock-–公平锁"><a href="#lock-–公平锁" class="headerlink" title="lock()–公平锁"></a>lock()–公平锁</h4><p>介绍完lock()公平锁的实现，现在介绍lock()非公平锁。通过上面的图发现，公平锁和非公平锁的区别在于Sync.lock和tryAcquire两个方法，我们分别看一看</p>
+<h4 id="FairSync-lock"><a href="#FairSync-lock" class="headerlink" title="FairSync.lock()"></a>FairSync.lock()</h4><p>可以看到公平锁和非公平锁的lock方法在实现上有细微的不同：线程使用非公平锁时会首先尝试获取锁，获取失败后才会调用acquire方法，但是公平锁不会尝试获取锁，而是直接调用acquire。这恰恰是公平锁的语义，线程需要按照先来后到的顺序依次获取锁。我们考虑下面这种情况：当前线程A持有公平锁，同步队列中已经有B线程等待锁，线程C尝试调用lock获取锁，此时A释放了锁，那么按照我们对公平锁的定义，B应该获取锁，而C进入同步队列等待。如果C在lock方法中首先尝试获取锁，那么C就有可能在B之前获取锁，这就违背了我们对公平锁的定义</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    acquire(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="FairSync-tryAcquire-int-acquires"><a href="#FairSync-tryAcquire-int-acquires" class="headerlink" title="FairSync.tryAcquire(int acquires)"></a>FairSync.tryAcquire(int acquires)</h4><p>和非公平锁一样，acquire是AQS的方法，acquire中回首先调用tryAcquire方法，而tryAcquire方法是由子类实现的，我们来看一下公平锁的tryAcquire方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 获取当前线程</span></span><br><span class="line">        <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">        <span class="comment">// 获取当前锁状态</span></span><br><span class="line">        <span class="keyword">int</span> c = getState();</span><br><span class="line">        <span class="comment">// 如果状态为0，说明没有线程持有锁</span></span><br><span class="line">        <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// 这里相对于非公平锁多了一个判断条件：如果当前节点是头节点的后继节点</span></span><br><span class="line">            <span class="comment">// 使用CAS修改锁状态，如果修改成功，则当前线程获取锁</span></span><br><span class="line">            <span class="keyword">if</span> (!hasQueuedPredecessors() &amp;&amp;</span><br><span class="line">                compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">                setExclusiveOwnerThread(current);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 和非公平锁一样</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">            <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">            <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</span><br><span class="line">            setState(nextc);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过源码我们发现，非公平锁和公平锁的tryAcquire方法唯一的不同在于公平锁比非公平锁多了一个判断条件，即调用了hasQueuedPredecessors方法，我们来看一看这个方法</p>
+<h4 id="AQS-hasQueuedPredecessors"><a href="#AQS-hasQueuedPredecessors" class="headerlink" title="AQS.hasQueuedPredecessors()"></a>AQS.hasQueuedPredecessors()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">hasQueuedPredecessors</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Node t = tail; <span class="comment">// Read fields in reverse initialization order</span></span><br><span class="line">    Node h = head;</span><br><span class="line">    Node s;</span><br><span class="line">    <span class="comment">// 如果当前同步队列为空(h==t),返回false</span></span><br><span class="line">    <span class="comment">// 如果当前同步队列不为空并且当前头节点的后继节点为空或后继节点不是当前线程，返回true</span></span><br><span class="line">    <span class="comment">// 如果当前同步队列不为空并且头节点的后继节点就是当前线程，返回false</span></span><br><span class="line">    <span class="keyword">return</span> h != t &amp;&amp;</span><br><span class="line">        ((s = h.next) == <span class="keyword">null</span> || s.thread != Thread.currentThread());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个方法是AQS提供的方法，主要是用来判断同步队列中是否有已经在等待的线程，如果有的话队列中第一个等待的线程是否是当前线程；从而判断在当前线程是否应该尝试获取锁。这就是公平锁的实现原理。</p>
+<h4 id="unlock"><a href="#unlock" class="headerlink" title="unlock()"></a>unlock()</h4><p>介绍完lock，我们来介绍一下unlock</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unlock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 调用sync的release，实际上release是AQS提供的方法</span></span><br><span class="line">    sync.release(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果你看过上一篇AQS的文章，那么你一定对release有影响，这不就是AQS中的方法么，我们再来看一下AQS的release方法</p>
+<h4 id="AQS-release-int-arg"><a href="#AQS-release-int-arg" class="headerlink" title="AQS.release(int arg)"></a>AQS.release(int arg)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">release</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 调用模板方法tryRelease方法，如果成功</span></span><br><span class="line">    <span class="comment">// 唤醒一个同步队列上等待的线程，并返回true</span></span><br><span class="line">    <span class="keyword">if</span> (tryRelease(arg)) &#123;</span><br><span class="line">        Node h = head;</span><br><span class="line">        <span class="keyword">if</span> (h != <span class="keyword">null</span> &amp;&amp; h.waitStatus != <span class="number">0</span>)</span><br><span class="line">            unparkSuccessor(h);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 否则，返回false</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>tryRelease就是我们在前面提到的AQS提供给子类实现的模板方法，对于非公平锁和公平锁，他们的tryRelease方法都是一样的，都是由Sync来实现，我们来看一看Sync对tryRelease的实现</p>
+<h4 id="Sync-tryRelease-int-arg"><a href="#Sync-tryRelease-int-arg" class="headerlink" title="Sync.tryRelease(int arg)"></a>Sync.tryRelease(int arg)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryRelease</span><span class="params">(<span class="keyword">int</span> releases)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 计算释放后的锁状态，支持可重入。</span></span><br><span class="line">    <span class="keyword">int</span> c = getState() - releases;</span><br><span class="line">    <span class="comment">// 如果当前线程不是持有锁的线程，抛出异常</span></span><br><span class="line">    <span class="keyword">if</span> (Thread.currentThread() != getExclusiveOwnerThread())</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalMonitorStateException();</span><br><span class="line">    <span class="keyword">boolean</span> free = <span class="keyword">false</span>;</span><br><span class="line">    <span class="comment">// 如果锁状态为0，说明当前线程已经不持有锁</span></span><br><span class="line">    <span class="comment">// 否则说明当前线程仍然持有锁，即当前线程重入过该锁</span></span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">        free = <span class="keyword">true</span>;</span><br><span class="line">        setExclusiveOwnerThread(<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    setState(c);</span><br><span class="line">    <span class="keyword">return</span> free;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>unparkSuccessor方法我们在AQS那一篇中介绍过，这里就不多介绍了，不记得了可以回看一下</p>
+<h4 id="unlock-方法总结"><a href="#unlock-方法总结" class="headerlink" title="unlock()方法总结"></a>unlock()方法总结</h4><p>至此，ReentrantLock的unlock已经介绍完毕。同样的，我总结一张图来表示unlock的大致逻辑</p>
+<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/6.png" alt></p>
+<p>通过源码得知，如果当前线程在持有锁后又多次调用了lock(重入)，那么就需要相应次数的unlock才能够释放锁。如果是最后一次unlock，那么需要将同步队列中最靠前的没有被取消的线程唤醒(unpark)。</p>
+<h2 id="ReentrantLock总结"><a href="#ReentrantLock总结" class="headerlink" title="ReentrantLock总结"></a>ReentrantLock总结</h2><p>到目前为止，已经将AQS、ReentrantLock的主要内容介绍完毕，但是你可能还有不少疑问，如当一个线程释放锁后，应该唤醒哪一个线程，被唤醒的线程又是如何重新获取锁，获取到锁之后同步队列会发生什么变化；当一个线程尝试获取锁失败后，什么时候加入到同步队列，什么时候被阻塞…等等。下面我将通过几幅图搭配文字将前面讲的串联起来，希望能够为你解惑。由于公平锁和非公平锁的实现基本类似，所以下面的示例基于非公平锁演示。</p>
+<ul>
+<li><p><strong>ReentrantLock对象刚创建，没有线程申请过锁</strong></p>
+<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/7.png" alt></p>
+<p>此时还不存在同步队列，锁状态为0，没有线程持有锁</p>
+</li>
+<li><p><strong>线程A申请锁</strong></p>
+<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/8.png" alt></p>
+<p>此时没有只有线程A申请锁，通过lock源码可知，线程A直接获取到锁，锁状态为1，由于仍然没有线程等待锁，因此同步队列仍为空</p>
+</li>
+<li><p><strong>线程B、线程C申请锁</strong></p>
+<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/9.png" alt></p>
+<p>此时A并没有释放锁，因此线程B和线程C尝试获取锁失败，调用acquire方法，并且在acquire中调用tryAcquire失败(因为我们假设在这个过程中线程A一直持有锁)，因此线程B和线程C会并发的将自己插入到同步队列中，两者在同步队列中的顺序无法保证。我们假设是线程C先进入同步队列。紧接着线程B和线程C会并发调用acquireQueued方法。在该方法中，C线程会进入到一个死循环中，在死循环中首先尝试获取锁，因为此时A并没有释放锁，因此获取失败，此时C线程会将它的前驱节点(此时是头节点)waitStatus修改为Signal(-1)，最后调用park阻塞。同样的，B线程会做和C一样的操作，不过B线程会将它的前驱节点(此时是C节点)waitStatus修改为Signal(-1)，最后调用park阻塞。因此最终的结果就是：B和C加入到同步队列；B和C线程代表的节点以及头节点状态都是Signal(-1)。</p>
+</li>
+<li><p><strong>线程A释放锁</strong></p>
+<p>A释放锁，调用AQS的release方法，release方法首先会调用Sync实现的tryRelease方法，由于A并没有对锁进行重入，因此A线程此时已经完全的释放了锁，并且同步队列不为空(B和C线程正在等待锁)，所以release方法还会调用AQS的unparkSuccessor方法，唤醒同步队列中的一个等待线程。在unparkSuccessor方法中，会首先将头结点的状态修改为0，并且找到最靠近头节点的非Cancelled节点(在本例中即C节点)，调用unpark唤醒该节点上的线程。</p>
+</li>
+<li><p><strong>C被唤醒，再次尝试获取锁</strong></p>
+<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/10.png" alt></p>
+<p>当C线程被唤醒以后，由于是一个死循环，因此会重新尝试获取锁。我们假设此时没有别的线程与C竞争(实际上可能会刚好线程D在此时也要获取锁，逻辑是一样的，不过说起来篇幅较长，这里就假设只有C再获取锁)，此时C是头节点的后继节点，因此C调用tryAcquire方法尝试获取锁并且获取成功，获取成功后C会重新设置头节点：将原来的head节点丢弃，将C节点设置为head节点，并且将C中的thread字段置null，因为C代表的线程已经获得了锁，这里就不需要了。</p>
+</li>
+</ul>
+<p>以三个线程为例，通过图示，简单的将它们的获取锁成功、获取锁失败、释放锁、重新获取锁的过程串联在了一起，希望你能够有所收获。对ReentrantLock的介绍就到这里。后面会对Condition、Semaphore逐一进行介绍。</p>
+
+    </div>
+
+    
+    
+    
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 <i class="fa fa-paw"></i> 感谢您的阅读-------------</div>
+    
+</div>
+
+	
+	</div>
+	<div>
+      
+        
+      
+	</div>
+        
+      
+        <div id="reward-container">
+  <div>如果你喜欢，请我喝杯茶呗...</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/源码/" rel="tag"><i class="fa fa-tag"></i>源码</a>
+            
+              <a href="/tags/ReentrantLock/" rel="tag"><i class="fa fa-tag"></i>ReentrantLock</a>
+            
+              <a href="/tags/AQS/" rel="tag"><i class="fa fa-tag"></i>AQS</a>
+            
+              <a href="/tags/Java并发/" rel="tag"><i class="fa fa-tag"></i>Java并发</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2021/02/16/深入剖析Java抽象队列同步器AQS/" rel="next" title="深入剖析Java抽象队列同步器AQS">
+                  <i class="fa fa-chevron-left"></i> 深入剖析Java抽象队列同步器AQS
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ReentrantLock简介"><span class="nav-number">1.</span> <span class="nav-text">ReentrantLock简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sync类"><span class="nav-number">2.</span> <span class="nav-text">Sync类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NonFairSync类"><span class="nav-number">3.</span> <span class="nav-text">NonFairSync类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FairSync类"><span class="nav-number">4.</span> <span class="nav-text">FairSync类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ReentrantLock类"><span class="nav-number">5.</span> <span class="nav-text">ReentrantLock类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ReentrantLock成员属性"><span class="nav-number">5.1.</span> <span class="nav-text">ReentrantLock成员属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ReentrantLock构造方法"><span class="nav-number">5.2.</span> <span class="nav-text">ReentrantLock构造方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ReentrantLock成员方法"><span class="nav-number">5.3.</span> <span class="nav-text">ReentrantLock成员方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#lock-–非公平锁"><span class="nav-number">5.3.1.</span> <span class="nav-text">lock()–非公平锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NonFairSync-lock"><span class="nav-number">5.3.2.</span> <span class="nav-text">NonFairSync.lock()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#acquire-int-arg"><span class="nav-number">5.3.3.</span> <span class="nav-text">acquire(int arg)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NonFairSync-tryAcquire-int-arg"><span class="nav-number">5.3.4.</span> <span class="nav-text">NonFairSync.tryAcquire(int arg)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Sync-nonfairTryAcquire-int-acquires"><span class="nav-number">5.3.5.</span> <span class="nav-text">Sync.nonfairTryAcquire(int acquires)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#lock-方法总结"><span class="nav-number">5.3.6.</span> <span class="nav-text">lock()方法总结</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#lock-–公平锁"><span class="nav-number">5.3.7.</span> <span class="nav-text">lock()–公平锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FairSync-lock"><span class="nav-number">5.3.8.</span> <span class="nav-text">FairSync.lock()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FairSync-tryAcquire-int-acquires"><span class="nav-number">5.3.9.</span> <span class="nav-text">FairSync.tryAcquire(int acquires)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AQS-hasQueuedPredecessors"><span class="nav-number">5.3.10.</span> <span class="nav-text">AQS.hasQueuedPredecessors()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#unlock"><span class="nav-number">5.3.11.</span> <span class="nav-text">unlock()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AQS-release-int-arg"><span class="nav-number">5.3.12.</span> <span class="nav-text">AQS.release(int arg)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Sync-tryRelease-int-arg"><span class="nav-number">5.3.13.</span> <span class="nav-text">Sync.tryRelease(int arg)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#unlock-方法总结"><span class="nav-number">5.3.14.</span> <span class="nav-text">unlock()方法总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ReentrantLock总结"><span class="nav-number">6.</span> <span class="nav-text">ReentrantLock总结</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/pic.jpg"
+      alt="买太平湖底陈年水墨">
+  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
+  <div class="site-description" itemprop="description">前路坎坷，人得自个儿成全自个儿</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">175</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/HoA-W" title="GitHub &rarr; https://github.com/HoA-W" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:932552424@qq.com" title="E-Mail &rarr; mailto:932552424@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/u/6273792268?is_all=1" title="Weibo &rarr; https://weibo.com/u/6273792268?is_all=1" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+    
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      推荐阅读
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.w3school.com.cn/tags/tag_ul.asp" title="https://www.w3school.com.cn/tags/tag_ul.asp" rel="noopener" target="_blank">w3school</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+</div>
+	<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	  <span id="busuanzi_container_site_pv">
+	  本站总访问量<span id="busuanzi_value_site_pv"></span>次
+	  </span>
+	</span>
+	</div>
+<!--
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+-->
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+  
+  <script color='96,96,96' opacity='0.5' zIndex='-1' count='150' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+ 
+  <script type = "text/javascript"  src ="dist/canvas-nest.js"> </script>
+ 
+</body>
+</html>
