@@ -61,18 +61,18 @@
 <meta name="keywords" content="Java基础,Lambda表达式,底层实现">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Lambda表达式的底层实现">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/03/23/Lambda表达式的底层实现/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/03/23/Lambda表达式的底层实现/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="今天写多线程代码时，用到了Lambda表达式实现Runnable接口，于是我突然想到一个问题：Lambda是Jdk8的新特性，那么Lambda表达式到底是怎么实现的呢？于是我进行了一番测试和上网查找，终于弄明白了Lambda的底层实现，所以特此来记录一下。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/23/Lambda表达式的底层实现/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/23/Lambda表达式的底层实现/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/23/Lambda表达式的底层实现/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/23/Lambda表达式的底层实现/2.png">
 <meta property="og:updated_time" content="2020-03-24T02:31:08.756Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Lambda表达式的底层实现">
 <meta name="twitter:description" content="今天写多线程代码时，用到了Lambda表达式实现Runnable接口，于是我突然想到一个问题：Lambda是Jdk8的新特性，那么Lambda表达式到底是怎么实现的呢？于是我进行了一番测试和上网查找，终于弄明白了Lambda的底层实现，所以特此来记录一下。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/03/23/Lambda表达式的底层实现/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/03/23/Lambda表达式的底层实现/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/03/23/Lambda表达式的底层实现/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/03/23/Lambda表达式的底层实现/">
 
 
 <script id="page-configurations">
@@ -262,7 +262,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/03/23/Lambda表达式的底层实现/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/03/23/Lambda表达式的底层实现/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -342,9 +342,9 @@
 <li><p>我们写一个使用Lambda表达式的类，如下所示</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class App&#123;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        //使用Lambda表达式创建一个接口实现类</span><br><span class="line">        IMarkUp mu=(msg)-&gt;System.out.println(msg);</span><br><span class="line">        //调用该接口方法</span><br><span class="line">        mu.test(&quot;lambda&quot;);</span><br><span class="line">    </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">interface IMarkUp&#123;</span><br><span class="line">    void test(String msg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>在cmd窗口，使用javac App.java 命令编译该App类，会发现得到了两个Class文件<br><img src="/2020/03/23/Lambda表达式的底层实现/1.png" alt></p>
+<li><p>在cmd窗口，使用javac App.java 命令编译该App类，会发现得到了两个Class文件<br><img src="/blog.github.io/2020/03/23/Lambda表达式的底层实现/1.png" alt></p>
 </li>
-<li><p>我们使用javap -p App命令反编译一下App类<br><img src="/2020/03/23/Lambda表达式的底层实现/2.png" alt> 通过反编译我们发现，反编译后出现了一个私有静态方法，并且该方法是我们的java源码中不存在的，它接受一个String类型作为参数</p>
+<li><p>我们使用javap -p App命令反编译一下App类<br><img src="/blog.github.io/2020/03/23/Lambda表达式的底层实现/2.png" alt> 通过反编译我们发现，反编译后出现了一个私有静态方法，并且该方法是我们的java源码中不存在的，它接受一个String类型作为参数</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">private static void lambda$main$0(java.lang.String)&#123;</span><br><span class="line">    //该方法的方法体就是我们Lambda表达式的内容</span><br><span class="line">    System.out.println(msg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>使用java -Djdk.internal.lambda.dumpProxyClasses App来查看接口的实现类，但是我电脑上该命令执行不出来，于是我在IDEA上将前面的命令配置成参数执行，得到了JVM生成的接口的实现类</p>

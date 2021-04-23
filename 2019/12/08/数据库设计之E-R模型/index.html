@@ -61,23 +61,23 @@
 <meta name="keywords" content="读书笔记,数据库,数据库设计">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据库设计之E-R模型">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/12/08/数据库设计之E-R模型/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/12/08/数据库设计之E-R模型/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="E-R模型，即实体-联系模型(entity-relationship)。该数据模型能够方便我们的数据库设计，它将在现实世界实体的含义和交互映射到概念模式上。E-R模式涉及到三个基本概念:实体集、联系集和属性。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/12/08/数据库设计之E-R模型/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/12/08/数据库设计之E-R模型/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/12/08/数据库设计之E-R模型/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/12/08/数据库设计之E-R模型/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/12/08/数据库设计之E-R模型/5.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/12/08/数据库设计之E-R模型/6.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/12/08/数据库设计之E-R模型/7.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/12/08/数据库设计之E-R模型/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/12/08/数据库设计之E-R模型/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/12/08/数据库设计之E-R模型/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/12/08/数据库设计之E-R模型/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/12/08/数据库设计之E-R模型/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/12/08/数据库设计之E-R模型/6.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/12/08/数据库设计之E-R模型/7.png">
 <meta property="og:updated_time" content="2019-12-10T11:42:18.227Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据库设计之E-R模型">
 <meta name="twitter:description" content="E-R模型，即实体-联系模型(entity-relationship)。该数据模型能够方便我们的数据库设计，它将在现实世界实体的含义和交互映射到概念模式上。E-R模式涉及到三个基本概念:实体集、联系集和属性。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/12/08/数据库设计之E-R模型/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/12/08/数据库设计之E-R模型/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/12/08/数据库设计之E-R模型/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/12/08/数据库设计之E-R模型/">
 
 
 <script id="page-configurations">
@@ -267,7 +267,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/12/08/数据库设计之E-R模型/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/12/08/数据库设计之E-R模型/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -354,7 +354,7 @@
 </ol>
 <h2 id="属性"><a href="#属性" class="headerlink" title="属性"></a><font size="5">属性</font></h2><p>每个属性都有一个可取值的集合，称为该属性的域，或者值集。在E-R模型中，属性有不同的划分：</p>
 <ol>
-<li><b>简单属性和复合属性</b><br><font color="red"><b>简单属性是指不能够划分为更小的部分。而复合属性可以再划分为更小的部分(即其他属性)。</b></font>例如：属性NAME可以设计为包含first_name,middle_name,last_name的复合属性。如果一个用户希望在一些场景中使用复合属性，而在另外一些场景中仅仅使用属性的一部分，那么我们可以将属性设计为复合属性。<br><img src="/2019/12/08/数据库设计之E-R模型/1.png" alt></li>
+<li><b>简单属性和复合属性</b><br><font color="red"><b>简单属性是指不能够划分为更小的部分。而复合属性可以再划分为更小的部分(即其他属性)。</b></font>例如：属性NAME可以设计为包含first_name,middle_name,last_name的复合属性。如果一个用户希望在一些场景中使用复合属性，而在另外一些场景中仅仅使用属性的一部分，那么我们可以将属性设计为复合属性。<br><img src="/blog.github.io/2019/12/08/数据库设计之E-R模型/1.png" alt></li>
 <li><b>单值和多值属性</b><br><font color="red"><b>单值属性对于一个特定的实体只有单独的一个值。</b></font>例如：对于一个学生实体而言，它的ID属性只有一个。<font color="red"><b>而多值属性在某些情况下，对某个特定的实体而言，一个属性值可能对应一组值。</b></font>例如：对于一个教师实体，他可能有多个电话号码，那么它的phone_number属性可能有一组值。我们用{phone_number}来表示该属性是多值属性。</li>
 <li><b>派生属性</b><br><font color="red"><b>这类属性的值可以从别的相关属性或实体派生出来。</b></font>例如：我们假设教师实体有一个属性students_advised，表示一个教师指导了多少个学生。我们可以通过统计一个教师相关联的所有学生实体数来得到这个属性值。或者我们可以通过教师的birth(出生日期)和当前日期来得到教师的年龄age。派生属性的值不存储，而是在需要时计算出来。</li>
 </ol>
@@ -367,7 +367,7 @@
 <li><b>多对一</b><br>A中的一个实体至多与B中的一个实体相关联，而B中的一个实体可以与A中任意数目实体相关联</li>
 <li><b>多对多</b><br>A中的一个实体可以和B中的任意数目实体相关联，B中的一个实体也可以和A中任意数目实体相关联</li>
 </ol>
-<p>如下图所示<br><img src="/2019/12/08/数据库设计之E-R模型/2.png" alt>，你应该注意到，四种情况下两实体集中都可能会存在没有和另外一个实体集关联的实体。</p>
+<p>如下图所示<br><img src="/blog.github.io/2019/12/08/数据库设计之E-R模型/2.png" alt>，你应该注意到，四种情况下两实体集中都可能会存在没有和另外一个实体集关联的实体。</p>
 <h2 id="参与约束"><a href="#参与约束" class="headerlink" title="参与约束"></a><font size="5">参与约束</font></h2><p><font color="red"><b>如果实体集E的每一个实体都参与到联系集R的至少一个联系中，实体集E在联系中的参与称为全部参与。如果E中只有部分实体参与到R的练习中，实体集E到联系集R的参与称为部分的。</b></font><br>例如，我们期望每个学生实体通过advisor联系至少同一名教师相联系，因而学生实体集在联系集advisor中的参与是全部的；相反的，每个教师实体不是必须指导一个学生，因此很可能只有一部分教师实体通过advisor联系同学生实体集相联系，于是教师实体集在advisor中的参与是部分的。</p>
 <h2 id="码"><a href="#码" class="headerlink" title="码"></a><font size="5">码</font></h2><h3 id="码的定义"><a href="#码的定义" class="headerlink" title="码的定义"></a><font size="5">码的定义</font></h3><p>我们应该有一个区分给定实体集中实体的方法。从概念上说，各个实体间是不同的，但是从数据库观点来看，它们的区别必须通过其属性来体现。我们来介绍三种码</p>
 <ol>
@@ -405,10 +405,10 @@
 <li><b>双线</b>显式实体在联系集中的参与度(双线表示全部参与)</li>
 <li><b>双菱形</b><br>表示连接到弱实体集的标识性联系集(后面介绍)</li>
 </ol>
-<h2 id="映射基数-1"><a href="#映射基数-1" class="headerlink" title="映射基数"></a><font size="5">映射基数</font></h2><p>前面我们过了映射基数，下面主要介绍如何在E-R图中表示映射基数。如下图所示<br><img src="/2019/12/08/数据库设计之E-R模型/3.png" alt><br>通过图我们可以发现规律，在四种映射关系中：<font color="red"><b>如果实体集是一，则联系集用箭头指向该实体集；如果实体集是多，则联系集用线段指向该实体集。</b></font></p>
-<h2 id="复杂的属性"><a href="#复杂的属性" class="headerlink" title="复杂的属性"></a><font size="5">复杂的属性</font></h2><p>如果一个实体集拥有复杂的属性，那么它的E-R图又该怎么表示？我们假设前面instructor实体集的name属性为复杂属性，则instructor的E-R如下所示<br><img src="/2019/12/08/数据库设计之E-R模型/4.png" alt>可以看到，<font color="red"><b>在E-R图中，我们使用{属性名}表示多值属性。</b></font></p>
-<h2 id="角色"><a href="#角色" class="headerlink" title="角色"></a><font size="5">角色</font></h2><p>前面介绍过，在闭环联系集中，我们需要用到角色，那么E-R图又是如何表示角色的呢？<br><img src="/2019/12/08/数据库设计之E-R模型/5.png" alt>从图中可以看到，我们使用两条线段分别标识不同的角色。</p>
-<h2 id="非二元的联系集"><a href="#非二元的联系集" class="headerlink" title="非二元的联系集"></a><font size="5">非二元的联系集</font></h2><p>非二元的联系集也可以在E-R图中简单地表示，如下图所示<br><img src="/2019/12/08/数据库设计之E-R模型/6.png" alt>如图，在非二元的联系集中，我们可以表示某些类型的多对一关系。假设student在每个项目(project)上最多只能有一位导师(学生和导师多对一)，这种约束可以从proj_guide指向instructor的箭头表示。另外要注意的是：<font color="red"><b>在一个联系集外我们至多允许使用一个箭头。</b></font></p>
+<h2 id="映射基数-1"><a href="#映射基数-1" class="headerlink" title="映射基数"></a><font size="5">映射基数</font></h2><p>前面我们过了映射基数，下面主要介绍如何在E-R图中表示映射基数。如下图所示<br><img src="/blog.github.io/2019/12/08/数据库设计之E-R模型/3.png" alt><br>通过图我们可以发现规律，在四种映射关系中：<font color="red"><b>如果实体集是一，则联系集用箭头指向该实体集；如果实体集是多，则联系集用线段指向该实体集。</b></font></p>
+<h2 id="复杂的属性"><a href="#复杂的属性" class="headerlink" title="复杂的属性"></a><font size="5">复杂的属性</font></h2><p>如果一个实体集拥有复杂的属性，那么它的E-R图又该怎么表示？我们假设前面instructor实体集的name属性为复杂属性，则instructor的E-R如下所示<br><img src="/blog.github.io/2019/12/08/数据库设计之E-R模型/4.png" alt>可以看到，<font color="red"><b>在E-R图中，我们使用{属性名}表示多值属性。</b></font></p>
+<h2 id="角色"><a href="#角色" class="headerlink" title="角色"></a><font size="5">角色</font></h2><p>前面介绍过，在闭环联系集中，我们需要用到角色，那么E-R图又是如何表示角色的呢？<br><img src="/blog.github.io/2019/12/08/数据库设计之E-R模型/5.png" alt>从图中可以看到，我们使用两条线段分别标识不同的角色。</p>
+<h2 id="非二元的联系集"><a href="#非二元的联系集" class="headerlink" title="非二元的联系集"></a><font size="5">非二元的联系集</font></h2><p>非二元的联系集也可以在E-R图中简单地表示，如下图所示<br><img src="/blog.github.io/2019/12/08/数据库设计之E-R模型/6.png" alt>如图，在非二元的联系集中，我们可以表示某些类型的多对一关系。假设student在每个项目(project)上最多只能有一位导师(学生和导师多对一)，这种约束可以从proj_guide指向instructor的箭头表示。另外要注意的是：<font color="red"><b>在一个联系集外我们至多允许使用一个箭头。</b></font></p>
 <h2 id="弱实体集"><a href="#弱实体集" class="headerlink" title="弱实体集"></a><font size="5">弱实体集</font></h2><p>前面在介绍E-R图形的时候，说了双菱形代表连接到弱实体集的标识性联系集，下面就来介绍一下什么是弱实体集。</p>
 <h3 id="示例介绍"><a href="#示例介绍" class="headerlink" title="示例介绍"></a><font size="5">示例介绍</font></h3><p>假设一个section(开课)实体，它由课程编号、学期、学年以及开课编号唯一标识。显然，开课实体和课程(course)实体相关联。假定我们在实体集section和course之间创建了一个联系集sec_course。<br>现在，发现sec_course中的信息是冗余的，由于section存在属性course_id，它标识该开课所关联的课程。消除这种冗余的一个方法是删除联系sec_course。然而，这么做会使得section和course之间的联系隐含于一个属性中，这不是一个好办法。消除这种冗余的另一个方法是在实体section中不保留course_id，但是由于course_id参与构成section的主码，去掉之后剩下的属性无法唯一标识一个指定的section实体，为了解决这个问题，我们将联系sec_course视为一个特殊的联系，它给唯一标识section实体提供额外信息，即course_id。</p>
 <h3 id="弱实体集定义"><a href="#弱实体集定义" class="headerlink" title="弱实体集定义"></a><font size="5">弱实体集定义</font></h3><p><font color="red"><b>没有足够的属性以形成主码的实体被称为弱实体集，与之对应的，有主码的实体称作强实体集。</b></font><b>弱实体集必须和另外一个称作标识实体集的实体集关联才有意义，每个弱实体集必须和一个标识实体集关联。我们称标识实体集拥有它所标识的弱实体集。弱实体集和标识实体集相连的联系称为标识性联系。标识性联系从弱实体集到标识实体集是多对一的，并且弱实体集是全部参与的，标识性联系不能有自己的属性。</b></p>
@@ -419,7 +419,7 @@
 <li>关联弱实体集和标识实体集的联系集以双菱形表示</li>
 <li>弱实体集是全部参与的并且从标识实体集到弱实体集是一对多的关系</li>
 </ol>
-<p><img src="/2019/12/08/数据库设计之E-R模型/7.png" alt></p>
+<p><img src="/blog.github.io/2019/12/08/数据库设计之E-R模型/7.png" alt></p>
 <ol>
 <li><b>弱实体集可以参与标识性联系以外的其他联系。</b>例如，一个section实体可以和time_slot实体参与一个联系，以标识开课时间</li>
 <li><b>一个弱实体集可以作为另一个弱实体集的标识实体集</b></li>

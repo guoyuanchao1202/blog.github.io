@@ -61,19 +61,19 @@
 <meta name="keywords" content="数据库,隔离级别,InnoDB,MVCC">
 <meta property="og:type" content="article">
 <meta property="og:title" content="详解MySQL的InnoDB引擎MVCC机制">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在前面两篇博客中分别介绍了数据库的四大特性和数据库的四大隔离级别。那么不知道你有没有想过：数据库是怎么实现四大隔离级别的呢？由于不同的数据库实现方法可能不同，我就以我常用的MySQL为例，介绍一下MySQL的InnoDB如何实现数据库四大隔离级别，本文基于Win10环境下MySQL5.5版本。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.jpg">
 <meta property="og:updated_time" content="2020-02-29T15:07:16.568Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="详解MySQL的InnoDB引擎MVCC机制">
 <meta name="twitter:description" content="在前面两篇博客中分别介绍了数据库的四大特性和数据库的四大隔离级别。那么不知道你有没有想过：数据库是怎么实现四大隔离级别的呢？由于不同的数据库实现方法可能不同，我就以我常用的MySQL为例，介绍一下MySQL的InnoDB如何实现数据库四大隔离级别，本文基于Win10环境下MySQL5.5版本。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/">
 
 
 <script id="page-configurations">
@@ -263,7 +263,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -344,7 +344,7 @@
 <p>这两个列被称为<b>ROW HEADER–元信息</b>。我们来举例说明，假设我们创建一张表</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">create table t(</span><br><span class="line">    ID int,</span><br><span class="line">    count int</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
-<p>那么该表在InnoDB中是这样的：<br><img src="/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.png" alt><br>在本节中，我们只需要了解行记录的元信息即可，至于它们的作用在后面的小节介绍。</p>
+<p>那么该表在InnoDB中是这样的：<br><img src="/blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.png" alt><br>在本节中，我们只需要了解行记录的元信息即可，至于它们的作用在后面的小节介绍。</p>
 <h1 id="MySQL版本号"><a href="#MySQL版本号" class="headerlink" title="MySQL版本号"></a>MySQL版本号</h1><p>MySQL维护了两个版本号</p>
 <ol>
 <li><font color="red"><b>系统版本号(sys_id)</b></font><br>是一个递增的数字，每开启一个事务，该版本号+1。</li>
@@ -365,11 +365,11 @@
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">例如在MySQL创建了一个表t，包含主键id和一个字段x，</span><br><span class="line">并假设系统版本号sys_id=1</span><br><span class="line">我们对该表进行如下操作：</span><br><span class="line">INSERT INTO t VALUES(1,&apos;a&apos;);</span><br><span class="line">UPDATE t SET x=&apos;b&apos; WHERE id=1;</span><br><span class="line">UPDATE t SET x=&apos;c&apos; WHERE id=1;</span><br></pre></td></tr></table></figure>
 
-<p>我们没有使用start transaction来开启一个事务，因此根据MySQL的AUTOCOMMIT机制，每一条SQL语句都被当作一个事务执行，因此一共执行了三个事务，事务的版本号分别为1，2，3。<br><img src="/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/2.png" alt><br>到目前为止，我们知道了数据在MySQL中的组织方式以及Undo记录，上图中Undo记录中每一个数据行被称为一张快照。</p>
+<p>我们没有使用start transaction来开启一个事务，因此根据MySQL的AUTOCOMMIT机制，每一条SQL语句都被当作一个事务执行，因此一共执行了三个事务，事务的版本号分别为1，2，3。<br><img src="/blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/2.png" alt><br>到目前为止，我们知道了数据在MySQL中的组织方式以及Undo记录，上图中Undo记录中每一个数据行被称为一张快照。</p>
 <h1 id="事务执行状态的快照–ReadView"><a href="#事务执行状态的快照–ReadView" class="headerlink" title="事务执行状态的快照–ReadView"></a>事务执行状态的快照–ReadView</h1><p>MVCC维护了一个被称为READ VIEW的结构，它的基本结构如下。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ReadView&#123;</span><br><span class="line">    creator_trx_id</span><br><span class="line">    trx_id_min</span><br><span class="line">    trx_id_max</span><br><span class="line">    id1</span><br><span class="line">    id2</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>该结构包含了当前系统所有活动的事务(未提交的事务)的trx_id。MVCC还维护了最大值(TRX_ID_MAX)和最小值(TRX_ID_MIN)，这表示当前未提交的事务中最年轻事务(最新开启)的ID和最年老事务(最早开启)的ID。<br><img src="/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.jpg" alt><br>ReadView用于进行可见性判断，我们在后面详细说，现在你只需要知道：ReadView是由事务创建的(至于什么时候创建什么时候更新由不同的隔离级别决定)，用于可见性判断。</p>
+<p>该结构包含了当前系统所有活动的事务(未提交的事务)的trx_id。MVCC还维护了最大值(TRX_ID_MAX)和最小值(TRX_ID_MIN)，这表示当前未提交的事务中最年轻事务(最新开启)的ID和最年老事务(最早开启)的ID。<br><img src="/blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.jpg" alt><br>ReadView用于进行可见性判断，我们在后面详细说，现在你只需要知道：ReadView是由事务创建的(至于什么时候创建什么时候更新由不同的隔离级别决定)，用于可见性判断。</p>
 <h1 id="快照读和当前读"><a href="#快照读和当前读" class="headerlink" title="快照读和当前读"></a>快照读和当前读</h1><p>在正式介绍四大隔离级别的实现时，我们先介绍两个概念，个人觉得这两个概念对于后面的学习至关重要。</p>
 <h2 id="快照读-snapshot-read"><a href="#快照读-snapshot-read" class="headerlink" title="快照读(snapshot read)"></a><font size="5">快照读(snapshot read)</font></h2><p>MVCC中的SELECT操作读取的是快照中的数据，你可以理解为前面图中Undo记录中的数据，并不是B+树的节点。该操作不需要加锁。<br>在提交读和可重复读两种隔离级别下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT ? FROM table WHERE ?</span><br></pre></td></tr></table></figure>

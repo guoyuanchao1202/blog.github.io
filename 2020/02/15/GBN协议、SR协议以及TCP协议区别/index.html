@@ -61,18 +61,18 @@
 <meta name="keywords" content="读书笔记,TCP&#x2F;IP">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GBN协议、SR协议以及TCP协议区别">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="我们知道GBN协议、SR(选择重传)协议以及TCP协议都能够保证可靠数据传输，那么问题来了:TCP到底采用的是GBN协议还是SR协议来实现的可靠数据传输呢？这里不对三种协议进行详细的介绍，主要介绍三者的区别和联系。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/2.png">
 <meta property="og:updated_time" content="2020-02-15T02:10:41.375Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GBN协议、SR协议以及TCP协议区别">
 <meta name="twitter:description" content="我们知道GBN协议、SR(选择重传)协议以及TCP协议都能够保证可靠数据传输，那么问题来了:TCP到底采用的是GBN协议还是SR协议来实现的可靠数据传输呢？这里不对三种协议进行详细的介绍，主要介绍三者的区别和联系。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/">
 
 
 <script id="page-configurations">
@@ -262,7 +262,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -333,7 +333,7 @@
 </ul>
 <h1 id="SR协议"><a href="#SR协议" class="headerlink" title="SR协议"></a>SR协议</h1><p>接收方也设置一个缓冲区，为每个报文段设置计时器，对于乱序到达的报文段，先存储在接收方缓冲区中并发送此报文段的ACK应答。当缺失的报文段到达之后，接收方进行整理排序统一提交给上层(注意和GBN协议的区别)。</p>
 <h1 id="TCP协议"><a href="#TCP协议" class="headerlink" title="TCP协议"></a>TCP协议</h1><p>TCP协议可以理解为GBN协议和SR协议的结合体，它具有累计确认机制(GBN协议)，但是对于失序到达的报文段，接收方并不是丢弃掉而是缓存起来，最后整理排序后提交给上一层(SR协议)，接收方只会对最后一个按序到达的报文段进行确认(发送ACK报文段)(GBN协议)。并且TCP还有快速重传机制:当累计收到对同一个报文段的3个ACK后，不必等待超时时间，立刻重传该报文段。</p>
-<h1 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h1><p><img src="/2020/02/15/GBN协议、SR协议以及TCP协议区别/1.png" alt><br><img src="/2020/02/15/GBN协议、SR协议以及TCP协议区别/2.png" alt></p>
+<h1 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h1><p><img src="/blog.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/1.png" alt><br><img src="/blog.github.io/2020/02/15/GBN协议、SR协议以及TCP协议区别/2.png" alt></p>
 <hr>
 
     </div>

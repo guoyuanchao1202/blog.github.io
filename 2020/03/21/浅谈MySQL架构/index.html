@@ -61,17 +61,17 @@
 <meta name="keywords" content="MySQL,索引,MySQL架构">
 <meta property="og:type" content="article">
 <meta property="og:title" content="浅谈MySQL架构">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/03/21/浅谈MySQL架构/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/03/21/浅谈MySQL架构/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="一直以来都在学习MySQL，学了MySQL的事务、事务的四大特性及实现原理、索引的使用和实现等等一些MySQL相关的知识，但是对于MySQL的架构，或者通俗的说，MySQL是由哪几部分组成的却忽略了，实际上这是很不应该的，因为只有对MySQL的架构有了一个了解，才能对于SQL语句的执行流程有一个认识，从而能够进行更好的优化。今天就来简单地学习一个MySQL的架构，本文基于MySQL5.5版本。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/21/浅谈MySQL架构/1.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/21/浅谈MySQL架构/1.jpg">
 <meta property="og:updated_time" content="2020-10-12T02:28:52.936Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="浅谈MySQL架构">
 <meta name="twitter:description" content="一直以来都在学习MySQL，学了MySQL的事务、事务的四大特性及实现原理、索引的使用和实现等等一些MySQL相关的知识，但是对于MySQL的架构，或者通俗的说，MySQL是由哪几部分组成的却忽略了，实际上这是很不应该的，因为只有对MySQL的架构有了一个了解，才能对于SQL语句的执行流程有一个认识，从而能够进行更好的优化。今天就来简单地学习一个MySQL的架构，本文基于MySQL5.5版本。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/03/21/浅谈MySQL架构/1.jpg">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/03/21/浅谈MySQL架构/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/03/21/浅谈MySQL架构/1.jpg">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/03/21/浅谈MySQL架构/">
 
 
 <script id="page-configurations">
@@ -261,7 +261,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/03/21/浅谈MySQL架构/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/03/21/浅谈MySQL架构/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -333,7 +333,7 @@
 <hr>
 <a id="more"></a>
 
-<h1 id="总体架构"><a href="#总体架构" class="headerlink" title="总体架构"></a>总体架构</h1><p><img src="/2020/03/21/浅谈MySQL架构/1.jpg" alt> 如图，这就是MySQL的基础架构，可以看到MySQL总体上可以分为三层</p>
+<h1 id="总体架构"><a href="#总体架构" class="headerlink" title="总体架构"></a>总体架构</h1><p><img src="/blog.github.io/2020/03/21/浅谈MySQL架构/1.jpg" alt> 如图，这就是MySQL的基础架构，可以看到MySQL总体上可以分为三层</p>
 <ol>
 <li>客户层</li>
 <li>Server层</li>

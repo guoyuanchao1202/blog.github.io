@@ -61,18 +61,18 @@
 <meta name="keywords" content="递归,回溯">
 <meta property="og:type" content="article">
 <meta property="og:title" content="八皇后问题">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/09/18/八皇后问题/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/09/18/八皇后问题/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="八皇后问题一个古老而著名的问题，该问题是回溯算法的典型案例。在8*8格的国际棋盘上摆放8个皇后，使其相互不能攻击。即：任意两个皇后不能处于同一行、同一列或同意斜线上，问有多少中摆法？">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/18/八皇后问题/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/18/八皇后问题/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/18/八皇后问题/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/18/八皇后问题/2.png">
 <meta property="og:updated_time" content="2019-09-18T02:55:09.599Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="八皇后问题">
 <meta name="twitter:description" content="八皇后问题一个古老而著名的问题，该问题是回溯算法的典型案例。在8*8格的国际棋盘上摆放8个皇后，使其相互不能攻击。即：任意两个皇后不能处于同一行、同一列或同意斜线上，问有多少中摆法？">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/09/18/八皇后问题/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/09/18/八皇后问题/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/09/18/八皇后问题/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/09/18/八皇后问题/">
 
 
 <script id="page-configurations">
@@ -262,7 +262,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/09/18/八皇后问题/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/09/18/八皇后问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -342,7 +342,7 @@
 <li>数组arr的下标：表示第几行，即第几个皇后</li>
 <li>arr[i]=val：表示第i+1个皇后放在第i+1行的val+1的位置</li>
 </ul>
-<h1 id="检查冲突的方法"><a href="#检查冲突的方法" class="headerlink" title="检查冲突的方法"></a>检查冲突的方法</h1><p><img src="/2019/09/18/八皇后问题/1.png" alt>该方法用于检查当前第n个皇后和前面的n-1个皇后是否发生冲突(即是否在同一行、同一列或同一斜线上)</p>
+<h1 id="检查冲突的方法"><a href="#检查冲突的方法" class="headerlink" title="检查冲突的方法"></a>检查冲突的方法</h1><p><img src="/blog.github.io/2019/09/18/八皇后问题/1.png" alt>该方法用于检查当前第n个皇后和前面的n-1个皇后是否发生冲突(即是否在同一行、同一列或同一斜线上)</p>
 <ul>
 <li><font color="red">arr[n] == arr[i]：</font>数组的值表示的是列，这里是判断第i+1个皇后是否和第n+1个皇后在同一列</li>
 <li><font color="red">Math.abs(n-i)==Math.abs(arr[n]-arr[i])：</font>判断第i+1个皇后是否和第n+1个皇后在同一斜线<ul>
@@ -351,7 +351,7 @@
 </ul>
 </li>
 </ul>
-<h1 id="递归回溯方法"><a href="#递归回溯方法" class="headerlink" title="递归回溯方法"></a>递归回溯方法</h1><p><img src="/2019/09/18/八皇后问题/2.png" alt></p>
+<h1 id="递归回溯方法"><a href="#递归回溯方法" class="headerlink" title="递归回溯方法"></a>递归回溯方法</h1><p><img src="/blog.github.io/2019/09/18/八皇后问题/2.png" alt></p>
 <ol>
 <li>首先，创建一个长度为9的数组，0-7用于表示8个皇后，最后一个用于记录摆放方法个数</li>
 <li>当n==MAX=8时：之前说过，n代表第n+1个皇后(例如n=0时代表第一个皇后)，那么n=8应该代表的是第9个皇后，这时候说明前8个皇后都已经摆放好了，即找到了一种摆放方法<ul>

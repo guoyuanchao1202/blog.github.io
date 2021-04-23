@@ -61,19 +61,19 @@
 <meta name="keywords" content="读书笔记,IP编址">
 <meta property="og:type" content="article">
 <meta property="og:title" content="浅谈IP编址">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/15/浅谈IP编址/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/02/15/浅谈IP编址/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="我们知道，我们的电脑都有一个IP地址(确切的说，是一个接口对应一个IP地址，不过在这里不影响)，它能够唯一的标识我们的主机，那么电脑的IP地址又是怎么来的呢？这就涉及到了IP编址。(本文仅涉及到IPv4编址，并不涉及IPv6)">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/15/浅谈IP编址/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/15/浅谈IP编址/2.jpg">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/15/浅谈IP编址/3.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/15/浅谈IP编址/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/15/浅谈IP编址/2.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/15/浅谈IP编址/3.jpg">
 <meta property="og:updated_time" content="2020-02-17T03:57:00.364Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="浅谈IP编址">
 <meta name="twitter:description" content="我们知道，我们的电脑都有一个IP地址(确切的说，是一个接口对应一个IP地址，不过在这里不影响)，它能够唯一的标识我们的主机，那么电脑的IP地址又是怎么来的呢？这就涉及到了IP编址。(本文仅涉及到IPv4编址，并不涉及IPv6)">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/15/浅谈IP编址/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/15/浅谈IP编址/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/02/15/浅谈IP编址/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/02/15/浅谈IP编址/">
 
 
 <script id="page-configurations">
@@ -263,7 +263,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/15/浅谈IP编址/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/02/15/浅谈IP编址/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -342,7 +342,7 @@
 <li>无分类间域路由选择(CIDR)阶段</li>
 </ol>
 <p>目前主要采用CIDR编址，分类编址已经渐渐被淘汰，因此本文主要介绍CIDR编址。</p>
-<h1 id="分类编址"><a href="#分类编址" class="headerlink" title="分类编址"></a>分类编址</h1><p>早期的IP地址被分为5类，它们分别是A、B、C、D、E类。不过我们常用的只有A类、B类和C类。<br><img src="/2020/02/15/浅谈IP编址/1.png" alt><br>IP地址由<font color="red">网络号+主机号</font>组成，这几类地址的不同之处在于网络号和主机号各自占的位数不同。并且对于任意一类地址，它们主机号全0和全1不能使用(有特殊用途)，因此各类地址能表示的主机数：<br><img src="/2020/02/15/浅谈IP编址/2.jpg" alt></p>
+<h1 id="分类编址"><a href="#分类编址" class="headerlink" title="分类编址"></a>分类编址</h1><p>早期的IP地址被分为5类，它们分别是A、B、C、D、E类。不过我们常用的只有A类、B类和C类。<br><img src="/blog.github.io/2020/02/15/浅谈IP编址/1.png" alt><br>IP地址由<font color="red">网络号+主机号</font>组成，这几类地址的不同之处在于网络号和主机号各自占的位数不同。并且对于任意一类地址，它们主机号全0和全1不能使用(有特殊用途)，因此各类地址能表示的主机数：<br><img src="/blog.github.io/2020/02/15/浅谈IP编址/2.jpg" alt></p>
 <ol>
 <li><font color="red"><b>主机号全0:表示这个网络的地址</b></font></li>
 <li><font color="red"><b>主机号全1:本子网内的广播地址</b></font></li>
@@ -353,7 +353,7 @@
 <li>造成IP地址的大量浪费。例如：现有一个公司需要分配一个网络地址，已知该公司内有300台主机。这时候，就需要给该公司分配一个B类地址(因为C类地址最多表示254台主机)，但是问题来了，一个B类地址能够表示65534台主机，而在这里只用了300个，那么剩余的65234个IP地址都被浪费了。这样会造成IP地址的迅速衰竭。</li>
 <li>给每一个物理网络分配一个网络号会使路由表太大。</li>
 </ol>
-<h2 id="划分方法"><a href="#划分方法" class="headerlink" title="划分方法"></a><font size="5">划分方法</font></h2><p>子网划分实际上就是将原来的两级IP地址转变为三级IP地址，此时<font color="red">IP地址为{网络号+子网号+主机号}</font>。从这里可以看出，子网划分其实就是从32位中拿出几位来表示子网号。要注意的是，这里网络号不变，子网号就是从主机号接走的。所以就很好理解了，<font color="red">子网划分实际上就是减少了主机数，分配到不同的子网，每个子网包含一定的主机数。</font>但是对于网络外部来说，还是一个大的网络，从外部看并没有变化。<br>有一点非常重要，由于子网号是从主机号中拿出几位表示的，而前面说过，主机号全0和全1不能使用，因此每次划分子网时，子网号全0和全1仍不能使用，因此每划分一次子网，同样会浪费一些IP地址<br><img src="/2020/02/15/浅谈IP编址/3.jpg" alt></p>
+<h2 id="划分方法"><a href="#划分方法" class="headerlink" title="划分方法"></a><font size="5">划分方法</font></h2><p>子网划分实际上就是将原来的两级IP地址转变为三级IP地址，此时<font color="red">IP地址为{网络号+子网号+主机号}</font>。从这里可以看出，子网划分其实就是从32位中拿出几位来表示子网号。要注意的是，这里网络号不变，子网号就是从主机号接走的。所以就很好理解了，<font color="red">子网划分实际上就是减少了主机数，分配到不同的子网，每个子网包含一定的主机数。</font>但是对于网络外部来说，还是一个大的网络，从外部看并没有变化。<br>有一点非常重要，由于子网号是从主机号中拿出几位表示的，而前面说过，主机号全0和全1不能使用，因此每次划分子网时，子网号全0和全1仍不能使用，因此每划分一次子网，同样会浪费一些IP地址<br><img src="/blog.github.io/2020/02/15/浅谈IP编址/3.jpg" alt></p>
 <h2 id="子网掩码"><a href="#子网掩码" class="headerlink" title="子网掩码"></a><font size="5">子网掩码</font></h2><p>子网划分中有一个十分重要的概念就是子网掩码。大家想一想，在在传输的过程中，路由器是怎么识别子网划分后的IP地址中的网络地址的？如果不提供任何信息，路由器是无法分清楚的，所以就出现了子网掩码。子网掩码很简单，<font color="red">就是将网络号和子网号对应的位置1，将主机号对应位置0，就得到了子网掩码。</font>将子网掩码和IP地址做“与”逻辑运算，就得到了网络地址。</p>
 <h1 id="CIDR编址"><a href="#CIDR编址" class="headerlink" title="CIDR编址"></a>CIDR编址</h1><p>CIDR的全称是无分类间域路由选择，该方法在一定程度上解决了路由表过大问题。之所以被称为无分类，是因为CIDR完全放弃了之前的分类表示法，消除了传统的A类、B类、C类以及划分子网的概念。使用CIDR时，<font color="red">IP地址={网络前缀+主机号}/网络前缀所占位数</font>。CIDR仅将IP地址划分为网络前缀和主机号两部分，可以说又回到了二级IP表示。但是有一点要注意，最后用斜线/分隔，并写上网络前缀所占的位数，这样就不需要告知路由器地址掩码，仅需要通过网络前缀所占位数就可以得到地址掩码。为了便于介绍，CIDR中的地址掩码在本文中仍称作子网掩码。<br>CIDR表示法给出任何一个IP地址，就相当于给出了一个地址块，一个由连续地址构成的地址块，这样就实现了路由聚合：即从一个IP地址就可以得知一个CIDR地址块。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">例如:已知一个IP地址128.14.35.7/20。我们来分析一下</span><br><span class="line">128.14.35.7/20=[10000000 00001110 0010]0011 00000011</span><br><span class="line">即前20位是网络前缀，后12位是主机号，那么我们令主机号</span><br><span class="line">全0和全1就可以得到一个CIDR地址块的最小地址和最大地址</span><br><span class="line"></span><br><span class="line">128.14.32.0=[10000000 00001110 0010]0000 00000000-&gt;最小地址</span><br><span class="line">128.14.47.255=[10000000 00001110 0010]1111 11111111-&gt;最大地址</span><br><span class="line">255.255.240.0=[11111111 11111111 1111]0000 00000000-&gt;子网掩码</span><br><span class="line"></span><br><span class="line">可以看出，该CIDR地址块可以指派(47-32+1)*255=4096个IP地址</span><br><span class="line">包括全0和全1</span><br></pre></td></tr></table></figure>

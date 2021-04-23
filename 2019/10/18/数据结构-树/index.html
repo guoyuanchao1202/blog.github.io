@@ -61,23 +61,23 @@
 <meta name="keywords" content="AVL树,递归,读书笔记,数据结构,二叉查找树">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据结构-树">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/10/18/数据结构-树/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/10/18/数据结构-树/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种树，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/10/18/数据结构-树/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/10/18/数据结构-树/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/10/18/数据结构-树/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/10/18/数据结构-树/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/10/18/数据结构-树/5.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/10/18/数据结构-树/6.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/10/18/数据结构-树/7.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/10/18/数据结构-树/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/10/18/数据结构-树/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/10/18/数据结构-树/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/10/18/数据结构-树/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/10/18/数据结构-树/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/10/18/数据结构-树/6.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/10/18/数据结构-树/7.png">
 <meta property="og:updated_time" content="2019-10-19T02:05:25.278Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据结构-树">
 <meta name="twitter:description" content="前面说过，数组查询快而增删满，链表增删快而查询慢，那么有没有一种查询和增删修改都比较快的数据结构呢？这里主要介绍两种树，即二叉查找树和AVL树。值得一提的是，二叉查找树对于大部分操作的运行时间平均为O(logN)。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/10/18/数据结构-树/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/10/18/数据结构-树/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/10/18/数据结构-树/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/10/18/数据结构-树/">
 
 
 <script id="page-configurations">
@@ -267,7 +267,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/10/18/数据结构-树/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/10/18/数据结构-树/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -402,13 +402,13 @@
 
 </li>
 </ol>
-<p>删除操作是二叉查找树最困难的操作，对于以恶搞要删除的节点，需要考虑几种可能的情况<br>    1. 如果节点是一个叶子节点，那么可以直接删除<br>    2. 如果节点有一个子节点(左右都可以)，那么可以可以将该节点的父节点指向它的子节点来达到删除该节点的目的，如图<br>    <img src="/2019/10/18/数据结构-树/1.png" alt><br>    3. 比较复杂的是，待删除节点具有两个孩子节点，一般的策略是<font color="red">用待删除节点的右子树中最小的子节点代替该节点的数据并递归的删除那个最小的节点。</font>因为右子树中最小的节点不可能有左儿子，因此第二次remove时要容易。如图<br>    <img src="/2019/10/18/数据结构-树/2.png" alt></p>
-<h1 id="AVL树"><a href="#AVL树" class="headerlink" title="AVL树"></a>AVL树</h1><p>二叉查找树在大多数情况下能够提高我们的访问速度，但是对于下面这样已经退化为链表的二叉排序树，并不能提高我们的访问速度。因此在二叉查找树的基础上又引进了AVL树<br><img src="/2019/10/18/数据结构-树/3.png" alt><font color="red">对于AVL树结构，要求它的每一个节点的左右子树的高度最多相差1。</font></p>
-<h2 id="平衡调整策略"><a href="#平衡调整策略" class="headerlink" title="平衡调整策略"></a>平衡调整策略</h2><p>当执行插入操作时，我们需要更新通向根节点路径上的哪些节点的所有平衡信息。但是，插入一个节点可能会破坏AVL树的特性。如图<br><img src="/2019/10/18/数据结构-树/4.png" alt>破坏平衡的插入情况一共有4种，下面将对这四种情况进行分别说明</p>
+<p>删除操作是二叉查找树最困难的操作，对于以恶搞要删除的节点，需要考虑几种可能的情况<br>    1. 如果节点是一个叶子节点，那么可以直接删除<br>    2. 如果节点有一个子节点(左右都可以)，那么可以可以将该节点的父节点指向它的子节点来达到删除该节点的目的，如图<br>    <img src="/blog.github.io/2019/10/18/数据结构-树/1.png" alt><br>    3. 比较复杂的是，待删除节点具有两个孩子节点，一般的策略是<font color="red">用待删除节点的右子树中最小的子节点代替该节点的数据并递归的删除那个最小的节点。</font>因为右子树中最小的节点不可能有左儿子，因此第二次remove时要容易。如图<br>    <img src="/blog.github.io/2019/10/18/数据结构-树/2.png" alt></p>
+<h1 id="AVL树"><a href="#AVL树" class="headerlink" title="AVL树"></a>AVL树</h1><p>二叉查找树在大多数情况下能够提高我们的访问速度，但是对于下面这样已经退化为链表的二叉排序树，并不能提高我们的访问速度。因此在二叉查找树的基础上又引进了AVL树<br><img src="/blog.github.io/2019/10/18/数据结构-树/3.png" alt><font color="red">对于AVL树结构，要求它的每一个节点的左右子树的高度最多相差1。</font></p>
+<h2 id="平衡调整策略"><a href="#平衡调整策略" class="headerlink" title="平衡调整策略"></a>平衡调整策略</h2><p>当执行插入操作时，我们需要更新通向根节点路径上的哪些节点的所有平衡信息。但是，插入一个节点可能会破坏AVL树的特性。如图<br><img src="/blog.github.io/2019/10/18/数据结构-树/4.png" alt>破坏平衡的插入情况一共有4种，下面将对这四种情况进行分别说明</p>
 <ol>
-<li><font color="blue"><b>LL形调整</b></font><br><img src="/2019/10/18/数据结构-树/5.png" alt>如图所示</li>
+<li><font color="blue"><b>LL形调整</b></font><br><img src="/blog.github.io/2019/10/18/数据结构-树/5.png" alt>如图所示</li>
 <li><font color="blue"><b>RR形调整</b></font><br>和LL形类似，可以推导一下</li>
-<li><font color="blue"><b>LR形调整</b></font><br><img src="/2019/10/18/数据结构-树/6.png" alt>如图所示</li>
+<li><font color="blue"><b>LR形调整</b></font><br><img src="/blog.github.io/2019/10/18/数据结构-树/6.png" alt>如图所示</li>
 <li><font color="blue"><b>RL形调整</b></font><br>同样的，和LR形类似，可以推导一下</li>
 </ol>
 <p>以上就是四种破坏平衡的情况对应的调整策略，下面来看一下代码实现</p>
@@ -443,7 +443,7 @@
 
 </li>
 </ol>
-<p>对于删除节点，无疑更为麻烦。但是就像插入方法一样。我们<font color="red">使用二叉查找树的删除方法，最后不直接返回t，而是对删除节点到根节点上的每一个节点进行平衡调整后再返回，即返回balance(t)</font>，这是可行的！<br>为了证明可行，下面推导一种删除后需要LL调整的情形：<br><img src="/2019/10/18/数据结构-树/7.png" alt>对于需要RR调整和另外两种调整的情形类似。</p>
+<p>对于删除节点，无疑更为麻烦。但是就像插入方法一样。我们<font color="red">使用二叉查找树的删除方法，最后不直接返回t，而是对删除节点到根节点上的每一个节点进行平衡调整后再返回，即返回balance(t)</font>，这是可行的！<br>为了证明可行，下面推导一种删除后需要LL调整的情形：<br><img src="/blog.github.io/2019/10/18/数据结构-树/7.png" alt>对于需要RR调整和另外两种调整的情形类似。</p>
 <hr>
 二叉查找树和AVL树介绍告一段落，对于树要学的还有很多。另外可以发现，树相关的问题大多可以用递归来解决，因此能够理解并运用递归非常重要。(参考书籍：数据结构和算法分析(Java语言描述)》)
 

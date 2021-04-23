@@ -61,32 +61,32 @@
 <meta name="keywords" content="数据库,隔离级别">
 <meta property="og:type" content="article">
 <meta property="og:title" content="事务的四大隔离级别">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在上一篇博客中介绍了事务的四大特性，并且也说：为了提高性能和利用率，我们有时候会弱化一致性，设置不同的隔离级别。那么到底怎么做呢？设置不同的隔离级别之后又会带来哪些负面效果呢？下面就让我们来看一看事务的四大隔离级别。本文中相关实验基于Windows10环境下的MySQL实现。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/5.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/6.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/7.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/8.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/9.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/10.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/11.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/12.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/13.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/14.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/15.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/16.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/6.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/7.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/8.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/9.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/10.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/11.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/12.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/13.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/14.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/15.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/16.png">
 <meta property="og:updated_time" content="2020-02-27T07:40:37.629Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="事务的四大隔离级别">
 <meta name="twitter:description" content="在上一篇博客中介绍了事务的四大特性，并且也说：为了提高性能和利用率，我们有时候会弱化一致性，设置不同的隔离级别。那么到底怎么做呢？设置不同的隔离级别之后又会带来哪些负面效果呢？下面就让我们来看一看事务的四大隔离级别。本文中相关实验基于Windows10环境下的MySQL实现。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/">
 
 
 <script id="page-configurations">
@@ -276,7 +276,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/02/26/事务的四大隔离级别/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -362,24 +362,24 @@
 </ul>
 <h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><p>在正式开始介绍隔离级别之前，为了方便后面的实验演示，先为后面的相关实验做一下铺垫</p>
 <ol>
-<li>在Windows10下打开两个CMD窗口，并且在两个窗口中都登陆MySQL。如图所示<br><img src="/2020/02/26/事务的四大隔离级别/1.png" alt></li>
-<li>我们先创建一个银行账户表(isolation_demo)，只有ID和count两个属性。方便我们后面做测试。如图我已经创建好了<br><img src="/2020/02/26/事务的四大隔离级别/2.png" alt></li>
+<li>在Windows10下打开两个CMD窗口，并且在两个窗口中都登陆MySQL。如图所示<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/1.png" alt></li>
+<li>我们先创建一个银行账户表(isolation_demo)，只有ID和count两个属性。方便我们后面做测试。如图我已经创建好了<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/2.png" alt></li>
 <li>下面我们对于四种隔离级别下存在的问题将会在这张表上进行测试。</li>
 </ol>
 <h1 id="未提交读"><a href="#未提交读" class="headerlink" title="未提交读"></a>未提交读</h1><h2 id="作用及存在问题"><a href="#作用及存在问题" class="headerlink" title="作用及存在问题"></a><font size="5">作用及存在问题</font></h2><p>这是数据库事务最低的隔离级别，在此隔离级别下：<font color="red"><b>事务中的修改，即使没有提交，对其他事务也都是可见的。事务可以读取未提交的数据，这种情况被称为脏读。</b></font>这个级别会导致许多问题，并且从性能上来说，该级别不会比其他级别好太多，但是却缺乏其他级别的很多好处，因此除非真的有非常必要的理由，在实际应用中很少使用。</p>
 <h2 id="实验演示"><a href="#实验演示" class="headerlink" title="实验演示"></a><font size="5">实验演示</font></h2><ol>
-<li><p>为了方便起见，我们将两个CMD窗口下的会话隔离级别都设置为READ UNMMITTED。<br><img src="/2020/02/26/事务的四大隔离级别/3.png" alt></p>
+<li><p>为了方便起见，我们将两个CMD窗口下的会话隔离级别都设置为READ UNMMITTED。<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/3.png" alt></p>
 </li>
 <li><p>在两个会话中各开启一个事务(先开启T1后开启T2)(start transaction;)，分别称为T1和T2(左图为T1)。</p>
 </li>
 <li><p>我们在T2中完成转账操作：A向B转账50元。在T1中进行查询余额。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">T2的SQL操作</span><br><span class="line">update isolation_demo set count=count-50 where ID=&apos;A&apos;;--语句1</span><br><span class="line">update isolation_demo set count=count+50 where ID=&apos;B&apos;;--语句2</span><br><span class="line"></span><br><span class="line">=============================</span><br><span class="line">T1的SQL操作</span><br><span class="line">select * from isolation_demo;</span><br><span class="line">...执行多次该语句</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>在T2事务的语句1执行之前，我们执行一次查询，得到如图所示结果<br><img src="/2020/02/26/事务的四大隔离级别/4.png" alt></p>
+<li><p>在T2事务的语句1执行之前，我们执行一次查询，得到如图所示结果<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/4.png" alt></p>
 </li>
-<li><p>我们转过来执行T2事务的语句1，得到如图所示结果<br><img src="/2020/02/26/事务的四大隔离级别/5.png" alt></p>
+<li><p>我们转过来执行T2事务的语句1，得到如图所示结果<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/5.png" alt></p>
 </li>
-<li><p>我们在T1事务中再执行一次查询(select)<br><img src="/2020/02/26/事务的四大隔离级别/6.png" alt><br>和在第四步中查询得到的结果不同。这时候问题来了，我们看到T1中此时查询得到的是T2事务没有提交的修改，违反了事务的一致性，这样会导致很严重的问题。</p>
+<li><p>我们在T1事务中再执行一次查询(select)<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/6.png" alt><br>和在第四步中查询得到的结果不同。这时候问题来了，我们看到T1中此时查询得到的是T2事务没有提交的修改，违反了事务的一致性，这样会导致很严重的问题。</p>
 </li>
 <li><p>在T2中执行语句2后，在T1中再执行一次查询，可以看到T1查询得到的结果再次发生变化，这里不做演示。</p>
 </li>
@@ -390,18 +390,18 @@
 <li><b>存在问题</b><br>这个级别也叫做不可重复读，因为一个事务两次执行相同的查询，可能由于其他事务的修改可能得到不同的结果</li>
 </ol>
 <h2 id="实验演示-1"><a href="#实验演示-1" class="headerlink" title="实验演示"></a><font size="5">实验演示</font></h2><ol>
-<li>同样的，我们将隔离级别改为READ COMMITTED。<br><img src="/2020/02/26/事务的四大隔离级别/7.png" alt></li>
+<li>同样的，我们将隔离级别改为READ COMMITTED。<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/7.png" alt></li>
 <li>分别开启两个事务(先开启T1后开启T2)，并且两个事务的操作和前面相同。</li>
-<li>在T2事务语句1执行前，语句1执行后语句2执行前，T2事务提交后这三个时刻T1事务各执行一次查询<br>T2事务语句1执行前<br><img src="/2020/02/26/事务的四大隔离级别/8.png" alt><br>T2事务语句1执行后，语句2执行前<br><img src="/2020/02/26/事务的四大隔离级别/9.png" alt><br>T2事务提交后<br><img src="/2020/02/26/事务的四大隔离级别/10.png" alt><br>如图，我们可以发现，T2事务中所做的修改对于T1是不可见的，但是由于T2事务对数据的修改，T1事务执行相同的查询得到了不一样的结果，这就是不可重复读。</li>
+<li>在T2事务语句1执行前，语句1执行后语句2执行前，T2事务提交后这三个时刻T1事务各执行一次查询<br>T2事务语句1执行前<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/8.png" alt><br>T2事务语句1执行后，语句2执行前<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/9.png" alt><br>T2事务提交后<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/10.png" alt><br>如图，我们可以发现，T2事务中所做的修改对于T1是不可见的，但是由于T2事务对数据的修改，T1事务执行相同的查询得到了不一样的结果，这就是不可重复读。</li>
 </ol>
 <h1 id="可重复读"><a href="#可重复读" class="headerlink" title="可重复读"></a>可重复读</h1><h2 id="作用及存在问题-2"><a href="#作用及存在问题-2" class="headerlink" title="作用及存在问题"></a><font size="5">作用及存在问题</font></h2><ol>
 <li><b>作用</b><br>通过名字不难理解，该级别不仅解决了脏读的问题，也解决了不可重复读的问题。也就是说，该级别保证了同一个事务多次读取同样的记录结果是一致的。MySQL默认的隔离级别即为可重复读。</li>
 <li><b>存在问题</b><br>在该级别下，会存在幻行的问题，所谓幻行，指的是当事务A在读取某个范围内的记录时，另外一个事务B又在该范围内插入了新的记录，当之前的事务A再次读取该范围内的记录时，会产生幻行(即读取到事务B新插入的数据)。</li>
 </ol>
 <h2 id="实验演示-2"><a href="#实验演示-2" class="headerlink" title="实验演示"></a><font size="5">实验演示</font></h2><ol>
-<li>我们将隔离级别改为REPEATABLE READ。<br><img src="/2020/02/26/事务的四大隔离级别/11.png" alt></li>
+<li>我们将隔离级别改为REPEATABLE READ。<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/11.png" alt></li>
 <li>分别开启两个事务(先开启T1后开启T2)，并且两个事务的操作和前面相同。</li>
-<li>在T2事务语句1执行前，语句1执行后语句2执行前，T2事务提交后这三个时刻T1事务各执行一次查询<br>T2事务语句1执行前<br><img src="/2020/02/26/事务的四大隔离级别/12.png" alt><br>T2事务语句1执行后，语句2执行前<br><img src="/2020/02/26/事务的四大隔离级别/13.png" alt><br>T2事务提交后<br><img src="/2020/02/26/事务的四大隔离级别/14.png" alt><br>可以看到，当T1事务开启时，无论T2对数据进行怎样的修改，T1中重复查询多次得到的结果相同，这就叫做可重复读。至于该级别下的幻行问题，已经由MySQL的InnoDB执行引擎通过MVCC(多版本并发控制)解决，因此这里无法进行演示。</li>
+<li>在T2事务语句1执行前，语句1执行后语句2执行前，T2事务提交后这三个时刻T1事务各执行一次查询<br>T2事务语句1执行前<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/12.png" alt><br>T2事务语句1执行后，语句2执行前<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/13.png" alt><br>T2事务提交后<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/14.png" alt><br>可以看到，当T1事务开启时，无论T2对数据进行怎样的修改，T1中重复查询多次得到的结果相同，这就叫做可重复读。至于该级别下的幻行问题，已经由MySQL的InnoDB执行引擎通过MVCC(多版本并发控制)解决，因此这里无法进行演示。</li>
 </ol>
 <h1 id="可串行化"><a href="#可串行化" class="headerlink" title="可串行化"></a>可串行化</h1><h2 id="作用及存在问题-3"><a href="#作用及存在问题-3" class="headerlink" title="作用及存在问题"></a><font size="5">作用及存在问题</font></h2><ol>
 <li><b>作用</b><br>这是四大隔离级别中最高的级别。它通过强制事务串行执行，避免了前面说到的换行问题。简单来说，SERIALIZABLE会在读取的每一行数据上都加锁，所以可能导致大量的超时和锁争用问题，实际应用中也很少使用这一级别。只有在非常需要确保数据一致性并且可以接受没有并发的情况下才考虑使用。</li>
@@ -409,8 +409,8 @@
 </ol>
 <h2 id="实验演示-3"><a href="#实验演示-3" class="headerlink" title="实验演示"></a><font size="5">实验演示</font></h2><ol start="2">
 <li>分别开启两个事务(顺序无所谓)，并且两个事务的操作和前面相同。</li>
-<li>我们将隔离级别改为SERIALIZABLE。<br><img src="/2020/02/26/事务的四大隔离级别/15.png" alt></li>
-<li>T2事务先执行语句1(此时T2事务对表加锁)，然后T1事务进行查询。<br><img src="/2020/02/26/事务的四大隔离级别/16.png" alt><br>由于是截图，所以不够直观，但是可以告诉你：<b>由于T2对表进行加锁，因此T1对该表的任何操作都会等到T2提交释放锁，T1获得锁之后才能进行，因此图中T1的查询操作会阻塞知道获得锁为止。</b>可以看到，此时所有事务串行执行，没有并发，性能低下。</li>
+<li>我们将隔离级别改为SERIALIZABLE。<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/15.png" alt></li>
+<li>T2事务先执行语句1(此时T2事务对表加锁)，然后T1事务进行查询。<br><img src="/blog.github.io/2020/02/26/事务的四大隔离级别/16.png" alt><br>由于是截图，所以不够直观，但是可以告诉你：<b>由于T2对表进行加锁，因此T1对该表的任何操作都会等到T2提交释放锁，T1获得锁之后才能进行，因此图中T1的查询操作会阻塞知道获得锁为止。</b>可以看到，此时所有事务串行执行，没有并发，性能低下。</li>
 </ol>
 <hr>
 对于事务四大隔离级别的介绍就到这里，文中提到的MVCC会在后续的博客中进一步介绍。

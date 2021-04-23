@@ -61,20 +61,20 @@
 <meta name="keywords" content="栈,逆波兰表达式">
 <meta property="og:type" content="article">
 <meta property="og:title" content="逆波兰计算器">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/09/16/逆波兰计算器/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/09/16/逆波兰计算器/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="今天重新学习了一下栈这一经典的数据结构，突然想起来当时大二为了进实验室用安卓写的一个计算器app，当时也是年轻，虽然写出来了，但是对于中缀转后缀却仍是似懂非懂、迷迷糊糊，所以趁着刚复习完栈这个号时候，准备趁热打铁，把这方面给弄明白了。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/16/逆波兰计算器/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/16/逆波兰计算器/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/16/逆波兰计算器/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/16/逆波兰计算器/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/16/逆波兰计算器/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/16/逆波兰计算器/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/16/逆波兰计算器/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/16/逆波兰计算器/4.png">
 <meta property="og:updated_time" content="2019-09-16T09:39:53.591Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="逆波兰计算器">
 <meta name="twitter:description" content="今天重新学习了一下栈这一经典的数据结构，突然想起来当时大二为了进实验室用安卓写的一个计算器app，当时也是年轻，虽然写出来了，但是对于中缀转后缀却仍是似懂非懂、迷迷糊糊，所以趁着刚复习完栈这个号时候，准备趁热打铁，把这方面给弄明白了。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/09/16/逆波兰计算器/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/09/16/逆波兰计算器/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/09/16/逆波兰计算器/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/09/16/逆波兰计算器/">
 
 
 <script id="page-configurations">
@@ -264,7 +264,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/09/16/逆波兰计算器/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/09/16/逆波兰计算器/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -341,11 +341,11 @@
 <li>如果当前字符是操作符，那么直接加入到集合中</li>
 <li>如果当前字符是操作数，那么就要考虑多位数操作数的问题<ul>
 <li>继续向后遍历，如果后面的字符仍是操作数，就将这些数拼接起来</li>
-<li>直到当前字符不是操作数为止，将拼接的字符串加入到集合中<br><img src="/2019/09/16/逆波兰计算器/1.png" alt></li>
+<li>直到当前字符不是操作数为止，将拼接的字符串加入到集合中<br><img src="/blog.github.io/2019/09/16/逆波兰计算器/1.png" alt></li>
 </ul>
 </li>
 </ul>
-<h2 id="判断操作符优先级"><a href="#判断操作符优先级" class="headerlink" title="判断操作符优先级"></a><font size="5">判断操作符优先级</font></h2><p><img src="/2019/09/16/逆波兰计算器/3.png" alt></p>
+<h2 id="判断操作符优先级"><a href="#判断操作符优先级" class="headerlink" title="判断操作符优先级"></a><font size="5">判断操作符优先级</font></h2><p><img src="/blog.github.io/2019/09/16/逆波兰计算器/3.png" alt></p>
 <h2 id="后缀表达式集合"><a href="#后缀表达式集合" class="headerlink" title="后缀表达式集合"></a><font size="5">后缀表达式集合</font></h2><p>上一步我们得到了一个集合，集合中存储着中缀表达式内容，这一步就要将中缀表达式转换为后缀表达式并存储到集合中<br>步骤：</p>
 <ul>
 <li>创建变量<ul>
@@ -366,13 +366,13 @@
 <li>集合list遍历完毕后，将s1中所有元素依次出栈加入到ls集合中</li>
 <li>最后得到的ls集合就是后缀表达式</li>
 </ul>
-<p><font color="red"><b>注意：</b></font>这里如果用栈代替集合，那么由于栈先进后出的特性，得到的只能是逆序的后缀表达式，还要进一步的转换才能得到后缀表达式<br><img src="/2019/09/16/逆波兰计算器/2.png" alt></p>
+<p><font color="red"><b>注意：</b></font>这里如果用栈代替集合，那么由于栈先进后出的特性，得到的只能是逆序的后缀表达式，还要进一步的转换才能得到后缀表达式<br><img src="/blog.github.io/2019/09/16/逆波兰计算器/2.png" alt></p>
 <h1 id="计算后缀表达式"><a href="#计算后缀表达式" class="headerlink" title="计算后缀表达式"></a>计算后缀表达式</h1><ul>
 <li>创建一个栈stack用于存放操作数</li>
 <li>从左向右扫描后缀表达式集合<ul>
 <li>如果是操作数，直接入栈</li>
 <li>如果是操作符，就从stack中弹出两个操作数进行运算，并将运算结果重新入栈</li>
-<li>集合遍历完毕，stack剩下的元素就是最后的结果<br><img src="/2019/09/16/逆波兰计算器/4.png" alt></li>
+<li>集合遍历完毕，stack剩下的元素就是最后的结果<br><img src="/blog.github.io/2019/09/16/逆波兰计算器/4.png" alt></li>
 </ul>
 </li>
 </ul>

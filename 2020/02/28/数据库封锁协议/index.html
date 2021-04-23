@@ -61,21 +61,21 @@
 <meta name="keywords" content="数据库,并发控制,封锁协议">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据库封锁协议">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/28/数据库封锁协议/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库封锁协议/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在前一篇文章中介绍了数据库中常见的锁，本文主要介绍数据库并发控制中的两种封锁协议，它们分别是：三级封锁协议和两阶段封锁协议。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/数据库封锁协议/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/数据库封锁协议/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/数据库封锁协议/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/数据库封锁协议/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/数据库封锁协议/1.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库封锁协议/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库封锁协议/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库封锁协议/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库封锁协议/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库封锁协议/1.jpg">
 <meta property="og:updated_time" content="2020-02-28T08:59:50.938Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据库封锁协议">
 <meta name="twitter:description" content="在前一篇文章中介绍了数据库中常见的锁，本文主要介绍数据库并发控制中的两种封锁协议，它们分别是：三级封锁协议和两阶段封锁协议。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/28/数据库封锁协议/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/28/数据库封锁协议/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库封锁协议/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库封锁协议/">
 
 
 <script id="page-configurations">
@@ -265,7 +265,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/28/数据库封锁协议/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库封锁协议/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -330,9 +330,9 @@
 <a id="more"></a>
 
 <h1 id="三级封锁协议"><a href="#三级封锁协议" class="headerlink" title="三级封锁协议"></a>三级封锁协议</h1><p>三级封锁协议，主要约定了申请锁、释放锁的时机。</p>
-<h2 id="一级封锁协议"><a href="#一级封锁协议" class="headerlink" title="一级封锁协议"></a><font size="5">一级封锁协议</font></h2><p><font color="red"><b>事务T要修改数据A时必须加X锁，直到T结束才释放锁。</b></font>可以解决丢失修改问题(脏写)，因为不能同时有两个事务对同一个数据进行修改，那么事务的修改就不会被覆盖。<br><img src="/2020/02/28/数据库封锁协议/1.png" alt></p>
-<h2 id="二级封锁协议"><a href="#二级封锁协议" class="headerlink" title="二级封锁协议"></a><font size="5">二级封锁协议</font></h2><p>在一级封锁协议的基础上，<font color="red"><b>事务对数据的访问必须加S锁，访问完毕后立刻释放。</b></font>可以解决读脏数据问题，因为如果一个事务在对数据A进行修改，根据一级封锁协议，会加X锁，那么就不能再加S锁了，也就是不会读入数据。<br><img src="/2020/02/28/数据库封锁协议/2.png" alt></p>
-<h2 id="三级封锁协议-1"><a href="#三级封锁协议-1" class="headerlink" title="三级封锁协议"></a><font size="5">三级封锁协议</font></h2><p>在二级封锁协议的基础上，<font color="red"><b>要求读取数据A时必须加S锁，直到事务结束了才能释放S锁。</b></font>可以解决不可重复读的问题，因为读A时，其它事务不能对A加X锁，从而避免了在读的期间数据发生改变。<br><img src="/2020/02/28/数据库封锁协议/3.png" alt><br>可以发现，对于第三级封锁协议，所有的锁都在事务结束时释放。</p>
+<h2 id="一级封锁协议"><a href="#一级封锁协议" class="headerlink" title="一级封锁协议"></a><font size="5">一级封锁协议</font></h2><p><font color="red"><b>事务T要修改数据A时必须加X锁，直到T结束才释放锁。</b></font>可以解决丢失修改问题(脏写)，因为不能同时有两个事务对同一个数据进行修改，那么事务的修改就不会被覆盖。<br><img src="/blog.github.io/2020/02/28/数据库封锁协议/1.png" alt></p>
+<h2 id="二级封锁协议"><a href="#二级封锁协议" class="headerlink" title="二级封锁协议"></a><font size="5">二级封锁协议</font></h2><p>在一级封锁协议的基础上，<font color="red"><b>事务对数据的访问必须加S锁，访问完毕后立刻释放。</b></font>可以解决读脏数据问题，因为如果一个事务在对数据A进行修改，根据一级封锁协议，会加X锁，那么就不能再加S锁了，也就是不会读入数据。<br><img src="/blog.github.io/2020/02/28/数据库封锁协议/2.png" alt></p>
+<h2 id="三级封锁协议-1"><a href="#三级封锁协议-1" class="headerlink" title="三级封锁协议"></a><font size="5">三级封锁协议</font></h2><p>在二级封锁协议的基础上，<font color="red"><b>要求读取数据A时必须加S锁，直到事务结束了才能释放S锁。</b></font>可以解决不可重复读的问题，因为读A时，其它事务不能对A加X锁，从而避免了在读的期间数据发生改变。<br><img src="/blog.github.io/2020/02/28/数据库封锁协议/3.png" alt><br>可以发现，对于第三级封锁协议，所有的锁都在事务结束时释放。</p>
 <h1 id="两阶段封锁协议"><a href="#两阶段封锁协议" class="headerlink" title="两阶段封锁协议"></a>两阶段封锁协议</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a><font size="5">定义</font></h2><p>该协议要求每个事务分两个阶段提出加锁和解锁申请</p>
 <ol>
 <li><b>增长阶段</b><br>事务可以获得锁，但是不能释放锁</li>
@@ -345,9 +345,9 @@
 <p>可以证明：两阶段封锁协议保证了冲突可串行化。对于任何事务，在调度中获得其最后加锁的位置(增长阶段结束点)称为事务的封锁点。这样，多个事务可以根据可以根据它们的封锁点进行排序。实际上，这个顺序就是事务地一个可串行化顺序。</p>
 <h2 id="严格两阶段封锁协议-S2PL"><a href="#严格两阶段封锁协议-S2PL" class="headerlink" title="严格两阶段封锁协议(S2PL)"></a><font size="5">严格两阶段封锁协议(S2PL)</font></h2><p>在两阶段封锁协议下，级联回滚是可能发生的。</p>
 <ul>
-<li><b>级联回滚</b><br>一个事务T1读取到了T2未提交的数据并对该数据进行了操作，当T2回滚时，T1也必须跟着回滚，这就是级联回滚。级联回滚导致大量撤销工作，是我们不希望发生的<br><img src="/2020/02/28/数据库封锁协议/4.png" alt>如图所示，三个事务都满足两阶段封锁协议，但是会出现级联回滚现象：T3事务读取到A的数据后T1发生回滚，那么T2和T3都要回滚。</li>
+<li><b>级联回滚</b><br>一个事务T1读取到了T2未提交的数据并对该数据进行了操作，当T2回滚时，T1也必须跟着回滚，这就是级联回滚。级联回滚导致大量撤销工作，是我们不希望发生的<br><img src="/blog.github.io/2020/02/28/数据库封锁协议/4.png" alt>如图所示，三个事务都满足两阶段封锁协议，但是会出现级联回滚现象：T3事务读取到A的数据后T1发生回滚，那么T2和T3都要回滚。</li>
 </ul>
-<p>为了防止级联回滚现象，我们可以使用严格两阶段锁协议：在两阶段封锁协议的基础上，<font color="red"><b>严格两阶段封锁协议要求所有的锁只能在事务提交时释放。</b></font>这样以来，就不会出现级联回滚。<br><img src="/2020/02/28/数据库封锁协议/1.jpg" alt>如图所示，所有的锁在事务结束时释放。</p>
+<p>为了防止级联回滚现象，我们可以使用严格两阶段锁协议：在两阶段封锁协议的基础上，<font color="red"><b>严格两阶段封锁协议要求所有的锁只能在事务提交时释放。</b></font>这样以来，就不会出现级联回滚。<br><img src="/blog.github.io/2020/02/28/数据库封锁协议/1.jpg" alt>如图所示，所有的锁在事务结束时释放。</p>
 <h1 id="锁转换"><a href="#锁转换" class="headerlink" title="锁转换"></a>锁转换</h1><p>我们考虑下面两个事务</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">T1: read(a1);</span><br><span class="line">    read(a2);</span><br><span class="line">    ......</span><br><span class="line">    read(an);</span><br><span class="line">    write(a1);</span><br><span class="line"></span><br><span class="line">===============</span><br><span class="line">T2: read(a1);</span><br><span class="line">    read(a2);</span><br><span class="line">    display(a1+a2);</span><br></pre></td></tr></table></figure>
 

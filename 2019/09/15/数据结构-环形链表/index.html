@@ -61,20 +61,20 @@
 <meta name="keywords" content="环形链表,链表,数据结构">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据结构-环形链表">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/09/15/数据结构-环形链表/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/09/15/数据结构-环形链表/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="环形链表，顾名思义，就是整个链表构成一个环，将单链表的最后一个节点的next指针指向头节点，这样就构成了循环链表。这里说的循环链表主要用于解决约瑟夫环问题和判断链表是否有环两个算法问题。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/15/数据结构-环形链表/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/15/数据结构-环形链表/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/15/数据结构-环形链表/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/15/数据结构-环形链表/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/数据结构-环形链表/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/数据结构-环形链表/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/数据结构-环形链表/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/数据结构-环形链表/4.png">
 <meta property="og:updated_time" content="2019-10-19T02:04:32.576Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据结构-环形链表">
 <meta name="twitter:description" content="环形链表，顾名思义，就是整个链表构成一个环，将单链表的最后一个节点的next指针指向头节点，这样就构成了循环链表。这里说的循环链表主要用于解决约瑟夫环问题和判断链表是否有环两个算法问题。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/09/15/数据结构-环形链表/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/09/15/数据结构-环形链表/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/数据结构-环形链表/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/09/15/数据结构-环形链表/">
 
 
 <script id="page-configurations">
@@ -264,7 +264,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/09/15/数据结构-环形链表/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/09/15/数据结构-环形链表/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -336,17 +336,17 @@
 <hr>
 <a id="more"></a>
 
-<h1 id="环形链表节点"><a href="#环形链表节点" class="headerlink" title="环形链表节点"></a>环形链表节点</h1><p><img src="/2019/09/15/数据结构-环形链表/1.png" alt></p>
+<h1 id="环形链表节点"><a href="#环形链表节点" class="headerlink" title="环形链表节点"></a>环形链表节点</h1><p><img src="/blog.github.io/2019/09/15/数据结构-环形链表/1.png" alt></p>
 <ol>
 <li>int val：存储数据</li>
 <li>Node next：指向另外一个Node节点</li>
 </ol>
-<h1 id="单向循环链表"><a href="#单向循环链表" class="headerlink" title="单向循环链表"></a>单向循环链表</h1><h2 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a><font size="5">成员变量</font></h2><p><img src="/2019/09/15/数据结构-环形链表/2.png" alt></p>
+<h1 id="单向循环链表"><a href="#单向循环链表" class="headerlink" title="单向循环链表"></a>单向循环链表</h1><h2 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a><font size="5">成员变量</font></h2><p><img src="/blog.github.io/2019/09/15/数据结构-环形链表/2.png" alt></p>
 <ol>
 <li>head：环形链表的头指针</li>
 <li>helper：环形链表的尾指针，每次都指向新插入的节点<font color="red">(helper.next=head)</font></li>
 </ol>
-<h2 id="成员方法"><a href="#成员方法" class="headerlink" title="成员方法"></a><font size="5">成员方法</font></h2><h3 id="public-void-Add-int-ele"><a href="#public-void-Add-int-ele" class="headerlink" title="public void Add(int ele)"></a><font size="5">public void Add(int ele)</font></h3><p><img src="/2019/09/15/数据结构-环形链表/3.png" alt>向链表中添加元素</p>
+<h2 id="成员方法"><a href="#成员方法" class="headerlink" title="成员方法"></a><font size="5">成员方法</font></h2><h3 id="public-void-Add-int-ele"><a href="#public-void-Add-int-ele" class="headerlink" title="public void Add(int ele)"></a><font size="5">public void Add(int ele)</font></h3><p><img src="/blog.github.io/2019/09/15/数据结构-环形链表/3.png" alt>向链表中添加元素</p>
 <ol>
 <li>在添加之前，判断当前链表是否为空</li>
 <li>如果为空<ul>
@@ -363,7 +363,7 @@
 </li>
 </ol>
 <p><font color="red"><b>环形链表，其实就是将单链表的尾节点的next指针指向头节点</b></font></p>
-<h3 id="public-void-show"><a href="#public-void-show" class="headerlink" title="public void show()"></a><font size="5">public void show()</font></h3><p><img src="/2019/09/15/数据结构-环形链表/4.png" alt>打印环形链表<br>逻辑比较简单，因为在打印的过程中指针会移动，所以可以<font color="red">创建两个临时变量</font>，这样打印过后head和helper指针都没有发生变化，下次添加元素的时候仍然能够按照顺序添加</p>
+<h3 id="public-void-show"><a href="#public-void-show" class="headerlink" title="public void show()"></a><font size="5">public void show()</font></h3><p><img src="/blog.github.io/2019/09/15/数据结构-环形链表/4.png" alt>打印环形链表<br>逻辑比较简单，因为在打印的过程中指针会移动，所以可以<font color="red">创建两个临时变量</font>，这样打印过后head和helper指针都没有发生变化，下次添加元素的时候仍然能够按照顺序添加</p>
 <hr>
 单链表的两个算法问题会在<font color="red"><b>算法之美</b></font>分类中说到
     </div>

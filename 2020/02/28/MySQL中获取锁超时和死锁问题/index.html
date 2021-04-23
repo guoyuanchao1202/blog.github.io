@@ -61,23 +61,23 @@
 <meta name="keywords" content="数据库,MySQL,死锁,锁超时">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL中获取锁超时和死锁问题">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="MySQL地InnoDB引擎地并发控制有两种形式：分别是MVCC和两阶段封锁协议。在前面说过，两阶段封锁协议可能会出现死锁问题，那么出现死锁之后该如何处理呢？通过本文你将了解MySQL处理死锁问题以及获取锁超时问题地方式。本文所有实验演示全部基于Win10环境下MySQL5.5版本">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.jpg">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/5.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/6.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/6.png">
 <meta property="og:updated_time" content="2020-02-28T14:24:48.896Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL中获取锁超时和死锁问题">
 <meta name="twitter:description" content="MySQL地InnoDB引擎地并发控制有两种形式：分别是MVCC和两阶段封锁协议。在前面说过，两阶段封锁协议可能会出现死锁问题，那么出现死锁之后该如何处理呢？通过本文你将了解MySQL处理死锁问题以及获取锁超时问题地方式。本文所有实验演示全部基于Win10环境下MySQL5.5版本">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.jpg">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.jpg">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/">
 
 
 <script id="page-configurations">
@@ -267,7 +267,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -337,9 +337,9 @@
 <li>死锁问题。</li>
 </ol>
 <p>下面我将通过实验演示MySQL如何解决这两种情况。</p>
-<h1 id="什么是死锁"><a href="#什么是死锁" class="headerlink" title="什么是死锁"></a>什么是死锁</h1><p>在数据库中，死锁的定义如下：两个事务都持有对方需要的锁，并且在等待对方释放，并且双方都不会释放自己已经持有的锁。<br><img src="/2020/02/28/MySQL中获取锁超时和死锁问题/1.jpg" alt><br>由于MySQL使用的是两阶段封锁协议，因此MySQL在并发环境下可能会出现死锁。</p>
+<h1 id="什么是死锁"><a href="#什么是死锁" class="headerlink" title="什么是死锁"></a>什么是死锁</h1><p>在数据库中，死锁的定义如下：两个事务都持有对方需要的锁，并且在等待对方释放，并且双方都不会释放自己已经持有的锁。<br><img src="/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.jpg" alt><br>由于MySQL使用的是两阶段封锁协议，因此MySQL在并发环境下可能会出现死锁。</p>
 <h1 id="死锁检测和恢复"><a href="#死锁检测和恢复" class="headerlink" title="死锁检测和恢复"></a>死锁检测和恢复</h1><p>MySQL不能保证不产生死锁，那么它就必须采用检测和恢复机制。检查系统状态的算法周期新激活，判断有无死锁发生。如果发生死锁，则系统必须尝试着从死锁中恢复。</p>
-<h2 id="死锁检测"><a href="#死锁检测" class="headerlink" title="死锁检测"></a><font size="5">死锁检测</font></h2><p>死锁可以用称为等待图的有向图来描述，该图由G=(V,E)来描述，其中V是顶点集，E是边集。顶点集由系统中所有事务组成，边集E的每个元素是一个有序对Ti–&gt;Tj。如果Ti–&gt;Tj属于E，则表示Ti在等待Tj释放所需要的数据项。当Ti申请的数据项被Tj持有时，边Ti–&gt;Tj被插入等待图中，只有当Tj不再持有Ti需要的数据项时，Ti–&gt;Tj才被删除。<br><font size="5" color="red"><b>当且仅当等待途中包含环时，系统中存在死锁，该环的每一个事务称为处于死锁状态。</b></font>要检测死锁，系统需维护等待图，并周期性的激活一个在等待图中搜索环的算法。<br><img src="/2020/02/28/MySQL中获取锁超时和死锁问题/1.png" alt><br><img src="/2020/02/28/MySQL中获取锁超时和死锁问题/2.png" alt><br>如上图，第一张图中不存在环，因此没有死锁发生；而在第二张图中存在环，因此T2、T3以及T4处于死锁状态，需要进行死锁恢复。</p>
+<h2 id="死锁检测"><a href="#死锁检测" class="headerlink" title="死锁检测"></a><font size="5">死锁检测</font></h2><p>死锁可以用称为等待图的有向图来描述，该图由G=(V,E)来描述，其中V是顶点集，E是边集。顶点集由系统中所有事务组成，边集E的每个元素是一个有序对Ti–&gt;Tj。如果Ti–&gt;Tj属于E，则表示Ti在等待Tj释放所需要的数据项。当Ti申请的数据项被Tj持有时，边Ti–&gt;Tj被插入等待图中，只有当Tj不再持有Ti需要的数据项时，Ti–&gt;Tj才被删除。<br><font size="5" color="red"><b>当且仅当等待途中包含环时，系统中存在死锁，该环的每一个事务称为处于死锁状态。</b></font>要检测死锁，系统需维护等待图，并周期性的激活一个在等待图中搜索环的算法。<br><img src="/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.png" alt><br><img src="/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/2.png" alt><br>如上图，第一张图中不存在环，因此没有死锁发生；而在第二张图中存在环，因此T2、T3以及T4处于死锁状态，需要进行死锁恢复。</p>
 <h2 id="死锁恢复"><a href="#死锁恢复" class="headerlink" title="死锁恢复"></a><font size="5">死锁恢复</font></h2><p>当检测到死锁时，系统必须从死锁中恢复，解除死锁最通常的做法是回滚一个或多个事务。采取的动作有三个：</p>
 <ol>
 <li><p><b>选择牺牲者</b><br>死锁发生后，系统选择插入更新或者删除数量最少的事务进行回滚(基于INFORMATION_SCHEMA.INNODB_TRX表中的trx_weight字段来判断)</p>
@@ -361,7 +361,7 @@
 <li>T1再执行第三条SQL语句</li>
 <li>T2执行第二条SQL语句</li>
 </ol>
-<p><img src="/2020/02/28/MySQL中获取锁超时和死锁问题/3.png" alt>，再RR级别下，只有更新操作时，被回滚的事务直接终止。</p>
+<p><img src="/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/3.png" alt>，再RR级别下，只有更新操作时，被回滚的事务直接终止。</p>
 <h1 id="超时等待"><a href="#超时等待" class="headerlink" title="超时等待"></a>超时等待</h1><p>在MySQL中，还有一种情况：那就是当一个事务长时间持有锁时，被阻塞的事务会一直等待该锁，那么等待多久呢？超时之后呢？</p>
 <h2 id="等待多久"><a href="#等待多久" class="headerlink" title="等待多久"></a><font size="5">等待多久</font></h2><p>在MySQL中，InnoDB默认的行级锁等待时间为50s。可以通过设置innodb_lock_wait_timeout的值来改变超时时间</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">innodb_lock_wait_timeout</span><br><span class="line">默认值：50s</span><br><span class="line">最小值：1s</span><br><span class="line">最大值：1073741824</span><br></pre></td></tr></table></figure>
@@ -379,10 +379,10 @@
 <h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a><font size="5">测试</font></h2><p>锁超时的实验很好测试，表还是上面的表，开启两个事务</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">T1:update deadlock_test set number=-1 where ID=1;</span><br><span class="line"></span><br><span class="line">T2:update deadlock_test set number=-2 where ID=1;</span><br></pre></td></tr></table></figure>
 
-<p>两事务同时对一条记录进行修改，就会发生锁争用现象，后面的事务会被阻塞，知道获得锁或者超时。<br><img src="/2020/02/28/MySQL中获取锁超时和死锁问题/4.png" alt></p>
+<p>两事务同时对一条记录进行修改，就会发生锁争用现象，后面的事务会被阻塞，知道获得锁或者超时。<br><img src="/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/4.png" alt></p>
 <h1 id="附-查看修改超时时间操作截图"><a href="#附-查看修改超时时间操作截图" class="headerlink" title="附(查看修改超时时间操作截图)"></a>附(查看修改超时时间操作截图)</h1><ol>
-<li>查看行级锁超时时间<br><img src="/2020/02/28/MySQL中获取锁超时和死锁问题/5.png" alt></li>
-<li>设置当前会话行级锁超时时间<br><img src="/2020/02/28/MySQL中获取锁超时和死锁问题/6.png" alt></li>
+<li>查看行级锁超时时间<br><img src="/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/5.png" alt></li>
+<li>设置当前会话行级锁超时时间<br><img src="/blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/6.png" alt></li>
 </ol>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>对于MySQL中的死锁问题的介绍就到这里，由于MySQL使用两阶段封锁协议，不能保证不发生死锁，因此InnoDB具有完善的死锁检测和恢复机制。今天的介绍就到这里。</p>
 <hr>

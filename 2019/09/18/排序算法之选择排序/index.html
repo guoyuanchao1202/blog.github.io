@@ -61,22 +61,22 @@
 <meta name="keywords" content="排序,选择排序">
 <meta property="og:type" content="article">
 <meta property="og:title" content="排序算法之选择排序">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/09/18/排序算法之选择排序/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/09/18/排序算法之选择排序/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="前面说过了冒泡排序，这次来说一下选择排序。同样的，这次也会从算法思路、代码实现以及算法分析三个思路来剖析选择排序">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/18/排序算法之选择排序/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/18/排序算法之选择排序/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/18/排序算法之选择排序/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/18/排序算法之选择排序/5.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/18/排序算法之选择排序/6.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/18/排序算法之选择排序/7.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/18/排序算法之选择排序/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/18/排序算法之选择排序/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/18/排序算法之选择排序/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/18/排序算法之选择排序/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/18/排序算法之选择排序/6.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/18/排序算法之选择排序/7.png">
 <meta property="og:updated_time" content="2019-10-06T13:48:09.688Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="排序算法之选择排序">
 <meta name="twitter:description" content="前面说过了冒泡排序，这次来说一下选择排序。同样的，这次也会从算法思路、代码实现以及算法分析三个思路来剖析选择排序">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/09/18/排序算法之选择排序/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/09/18/排序算法之选择排序/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/09/18/排序算法之选择排序/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/09/18/排序算法之选择排序/">
 
 
 <script id="page-configurations">
@@ -266,7 +266,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/09/18/排序算法之选择排序/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/09/18/排序算法之选择排序/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -345,7 +345,7 @@
 <li>第n-1次从arr[n-2]和arr[n-1]中选取最小值，与arr[n-2]交换</li>
 <li>至此，得到一个从小到大的有序数组，一共进行n-1轮</li>
 </ol>
-<p>对于一个数组<font color="red">arr={3,-1,9,10,-2}</font><br><img src="/2019/09/18/排序算法之选择排序/1.png" alt></p>
+<p>对于一个数组<font color="red">arr={3,-1,9,10,-2}</font><br><img src="/blog.github.io/2019/09/18/排序算法之选择排序/1.png" alt></p>
 <h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public static void SelSort(int[] arr) &#123;</span><br><span class="line">	int min;</span><br><span class="line">	int index;</span><br><span class="line">	//一共进行n-1趟排序，当确定了n-1个元素的位置后，最后一个元素的位置自然也就确定了</span><br><span class="line">	for (int i = 0; i &lt; arr.length - 1; i++) &#123;</span><br><span class="line">		//假定最大值为arr[i]，下标为i</span><br><span class="line">		min = arr[i];</span><br><span class="line">		index = i;</span><br><span class="line">		//找到i+1到最后一个元素的最大值，记录该元素的值和下标位置</span><br><span class="line">		for (int j = i + 1; j &lt; arr.length; j++) &#123;</span><br><span class="line">			if (arr[j] &lt; min) &#123;</span><br><span class="line">				min=arr[j];</span><br><span class="line">				index = j;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		//如果index发生了变化，说明arr[i]不是最大的，那么就将最大值和arr[i]交换</span><br><span class="line">		if (index != i) &#123;</span><br><span class="line">			arr[index]=arr[i];</span><br><span class="line">			arr[i] = min;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h1 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h1><ol>
@@ -367,10 +367,10 @@
 </li>
 <li>另外，该排序算法在<font color="red">n比较小时较好</font></li>
 </ol>
-<h1 id="和冒泡排序比较"><a href="#和冒泡排序比较" class="headerlink" title="和冒泡排序比较"></a>和冒泡排序比较</h1><p>这里，我创建了一个80000大小的数组对其进行排序，分别使用冒泡排序和选择排序，并记录两种排序耗费的时间<br><img src="/2019/09/18/排序算法之选择排序/3.png" alt></p>
+<h1 id="和冒泡排序比较"><a href="#和冒泡排序比较" class="headerlink" title="和冒泡排序比较"></a>和冒泡排序比较</h1><p>这里，我创建了一个80000大小的数组对其进行排序，分别使用冒泡排序和选择排序，并记录两种排序耗费的时间<br><img src="/blog.github.io/2019/09/18/排序算法之选择排序/3.png" alt></p>
 <ul>
-<li>冒泡排序<br><img src="/2019/09/18/排序算法之选择排序/4.png" alt><br><img src="/2019/09/18/排序算法之选择排序/5.png" alt></li>
-<li>选择排序<br><img src="/2019/09/18/排序算法之选择排序/6.png" alt><br><img src="/2019/09/18/排序算法之选择排序/7.png" alt></li>
+<li>冒泡排序<br><img src="/blog.github.io/2019/09/18/排序算法之选择排序/4.png" alt><br><img src="/blog.github.io/2019/09/18/排序算法之选择排序/5.png" alt></li>
+<li>选择排序<br><img src="/blog.github.io/2019/09/18/排序算法之选择排序/6.png" alt><br><img src="/blog.github.io/2019/09/18/排序算法之选择排序/7.png" alt></li>
 </ul>
 <hr>
 <font size="5,face=宋体">通过上面的对比发现，<font color="red">对同样规模的随机生成的数组进行排序，选择排序要比冒泡排序快很多</font></font><br>

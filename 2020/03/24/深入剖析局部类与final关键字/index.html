@@ -61,22 +61,22 @@
 <meta name="keywords" content="局部内部类,final关键字">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入剖析局部类与final关键字">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/03/24/深入剖析局部类与final关键字/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/03/24/深入剖析局部类与final关键字/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="Java中有一种神奇的类，那就是局部内部类。定义在方法或某个作用域内的类，就是局部内部类。而匿名内部类就是一种局部内部类。关于局部内部类，我一直很疑惑为什么它只能访问final修饰的局部变量？它访问成员变量时需要加final修饰么？我上网查阅，网上给出的答案五花八门让人无法分辨真假，于是我花了点儿时间，自己动手一个一个的实验，终于整理出了头绪，特此来记录一下。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/24/深入剖析局部类与final关键字/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/24/深入剖析局部类与final关键字/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/24/深入剖析局部类与final关键字/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/24/深入剖析局部类与final关键字/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/24/深入剖析局部类与final关键字/5.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/24/深入剖析局部类与final关键字/6.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/24/深入剖析局部类与final关键字/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/24/深入剖析局部类与final关键字/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/24/深入剖析局部类与final关键字/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/24/深入剖析局部类与final关键字/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/24/深入剖析局部类与final关键字/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/24/深入剖析局部类与final关键字/6.png">
 <meta property="og:updated_time" content="2020-03-24T07:42:39.588Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入剖析局部类与final关键字">
 <meta name="twitter:description" content="Java中有一种神奇的类，那就是局部内部类。定义在方法或某个作用域内的类，就是局部内部类。而匿名内部类就是一种局部内部类。关于局部内部类，我一直很疑惑为什么它只能访问final修饰的局部变量？它访问成员变量时需要加final修饰么？我上网查阅，网上给出的答案五花八门让人无法分辨真假，于是我花了点儿时间，自己动手一个一个的实验，终于整理出了头绪，特此来记录一下。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/03/24/深入剖析局部类与final关键字/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/03/24/深入剖析局部类与final关键字/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/03/24/深入剖析局部类与final关键字/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/03/24/深入剖析局部类与final关键字/">
 
 
 <script id="page-configurations">
@@ -266,7 +266,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/03/24/深入剖析局部类与final关键字/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/03/24/深入剖析局部类与final关键字/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -336,11 +336,11 @@
 <li><p>在方法内部定义一个局部内部类，并在内部类中使用内部类所述方法的User类型的变量。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">class Outter&#123;</span><br><span class="line">    public static void test(User user)&#123;</span><br><span class="line">        user.name=&quot;hello &quot;;</span><br><span class="line">        class Inner&#123;</span><br><span class="line">        	public void show()&#123;</span><br><span class="line">            	System.out.println(user.name);</span><br><span class="line">        	&#125;</span><br><span class="line">    	&#125;</span><br><span class="line">    new Inner().show();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        test(new User());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//定义一个类</span><br><span class="line">class User&#123;</span><br><span class="line">  public int id;</span><br><span class="line">  public String name;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>使用javac Outter.java编译该类，会得到两个class文件(不考虑User.class)<br><img src="/2020/03/24/深入剖析局部类与final关键字/1.png" alt> </p>
+<li><p>使用javac Outter.java编译该类，会得到两个class文件(不考虑User.class)<br><img src="/blog.github.io/2020/03/24/深入剖析局部类与final关键字/1.png" alt> </p>
 </li>
-<li><p>其中一个和外围类(Outter)的名字相同，另外一个应该是局部内部类的class文件，我们来反编译一下Outter.class<br><img src="/2020/03/24/深入剖析局部类与final关键字/2.png" alt> 查看Outter反编译后的代码，我们发现，它test方法中的参数竟然是final的，我们写的代码中明明没有final啊，这是为什么呢？原来，在以前，我们是需要显式的用final修饰该局部变量的，但是后来，Java使用了语法糖，不用我们去加final了，它在编译时会自动加上final。</p>
+<li><p>其中一个和外围类(Outter)的名字相同，另外一个应该是局部内部类的class文件，我们来反编译一下Outter.class<br><img src="/blog.github.io/2020/03/24/深入剖析局部类与final关键字/2.png" alt> 查看Outter反编译后的代码，我们发现，它test方法中的参数竟然是final的，我们写的代码中明明没有final啊，这是为什么呢？原来，在以前，我们是需要显式的用final修饰该局部变量的，但是后来，Java使用了语法糖，不用我们去加final了，它在编译时会自动加上final。</p>
 </li>
-<li><p>我们再来反编译下局部内部类Inner的字节码文件Outter$1Inner.class<br><img src="/2020/03/24/深入剖析局部类与final关键字/3.png" alt> 通过查看反编译的代码，我们发现，当我们的局部内部类使用局部变量时，会将该局部变量当作自己的成员变量使用(在构造方法中赋值)。</p>
+<li><p>我们再来反编译下局部内部类Inner的字节码文件Outter$1Inner.class<br><img src="/blog.github.io/2020/03/24/深入剖析局部类与final关键字/3.png" alt> 通过查看反编译的代码，我们发现，当我们的局部内部类使用局部变量时，会将该局部变量当作自己的成员变量使用(在构造方法中赋值)。</p>
 </li>
 </ol>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><font size="5">总结</font></h2><p>通过演示，我们可以得出结论：<font color="red"><b>在方法内部定义局部内部类时，如果局部内部类使用了局部变量，即使我们没有将该局部变量显式的声明为final，JVM在编译会自动将该局部变量加上final修饰。并且局部内部类会将该局部变量当作自己的成员属性使用。</b></font></p>
@@ -349,11 +349,11 @@
 <li><p>定义一个方法，在方法中定义一个局部内部类，内部类中访问外围类的成员属性</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public class Outter &#123;</span><br><span class="line">    //定义一个外围类的成员属性</span><br><span class="line">    private User OutterUser = new User();</span><br><span class="line">    </span><br><span class="line">    public void show() &#123;</span><br><span class="line">        this.OutterUser.name = &quot;Outter&quot;;</span><br><span class="line">        //定义一个方法的局部内部类</span><br><span class="line">        class Inner&#123;</span><br><span class="line">            public void InnerMethod() &#123;</span><br><span class="line">                //局部内部类访问外围类的成员属性</span><br><span class="line">                System.out.println(OutterUser.name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        //修改成员属性，使其指向新的User对象</span><br><span class="line">        this.OutterUser=new User();</span><br><span class="line">        //执行局部类的方法</span><br><span class="line">        new Inner().InnerMethod();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        //调用show()方法</span><br><span class="line">        new Outter().show();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class User&#123;</span><br><span class="line">    public int id;</span><br><span class="line">    public String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>我们使用javac Outter.java编译java文件，除去User.class，我们仍得到两个class文件<br><img src="/2020/03/24/深入剖析局部类与final关键字/4.png" alt> </p>
+<li><p>我们使用javac Outter.java编译java文件，除去User.class，我们仍得到两个class文件<br><img src="/blog.github.io/2020/03/24/深入剖析局部类与final关键字/4.png" alt> </p>
 </li>
-<li><p>我们通过反汇编查看Outter.class文件<br><img src="/2020/03/24/深入剖析局部类与final关键字/5.png" alt> 这里我们发现了，<font color="red"><b>此时成员属性并没有被final修饰。方法执行时使用Outter.this调用外围类的成员属性。</b></font>这里有个小细节需要特别注意：<font color="red"><b>我们在代码中，修改成员属性的动作写在定义局部内部类之后，但是反编译后，该动作被提到了前面执行，这也就意味着我们InnerMethod()方法时，打印的不是Outter，而是null。</b></font>我经过测试发现结果确实是这样。</p>
+<li><p>我们通过反汇编查看Outter.class文件<br><img src="/blog.github.io/2020/03/24/深入剖析局部类与final关键字/5.png" alt> 这里我们发现了，<font color="red"><b>此时成员属性并没有被final修饰。方法执行时使用Outter.this调用外围类的成员属性。</b></font>这里有个小细节需要特别注意：<font color="red"><b>我们在代码中，修改成员属性的动作写在定义局部内部类之后，但是反编译后，该动作被提到了前面执行，这也就意味着我们InnerMethod()方法时，打印的不是Outter，而是null。</b></font>我经过测试发现结果确实是这样。</p>
 </li>
-<li><p>我们再来看看局部内部类的class文件<br><img src="/2020/03/24/深入剖析局部类与final关键字/6.png" alt> 在局部内部类中，此时和前面的不同，此时直接将外围类的引用传递了进来，这也就意味着局部内部类可以访问外围类的任何东西。</p>
+<li><p>我们再来看看局部内部类的class文件<br><img src="/blog.github.io/2020/03/24/深入剖析局部类与final关键字/6.png" alt> 在局部内部类中，此时和前面的不同，此时直接将外围类的引用传递了进来，这也就意味着局部内部类可以访问外围类的任何东西。</p>
 </li>
 </ol>
 <h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a><font size="5">总结</font></h2><p>通过演示，我们可以得出结论：<font color="red"><b>当局部内部类使用外围类的成员属性时，局部内部类在构造方法中会传入外围类的引用，当需要访问外围类的成员属性时，直接使用该引用调用。</b></font></p>

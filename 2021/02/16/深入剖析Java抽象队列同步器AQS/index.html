@@ -61,19 +61,19 @@
 <meta name="keywords" content="AQS,Java并发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入剖析Java抽象队列同步器AQS">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="AbstractQueuedSynchronizer又称为队列同步器(后面简称AQS)，它提供了一套完整的同步编程框架，开发人员只需要实现其中几个简单的方法就能自由的使用诸如独占，共享，条件队列等多种同步模式。我们常见的ReentrantLock、Semaphore、CountDownLatch等都是基于AQS实现的，足以说明这套框架的强大之处。本文将基于JDK1.8对AQS进行剖析。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/3.png">
 <meta property="og:updated_time" content="2021-02-16T16:17:01.853Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入剖析Java抽象队列同步器AQS">
 <meta name="twitter:description" content="AbstractQueuedSynchronizer又称为队列同步器(后面简称AQS)，它提供了一套完整的同步编程框架，开发人员只需要实现其中几个简单的方法就能自由的使用诸如独占，共享，条件队列等多种同步模式。我们常见的ReentrantLock、Semaphore、CountDownLatch等都是基于AQS实现的，足以说明这套框架的强大之处。本文将基于JDK1.8对AQS进行剖析。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/">
 
 
 <script id="page-configurations">
@@ -263,7 +263,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -336,9 +336,9 @@
 <a id="more"></a>
 
 <h2 id="AQS简介"><a href="#AQS简介" class="headerlink" title="AQS简介"></a>AQS简介</h2><p>AQS是用来构建锁或者其它同步器组件的重量级基础框架及整个JUC体系的基石，通过内置的CLH(FIFO)队列的变种来完成资源获取线程的排队工作,将每条将要去抢占资源的线程封装成一个Node节点来实现锁的分配，有一个int类变量表示持有锁的状态,通过CAS完成对status值的修改(0表示没有,1表示阻塞)。</p>
-<p><img src="/2021/02/16/深入剖析Java抽象队列同步器AQS/1.png" alt></p>
+<p><img src="/blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/1.png" alt></p>
 <p>如图所示，常见锁或者同步组件都是基于AQS实现的。</p>
-<h2 id="AQS内部架构图"><a href="#AQS内部架构图" class="headerlink" title="AQS内部架构图"></a>AQS内部架构图</h2><p><img src="/2021/02/16/深入剖析Java抽象队列同步器AQS/2.png" alt></p>
+<h2 id="AQS内部架构图"><a href="#AQS内部架构图" class="headerlink" title="AQS内部架构图"></a>AQS内部架构图</h2><p><img src="/blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/2.png" alt></p>
 <p>如图，AQS有两个内部类：</p>
 <ul>
 <li>final 静态内部类Node</li>
@@ -384,7 +384,7 @@
 </ol>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> Node <span class="title">predecessor</span><span class="params">()</span> <span class="keyword">throws</span> NullPointerException </span>&#123;</span><br><span class="line">      Node p = prev;</span><br><span class="line">      <span class="keyword">if</span> (p == <span class="keyword">null</span>)</span><br><span class="line">          <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">          <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="AQS内部类–ConditionObject"><a href="#AQS内部类–ConditionObject" class="headerlink" title="AQS内部类–ConditionObject"></a>AQS内部类–ConditionObject</h2><p><img src="/2021/02/16/深入剖析Java抽象队列同步器AQS/3.png" alt></p>
+<h2 id="AQS内部类–ConditionObject"><a href="#AQS内部类–ConditionObject" class="headerlink" title="AQS内部类–ConditionObject"></a>AQS内部类–ConditionObject</h2><p><img src="/blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/3.png" alt></p>
 <p>ConditionObject架构如上图所示，该类实现了Condition接口的抽象方法。</p>
 <h3 id="ConditionObject成员属性"><a href="#ConditionObject成员属性" class="headerlink" title="ConditionObject成员属性"></a>ConditionObject成员属性</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 等待队列的头节点</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Node firstWaiter;</span><br><span class="line"><span class="comment">// 等待队列的尾节点</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Node lastWaiter;</span><br><span class="line"><span class="comment">// 用于相应中断，后面介绍具体用法</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> REINTERRUPT =  <span class="number">1</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> THROW_IE    = -<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
 

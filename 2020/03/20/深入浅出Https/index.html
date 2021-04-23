@@ -61,22 +61,22 @@
 <meta name="keywords" content="Https,应用层">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入浅出Https">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/03/20/深入浅出Https/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/03/20/深入浅出Https/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="本文对于基本的Http协议不再做赘述(如果对Http协议不了解的建议先学习一下Http协议)。在本文中，首先指出Http协议的缺陷，紧接着提出各种解决方法，最后剖析一下Https协议的实现原理。最后对比Http协议和Https协议，分别介绍它们的优缺点。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/20/深入浅出Https/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/20/深入浅出Https/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/20/深入浅出Https/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/20/深入浅出Https/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/20/深入浅出Https/5.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/20/深入浅出Https/7.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/20/深入浅出Https/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/20/深入浅出Https/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/20/深入浅出Https/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/20/深入浅出Https/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/20/深入浅出Https/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/20/深入浅出Https/7.png">
 <meta property="og:updated_time" content="2020-03-20T09:43:04.787Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入浅出Https">
 <meta name="twitter:description" content="本文对于基本的Http协议不再做赘述(如果对Http协议不了解的建议先学习一下Http协议)。在本文中，首先指出Http协议的缺陷，紧接着提出各种解决方法，最后剖析一下Https协议的实现原理。最后对比Http协议和Https协议，分别介绍它们的优缺点。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/03/20/深入浅出Https/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/03/20/深入浅出Https/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/03/20/深入浅出Https/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/03/20/深入浅出Https/">
 
 
 <script id="page-configurations">
@@ -266,7 +266,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/03/20/深入浅出Https/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/03/20/深入浅出Https/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -330,9 +330,9 @@
 <hr>
 <a id="more"></a>
 
-<h1 id="Http协议存在的问题"><a href="#Http协议存在的问题" class="headerlink" title="Http协议存在的问题"></a>Http协议存在的问题</h1><p>我们知道，Http协议是基于请求响应模型，客户端发送请求，服务器回送响应。这里的关键在于，无论是客户端发送的请求还是服务器回送的响应，都是没有加密的，也就是<font color="red"><b>明文传输</b></font>。由于Http协议是明文传输，因此会造成安全性问题。<br><img src="/2020/03/20/深入浅出Https/1.png" alt><br>如图，当你使用http协议上网时，你在浏览什么网站，你的隐私等等，别人都能够轻而易举地获取，这无疑是很不安全的。</p>
-<h1 id="对称加密传输"><a href="#对称加密传输" class="headerlink" title="对称加密传输"></a>对称加密传输</h1><p>当出现了上面的问题，人们就像，我能不能在发送方对数据进行加密，在接收方对数据进行解密，这样不就安全了么。我们发送方和接收方只需要在交换数据之前，先约定一下加密解密的方法(秘钥)，这样发送方发送数据时先对数据进行加密，然后接收方接收到数据后用对应的解密方法对数据解密。这种加密传输看起来是安全的，但实际上毫无作用，我们来看一下。<br><img src="/2020/03/20/深入浅出Https/2.png" alt><br>就像图中说的，虽然客户端和服务器对数据进行加密传输，但是由于<font color="red"><b>它们的密钥能够被其他人获取到</b></font>，所以这种对称加密方法和明问传输无异。</p>
-<h1 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h1><p>为了解决对称加密出现的问题(密钥能够被第三方获取到)，人们又想出了非对称加密算法。对于非对称加密算法：有一对密钥，一个是公钥、一个是私钥。<font color="red"><b>公钥加密的数据只能用私钥解密，而私钥加密的数据只能用公钥解密</b></font>(至于原理不用深究，只需要知道这一点就足够)。其中私钥是服务器私有的，只有服务器知道，而公钥是发送给客户端的(这就意味着公钥是很容易获取到的)。让我们来看看非对称加密算法能不能解决问题，它又存在哪些问题<br><img src="/2020/03/20/深入浅出Https/3.png" alt><br>从图中可以看到，使用了非对称加密后，客户端发往服务器的数据安全能够得到保障，但是服务器发送给客户端的数据却能够轻易的被他人获取，这仍然是不安全的。那么怎么解决呢？我们继续往下看</p>
+<h1 id="Http协议存在的问题"><a href="#Http协议存在的问题" class="headerlink" title="Http协议存在的问题"></a>Http协议存在的问题</h1><p>我们知道，Http协议是基于请求响应模型，客户端发送请求，服务器回送响应。这里的关键在于，无论是客户端发送的请求还是服务器回送的响应，都是没有加密的，也就是<font color="red"><b>明文传输</b></font>。由于Http协议是明文传输，因此会造成安全性问题。<br><img src="/blog.github.io/2020/03/20/深入浅出Https/1.png" alt><br>如图，当你使用http协议上网时，你在浏览什么网站，你的隐私等等，别人都能够轻而易举地获取，这无疑是很不安全的。</p>
+<h1 id="对称加密传输"><a href="#对称加密传输" class="headerlink" title="对称加密传输"></a>对称加密传输</h1><p>当出现了上面的问题，人们就像，我能不能在发送方对数据进行加密，在接收方对数据进行解密，这样不就安全了么。我们发送方和接收方只需要在交换数据之前，先约定一下加密解密的方法(秘钥)，这样发送方发送数据时先对数据进行加密，然后接收方接收到数据后用对应的解密方法对数据解密。这种加密传输看起来是安全的，但实际上毫无作用，我们来看一下。<br><img src="/blog.github.io/2020/03/20/深入浅出Https/2.png" alt><br>就像图中说的，虽然客户端和服务器对数据进行加密传输，但是由于<font color="red"><b>它们的密钥能够被其他人获取到</b></font>，所以这种对称加密方法和明问传输无异。</p>
+<h1 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h1><p>为了解决对称加密出现的问题(密钥能够被第三方获取到)，人们又想出了非对称加密算法。对于非对称加密算法：有一对密钥，一个是公钥、一个是私钥。<font color="red"><b>公钥加密的数据只能用私钥解密，而私钥加密的数据只能用公钥解密</b></font>(至于原理不用深究，只需要知道这一点就足够)。其中私钥是服务器私有的，只有服务器知道，而公钥是发送给客户端的(这就意味着公钥是很容易获取到的)。让我们来看看非对称加密算法能不能解决问题，它又存在哪些问题<br><img src="/blog.github.io/2020/03/20/深入浅出Https/3.png" alt><br>从图中可以看到，使用了非对称加密后，客户端发往服务器的数据安全能够得到保障，但是服务器发送给客户端的数据却能够轻易的被他人获取，这仍然是不安全的。那么怎么解决呢？我们继续往下看</p>
 <h1 id="非对称加密-对称加密"><a href="#非对称加密-对称加密" class="headerlink" title="非对称加密+对称加密"></a>非对称加密+对称加密</h1><p>我们可以看到，无论是对称加密还是非对称加密，都存在安全问题，于是人们又想出了一种办法：将对称加密和非对称加密结合使用。它的大致思路是这样的：</p>
 <ol>
 <li>客户端先获取服务器的公钥，然后自己生成一个密钥(这里假设是K)。</li>
@@ -340,13 +340,13 @@
 <li>服务器收到加密数据后，使用私钥解密数据得到客户端的密钥K。</li>
 <li>然后客户端和服务器使用该密钥K对数据进行加密解密(对称加密)</li>
 </ol>
-<p><img src="/2020/03/20/深入浅出Https/4.png" alt><br>我们可以看到，客户端和服务器使用非对称加密算法保证密钥K的安全，然后使用对称加密算法对数据进行加密。但是这样就万无一失了么？我们看看这样会存在什么问题？<br><img src="/2020/03/20/深入浅出Https/5.png" alt><br>通过分析我们发现，使用非对称加密+对称加密算法后，黑客仍然能够获取到对称加密的密钥，从而获取篡改数据，这种方法也不是万无一失的。</p>
+<p><img src="/blog.github.io/2020/03/20/深入浅出Https/4.png" alt><br>我们可以看到，客户端和服务器使用非对称加密算法保证密钥K的安全，然后使用对称加密算法对数据进行加密。但是这样就万无一失了么？我们看看这样会存在什么问题？<br><img src="/blog.github.io/2020/03/20/深入浅出Https/5.png" alt><br>通过分析我们发现，使用非对称加密+对称加密算法后，黑客仍然能够获取到对称加密的密钥，从而获取篡改数据，这种方法也不是万无一失的。</p>
 <h1 id="CA认证"><a href="#CA认证" class="headerlink" title="CA认证"></a>CA认证</h1><p>通过分析我们可以发现，使用非对称+对称加密时之所以会出现问题，是因为客户端无法辨别服务器的身份，换句话说，就是它<font color="red"><b>不知道它收到的公钥是来自服务器还是来自客户端。</b></font>既然知道了问题所在，那我们就来解决。于是CA机构就出现了。</p>
 什么是CA认证呢？我们来打个比方：现在有两个人A、B和C，它们互相都不认识。当A和B想要进行交流时，C插入进来，C对A说它是B，然后对B说它是A。由于A、B互相不认识并且都不认识C，因此它们并不会怀疑C的身份，于是它们就开始交流。这样A和B交流的所有内容都被C得知，并且C还可以改变它们对对方说的话。而CA机构就像一个警察，它认识A、B和C，并且<font color="red"><b>三者都信任他</b></font>。当C对A说它是B时，警察就告诉A：他不是B，它是C...这样以来，A就知道C是伪装的，C就无法窃取数据了。
 ![](/深入浅出Https/6.png) 
 如图，由于网络中的计算机都是信任CA机构的，因此借助CA机构，在非对称加密阶段，客户端就能够识别出它收到的公钥是来自黑客还是来自服务器，这样就能够保证安全。
 
-<h1 id="CA证书"><a href="#CA证书" class="headerlink" title="CA证书"></a>CA证书</h1><p>CA证书是网站向CA机构申请认证，然后CA机构向网站颁发的能够标识网站身份的电子证书(可以理解为网站的身份证，不同的网站CA证书是不同的)。当网站向CA机构申请认证时，需要将自己的公钥、域名、等等信息提交给CA认证(不同级别的认证提交的信息不同)。CA机构<font color="red"><b>对网站提交的域名、公钥等明文信息使用hash算法(MD5)生成数字数字摘要。最后，CA机构使用自己的私钥对数字摘要进行加密，就得到了数字签名。最后的CA证书中包含了明文和由明文生成的数字签名</b></font><br><img src="/2020/03/20/深入浅出Https/7.png" alt> </p>
+<h1 id="CA证书"><a href="#CA证书" class="headerlink" title="CA证书"></a>CA证书</h1><p>CA证书是网站向CA机构申请认证，然后CA机构向网站颁发的能够标识网站身份的电子证书(可以理解为网站的身份证，不同的网站CA证书是不同的)。当网站向CA机构申请认证时，需要将自己的公钥、域名、等等信息提交给CA认证(不同级别的认证提交的信息不同)。CA机构<font color="red"><b>对网站提交的域名、公钥等明文信息使用hash算法(MD5)生成数字数字摘要。最后，CA机构使用自己的私钥对数字摘要进行加密，就得到了数字签名。最后的CA证书中包含了明文和由明文生成的数字签名</b></font><br><img src="/blog.github.io/2020/03/20/深入浅出Https/7.png" alt> </p>
 <h1 id="CA认证-非对称加密-对称加密"><a href="#CA认证-非对称加密-对称加密" class="headerlink" title="CA认证+非对称加密+对称加密"></a>CA认证+非对称加密+对称加密</h1><p>下面就介绍一下CA机构+非堆成加密+对称加密是如何保证数据安全的。</p>
 <ol>
 <li>客户端向服务器请求服务器公钥，服务器将自己的CA证书发送给客户端</li>

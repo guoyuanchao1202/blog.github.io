@@ -61,17 +61,17 @@
 <meta name="keywords" content="源码,面试,String类,interrn">
 <meta property="og:type" content="article">
 <meta property="og:title" content="详解String.intern()方法">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/03/02/详解String-intern-方法/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/03/02/详解String-intern-方法/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="最近又重新回顾了一下String的源码。对于其中的interrn()方法还是有点疑惑，因此特意上网再次查了一番，在这里做一下记录方便日后回顾。下面主要介绍一下String.intern()方法。这个方法还是非常有意思的，我们来看一看">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/02/详解String-intern-方法/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/02/详解String-intern-方法/1.png">
 <meta property="og:updated_time" content="2020-03-02T16:08:36.964Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="详解String.intern()方法">
 <meta name="twitter:description" content="最近又重新回顾了一下String的源码。对于其中的interrn()方法还是有点疑惑，因此特意上网再次查了一番，在这里做一下记录方便日后回顾。下面主要介绍一下String.intern()方法。这个方法还是非常有意思的，我们来看一看">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/03/02/详解String-intern-方法/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/03/02/详解String-intern-方法/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/03/02/详解String-intern-方法/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/03/02/详解String-intern-方法/">
 
 
 <script id="page-configurations">
@@ -261,7 +261,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/03/02/详解String-intern-方法/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/03/02/详解String-intern-方法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -346,7 +346,7 @@
 </li>
 <li><p><font color="red"><b>String str2=”我爱学习”;</b></font><br>一个对象，当使用””形式创建String实例时，会在字符串常量池中添加该实例，并且str2指向常量池。</p>
 </li>
-<li><p><font color="red"><b>String str3=”a”+”b”+”c”+”d”;</b></font><br>一个对象。赋值符号右边的”a”、”b”、”c”、”d”、”e”都是常量。对于常量，编译时就直接存储它们的字面值而不是它们的引用，即在编译时就直接讲它们连接的结果提取出来变成了”abcde”。该语句在class文件中就相当于String s = “abcde”<br>我们来看看字节码验证一下：<br><img src="/2020/03/02/详解String-intern-方法/1.png" alt> 可以看到，常量池中只有一个字符串常量，那就是”abcde”。</p>
+<li><p><font color="red"><b>String str3=”a”+”b”+”c”+”d”;</b></font><br>一个对象。赋值符号右边的”a”、”b”、”c”、”d”、”e”都是常量。对于常量，编译时就直接存储它们的字面值而不是它们的引用，即在编译时就直接讲它们连接的结果提取出来变成了”abcde”。该语句在class文件中就相当于String s = “abcde”<br>我们来看看字节码验证一下：<br><img src="/blog.github.io/2020/03/02/详解String-intern-方法/1.png" alt> 可以看到，常量池中只有一个字符串常量，那就是”abcde”。</p>
 </li>
 <li><p><font color="red"><b>String str4=new String(“a”)+”b”;</b></font><br>一共创建了5个对象：其中”a”和”b”放在常量池中、还有一个”a”的实例在堆中、另外创建了一个StringBuilder对象，调用它的append()方法将字符串拼接起来，然后调用toString()方法生成一个新的字符串实例”ab”放在堆中，因此一共是5个对象。但是在JDK9之后情况不一样了(通过字节码发现的，此时没有创建StringBuilder实例，这里我也不清楚具体情况)。</p>
 </li>

@@ -61,20 +61,20 @@
 <meta name="keywords" content="读书笔记,DNS,应用层,HTTP,计算机网络自顶向下方法">
 <meta property="og:type" content="article">
 <meta property="og:title" content="自顶向下之计算机网络和因特网-应用层">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="应用层是五层协议中的最顶层，网络应用是计算机网络存在的理由，如果我们不能构想出来任何有用的应用，也就没必要去设计支持他们的网络协议了。接下来就介绍一些应用层的一些相关知识。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/4.png">
 <meta property="og:updated_time" content="2019-10-09T01:20:06.539Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="自顶向下之计算机网络和因特网-应用层">
 <meta name="twitter:description" content="应用层是五层协议中的最顶层，网络应用是计算机网络存在的理由，如果我们不能构想出来任何有用的应用，也就没必要去设计支持他们的网络协议了。接下来就介绍一些应用层的一些相关知识。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/">
 
 
 <script id="page-configurations">
@@ -264,7 +264,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -449,7 +449,7 @@
 <li>响应空行<br>用于分隔响应头和响应体</li>
 <li>响应体<br>包含了客户请求的对象。如HTML文档、jpg图片以及视频等</li>
 </ol>
-<h2 id="Web缓存"><a href="#Web缓存" class="headerlink" title="Web缓存"></a><font size="5">Web缓存</font></h2><p>Web缓存器也叫Web代理服务器。它能够代表初始服务器来满足HTTP请求的网络实体。Web缓存器有自己的磁盘空间，并在存储空间中保存最近请求过的对象的副本。<br><img src="/2019/10/07/自顶向下之计算机网络和因特网-应用层/1.png" alt>如图，当浏览器正在请求对象<a href="http://www.aaa.com/campas.gif时" target="_blank" rel="noopener">http://www.aaa.com/campas.gif时</a></p>
+<h2 id="Web缓存"><a href="#Web缓存" class="headerlink" title="Web缓存"></a><font size="5">Web缓存</font></h2><p>Web缓存器也叫Web代理服务器。它能够代表初始服务器来满足HTTP请求的网络实体。Web缓存器有自己的磁盘空间，并在存储空间中保存最近请求过的对象的副本。<br><img src="/blog.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/1.png" alt>如图，当浏览器正在请求对象<a href="http://www.aaa.com/campas.gif时" target="_blank" rel="noopener">http://www.aaa.com/campas.gif时</a></p>
 <ol>
 <li>浏览器会创建一个到Wen缓存器的TCP连接，并向Web缓存器中对象发送一个HTTP请求</li>
 <li>Web缓存器进行检查，查看本地是否存储了该对象的副本。如果有，Web缓存器就像客户浏览器用响应报文返回该对象</li>
@@ -506,9 +506,9 @@
 <ul>
 <li>根DNS服务器<br>有400多个根服务器分布在全世界，用于提供TLD服务器的IP地址</li>
 <li>顶级域DNS(TLD)服务器<br>每一个顶级域(如com、org、net等)和所有的国家顶级域(如cn、uk等)都有TLD服务器，用于提供权威服务器的IP地址</li>
-<li>权威DNS服务器<br>在因特网上具有公共可访问主机(例如Web服务器、邮件服务器等)的每个组织都必须提供公共可访问的DNS记录，这些记录将这些主机的名字映射为IP地址。<br><img src="/2019/10/07/自顶向下之计算机网络和因特网-应用层/2.png" alt></li>
+<li>权威DNS服务器<br>在因特网上具有公共可访问主机(例如Web服务器、邮件服务器等)的每个组织都必须提供公共可访问的DNS记录，这些记录将这些主机的名字映射为IP地址。<br><img src="/blog.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/2.png" alt></li>
 </ul>
-<p>另外，还有一种很重要的DNS服务器，即本地服务器。它并不属于DNS服务器层次结构，但是它很重要。每个ISP都有一个本地DNS服务器，当主机和某个ISP连接时，该ISP提供一台主机的IP地址，该主机具有一台或多台其本地DNS服务器的IP地址。<font color="blue">主机的本地DNS服务器通常”邻近”本主机。</font><br><img src="/2019/10/07/自顶向下之计算机网络和因特网-应用层/3.png" alt>如图请求主机如果要得到服务器主机的IP地址，假设服务器主机名为( aaa.bbb.com)</p>
+<p>另外，还有一种很重要的DNS服务器，即本地服务器。它并不属于DNS服务器层次结构，但是它很重要。每个ISP都有一个本地DNS服务器，当主机和某个ISP连接时，该ISP提供一台主机的IP地址，该主机具有一台或多台其本地DNS服务器的IP地址。<font color="blue">主机的本地DNS服务器通常”邻近”本主机。</font><br><img src="/blog.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/3.png" alt>如图请求主机如果要得到服务器主机的IP地址，假设服务器主机名为( aaa.bbb.com)</p>
 <ol>
 <li>主机向本地服务器发送一个DNS查询报文，该报文含有被转换的主机名</li>
 <li>本地服务器将该报文转发到根服务器</li>
@@ -541,7 +541,7 @@
 </ul>
 </li>
 </ol>
-<h3 id="DNS报文"><a href="#DNS报文" class="headerlink" title="DNS报文"></a><font size="5">DNS报文</font></h3><p>前面说到了DNS查询和回答报文，DNS只有这两种报文并且两种报文格式相同。<br><img src="/2019/10/07/自顶向下之计算机网络和因特网-应用层/4.png" alt></p>
+<h3 id="DNS报文"><a href="#DNS报文" class="headerlink" title="DNS报文"></a><font size="5">DNS报文</font></h3><p>前面说到了DNS查询和回答报文，DNS只有这两种报文并且两种报文格式相同。<br><img src="/blog.github.io/2019/10/07/自顶向下之计算机网络和因特网-应用层/4.png" alt></p>
 <ul>
 <li><font color="blue"><b>前12个字节是首部区域</b></font><ul>
 <li><b>标识符(16比特)</b><br>用于标识该查询。这个标识符会被复制到对查询的回答报文中，以便让客户用它来匹配发送的请求和收到的回答</li>

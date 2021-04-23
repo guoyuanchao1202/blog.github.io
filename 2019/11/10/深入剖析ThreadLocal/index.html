@@ -61,23 +61,23 @@
 <meta name="keywords" content="多线程,ThreadLocal">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入剖析ThreadLocal">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/11/10/深入剖析ThreadLocal/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/11/10/深入剖析ThreadLocal/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="当访问共享的可变数据时，通常需要使用同步。一种避免同步的方式就是不共享数据，如果仅在线程内访问数据，就不需要同步。这种技术被称为线程封闭。它是实现线程安全性的最简单方式之一。维持线程封闭性的方法不止一种，ThreadLocal就是其中一种。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/10/深入剖析ThreadLocal/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/10/深入剖析ThreadLocal/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/10/深入剖析ThreadLocal/3.jpg">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/10/深入剖析ThreadLocal/2.jpg">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/10/深入剖析ThreadLocal/1.jpg">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/10/深入剖析ThreadLocal/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/10/深入剖析ThreadLocal/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/10/深入剖析ThreadLocal/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/10/深入剖析ThreadLocal/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/10/深入剖析ThreadLocal/3.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/10/深入剖析ThreadLocal/2.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/10/深入剖析ThreadLocal/1.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/10/深入剖析ThreadLocal/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/10/深入剖析ThreadLocal/4.png">
 <meta property="og:updated_time" content="2019-11-10T11:10:12.405Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入剖析ThreadLocal">
 <meta name="twitter:description" content="当访问共享的可变数据时，通常需要使用同步。一种避免同步的方式就是不共享数据，如果仅在线程内访问数据，就不需要同步。这种技术被称为线程封闭。它是实现线程安全性的最简单方式之一。维持线程封闭性的方法不止一种，ThreadLocal就是其中一种。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/11/10/深入剖析ThreadLocal/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/11/10/深入剖析ThreadLocal/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/11/10/深入剖析ThreadLocal/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/11/10/深入剖析ThreadLocal/">
 
 
 <script id="page-configurations">
@@ -267,7 +267,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/11/10/深入剖析ThreadLocal/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/11/10/深入剖析ThreadLocal/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -332,7 +332,7 @@
 <a id="more"></a>
 
 <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>ThreadLocal，很容易的就理解成为“本地线程”。其实，ThreadLocal并不是一个Thread，而是一个变量–线程局部变量。当使用ThreadLocal维护变量时，ThreadLocal为每个使用该变量的线程提供独立的变量副本，所以每个线程都可以独立地改变自己的副本，而不会影响其它线程的副本。</p>
-<h1 id="ThreadLocal整体结构"><a href="#ThreadLocal整体结构" class="headerlink" title="ThreadLocal整体结构"></a>ThreadLocal整体结构</h1><p>在深入分析源码之前，先大体介绍以下ThreadLocal的类结构，方便后续学习。<br><img src="/2019/11/10/深入剖析ThreadLocal/1.png" alt>再来看一下ThreadLocal的嵌套类ThreadLocalMap<br><img src="/2019/11/10/深入剖析ThreadLocal/2.png" alt><br>从图中可以发现，ThreadLocal共有的方法(不包括构造方法)只有四个</p>
+<h1 id="ThreadLocal整体结构"><a href="#ThreadLocal整体结构" class="headerlink" title="ThreadLocal整体结构"></a>ThreadLocal整体结构</h1><p>在深入分析源码之前，先大体介绍以下ThreadLocal的类结构，方便后续学习。<br><img src="/blog.github.io/2019/11/10/深入剖析ThreadLocal/1.png" alt>再来看一下ThreadLocal的嵌套类ThreadLocalMap<br><img src="/blog.github.io/2019/11/10/深入剖析ThreadLocal/2.png" alt><br>从图中可以发现，ThreadLocal共有的方法(不包括构造方法)只有四个</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">get()</span><br><span class="line">set()</span><br><span class="line">remove()</span><br><span class="line">withInitial()</span><br></pre></td></tr></table></figure>
 
 <h1 id="ThreadLocalMap源码分析"><a href="#ThreadLocalMap源码分析" class="headerlink" title="ThreadLocalMap源码分析"></a>ThreadLocalMap源码分析</h1><p>介绍了ThreadLocal的整体架构，现在来介绍以下它的内部类ThreadLocalMap。ThreadLocalMap也是一个哈希结构，内部维护一个Entry数组，每个Entry对象内存储这一对键值对。不过和HashMap不同的是，HashMap解决哈希冲突的方法是分离链接法，而ThreadLocalMap采用的则是开放定址法。</p>
@@ -387,9 +387,9 @@
 <h2 id="remove-方法-1"><a href="#remove-方法-1" class="headerlink" title="remove()方法"></a><font size="5">remove()方法</font></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public void remove() &#123;</span><br><span class="line">	ThreadLocalMap m = getMap(Thread.currentThread());</span><br><span class="line">	if (m != null)</span><br><span class="line">		m.remove(this);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>remove()方法源码也比较简单，直接调用ThreadLocalMap的remove方法，将当前ThreadLocal对象作为键传递进去即可。</p>
-<h1 id="三者的关系"><a href="#三者的关系" class="headerlink" title="三者的关系"></a>三者的关系</h1><p>经过一系列铺垫之后，终于可以正式的介绍他们三者之间的关系了，也许你通过前面的介绍已经了解了三者之间的关系，也许你还不了解，但都没关系，我们接下类将通过几张图来详细的说明。<br><img src="/2019/11/10/深入剖析ThreadLocal/3.jpg" alt>上面这张图很直观很容易理解，通过前面的学习我们发现确实有这样的关系存在<br><img src="/2019/11/10/深入剖析ThreadLocal/2.jpg" alt>这张图表明了三者的关系：<font color="red"><b>即每个线程中都有一个ThreadLocalMap对象，每个ThreadLocalMap对象内维护一个Entry数组，维护者若干个Entry对象；每个Entry存储着一对键值对，键值对的键就是ThreadLocal对象，值就是存储的共享变量的副本。</b></font><br><img src="/2019/11/10/深入剖析ThreadLocal/1.jpg" alt>简单地说，就是一个Thread对象只有一个ThreadLocalMap，而一个ThreadLocalMap中有多个键值对。每个键值对的键都是ThreadLocal对象。</p>
-<h1 id="ThreadLocal的内存回收"><a href="#ThreadLocal的内存回收" class="headerlink" title="ThreadLocal的内存回收"></a>ThreadLocal的内存回收</h1><p>了解了ThreadLocal实现以后，我们发现，这些数据的副本其实是维护在每个线程对象内部的(threadlocals属性内)，这也就意味着如果线程不退出，对象的引用就会一直存在。当一个线程退出时，Thread会进行一些清理工作，具体表现为在线程退出前，由系统回调exit()方法，进行资源清理。通过前面的Thread的exit()源码可以发现，Thread在推出时会将它的threadlocals属性置为null。这样ThreadLocalMap就能够被回收。<br>在介绍threadLocalMap的嵌套类Entry时，我们发现Entry是继承自WeakReference&lt;ThreadLocal&lt;?&gt;&gt;的，WeakReference是一个弱引用，在JVM那篇博客中介绍过，弱引用对于GC没有任何影响，只是会在GC时收到一个通知。在这里，虽然Entry使用ThreadLocal作为Map的key，但实际上，它并不真的持有ThreadLocal的引用。当ThreadLocal的外部强引用被回收时，Entry中的key就会变为null。当系统进行ThreadLocalMap清理时(从ThreadLocalMap方法源码可以发现，每次put、get方法时都会进行清理)，就会将这些垃圾数据回收。<br><img src="/2019/11/10/深入剖析ThreadLocal/3.png" alt></p>
-<h1 id="ThreadLocal导致的内存泄漏"><a href="#ThreadLocal导致的内存泄漏" class="headerlink" title="ThreadLocal导致的内存泄漏"></a>ThreadLocal导致的内存泄漏</h1><p>前面说过，当线程退出时，会将threadlocals属性置为空，这样该线程的所有变量都会被回收。但这样会存在一个问题，当我们使用线程池的时候，当前线程执行的任务结束后，线程并不会退出，而是会归还给线程池执行其他的任务，那这样一来，跟当前任务相关的变量数据并不会被回收，这样就导致了内存泄漏问题。如图所示<br><img src="/2019/11/10/深入剖析ThreadLocal/4.png" alt>此时，<font color="red"><b>如果你希望能够及时的回收对象，最好使用ThreadLocal.remove()方法将这个变量移除。</b></font></p>
+<h1 id="三者的关系"><a href="#三者的关系" class="headerlink" title="三者的关系"></a>三者的关系</h1><p>经过一系列铺垫之后，终于可以正式的介绍他们三者之间的关系了，也许你通过前面的介绍已经了解了三者之间的关系，也许你还不了解，但都没关系，我们接下类将通过几张图来详细的说明。<br><img src="/blog.github.io/2019/11/10/深入剖析ThreadLocal/3.jpg" alt>上面这张图很直观很容易理解，通过前面的学习我们发现确实有这样的关系存在<br><img src="/blog.github.io/2019/11/10/深入剖析ThreadLocal/2.jpg" alt>这张图表明了三者的关系：<font color="red"><b>即每个线程中都有一个ThreadLocalMap对象，每个ThreadLocalMap对象内维护一个Entry数组，维护者若干个Entry对象；每个Entry存储着一对键值对，键值对的键就是ThreadLocal对象，值就是存储的共享变量的副本。</b></font><br><img src="/blog.github.io/2019/11/10/深入剖析ThreadLocal/1.jpg" alt>简单地说，就是一个Thread对象只有一个ThreadLocalMap，而一个ThreadLocalMap中有多个键值对。每个键值对的键都是ThreadLocal对象。</p>
+<h1 id="ThreadLocal的内存回收"><a href="#ThreadLocal的内存回收" class="headerlink" title="ThreadLocal的内存回收"></a>ThreadLocal的内存回收</h1><p>了解了ThreadLocal实现以后，我们发现，这些数据的副本其实是维护在每个线程对象内部的(threadlocals属性内)，这也就意味着如果线程不退出，对象的引用就会一直存在。当一个线程退出时，Thread会进行一些清理工作，具体表现为在线程退出前，由系统回调exit()方法，进行资源清理。通过前面的Thread的exit()源码可以发现，Thread在推出时会将它的threadlocals属性置为null。这样ThreadLocalMap就能够被回收。<br>在介绍threadLocalMap的嵌套类Entry时，我们发现Entry是继承自WeakReference&lt;ThreadLocal&lt;?&gt;&gt;的，WeakReference是一个弱引用，在JVM那篇博客中介绍过，弱引用对于GC没有任何影响，只是会在GC时收到一个通知。在这里，虽然Entry使用ThreadLocal作为Map的key，但实际上，它并不真的持有ThreadLocal的引用。当ThreadLocal的外部强引用被回收时，Entry中的key就会变为null。当系统进行ThreadLocalMap清理时(从ThreadLocalMap方法源码可以发现，每次put、get方法时都会进行清理)，就会将这些垃圾数据回收。<br><img src="/blog.github.io/2019/11/10/深入剖析ThreadLocal/3.png" alt></p>
+<h1 id="ThreadLocal导致的内存泄漏"><a href="#ThreadLocal导致的内存泄漏" class="headerlink" title="ThreadLocal导致的内存泄漏"></a>ThreadLocal导致的内存泄漏</h1><p>前面说过，当线程退出时，会将threadlocals属性置为空，这样该线程的所有变量都会被回收。但这样会存在一个问题，当我们使用线程池的时候，当前线程执行的任务结束后，线程并不会退出，而是会归还给线程池执行其他的任务，那这样一来，跟当前任务相关的变量数据并不会被回收，这样就导致了内存泄漏问题。如图所示<br><img src="/blog.github.io/2019/11/10/深入剖析ThreadLocal/4.png" alt>此时，<font color="red"><b>如果你希望能够及时的回收对象，最好使用ThreadLocal.remove()方法将这个变量移除。</b></font></p>
 <h1 id="设计思路"><a href="#设计思路" class="headerlink" title="设计思路"></a>设计思路</h1><p>通过学习我们发现，ThreadLocal的嵌套类ThreadLocalMap是作为Thread的成员属性使用，即数据存储在Thread对象中。那么我们不禁要问两个问题(以下内容均为个人理解，如有不对欢迎指正共同学习，感谢)</p>
 <ol>
 <li><font color="red"><b>为什么ThreadLocalMap不直接定义在Thread中，而要定义在ThreadLocal中呢？</b></font><br>看起来将ThreadLocalMap定义在Thread的内部更符合逻辑，但是ThreadLocalMap并不需要Thread的对象来操作，所以定义在Thread类中只会增加不必要的开销。定义在ThreadLocal类中的原因是ThreadLocal来负责ThreadLocalMap的创建，仅当线程中设置第一个ThreadLocal时，才为线程创建ThreadLocalMap对象。总的来说，ThreadLocalMap并不是Thread的必需属性，定义在ThreadLocal内会增加不必要的开销，而定义在ThreadLocal中可以按需创建。</li>

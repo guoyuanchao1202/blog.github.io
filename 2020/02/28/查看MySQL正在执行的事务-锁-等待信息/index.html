@@ -61,19 +61,19 @@
 <meta name="keywords" content="数据库,MySQL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="查看MySQL正在执行的事务&#x2F;锁&#x2F;等待信息">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在5.5中，information_schema库中增加了三个关于锁的表，它们分别是：innodb_trx–当前运行的所有事务、innodb_locks–当前出现的锁以及innodb_lock_waits–锁等待的对应关系。今天看了一篇博客，对这方面进行了介绍。觉得写得很好，为了防止原博客404，特此记录一下。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/3.png">
 <meta property="og:updated_time" content="2020-02-28T15:03:10.793Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="查看MySQL正在执行的事务&#x2F;锁&#x2F;等待信息">
 <meta name="twitter:description" content="在5.5中，information_schema库中增加了三个关于锁的表，它们分别是：innodb_trx–当前运行的所有事务、innodb_locks–当前出现的锁以及innodb_lock_waits–锁等待的对应关系。今天看了一篇博客，对这方面进行了介绍。觉得写得很好，为了防止原博客404，特此记录一下。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/">
 
 
 <script id="page-configurations">
@@ -263,7 +263,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -346,19 +346,19 @@
 </li>
 </ol>
 <h1 id="innodb-locks"><a href="#innodb-locks" class="headerlink" title="innodb_locks"></a>innodb_locks</h1><ol>
-<li>在MySQL下使用desc information_schema.innodb_locks;语句可以查看innodb_locks表的结构，如图所示<br><img src="/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/1.png" alt></li>
+<li>在MySQL下使用desc information_schema.innodb_locks;语句可以查看innodb_locks表的结构，如图所示<br><img src="/blog.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/1.png" alt></li>
 <li>使用select * from information_schema.innodb_locks\G;查看表中数据</li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">表各个字段含义</span><br><span class="line">+-------------+---------------------+------+-----+---------+-------+</span><br><span class="line">| Field | Type | Null | Key | Default | Extra |</span><br><span class="line">+-------------+---------------------+------+-----+---------+-------+</span><br><span class="line">| lock_id | varchar(81) | NO | | | |#锁ID</span><br><span class="line">| lock_trx_id | varchar(18) | NO | | | |#拥有锁的事务ID</span><br><span class="line">| lock_mode | varchar(32) | NO | | | |#锁模式</span><br><span class="line">| lock_type | varchar(32) | NO | | | |#锁类型</span><br><span class="line">| lock_table | varchar(1024) | NO | | | |#被锁的表</span><br><span class="line">| lock_index | varchar(1024) | YES | | NULL | |#被锁的索引</span><br><span class="line">| lock_space | bigint(21) unsigned | YES | | NULL | |#被锁的表空间号</span><br><span class="line">| lock_page | bigint(21) unsigned | YES | | NULL | |#被锁的页号</span><br><span class="line">| lock_rec | bigint(21) unsigned | YES | | NULL | |#被锁的记录号</span><br><span class="line">| lock_data | varchar(8192) | YES | | NULL | |#被锁的数据</span><br><span class="line">+-------------+---------------------+------+-----+---------+-------+</span><br></pre></td></tr></table></figure>
 
 <h1 id="innodb-lock-waits"><a href="#innodb-lock-waits" class="headerlink" title="innodb_lock_waits"></a>innodb_lock_waits</h1><ol>
-<li>使用desc information_schema.innodb_lock_waits;命令查看innodb_lock_waits表的结构，如图所示<br><img src="/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/2.png" alt></li>
+<li>使用desc information_schema.innodb_lock_waits;命令查看innodb_lock_waits表的结构，如图所示<br><img src="/blog.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/2.png" alt></li>
 <li>使用select * from information_schema.innodb_lock_waits\G;查看表中数据<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">表各个字段含义</span><br><span class="line">+-------------------+-------------+------+-----+---------+-------+</span><br><span class="line">| Field | Type | Null | Key | Default | Extra |</span><br><span class="line">+-------------------+-------------+------+-----+---------+-------+</span><br><span class="line">| requesting_trx_id | varchar(18) | NO | | | |#请求锁的事务ID</span><br><span class="line">| requested_lock_id | varchar(81) | NO | | | |#请求锁的锁ID</span><br><span class="line">| blocking_trx_id | varchar(18) | NO | | | |#当前拥有锁的事务ID</span><br><span class="line">| blocking_lock_id | varchar(81) | NO | | | |#当前拥有锁的锁ID</span><br><span class="line">+-------------------+-------------+------+-----+---------+-------+</span><br></pre></td></tr></table></figure>
 
 </li>
 </ol>
 <h1 id="innodb-trx"><a href="#innodb-trx" class="headerlink" title="innodb_trx"></a>innodb_trx</h1><ol>
-<li>使用desc information_schema.innodb_trx;命令查看innodb_trx表的结构，如图所示<br><img src="/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/3.png" alt></li>
+<li>使用desc information_schema.innodb_trx;命令查看innodb_trx表的结构，如图所示<br><img src="/blog.github.io/2020/02/28/查看MySQL正在执行的事务-锁-等待信息/3.png" alt></li>
 <li>使用select * from information_schema.innodb_trx\G;查看表中数据<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">表各个字段的含义</span><br><span class="line">desc information_schema.innodb_trx;</span><br><span class="line">+----------------------------+---------------------+------+-----+---------------------+-------+</span><br><span class="line">| Field | Type | Null | Key | Default | Extra |</span><br><span class="line">+----------------------------+---------------------+------+-----+---------------------+-------+</span><br><span class="line">| trx_id | varchar(18) | NO | | | |#事务ID</span><br><span class="line">| trx_state | varchar(13) | NO | | | |#事务状态：</span><br><span class="line">| trx_started | datetime | NO | | 0000-00-00 00:00:00 ||#事务开始时间；</span><br><span class="line">| trx_requested_lock_id | varchar(81) | YES | | NULL ||#innodb_locks.lock_id</span><br><span class="line">| trx_wait_started | datetime | YES | | NULL | |#事务开始等待的时间</span><br><span class="line">| trx_weight | bigint(21) unsigned | NO | | 0 | |#</span><br><span class="line">| trx_mysql_thread_id | bigint(21) unsigned | NO | | 0 ||#事务线程ID</span><br><span class="line">| trx_query | varchar(1024) | YES | | NULL | |#具体SQL语句</span><br><span class="line">| trx_operation_state | varchar(64) | YES | | NULL ||#事务当前操作状态</span><br><span class="line">| trx_tables_in_use | bigint(21) unsigned | NO | | 0 ||#事务中有多少个表被使用</span><br><span class="line">| trx_tables_locked | bigint(21) unsigned | NO | | 0 ||#事务拥有多少个锁</span><br><span class="line">| trx_lock_structs | bigint(21) unsigned | NO | | 0 | |#</span><br><span class="line">| trx_lock_memory_bytes | bigint(21) unsigned | NO | | 0 ||#事务锁住的内存大小（B）</span><br><span class="line">| trx_rows_locked | bigint(21) unsigned | NO | | 0 ||#事务锁住的行数</span><br><span class="line">| trx_rows_modified | bigint(21) unsigned | NO | | 0 ||#事务更改的行数</span><br><span class="line">| trx_concurrency_tickets | bigint(21) unsigned | NO | | 0 ||#事务并发票数</span><br><span class="line">| trx_isolation_level | varchar(16) | NO | | | |#事务隔离级别</span><br><span class="line">| trx_unique_checks | int(1) | NO | | 0 | |#是否唯一性检查</span><br><span class="line">| trx_foreign_key_checks | int(1) | NO | | 0 | |#是否外键检查</span><br><span class="line">| trx_last_foreign_key_error | varchar(256) | YES | | NULL ||#最后的外键错误</span><br><span class="line">| trx_adaptive_hash_latched | int(1) | NO | | 0 | |#</span><br><span class="line">| trx_adaptive_hash_timeout | bigint(21) unsigned | NO | | 0 ||#</span><br><span class="line">+----------------------------+---------------------+------+-----+---------------------+-------+</span><br></pre></td></tr></table></figure>
 
 </li>

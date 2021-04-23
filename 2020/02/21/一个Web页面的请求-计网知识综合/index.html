@@ -61,18 +61,18 @@
 <meta name="keywords" content="读书笔记,总结">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一个Web页面的请求(计网知识综合)">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/21/一个Web页面的请求-计网知识综合/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/02/21/一个Web页面的请求-计网知识综合/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="学习计算机网络以来，我陆陆续续写了很多这方面的博客，到上一篇为止，链路层的以太网已进行了介绍。因此在本文中，我希望对之前学过的知识做一个全面的整合梳理，所以我就以一个Web页面的请求过程为例，来对前面学过的知识进行整合梳理。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/21/一个Web页面的请求-计网知识综合/1.jpg">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/21/一个Web页面的请求-计网知识综合/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/21/一个Web页面的请求-计网知识综合/1.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/21/一个Web页面的请求-计网知识综合/1.png">
 <meta property="og:updated_time" content="2020-02-21T16:37:32.457Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一个Web页面的请求(计网知识综合)">
 <meta name="twitter:description" content="学习计算机网络以来，我陆陆续续写了很多这方面的博客，到上一篇为止，链路层的以太网已进行了介绍。因此在本文中，我希望对之前学过的知识做一个全面的整合梳理，所以我就以一个Web页面的请求过程为例，来对前面学过的知识进行整合梳理。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/21/一个Web页面的请求-计网知识综合/1.jpg">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/21/一个Web页面的请求-计网知识综合/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/02/21/一个Web页面的请求-计网知识综合/1.jpg">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/02/21/一个Web页面的请求-计网知识综合/">
 
 
 <script id="page-configurations">
@@ -262,7 +262,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/21/一个Web页面的请求-计网知识综合/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/02/21/一个Web页面的请求-计网知识综合/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -334,7 +334,7 @@
 <hr>
 <a id="more"></a>
 
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>如图所示：一名学生A将他的笔记本与学校的以太网交换机相连，下载一个Web页面(假设是谷歌的主页)。<br><img src="/2020/02/21/一个Web页面的请求-计网知识综合/1.jpg" alt><br>我们假定A启动他的计算机，然后用一根以太网电缆连接到学校的以太网交换机，交换机又和学校的路由器相连。学校的路由器和一个ISP相连(图中ISP为comcast.net)。comcast.net为学校提供了DNS服务，并且DHCP服务器运行在路由器中。</p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>如图所示：一名学生A将他的笔记本与学校的以太网交换机相连，下载一个Web页面(假设是谷歌的主页)。<br><img src="/blog.github.io/2020/02/21/一个Web页面的请求-计网知识综合/1.jpg" alt><br>我们假定A启动他的计算机，然后用一根以太网电缆连接到学校的以太网交换机，交换机又和学校的路由器相连。学校的路由器和一个ISP相连(图中ISP为comcast.net)。comcast.net为学校提供了DNS服务，并且DHCP服务器运行在路由器中。</p>
 <h1 id="准备：DHCP、UDP、IP和以太网"><a href="#准备：DHCP、UDP、IP和以太网" class="headerlink" title="准备：DHCP、UDP、IP和以太网"></a>准备：DHCP、UDP、IP和以太网</h1><p>当A将计算机和网络连接时，该主机还没有IP地址，如果没有IP地址那么它就不能做任何事情。<font color="red"><b>因此，计算机所采取的第一个网络相关动作是运行DHCP协议，从本地DHCP服务器中获得一个IP地址以及其他信息。</b></font></p>
 <ol>
 <li>计算机的操作系统生成一个DHCP请求报文(为了方便起见，这里省略了DHCP协议的前两步骤，实际上前面两步并不是必须的)，并将这个报文放到目的端口为67(DHCP服务器)和源端口68(DHCP客户端)的UDP报文段。该报文段被封装在目的地址为255.255.255.255(受限广播地址)、源地址为0.0.0.0的IP数据报中。</li>
@@ -366,7 +366,7 @@
 <li>在www. google.com的HTTP服务器从TCP套接字中获取HTTP GET报文，生成一个HTTP响应报文，将计算机请求的Web页面放到响应体中，并将响应报文推送进套接字。</li>
 <li>包含HTTP响应报文的数据通过谷歌、Comcast和学校网络转发，到达学生A的计算机。计算机的Web浏览器程序从套接字读取HTTP响应报文，从响应体中获取html文件。最终显示到Web浏览器上。</li>
 </ol>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>一个Web页面的请求过程大致就是这些，可能在实际工作中有一些差异，但基本流程大同小异。有一点我还是有疑惑的：通过ipconfig/all命令我发现，默认网关、DHCP服务器以及DNS服务器的地址是一样的。如图所示：<br><img src="/2020/02/21/一个Web页面的请求-计网知识综合/1.png" alt><br>个人猜测，<font color="red"><b>可能是将DHCP服务器和本地DNS服务器都放到了网关路由器中</b></font>，因此三者的IP地址一样。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>一个Web页面的请求过程大致就是这些，可能在实际工作中有一些差异，但基本流程大同小异。有一点我还是有疑惑的：通过ipconfig/all命令我发现，默认网关、DHCP服务器以及DNS服务器的地址是一样的。如图所示：<br><img src="/blog.github.io/2020/02/21/一个Web页面的请求-计网知识综合/1.png" alt><br>个人猜测，<font color="red"><b>可能是将DHCP服务器和本地DNS服务器都放到了网关路由器中</b></font>，因此三者的IP地址一样。</p>
 <hr>
 
 

@@ -61,18 +61,18 @@
 <meta name="keywords" content="读书笔记,JVM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入理解JVM虚拟机四">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/09/30/深入理解JVM虚拟机四/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/09/30/深入理解JVM虚拟机四/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="这一节主要介绍一下虚拟机是怎么执行Class文件的字节码以及《深入理解JVM虚拟机》后面一些知识，因为后面很多都不是很理解，所以结合在一起记录，如果以后再次翻看弄懂了一些，就再另外记录吧。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/30/深入理解JVM虚拟机四/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/30/深入理解JVM虚拟机四/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/30/深入理解JVM虚拟机四/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/30/深入理解JVM虚拟机四/2.png">
 <meta property="og:updated_time" content="2020-03-07T01:34:27.079Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入理解JVM虚拟机四">
 <meta name="twitter:description" content="这一节主要介绍一下虚拟机是怎么执行Class文件的字节码以及《深入理解JVM虚拟机》后面一些知识，因为后面很多都不是很理解，所以结合在一起记录，如果以后再次翻看弄懂了一些，就再另外记录吧。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/09/30/深入理解JVM虚拟机四/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/09/30/深入理解JVM虚拟机四/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/09/30/深入理解JVM虚拟机四/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/09/30/深入理解JVM虚拟机四/">
 
 
 <script id="page-configurations">
@@ -262,7 +262,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/09/30/深入理解JVM虚拟机四/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/09/30/深入理解JVM虚拟机四/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -395,7 +395,7 @@
 
 </li>
 </ul>
-<p>执行结果<br><img src="/2019/09/30/深入理解JVM虚拟机四/1.png" alt>有三个重载的方法，为什么会选择执行参数类型为Human的重载呢？先介绍一下两个概念</p>
+<p>执行结果<br><img src="/blog.github.io/2019/09/30/深入理解JVM虚拟机四/1.png" alt>有三个重载的方法，为什么会选择执行参数类型为Human的重载呢？先介绍一下两个概念</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Human man = new Man();</span><br></pre></td></tr></table></figure>
 
 <p>上面这段代码中的”Human”被称为静态类型，new后面的”Man”被称为实际类型。</p>
@@ -412,7 +412,7 @@
 
 </li>
 </ul>
-<p>很简单的一段代码，用到了重写，运行结果<br><img src="/2019/09/30/深入理解JVM虚拟机四/2.png" alt>这里显然不是根据静态类型来决定的，因为静态类型都是Human的两个变量在调用sayHello时执行了不同的方法，并且man两次调用sayHello方法输出结果不同。<br>来看一下字节码</p>
+<p>很简单的一段代码，用到了重写，运行结果<br><img src="/blog.github.io/2019/09/30/深入理解JVM虚拟机四/2.png" alt>这里显然不是根据静态类型来决定的，因为静态类型都是Human的两个变量在调用sayHello时执行了不同的方法，并且man两次调用sayHello方法输出结果不同。<br>来看一下字节码</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">16: aload_1</span><br><span class="line">17: invokevirtual #6                  // Method Human.sayHello:()V</span><br><span class="line">20: aload_2</span><br><span class="line">21: invokevirtual #6                  // Method Human.sayHello:()V</span><br></pre></td></tr></table></figure>
 
 <p>其中aload_1和aload_2就是将man和woman两个对象的引用入操作数栈，这两个对象是将要执行的sayHello方法的所有者。<br>17和21行的invokevirtual是方法调用指令，从字节码角度来看，无论是指令(都是invokevirtual指令)还是参数(注释显示了参数是Human.sayHello的符号引用)都完全一样，两行指令一模一样。但是执行的结果却不同。<br>这就要从invokevirtual的多态查找过程说起，该指令运行使得解析过程大致分为一下几个步骤</p>

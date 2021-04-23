@@ -61,23 +61,23 @@
 <meta name="keywords" content="读书笔记,应用层,DHCP协议">
 <meta property="og:type" content="article">
 <meta property="og:title" content="通过WireShark抓包学习DHCP协议">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="当我们的主机接入网络时，它还没有自己的IP地址、子网掩码等一些必要的信息，这些信息需要从别处获取。那么这些信息是如何获取的？是人为配置的么？当然不是的。如果每一台主机的接入和断开都需要网络管理员进行配置(IP的分配回收等)，那管理员是忙不过来的。幸好，有DHCP协议来自动完成这些配置。下面，我将通过WireShark抓包来具体的介绍DHCP是如何工作的。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/3">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/5.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/6.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/3">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/6.png">
 <meta property="og:updated_time" content="2020-02-17T12:15:15.145Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="通过WireShark抓包学习DHCP协议">
 <meta name="twitter:description" content="当我们的主机接入网络时，它还没有自己的IP地址、子网掩码等一些必要的信息，这些信息需要从别处获取。那么这些信息是如何获取的？是人为配置的么？当然不是的。如果每一台主机的接入和断开都需要网络管理员进行配置(IP的分配回收等)，那管理员是忙不过来的。幸好，有DHCP协议来自动完成这些配置。下面，我将通过WireShark抓包来具体的介绍DHCP是如何工作的。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/">
 
 
 <script id="page-configurations">
@@ -267,7 +267,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -340,12 +340,12 @@
 <li>ipconfig/renew：更新适配器信息，请求连接网络，这条命令结束之后，主机会获得一个可用的IP，再次接入网络。</li>
 </ul>
 </li>
-<li><p>WireShark操作<br><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/1.png" alt><br>这是WireShark3的界面，我使用的WiFi连接，因此<font color="red">点击WLAN选项</font><br><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/2.png" alt><br>如图，<font color="red">在过滤器中输入DHCP(只捕获DHCP协议的分组)</font></p>
+<li><p>WireShark操作<br><img src="/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/1.png" alt><br>这是WireShark3的界面，我使用的WiFi连接，因此<font color="red">点击WLAN选项</font><br><img src="/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/2.png" alt><br>如图，<font color="red">在过滤器中输入DHCP(只捕获DHCP协议的分组)</font></p>
 </li>
 </ol>
 <p>关于前期准备就介绍到这里，下面开始介绍DHCP协议。</p>
 <h1 id="DHCP协议"><a href="#DHCP协议" class="headerlink" title="DHCP协议"></a>DHCP协议</h1><h2 id="DHCP简介"><a href="#DHCP简介" class="headerlink" title="DHCP简介"></a><font size="5">DHCP简介</font></h2><p>DHCP(Dynamic Host Configuration Protocol),动态主机配置协议，是一个<font color="red">应用层协议</font>并且运行在UDP协议之上。当我们将客户主机ip地址设置为动态获取方式时，DHCP服务器就会根据DHCP协议给客户端分配IP，使得客户机能够利用这个IP上网。</p>
-<h2 id="DHCP协议工作过程"><a href="#DHCP协议工作过程" class="headerlink" title="DHCP协议工作过程"></a><font size="5">DHCP协议工作过程</font></h2><p><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/3" alt><br>DHCP的实现分为4步，分别是： </p>
+<h2 id="DHCP协议工作过程"><a href="#DHCP协议工作过程" class="headerlink" title="DHCP协议工作过程"></a><font size="5">DHCP协议工作过程</font></h2><p><img src="/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/3" alt><br>DHCP的实现分为4步，分别是： </p>
 <ol>
 <li>第一步(DHCP发现)：Client端在局域网内发起一个DHCP　Discover包，目的是想发现能够给它提供IP的DHCP Server。 </li>
 <li>第二步(DHCP提供)：可用的DHCP Server接收到Discover包之后，通过发送DHCP Offer包给予Client端应答，意在告诉Client端它可以提供IP地址。 </li>
@@ -360,8 +360,8 @@
 <li>网络环境:无线连接</li>
 </ol>
 <h3 id="实验步骤"><a href="#实验步骤" class="headerlink" title="实验步骤"></a><font size="5">实验步骤</font></h3><ol>
-<li>使用ipconfig/release命令断开连接<br><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/3.png" alt><br>此时能观察到WireShark捕获到一个DHCP Release分组<br><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/4.png" alt></li>
-<li>使用ipconfig/renew命令重新连接<br><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/5.png" alt><br>此时WireShark再次捕获到4个DHCP分组<br><img src="/2020/02/17/通过WireShark抓包学习DHCP协议/6.png" alt><br>在这里，有一点很重要:DHCP的四个分组中，目的地址应该都是255.255.255，但是在实际抓包实验中发现DHCP OFFER和DHCP ACK包的目的地址都是实际给主机分配的地址。这应该是缓存导致的。至于DHCP四个包的内容，有兴趣可以自行使用WireShark抓包观察一下，比较简单就不做赘述。</li>
+<li>使用ipconfig/release命令断开连接<br><img src="/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/3.png" alt><br>此时能观察到WireShark捕获到一个DHCP Release分组<br><img src="/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/4.png" alt></li>
+<li>使用ipconfig/renew命令重新连接<br><img src="/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/5.png" alt><br>此时WireShark再次捕获到4个DHCP分组<br><img src="/blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/6.png" alt><br>在这里，有一点很重要:DHCP的四个分组中，目的地址应该都是255.255.255，但是在实际抓包实验中发现DHCP OFFER和DHCP ACK包的目的地址都是实际给主机分配的地址。这应该是缓存导致的。至于DHCP四个包的内容，有兴趣可以自行使用WireShark抓包观察一下，比较简单就不做赘述。</li>
 </ol>
 <h1 id="DHCP协议如何工作"><a href="#DHCP协议如何工作" class="headerlink" title="DHCP协议如何工作"></a>DHCP协议如何工作</h1><p>最后，将前面的文章梳理一遍，再对DHCP的工作流程进行进一步的介绍。</p>
 <ol>

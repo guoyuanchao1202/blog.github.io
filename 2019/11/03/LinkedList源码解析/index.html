@@ -61,17 +61,17 @@
 <meta name="keywords" content="源码,LinkedList集合">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LinkedList源码解析">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/11/03/LinkedList源码解析/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/11/03/LinkedList源码解析/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="上一节介绍了ArrayList集合，这次就接着介绍一下LinkedList集合。和ArrayList集合一样，该集合同样实现了List接口，和ArrayList集合不同的是，它们实现的抽象类不同。LinkedList集合适用于添加多查询少的场合。(本文基于JDK1.8版本)">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/03/LinkedList源码解析/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/03/LinkedList源码解析/1.png">
 <meta property="og:updated_time" content="2020-03-03T08:35:31.050Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LinkedList源码解析">
 <meta name="twitter:description" content="上一节介绍了ArrayList集合，这次就接着介绍一下LinkedList集合。和ArrayList集合一样，该集合同样实现了List接口，和ArrayList集合不同的是，它们实现的抽象类不同。LinkedList集合适用于添加多查询少的场合。(本文基于JDK1.8版本)">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/11/03/LinkedList源码解析/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/11/03/LinkedList源码解析/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/11/03/LinkedList源码解析/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/11/03/LinkedList源码解析/">
 
 
 <script id="page-configurations">
@@ -261,7 +261,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/11/03/LinkedList源码解析/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/11/03/LinkedList源码解析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -333,7 +333,7 @@
 <hr>
 <a id="more"></a>
 
-<h1 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h1><p>LinkedList集合底层数据结构是一个双向链表，如下图所示<br><img src="/2019/11/03/LinkedList源码解析/1.png" alt>如图所示，链表中的每一个节点都可以向前或者向后追溯</p>
+<h1 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h1><p>LinkedList集合底层数据结构是一个双向链表，如下图所示<br><img src="/blog.github.io/2019/11/03/LinkedList源码解析/1.png" alt>如图所示，链表中的每一个节点都可以向前或者向后追溯</p>
 <ol>
 <li><p><b>链表的每个节点叫做Node，是集合的私有嵌套类对象</b></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">private static class Node&lt;E&gt; &#123;</span><br><span class="line">    //存储数据</span><br><span class="line">    E item;</span><br><span class="line">    //指向下一个节点</span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line">    //指向前一个节点</span><br><span class="line">    Node&lt;E&gt; prev;</span><br><span class="line">    </span><br><span class="line">    //构造方法</span><br><span class="line">    Node(Node&lt;E&gt; prev, E element, Node&lt;E&gt; next) &#123;</span><br><span class="line">        this.item = element;</span><br><span class="line">        this.next = next;</span><br><span class="line">        this.prev = prev;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

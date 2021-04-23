@@ -61,20 +61,20 @@
 <meta name="keywords" content="排序,插入排序">
 <meta property="og:type" content="article">
 <meta property="og:title" content="排序算法之插入排序">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/09/21/排序算法之插入排序/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/09/21/排序算法之插入排序/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="前面说了两种排序算法，分别是冒泡排序和选择排序，这两种算法都比较容易理解。那么这次来学习第三种排序—-插入排序，这也是一种相对简单的排序算法，理解起来难度也不大。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/21/排序算法之插入排序/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/21/排序算法之插入排序/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/21/排序算法之插入排序/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/21/排序算法之插入排序/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/21/排序算法之插入排序/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/21/排序算法之插入排序/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/21/排序算法之插入排序/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/21/排序算法之插入排序/5.png">
 <meta property="og:updated_time" content="2019-10-06T13:39:29.800Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="排序算法之插入排序">
 <meta name="twitter:description" content="前面说了两种排序算法，分别是冒泡排序和选择排序，这两种算法都比较容易理解。那么这次来学习第三种排序—-插入排序，这也是一种相对简单的排序算法，理解起来难度也不大。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/09/21/排序算法之插入排序/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/09/21/排序算法之插入排序/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/09/21/排序算法之插入排序/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/09/21/排序算法之插入排序/">
 
 
 <script id="page-configurations">
@@ -264,7 +264,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/09/21/排序算法之插入排序/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/09/21/排序算法之插入排序/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -347,7 +347,7 @@
 <li>第一趟排序，将无序数组中第一个元素arr[1]放到有序数组中，此时有序数组包含两个元素</li>
 <li>第二趟排序，将无序数组中第一个元素arr[2]放到有序数组中，此时有序数组包含三个元素</li>
 <li>……</li>
-<li>第n-1趟排序，将无序数组中第一个也是最后一个元素arr[n-1]放到有序数组中，至此数组全部有序<br><img src="/2019/09/21/排序算法之插入排序/1.png" alt>可以看到，最后一趟排序过后，无序数组长度为0，至此数组全部有序。</li>
+<li>第n-1趟排序，将无序数组中第一个也是最后一个元素arr[n-1]放到有序数组中，至此数组全部有序<br><img src="/blog.github.io/2019/09/21/排序算法之插入排序/1.png" alt>可以看到，最后一趟排序过后，无序数组长度为0，至此数组全部有序。</li>
 </ul>
 <h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 插入排序</span><br><span class="line"> * @param arr</span><br><span class="line"> */</span><br><span class="line">public static void insertSort(int[] arr) &#123;</span><br><span class="line">	//待插入的数，无序数组第一个元素</span><br><span class="line">	int insertIndex; </span><br><span class="line">	//待插入的数前面一个数的下标，有序数组最后一个元素</span><br><span class="line">	int insertVal;      </span><br><span class="line">	for (int i = 0; i &lt; arr.length-1; i++) &#123;</span><br><span class="line">		//待插入的数为无序数组第一个元素</span><br><span class="line">		insertVal = arr[i+1];</span><br><span class="line">		//有序数组最后一个元素		</span><br><span class="line">		insertIndex = i ;    </span><br><span class="line">		while (insertIndex &gt;= 0 &amp;&amp; insertVal &lt; arr[insertIndex]) &#123;</span><br><span class="line">			arr[insertIndex + 1] = arr[insertIndex];</span><br><span class="line">			insertIndex--;</span><br><span class="line">		&#125;</span><br><span class="line">		arr[insertIndex+1] = insertVal;</span><br><span class="line">	&#125;</span><br><span class="line">	System.out.println(&quot;排序后的数组&quot;);</span><br><span class="line">	System.out.println(Arrays.toString(arr));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -370,7 +370,7 @@
 </li>
 <li>另外，该排序算法在<font color="red">大部分元素已经是有序时比较好</font></li>
 </ol>
-<h1 id="算法速度"><a href="#算法速度" class="headerlink" title="算法速度"></a>算法速度</h1><p>和前面两个排序算法一样，我们来随机创建一个80000大小的随机数组，测试所用的时间<br><img src="/2019/09/21/排序算法之插入排序/3.png" alt><br>最后测得的排序时间为<br><img src="/2019/09/21/排序算法之插入排序/4.png" alt><br>让我们以ms为单位，再测试一次<br><img src="/2019/09/21/排序算法之插入排序/5.png" alt><br>通过结果可以发现，相比于冒泡排序和选择排序，插入排序的速度还是很可观的。</p>
+<h1 id="算法速度"><a href="#算法速度" class="headerlink" title="算法速度"></a>算法速度</h1><p>和前面两个排序算法一样，我们来随机创建一个80000大小的随机数组，测试所用的时间<br><img src="/blog.github.io/2019/09/21/排序算法之插入排序/3.png" alt><br>最后测得的排序时间为<br><img src="/blog.github.io/2019/09/21/排序算法之插入排序/4.png" alt><br>让我们以ms为单位，再测试一次<br><img src="/blog.github.io/2019/09/21/排序算法之插入排序/5.png" alt><br>通过结果可以发现，相比于冒泡排序和选择排序，插入排序的速度还是很可观的。</p>
 
     </div>
 

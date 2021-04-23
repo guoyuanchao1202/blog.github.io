@@ -61,17 +61,17 @@
 <meta name="keywords" content="面试,String类">
 <meta property="og:type" content="article">
 <meta property="og:title" content="为什么String是final的">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/03/03/为什么String是final的/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/03/03/为什么String是final的/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在实际开发中，开发者会用到大量的字符串，可以说我们无时无刻不在与字符串打交道。我们都知道String类是final修饰的，这意味着它不可被继承。但是如题：为什么String是final的？下面我们就探讨一下这个问题(基于JDK1.8版本)。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/03/为什么String是final的/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/03/为什么String是final的/1.png">
 <meta property="og:updated_time" content="2020-03-03T07:19:24.139Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="为什么String是final的">
 <meta name="twitter:description" content="在实际开发中，开发者会用到大量的字符串，可以说我们无时无刻不在与字符串打交道。我们都知道String类是final修饰的，这意味着它不可被继承。但是如题：为什么String是final的？下面我们就探讨一下这个问题(基于JDK1.8版本)。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/03/03/为什么String是final的/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/03/03/为什么String是final的/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/03/03/为什么String是final的/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/03/03/为什么String是final的/">
 
 
 <script id="page-configurations">
@@ -261,7 +261,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/03/03/为什么String是final的/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/03/03/为什么String是final的/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -339,7 +339,7 @@
 </ol>
 <h2 id="修饰方法"><a href="#修饰方法" class="headerlink" title="修饰方法"></a><font size="5">修饰方法</font></h2><p>Java中使用final方法的原因是处于设计的考虑：把一个方法锁定，防止任何继承类修改它的含义。即确保在继承中方法的行为不变，不会被子类重写。</p>
 <h2 id="final类"><a href="#final类" class="headerlink" title="final类"></a><font size="5">final类</font></h2><p>如果一个类被定义为final，这意味着不能被继承。同时，这个类中所有的方法被隐式的指明为final方法，如果该类无法被继承，那么该类的方法自然也就不能被重写。</p>
-<h1 id="关于String类"><a href="#关于String类" class="headerlink" title="关于String类"></a>关于String类</h1><p>简单地介绍了一下final关键字，下面我们就来看看String类。<br><img src="/2020/03/03/为什么String是final的/1.png" alt> 如图所示，String中用于保存数据的char数组也是final修饰的，那么这么做到底是什么原因？</p>
+<h1 id="关于String类"><a href="#关于String类" class="headerlink" title="关于String类"></a>关于String类</h1><p>简单地介绍了一下final关键字，下面我们就来看看String类。<br><img src="/blog.github.io/2020/03/03/为什么String是final的/1.png" alt> 如图所示，String中用于保存数据的char数组也是final修饰的，那么这么做到底是什么原因？</p>
 <p>前面说过，final类意味着不可被继承，String类用final修饰是设计人员不希望客户端程序员继承String类并有可能重写其中的方法。使用String的最佳实践应该是关联或依赖而不是继承。String被定义为final主要从两个方面来考虑：<font color="red"><b>安全和性能</b></font></p>
 <h2 id="final修饰char数组"><a href="#final修饰char数组" class="headerlink" title="final修饰char数组"></a><font size="5">final修饰char数组</font></h2><p>通过上面图我们可以看到，不仅String类被定义为final，该类的成员属性–char类型的数组也被定义为final。我们先说一说这个final char[]。<br>我们在日常使用中，会有大量的字符串被轻易创建出来，这就涉及到一个很严重的问题：<font color="red"><b>性能的开销</b></font>。我们知道分配给JVM的内存是有限的，如果不加节制的创建字符串对象，那么弊端显而易见：<font color="red"><b>内存迅速被占满，程序执行缓慢</b></font>。于是Java设计者想到了一个非常好的解决方法：<font color="red"><b>共享字符串</b></font>。共享字符串对象的方法是将字符串对象放到JVM堆中(之前是在方法区)的字符串常量池中。不同的类、不同的方法甚至是不同的线程，可以使用同一个字符串，这样极大的降低了内存的损耗，提高了程序的运行效率。</p>
 <p>因此我们说：<font color="red"><b>字符串共享是解决内存损耗以及庞大的性能开销的必然选择</b></font>。说了这么多，我们还没有解释为什么char数组要用final修饰。用final修饰的原因来自于字符串带来的问题：<font color="red"><b>安全性问题</b></font>。这里的安全性指的是线程安全性。</p>

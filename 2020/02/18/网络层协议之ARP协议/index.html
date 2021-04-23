@@ -61,20 +61,20 @@
 <meta name="keywords" content="读书笔记,网络层,ARP协议">
 <meta property="og:type" content="article">
 <meta property="og:title" content="网络层协议之ARP协议">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/18/网络层协议之ARP协议/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/02/18/网络层协议之ARP协议/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="尽管有些书上将ARP协议看作是位于网络层和链路层之间的协议，但是和IP协议一样，ARP协议是封装在链路层帧上在网络中传输的。因此我更倾向于把ARP协议当作网络层协议。下面就让我们来学习一下ARP协议。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/18/网络层协议之ARP协议/2.jpg">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/18/网络层协议之ARP协议/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/18/网络层协议之ARP协议/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/18/网络层协议之ARP协议/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/18/网络层协议之ARP协议/2.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/18/网络层协议之ARP协议/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/18/网络层协议之ARP协议/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/18/网络层协议之ARP协议/3.png">
 <meta property="og:updated_time" content="2020-02-18T08:45:59.594Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="网络层协议之ARP协议">
 <meta name="twitter:description" content="尽管有些书上将ARP协议看作是位于网络层和链路层之间的协议，但是和IP协议一样，ARP协议是封装在链路层帧上在网络中传输的。因此我更倾向于把ARP协议当作网络层协议。下面就让我们来学习一下ARP协议。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/18/网络层协议之ARP协议/2.jpg">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/18/网络层协议之ARP协议/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/02/18/网络层协议之ARP协议/2.jpg">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/02/18/网络层协议之ARP协议/">
 
 
 <script id="page-configurations">
@@ -264,7 +264,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/18/网络层协议之ARP协议/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/02/18/网络层协议之ARP协议/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -331,7 +331,7 @@
 <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>网络设备有数据要发送给另一台网络设备时，必须要知道对方的网络层地址（即IP地址）。IP地址由网络层来提供，但是仅有IP地址是不够的，IP数据报文必须封装成帧才能通过数据链路进行发送。数据帧必须要包含目的MAC地址，因此发送端还必须获取到目的MAC地址。通过目的IP地址获取的MAC地址的过程是由ARP（Address Resolution Protocol）协议来实现的。</p>
 <h2 id="MAC地址"><a href="#MAC地址" class="headerlink" title="MAC地址"></a><font size="5">MAC地址</font></h2><p>IP地址前面介绍过，就不做赘述。这里主要介绍一下MAC地址。实际上，并不是主机或者路由器具有MAC地址，而是它们的适配器(网络接口)具有MAC地址。因此，如果一个主机或路由器有多个网络接口，那么它就有多个MAC地址。MAC地址长度为6个字节，通常用十六进制表示法，每个字节用一个十六进制数表示，字节之间用’-‘连接，例如：ff-ff-ff-ff-ff-ff。</p>
 <h2 id="MAC的获取"><a href="#MAC的获取" class="headerlink" title="MAC的获取"></a><font size="5">MAC的获取</font></h2><p>和IP地址不同，MAC地址是一个硬件地址，是制造商在制造的时候添加的，一旦确定不会发生变化。并且每个网络接口的MAC地址都是独一无二的。那么制造商的MAC地址是哪来的呢？答案是IEEE。该机构在管理着MAC地址空间，当一个公司要生产适配器时，它象征性的支付一定的费用购买组成2(24次方)个地址的一块地址空间。IEEE分配的方式是：前24个比特由IEEE指定，后面24个bite由生产厂商自己搭配。</p>
-<h1 id="ARP协议"><a href="#ARP协议" class="headerlink" title="ARP协议"></a>ARP协议</h1><h2 id="ARP分组格式"><a href="#ARP分组格式" class="headerlink" title="ARP分组格式"></a><font size="5">ARP分组格式</font></h2><p>这里直接简单的介绍一下ARP分组的格式作为了解，对于ARP协议，主要在于了解它的工作流程<br><img src="/2020/02/18/网络层协议之ARP协议/2.jpg" alt></p>
+<h1 id="ARP协议"><a href="#ARP协议" class="headerlink" title="ARP协议"></a>ARP协议</h1><h2 id="ARP分组格式"><a href="#ARP分组格式" class="headerlink" title="ARP分组格式"></a><font size="5">ARP分组格式</font></h2><p>这里直接简单的介绍一下ARP分组的格式作为了解，对于ARP协议，主要在于了解它的工作流程<br><img src="/blog.github.io/2020/02/18/网络层协议之ARP协议/2.jpg" alt></p>
 <ol>
 <li>硬件类型：发送方硬件接口类型，1为以太网</li>
 <li>协议类型：发送方请求解析的协议地址类型，0x0800为IP协议地址</li>
@@ -342,12 +342,12 @@
 </ol>
 <h2 id="ARP协议工作流程-重要"><a href="#ARP协议工作流程-重要" class="headerlink" title="ARP协议工作流程(重要)"></a><font size="5">ARP协议工作流程(重要)</font></h2><p>现在假设在一个局域网内有两台主机A、B。现A要向B发送数据。因此数据在主机A中被层层封装，应用层、传输层、网络层、链路层。但是问题来了：A只知道B的IP地址，因此只能封装到网络层(即将数据封装成IP数据报)，如果要将IP数据报成帧，那么就必须知道B的MAC地址。那么A如何得知B的MAC地址呢？</p>
 <ol>
-<li>每台主机内都有一个ARP缓存表，该表记录了最近运行时使用过的(IP-MAC)映射对，如果A的ARP缓存表中有B的IP-MAC映射，那么直接将B的MAC地址作为目的MAC地址，成帧后发送给主机B。如果所示在Windows下使用arp-a查看本机ARP缓存：<br><img src="/2020/02/18/网络层协议之ARP协议/1.png" alt></li>
+<li>每台主机内都有一个ARP缓存表，该表记录了最近运行时使用过的(IP-MAC)映射对，如果A的ARP缓存表中有B的IP-MAC映射，那么直接将B的MAC地址作为目的MAC地址，成帧后发送给主机B。如果所示在Windows下使用arp-a查看本机ARP缓存：<br><img src="/blog.github.io/2020/02/18/网络层协议之ARP协议/1.png" alt></li>
 <li>如果本机的ARP缓存中没有目标主机的(IP-MAC)映射对，则在本局域网内发送广播帧(即链路层帧首部的目的MAC地址字段为ff-ff-ff-ff-ff-ff-ff)，本局域网内的所有主机都会收到该ARP广播帧，但是只有IP地址和ARP中的目的IP相同的主机在会进行响应，向发送方回送一个标准帧(目的地址为发送方MAC地址)，其余的主机会丢弃该分组。</li>
 <li>当主机A收到B的ARP响应后，就得知了主机B的MAC地址，因此就能和主机B进行数据传输了。</li>
 <li>有一点需要区分清楚：<font color="red">ARP请求分组中的源IP地址和源MAC地址为A的IP地址和MAC地址，而目的IP地址为B的IP地址，目的MAC地址为0-0-0-0-0-0(因为A并不知道B的MAC地址)。</font></li>
 </ol>
-<p>通过WireShark捕获的一组ARP请求/响应报文<br><img src="/2020/02/18/网络层协议之ARP协议/2.png" alt><br><img src="/2020/02/18/网络层协议之ARP协议/3.png" alt><br>从图中我们可以清楚的看到，ARP请求报文中目的MAC地址为0-0-0-0-0-0，但是应该是由于缓存的原因，该请求报文是一个标准帧而不是一个广播帧。</p>
+<p>通过WireShark捕获的一组ARP请求/响应报文<br><img src="/blog.github.io/2020/02/18/网络层协议之ARP协议/2.png" alt><br><img src="/blog.github.io/2020/02/18/网络层协议之ARP协议/3.png" alt><br>从图中我们可以清楚的看到，ARP请求报文中目的MAC地址为0-0-0-0-0-0，但是应该是由于缓存的原因，该请求报文是一个标准帧而不是一个广播帧。</p>
 <h1 id="免费ARP"><a href="#免费ARP" class="headerlink" title="免费ARP"></a>免费ARP</h1><p>前面介绍的ARP又被称为标准ARP，那么我们接下来就介绍另外一种：即免费ARP协议(又称无偿ARP协议)。免费ARP的主要作用为验证同一个局域网中该主机的IP地址是否冲突。<br>当一个ARP请求分组满足以下条件时：</p>
 <ol>
 <li>源IP和目的IP相同，都是发送该ARP报文的主机IP地址</li>

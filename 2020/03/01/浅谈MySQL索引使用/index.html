@@ -61,35 +61,35 @@
 <meta name="keywords" content="数据库,MySQL,索引">
 <meta property="og:type" content="article">
 <meta property="og:title" content="浅谈MySQL索引使用">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在前面一篇我们对MySQL InnoDB/MyISAM 存储引擎索引的实现原理进行了简单的介绍。今天我们就来实际的介绍一下MySQL中索引的种类、不同的索引如何创建使用以及如何让索引发挥更大的作用(优化策略)。本文所有实验演示全部基于Win10环境下MySQL5.5版本(InnoDB)。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/5.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/6.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/17.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/18.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/19.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/7.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/8.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/9.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/10.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/11.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/12.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/13.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/14.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/15.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/16.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/6.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/17.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/18.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/19.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/7.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/8.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/9.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/10.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/11.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/12.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/13.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/14.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/15.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/16.png">
 <meta property="og:updated_time" content="2020-03-02T00:53:43.846Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="浅谈MySQL索引使用">
 <meta name="twitter:description" content="在前面一篇我们对MySQL InnoDB/MyISAM 存储引擎索引的实现原理进行了简单的介绍。今天我们就来实际的介绍一下MySQL中索引的种类、不同的索引如何创建使用以及如何让索引发挥更大的作用(优化策略)。本文所有实验演示全部基于Win10环境下MySQL5.5版本(InnoDB)。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/">
 
 
 <script id="page-configurations">
@@ -279,7 +279,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/03/01/浅谈MySQL索引使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -383,13 +383,13 @@
 
 </li>
 </ul>
-<p><img src="/2020/03/01/浅谈MySQL索引使用/1.png" alt><br>如图所示，可以看到我们创建的索引。其Non_unique=1，说明不是唯一的；其NULL=YES，说明可以有空值。</p>
+<p><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/1.png" alt><br>如图所示，可以看到我们创建的索引。其Non_unique=1，说明不是唯一的；其NULL=YES，说明可以有空值。</p>
 <ul>
 <li><b>在count列上创建非空索引</b><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">我们先将count列上原来的索引删除(删除语句后面说)</span><br><span class="line">CREATE UNIQUE INDEX index_count </span><br><span class="line">    ON Index_test(count);</span><br></pre></td></tr></table></figure>
 
 </li>
 </ul>
-<p><img src="/2020/03/01/浅谈MySQL索引使用/2.png" alt><br>如图所示，可以看到我们创建的索引。其Non_unique=0，说明是唯一索引；其NULL=YES，说明可以有空值。</p>
+<p><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/2.png" alt><br>如图所示，可以看到我们创建的索引。其Non_unique=0，说明是唯一索引；其NULL=YES，说明可以有空值。</p>
 <ul>
 <li><p><b>主键索引</b><br>对于主键索引，InnoDB会在创建表时自动在主键上创建该索引。如果创建表时没有定义主键，则InnoDB选择第一个唯一非空的列作为主键并在其上创建主键索引；否则，InnoDB添加一个6字节大小的自增主键(该列称为ROWID)并在其上创建主键索引。在本例中，我们指定ID为主键，因此InnoDB在ID列上创建了主键索引。</p>
 </li>
@@ -398,11 +398,11 @@
 
 </li>
 </ul>
-<p><img src="/2020/03/01/浅谈MySQL索引使用/3.png" alt><br>如图，我们创建了一个联合索引，由于创建表示约束了name列非空，因此索引中name也不能为NULL。联合索引中列的顺序对索引的性能影响很大，后面我们会说到。</p>
+<p><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/3.png" alt><br>如图，我们创建了一个联合索引，由于创建表示约束了name列非空，因此索引中name也不能为NULL。联合索引中列的顺序对索引的性能影响很大，后面我们会说到。</p>
 <h2 id="ALTER方式创建"><a href="#ALTER方式创建" class="headerlink" title="ALTER方式创建"></a><font xise="5">ALTER方式创建</font></h2><p>除了以CREATE的方式直接创建以外，我们还可以使用ALTER操作，以修改表的方式创建索引，其语法格式如下。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE 表名 </span><br><span class="line">    ADD [UNIQUE|FULLTEXT|SPATIAL] INDEX|KEY [索引名] </span><br><span class="line">    (字段名1[(长度)] [ASC|DESC]) [USING 索引方法]；</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2020/03/01/浅谈MySQL索引使用/4.png" alt><br>如图，除了创建方式不同以外，创建出来的索引没有任何区别，对于其他索引也一样，这里就不做演示。</p>
+<p><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/4.png" alt><br>如图，除了创建方式不同以外，创建出来的索引没有任何区别，对于其他索引也一样，这里就不做演示。</p>
 <h2 id="创建表时添加索引"><a href="#创建表时添加索引" class="headerlink" title="创建表时添加索引"></a><font size="5">创建表时添加索引</font></h2><p>我们可以在创建表时直接给相应的列添加索引</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE 表名(</span><br><span class="line">    字段名 数据类型 [完整性约束条件],</span><br><span class="line">    ......</span><br><span class="line">    </span><br><span class="line">    [UNIQUE|FULLTEXT|SPATIAL] INDEX|KEY</span><br><span class="line">    [索引名](字段名1[(长度)] [ASC|DESC]) [USING 索引方法]</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
@@ -410,7 +410,7 @@
 <h2 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a><font size="5">删除索引</font></h2><p>删除索引也有两种方式，其实和创建很类似，可以对比记忆</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">使用DROP直接删除</span><br><span class="line">DROP INDEX 索引名 ON 表名</span><br><span class="line"></span><br><span class="line">============================</span><br><span class="line"></span><br><span class="line">使用ALTER以修改表的方式删除</span><br><span class="line">ALTER TABLE 表名 DROP INDEX 索引名</span><br></pre></td></tr></table></figure>
 
-<p>这里只演示其中一种即可，我们来使用DROP直接删除索引，如图所示：<br><img src="/2020/03/01/浅谈MySQL索引使用/5.png" alt></p>
+<p>这里只演示其中一种即可，我们来使用DROP直接删除索引，如图所示：<br><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/5.png" alt></p>
 <h1 id="索引的优缺点及使用原则"><a href="#索引的优缺点及使用原则" class="headerlink" title="索引的优缺点及使用原则"></a>索引的优缺点及使用原则</h1><p>了解了如何创建/删除索引，那么我们再来看看索引的优点和缺点，从而进一步学习索引的使用原则：即什么时候创建索引、在哪些列上创建索引以及什么时候不能使用索引等等。</p>
 <h2 id="索引的优点"><a href="#索引的优点" class="headerlink" title="索引的优点"></a><font size="5">索引的优点</font></h2><p>其实这个问题的答案在前面一篇MySQL索引的实现原理已经提到，索引的优点主要有三</p>
 <ol>
@@ -479,16 +479,16 @@
 <h2 id="实战测试"><a href="#实战测试" class="headerlink" title="实战测试"></a><font size="5">实战测试</font></h2><p>我们创建一张表，下面的所有实验都基于该表进行。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> CREATE TABLE titles(</span><br><span class="line">    emp_no INT,</span><br><span class="line">    title VARCHAR(50),</span><br><span class="line">    from_date DATE,</span><br><span class="line">    to_date DATE,</span><br><span class="line">    PRIMARY KEY(emp_no,title,from_date)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
-<p>我们来看看这张表上有几个索引<br><img src="/2020/03/01/浅谈MySQL索引使用/6.png" alt>如图，由于该表包含一个联合主键，因此该表的主索引是一个组合索引。</p>
-<h3 id="覆盖索引测试"><a href="#覆盖索引测试" class="headerlink" title="覆盖索引测试"></a><font size="5">覆盖索引测试</font></h3><p>为了更好的进行演示，我们在from_date列上创建一个辅助索引，如图所示：<br><img src="/2020/03/01/浅谈MySQL索引使用/17.png" alt> 我们知道，InnoDB中辅助索引存储的是主键的值，那么只要我们要查询的列在(emp_no,title,from_date)之间，就会使用到覆盖索引。</p>
-<p><img src="/2020/03/01/浅谈MySQL索引使用/18.png" alt> 可以看到，Extra中Using Index，使用到了覆盖索引<br><img src="/2020/03/01/浅谈MySQL索引使用/19.png" alt> 在这里，要查询的列包括to_date，因此需要回表查数据，此时不能使用覆盖索引。Extra中是Using Where</p>
-<h3 id="全值匹配"><a href="#全值匹配" class="headerlink" title="全值匹配"></a><font size="5">全值匹配</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/7.png" alt> <font color="red"><b>当按照索引中所有列进行精确匹配（这里精确匹配指“=”或“IN”匹配）时，索引可以被用到。&lt;/b</b></font>这里有一点需要注意，理论上索引对顺序是敏感的，但是由于MySQL的查询优化器会自动调整where子句的条件顺序以使用适合的索引，例如我们将where中的条件顺序颠倒：<br><img src="/2020/03/01/浅谈MySQL索引使用/8.png" alt> 效果是一样的</p>
-<h3 id="最左前缀匹配"><a href="#最左前缀匹配" class="headerlink" title="最左前缀匹配"></a><font size="5">最左前缀匹配</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/9.png" alt> 当查询条件精确匹配索引的左边连续一个或几个列时，如<emp_no>或&lt;emp_no, title&gt;，所以可以被用到，但是只能用到一部分，即条件所组成的最左前缀。上面的查询从分析结果看用到了PRIMARY索引，但是key_len为4，说明只用到了索引的第一列前缀。</emp_no></p>
-<h3 id="精确匹配中间缺少条件"><a href="#精确匹配中间缺少条件" class="headerlink" title="精确匹配中间缺少条件"></a><font size="5">精确匹配中间缺少条件</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/10.png" alt> 此时索引使用情况和情况二相同，因为title未提供，所以<font color="red"><b>查询只用到了索引的第一列</b></font>，而后面的from_date虽然也在索引中，但是由于title不存在而无法和左前缀连接，因此<b>虽然使用到了索引，但需要对结果进行扫描过滤from_date</b>(这里由于emp_no唯一，所以不存在扫描)。</p>
-<h3 id="查询条件未指定索引首列"><a href="#查询条件未指定索引首列" class="headerlink" title="查询条件未指定索引首列"></a><font size="5">查询条件未指定索引首列</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/11.png" alt> 不是最左前缀，因此不会用到索引</p>
-<h3 id="匹配某列的前缀字符串"><a href="#匹配某列的前缀字符串" class="headerlink" title="匹配某列的前缀字符串"></a><font size="5">匹配某列的前缀字符串</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/12.png" alt> 此时可以用到索引原，如果通配符%不出现在开头，则可以用到索引，但根据具体情况不同可能只会用其中一个前缀</p>
-<h3 id="范围查询"><a href="#范围查询" class="headerlink" title="范围查询"></a><font size="5">范围查询</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/13.png" alt> 由于B+树的顺序特点,尤其适合此类查询。<font color="red"><b>范围列可以用到索引(必须是最左前缀)，但是范围列后面的列无法用到索引。</b></font>同时，索引最多用于一个范围列，因此如果查询条件中有两个范围列则无法全用到索引。</p>
-<h3 id="查询条件中含有函数或表达式"><a href="#查询条件中含有函数或表达式" class="headerlink" title="查询条件中含有函数或表达式"></a><font size="5">查询条件中含有函数或表达式</font></h3><p><img src="/2020/03/01/浅谈MySQL索引使用/14.png" alt> 如果查询条件中含有函数或表达式，则MySQL不会为这列使用索引。虽然图中所示的两个查询的效果是一样的，但是对于第一个查询，不会使用emp_no上的索引。</p>
+<p>我们来看看这张表上有几个索引<br><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/6.png" alt>如图，由于该表包含一个联合主键，因此该表的主索引是一个组合索引。</p>
+<h3 id="覆盖索引测试"><a href="#覆盖索引测试" class="headerlink" title="覆盖索引测试"></a><font size="5">覆盖索引测试</font></h3><p>为了更好的进行演示，我们在from_date列上创建一个辅助索引，如图所示：<br><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/17.png" alt> 我们知道，InnoDB中辅助索引存储的是主键的值，那么只要我们要查询的列在(emp_no,title,from_date)之间，就会使用到覆盖索引。</p>
+<p><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/18.png" alt> 可以看到，Extra中Using Index，使用到了覆盖索引<br><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/19.png" alt> 在这里，要查询的列包括to_date，因此需要回表查数据，此时不能使用覆盖索引。Extra中是Using Where</p>
+<h3 id="全值匹配"><a href="#全值匹配" class="headerlink" title="全值匹配"></a><font size="5">全值匹配</font></h3><p><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/7.png" alt> <font color="red"><b>当按照索引中所有列进行精确匹配（这里精确匹配指“=”或“IN”匹配）时，索引可以被用到。&lt;/b</b></font>这里有一点需要注意，理论上索引对顺序是敏感的，但是由于MySQL的查询优化器会自动调整where子句的条件顺序以使用适合的索引，例如我们将where中的条件顺序颠倒：<br><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/8.png" alt> 效果是一样的</p>
+<h3 id="最左前缀匹配"><a href="#最左前缀匹配" class="headerlink" title="最左前缀匹配"></a><font size="5">最左前缀匹配</font></h3><p><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/9.png" alt> 当查询条件精确匹配索引的左边连续一个或几个列时，如<emp_no>或&lt;emp_no, title&gt;，所以可以被用到，但是只能用到一部分，即条件所组成的最左前缀。上面的查询从分析结果看用到了PRIMARY索引，但是key_len为4，说明只用到了索引的第一列前缀。</emp_no></p>
+<h3 id="精确匹配中间缺少条件"><a href="#精确匹配中间缺少条件" class="headerlink" title="精确匹配中间缺少条件"></a><font size="5">精确匹配中间缺少条件</font></h3><p><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/10.png" alt> 此时索引使用情况和情况二相同，因为title未提供，所以<font color="red"><b>查询只用到了索引的第一列</b></font>，而后面的from_date虽然也在索引中，但是由于title不存在而无法和左前缀连接，因此<b>虽然使用到了索引，但需要对结果进行扫描过滤from_date</b>(这里由于emp_no唯一，所以不存在扫描)。</p>
+<h3 id="查询条件未指定索引首列"><a href="#查询条件未指定索引首列" class="headerlink" title="查询条件未指定索引首列"></a><font size="5">查询条件未指定索引首列</font></h3><p><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/11.png" alt> 不是最左前缀，因此不会用到索引</p>
+<h3 id="匹配某列的前缀字符串"><a href="#匹配某列的前缀字符串" class="headerlink" title="匹配某列的前缀字符串"></a><font size="5">匹配某列的前缀字符串</font></h3><p><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/12.png" alt> 此时可以用到索引原，如果通配符%不出现在开头，则可以用到索引，但根据具体情况不同可能只会用其中一个前缀</p>
+<h3 id="范围查询"><a href="#范围查询" class="headerlink" title="范围查询"></a><font size="5">范围查询</font></h3><p><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/13.png" alt> 由于B+树的顺序特点,尤其适合此类查询。<font color="red"><b>范围列可以用到索引(必须是最左前缀)，但是范围列后面的列无法用到索引。</b></font>同时，索引最多用于一个范围列，因此如果查询条件中有两个范围列则无法全用到索引。</p>
+<h3 id="查询条件中含有函数或表达式"><a href="#查询条件中含有函数或表达式" class="headerlink" title="查询条件中含有函数或表达式"></a><font size="5">查询条件中含有函数或表达式</font></h3><p><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/14.png" alt> 如果查询条件中含有函数或表达式，则MySQL不会为这列使用索引。虽然图中所示的两个查询的效果是一样的，但是对于第一个查询，不会使用emp_no上的索引。</p>
 <h2 id="B-Tree索引限制"><a href="#B-Tree索引限制" class="headerlink" title="B+Tree索引限制"></a><font size="5">B+Tree索引限制</font></h2><ol>
 <li><p>如果不是按照索引最左列开始查找，无法使用索引</p>
 </li>
@@ -504,8 +504,8 @@
 </li>
 </ol>
 <h1 id="InnoDB的主键选择与插入优化"><a href="#InnoDB的主键选择与插入优化" class="headerlink" title="InnoDB的主键选择与插入优化"></a>InnoDB的主键选择与插入优化</h1><p><font color="red"><b>使用InnoDB存储引擎时，如果没有特别的需要，请永远使用一个与业务无关的自增字段作为主键。</b></font></p>
-<p>InnoDB使用聚集索引，数据记录本身被存于主索引（一颗B+Tree）的叶子节点上。这就要求同一个叶子节点内(大小为一个内存页或磁盘页)的各条数据记录按主键顺序存放。因此<b>每当有一条新的记录插入时，MySQL会根据其主键将其插入适当的节点和位置，如果页面达到装载因子(InnoDB默认为15/16)，则开辟一个新的页(节点)。</b>如果表使用自增主键，那么每次插入新的记录，记录就会顺序添加到当前索引节点的后续位置，当一页写满，就会自动开辟一个新的页。如下图所示：<br><img src="/2020/03/01/浅谈MySQL索引使用/15.png" alt> 这样就会形成一个紧凑的索引结构，近似顺序填满。由于每次插入时也不需要移动已有数据，因此效率很高，也不会增加很多开销在维护索引上。</p>
-<p>如果使用非自增主键（如果身份证号或学号等），由于每次插入主键的值近似于随机，因此每次新纪录都要被插到现有索引页得中间某个位置：<br><img src="/2020/03/01/浅谈MySQL索引使用/16.png" alt><br>此时MySQL不得不为了将新记录插到合适位置而移动数据，甚至目标页面可能已经被回写到磁盘上而从缓存中清掉，此时又要从磁盘上读回来，这增加了很多开销，同时频繁的移动、分页操作造成了大量的碎片，得到了不够紧凑的索引结构，后续不得不通过OPTIMIZE TABLE来重建表并优化填充页面。</p>
+<p>InnoDB使用聚集索引，数据记录本身被存于主索引（一颗B+Tree）的叶子节点上。这就要求同一个叶子节点内(大小为一个内存页或磁盘页)的各条数据记录按主键顺序存放。因此<b>每当有一条新的记录插入时，MySQL会根据其主键将其插入适当的节点和位置，如果页面达到装载因子(InnoDB默认为15/16)，则开辟一个新的页(节点)。</b>如果表使用自增主键，那么每次插入新的记录，记录就会顺序添加到当前索引节点的后续位置，当一页写满，就会自动开辟一个新的页。如下图所示：<br><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/15.png" alt> 这样就会形成一个紧凑的索引结构，近似顺序填满。由于每次插入时也不需要移动已有数据，因此效率很高，也不会增加很多开销在维护索引上。</p>
+<p>如果使用非自增主键（如果身份证号或学号等），由于每次插入主键的值近似于随机，因此每次新纪录都要被插到现有索引页得中间某个位置：<br><img src="/blog.github.io/2020/03/01/浅谈MySQL索引使用/16.png" alt><br>此时MySQL不得不为了将新记录插到合适位置而移动数据，甚至目标页面可能已经被回写到磁盘上而从缓存中清掉，此时又要从磁盘上读回来，这增加了很多开销，同时频繁的移动、分页操作造成了大量的碎片，得到了不够紧凑的索引结构，后续不得不通过OPTIMIZE TABLE来重建表并优化填充页面。</p>
 <p>所以说，<font color="red"><b>如果可以，请尽量在InnoDB上采用自增字段做主键。</b></font></p>
 <h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p>本文参考借鉴了一下几篇博客：<br><a href="https://cloud.tencent.com/developer/article/1125452" target="_blank" rel="noopener">MySQL索引及其实现原理(基于MyISAM及InnoDB引擎)</a><br><a href="https://blog.csdn.net/justry_deng/article/details/81458470" target="_blank" rel="noopener">MySQL索引的创建与使用</a><br><a href="https://blog.csdn.net/why15732625998/article/details/80388236" target="_blank" rel="noopener">MySQL高级-EXPLAIN用法和结果分析</a><br><a href="https://www.cnblogs.com/tuanz/p/11806017.html" target="_blank" rel="noopener">回表查询的说明</a><br><a href="https://www.jianshu.com/p/8991cbca3854" target="_blank" rel="noopener">mysql覆盖索引与回表</a></p>
 <hr>

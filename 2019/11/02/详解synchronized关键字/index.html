@@ -61,17 +61,17 @@
 <meta name="keywords" content="多线程,synchronized">
 <meta property="og:type" content="article">
 <meta property="og:title" content="详解synchronized关键字">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/11/02/详解synchronized关键字/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/11/02/详解synchronized关键字/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="这次来介绍另外一个关键字-synchronized关键字，接下来将对synchronized关键字的底层实现原理进行深度的介绍。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/02/详解synchronized关键字/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/02/详解synchronized关键字/1.png">
 <meta property="og:updated_time" content="2020-02-13T07:51:50.717Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="详解synchronized关键字">
 <meta name="twitter:description" content="这次来介绍另外一个关键字-synchronized关键字，接下来将对synchronized关键字的底层实现原理进行深度的介绍。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/11/02/详解synchronized关键字/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/11/02/详解synchronized关键字/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/11/02/详解synchronized关键字/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/11/02/详解synchronized关键字/">
 
 
 <script id="page-configurations">
@@ -261,7 +261,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/11/02/详解synchronized关键字/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/11/02/详解synchronized关键字/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -371,7 +371,7 @@
 <p>从上面代码不难发现，<font color="blue">synchronized修饰代码块时，锁对象是需要自己指定的，你可以指定任意对象，但是关键要保证不同线程的锁对象是同一个。</font></p>
 <h1 id="synchronized底层原理"><a href="#synchronized底层原理" class="headerlink" title="synchronized底层原理"></a>synchronized底层原理</h1><p>前面说了synchronized的三种使用方式，下面说一下该关键字的底层原理。<br>Java虚拟机中的同步是基于<font color="blue">进入和退出管程(Monitor)对象实现</font>。无论是显式同步(有明确的 monitorenter 和 monitorexit 指令,即同步代码块)还是隐式同步都是如此。在 Java 语言中，同步用的最多的地方可能是被synchronized修饰的同步方法。<font color="blue">同步方法并不是由monitorenter和monitorexit指令来实现同步的，而是由方法调用指令读取运行时常量池中方法的 ACC_SYNCHRONIZED标志来隐式实现的。</font></p>
 <ul>
-<li><font color="bllue"><b>对象头</b></font><br>关于对象的组成部分在深入理解JVM虚拟机一已经介绍过，这里就不赘述。主要说一下对象头的组成，因为它是和synchronized息息相关的部分<br><img src="/2019/11/02/详解synchronized关键字/1.png" alt> 轻量级锁和偏向锁是Java6对synchronized锁进行优化后新增加的，一会儿会说到。这里我们主要分析一下重量级锁也就是通常说synchronized的对象锁<ul>
+<li><font color="bllue"><b>对象头</b></font><br>关于对象的组成部分在深入理解JVM虚拟机一已经介绍过，这里就不赘述。主要说一下对象头的组成，因为它是和synchronized息息相关的部分<br><img src="/blog.github.io/2019/11/02/详解synchronized关键字/1.png" alt> 轻量级锁和偏向锁是Java6对synchronized锁进行优化后新增加的，一会儿会说到。这里我们主要分析一下重量级锁也就是通常说synchronized的对象锁<ul>
 <li><font color="blue">锁标识位为10，其中指针指向的是monitor对象（也称为管程或监视器锁）的起始地址。</font><br>每个对象都存在着一个 monitor 与之关联，对象与其 monitor 之间的关系有存在多种实现方式，如monitor可以与对象一起创建销毁或当线程试图获取对象锁时自动生成，但当一个 monitor 被某个线程持有后，它便处于锁定状态。在Java虚拟机(HotSpot)中，monitor是由ObjectMonitor实现的，其主要数据结构如下（位于HotSpot虚拟机源码ObjectMonitor.hpp文件，C++实现的）<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">ObjectMonitor() &#123;</span><br><span class="line">    _header       = NULL;</span><br><span class="line">    _count        = 0; //记录个数</span><br><span class="line">    _waiters      = 0,</span><br><span class="line">    _recursions   = 0;</span><br><span class="line">    _object       = NULL;</span><br><span class="line">    _owner        = NULL;</span><br><span class="line">    _WaitSet      = NULL; //处于wait状态的线程，会被加入到_WaitSet</span><br><span class="line">    _WaitSetLock  = 0 ;</span><br><span class="line">    _Responsible  = NULL ;</span><br><span class="line">    _succ         = NULL ;</span><br><span class="line">    _cxq          = NULL ;</span><br><span class="line">    FreeNext      = NULL ;</span><br><span class="line">    _EntryList    = NULL ; //处于等待锁block状态的线程，会被加入到该列表</span><br><span class="line">    _SpinFreq     = 0 ;</span><br><span class="line">    _SpinClock    = 0 ;</span><br><span class="line">    OwnerIsThread = 0 ;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 
 </li>

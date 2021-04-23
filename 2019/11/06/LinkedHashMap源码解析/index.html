@@ -61,17 +61,17 @@
 <meta name="keywords" content="源码,LinkedHashMap集合">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LinkedHashMap源码解析">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/11/06/LinkedHashMap源码解析/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/11/06/LinkedHashMap源码解析/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="了解了HashMap之后，我们就会发现，插入HashMap中的元素是不保证顺序的，因为元素在数组中是通过映射找到具体位置的，所以不保证取出元素的顺序和插入时的相等。那如果有这方面的要求，就要用到LinkedHashMap集合了。接下来就介绍一下JDK1.8下的LinkedHashMap集合。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/06/LinkedHashMap源码解析/1.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/06/LinkedHashMap源码解析/1.jpg">
 <meta property="og:updated_time" content="2020-03-05T06:59:31.522Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LinkedHashMap源码解析">
 <meta name="twitter:description" content="了解了HashMap之后，我们就会发现，插入HashMap中的元素是不保证顺序的，因为元素在数组中是通过映射找到具体位置的，所以不保证取出元素的顺序和插入时的相等。那如果有这方面的要求，就要用到LinkedHashMap集合了。接下来就介绍一下JDK1.8下的LinkedHashMap集合。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/11/06/LinkedHashMap源码解析/1.jpg">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/11/06/LinkedHashMap源码解析/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/11/06/LinkedHashMap源码解析/1.jpg">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/11/06/LinkedHashMap源码解析/">
 
 
 <script id="page-configurations">
@@ -261,7 +261,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/11/06/LinkedHashMap源码解析/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/11/06/LinkedHashMap源码解析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -333,7 +333,7 @@
 <hr>
 <a id="more"></a>
 
-<h1 id="节点继承关系"><a href="#节点继承关系" class="headerlink" title="节点继承关系"></a>节点继承关系</h1><p>在介绍LinkedHashMap之前，我们先看一下节点的继承关系：<br><img src="/2019/11/06/LinkedHashMap源码解析/1.jpg" alt> 从图中可以看到，HashMap中的树节点TreeNode是继承自LinkedHashMap的Entry节点。至于TreeNode不继承自身的Node而去继承Entry，这是有原因的，我们后面说。</p>
+<h1 id="节点继承关系"><a href="#节点继承关系" class="headerlink" title="节点继承关系"></a>节点继承关系</h1><p>在介绍LinkedHashMap之前，我们先看一下节点的继承关系：<br><img src="/blog.github.io/2019/11/06/LinkedHashMap源码解析/1.jpg" alt> 从图中可以看到，HashMap中的树节点TreeNode是继承自LinkedHashMap的Entry节点。至于TreeNode不继承自身的Node而去继承Entry，这是有原因的，我们后面说。</p>
 <p>LinkedHashMap内部类Entry继承自HashMap内部类Node，并新增了两个引用，分别是before和after。这两个引用的用途不难理解，也就是用于维护双向链表。同时，TreeNode继承LinkedHashMap 的内部类Entry后，就具备了和其他Entry一起组成链表的能力。但是这里需要大家考虑一个问题。当我们使用HashMap时，TreeNode并不需要具备组成链表能力。如果继承LinkedHashMap内部类Entry ，TreeNode就多了两个用不到的引用，这样做不是会浪费空间吗？</p>
 
 <p>TreeNode对象的大小约是普通Node对象的2倍，我们仅在桶（bin）中包含足够多的节点时再使用。当桶中的节点数量变少时（取决于删除和扩容），TreeNode 会被转成 Node。当用户实现的 hashCode 方法具有良好分布性时，树类型的桶将会很少被使用。

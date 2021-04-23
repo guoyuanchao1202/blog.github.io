@@ -61,21 +61,21 @@
 <meta name="keywords" content="集合,链表,HashSet,快慢指针法">
 <meta property="og:type" content="article">
 <meta property="og:title" content="单链表的环问题">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/09/15/单链表的环问题/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/09/15/单链表的环问题/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="首先，关于单链表的环，一般涉及到以下几个问题  给一个单链表，判断是否有环 如果存在环，找出环的入口点 如果存在环，求出环上节点的个数 如果存在环，求出链表的长度">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/15/单链表的环问题/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/15/单链表的环问题/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/15/单链表的环问题/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/15/单链表的环问题/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/15/单链表的环问题/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/单链表的环问题/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/单链表的环问题/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/单链表的环问题/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/单链表的环问题/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/单链表的环问题/5.png">
 <meta property="og:updated_time" content="2019-11-01T14:59:26.883Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="单链表的环问题">
 <meta name="twitter:description" content="首先，关于单链表的环，一般涉及到以下几个问题  给一个单链表，判断是否有环 如果存在环，找出环的入口点 如果存在环，求出环上节点的个数 如果存在环，求出链表的长度">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/09/15/单链表的环问题/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/09/15/单链表的环问题/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/单链表的环问题/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/09/15/单链表的环问题/">
 
 
 <script id="page-configurations">
@@ -265,7 +265,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/09/15/单链表的环问题/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/09/15/单链表的环问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -358,10 +358,10 @@
 </ul>
 </li>
 </ol>
-<p>(可以画图帮助理解)<br><img src="/2019/09/15/单链表的环问题/1.png" alt>方法返回的是相遇的节点</p>
+<p>(可以画图帮助理解)<br><img src="/blog.github.io/2019/09/15/单链表的环问题/1.png" alt>方法返回的是相遇的节点</p>
 <h2 id="解法二：HashSet法"><a href="#解法二：HashSet法" class="headerlink" title="解法二：HashSet法"></a><font size="5">解法二：HashSet法</font></h2><ol>
 <li>遍历链表，将当前节点的引用存储到HashSet中</li>
-<li>如果当遍历到某个节点时，HashSet集合中已经存在该节点的引用，那么说明该链表有环，并且<font color="red">第一个重复的节点就是入环口</font><br><img src="/2019/09/15/单链表的环问题/2.png" alt></li>
+<li>如果当遍历到某个节点时，HashSet集合中已经存在该节点的引用，那么说明该链表有环，并且<font color="red">第一个重复的节点就是入环口</font><br><img src="/blog.github.io/2019/09/15/单链表的环问题/2.png" alt></li>
 </ol>
 <h1 id="找出环的入口点"><a href="#找出环的入口点" class="headerlink" title="找出环的入口点"></a>找出环的入口点</h1><p>如果用HashSet方法来解决第一个问题，那么这个问题就同时得到了解决<br>如果用快慢指针法解决第一题，那么<font color="red">得到fast和slow第一次相遇的节点</font>，</p>
 <p><font color="blue">假设slow和fast相遇时，slow还没有走完链表，即链表不是首尾相接的环形链表</font><br><font color="red"><b>分析</b></font></p>
@@ -402,7 +402,7 @@
 <li>str2=str2.next</li>
 </ul>
 </li>
-<li>str1==str2时退出循环，此时的str1/str2就是入环节点<br><img src="/2019/09/15/单链表的环问题/3.png" alt></li>
+<li>str1==str2时退出循环，此时的str1/str2就是入环节点<br><img src="/blog.github.io/2019/09/15/单链表的环问题/3.png" alt></li>
 </ul>
 <p><font color="blue"><b>特殊情况：即链表首尾相接(环长度最大)</b></font></p>
 <ul>
@@ -423,11 +423,11 @@
 </li>
 <li>当str1==str2(再次相遇)时，说明str2刚好比str1多走1圈，此时count就是环上节点的个数<ul>
 <li>假设再次相遇时str1走了s步、str2走了2*s步、环的长度为r</li>
-<li>由分析得到2*s=s+r，所以s=r;<br><img src="/2019/09/15/单链表的环问题/4.png" alt></li>
+<li>由分析得到2*s=s+r，所以s=r;<br><img src="/blog.github.io/2019/09/15/单链表的环问题/4.png" alt></li>
 </ul>
 </li>
 </ol>
-<h1 id="求出链表的长度"><a href="#求出链表的长度" class="headerlink" title="求出链表的长度"></a>求出链表的长度</h1><p>链表长度L=head节点到入口节点的距离a+环的长度r<br>根据上面两个问题，这个就很好解决<br><img src="/2019/09/15/单链表的环问题/5.png" alt></p>
+<h1 id="求出链表的长度"><a href="#求出链表的长度" class="headerlink" title="求出链表的长度"></a>求出链表的长度</h1><p>链表长度L=head节点到入口节点的距离a+环的长度r<br>根据上面两个问题，这个就很好解决<br><img src="/blog.github.io/2019/09/15/单链表的环问题/5.png" alt></p>
 
     </div>
 

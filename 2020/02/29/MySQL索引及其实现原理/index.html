@@ -61,27 +61,27 @@
 <meta name="keywords" content="数据库,MySQL,索引">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL索引及其实现原理">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="前面在介绍MySQL加锁处理的时候，多次的提到了索引，也简单地对MySQL InnoDB的索引进行了介绍，索引在数据库中有着至关重要的作用，通过索引能够大大提高我们的查询速度。那么索引到底是什么？今天我们就对索引进行详细的介绍。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/5.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/6.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/7.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/8.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/9.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/10.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/11.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/6.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/7.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/8.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/9.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/10.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/11.png">
 <meta property="og:updated_time" content="2020-03-21T15:04:20.932Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL索引及其实现原理">
 <meta name="twitter:description" content="前面在介绍MySQL加锁处理的时候，多次的提到了索引，也简单地对MySQL InnoDB的索引进行了介绍，索引在数据库中有着至关重要的作用，通过索引能够大大提高我们的查询速度。那么索引到底是什么？今天我们就对索引进行详细的介绍。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/">
 
 
 <script id="page-configurations">
@@ -271,7 +271,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/29/MySQL索引及其实现原理/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/02/29/MySQL索引及其实现原理/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -345,7 +345,7 @@
 
 <h1 id="数据结构和算法基础"><a href="#数据结构和算法基础" class="headerlink" title="数据结构和算法基础"></a>数据结构和算法基础</h1><p>在介绍索引之前，我们先介绍两种基本的数据结构：B树和B+树结构</p>
 <h2 id="索引的本质"><a href="#索引的本质" class="headerlink" title="索引的本质"></a><font size="5">索引的本质</font></h2><p>官方对索引的定义为：<font color="red"><b>索引(Index)是帮助MySQL高效获取数据的数据结构。因此索引本质上是一种数据结构。</b></font></p>
-<p>查询是数据库的最主要功能之一。我们都希望查询速度能尽可能快，因此数据库系统的设计者会从查询算法角度优化。最基本的查询算法当然是顺序查找(linear search)，这种复杂度为O(n)的算法在数据量很大时显然是糟糕的。好在CS的发展提供了很多更优秀的查找算法，如二分查找(binary search)、二叉树查找(binary tree search)等。稍微分析一下会发现，每种查找算法都只能应用于特定数据结构之上，如二分查找要求被检索数据有序，而二叉树查找只能应用于二叉查找树，但数据本身的组织结构不可能完全满足各种数据结构（例如，理论上不可能同时将两列都按顺序进行组织）。所以，在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用（指向）数据，这样就可以在这些数据结构上实现高级查找算法。这种ADT，就是索引。<br><img src="/2020/02/29/MySQL索引及其实现原理/1.png" alt><br>图1展示了一种可能的索引方式：左边是数据表，一共有两列14条记录，最左边是数据记录的物理地址（注意逻辑上相邻的记录在磁盘上并不一定物理相邻）。为加快Col2的查找，可维护一个右边所示二叉查找树，每个节点分别包含索引键值及一个指向对应数据记录物理地址的指针，这样就可以运用二叉查找在O(log2 N)内取到相应数据。虽然这是一个货真价实的索引，但实际数据库系统几乎没有使用二叉查找树或其进化品种红黑树（red-black tree）实现</p>
+<p>查询是数据库的最主要功能之一。我们都希望查询速度能尽可能快，因此数据库系统的设计者会从查询算法角度优化。最基本的查询算法当然是顺序查找(linear search)，这种复杂度为O(n)的算法在数据量很大时显然是糟糕的。好在CS的发展提供了很多更优秀的查找算法，如二分查找(binary search)、二叉树查找(binary tree search)等。稍微分析一下会发现，每种查找算法都只能应用于特定数据结构之上，如二分查找要求被检索数据有序，而二叉树查找只能应用于二叉查找树，但数据本身的组织结构不可能完全满足各种数据结构（例如，理论上不可能同时将两列都按顺序进行组织）。所以，在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用（指向）数据，这样就可以在这些数据结构上实现高级查找算法。这种ADT，就是索引。<br><img src="/blog.github.io/2020/02/29/MySQL索引及其实现原理/1.png" alt><br>图1展示了一种可能的索引方式：左边是数据表，一共有两列14条记录，最左边是数据记录的物理地址（注意逻辑上相邻的记录在磁盘上并不一定物理相邻）。为加快Col2的查找，可维护一个右边所示二叉查找树，每个节点分别包含索引键值及一个指向对应数据记录物理地址的指针，这样就可以运用二叉查找在O(log2 N)内取到相应数据。虽然这是一个货真价实的索引，但实际数据库系统几乎没有使用二叉查找树或其进化品种红黑树（red-black tree）实现</p>
 <h2 id="B树和B-树"><a href="#B树和B-树" class="headerlink" title="B树和B+树"></a><font size="5">B树和B+树</font></h2><p>目前大多数数据库和文件系统都采用B树及其变种B+树作为索引结构。</p>
 <h3 id="B-树"><a href="#B-树" class="headerlink" title="B-树"></a><font size="5">B-树</font></h3><p>我们定义一条数据库记录为(key,data)的二元组</p>
 <ul>
@@ -361,20 +361,20 @@
 <li>如果某个指针在节点node最右边且不为null，则其指向节点的所有key大于v(keym),v(keym)为node的最后一个key的值。</li>
 <li>如果某个指针在节点node的左右相邻key分别是keyi,keyi+1且不为null，则其指向节点的所有key小于v(keyi+1)且大于v(keyi)</li>
 </ol>
-<p>对于概念可能比较陌生，我们来看图<br><img src="/2020/02/29/MySQL索引及其实现原理/2.png" alt></p>
+<p>对于概念可能比较陌生，我们来看图<br><img src="/blog.github.io/2020/02/29/MySQL索引及其实现原理/2.png" alt></p>
 <h3 id="B-树-1"><a href="#B-树-1" class="headerlink" title="B+树"></a><font size="5">B+树</font></h3><p>B+树是B树的变种，和B树相比主要有一下几点不同</p>
 <ol>
 <li>对于B-树，每个节点指针数=key的数量+1；而B+树不同，B+树的每个节点，节点指针数=key的数量。</li>
 <li>非叶节点不存储数据，只存储key值和指针。数据只存储在叶节点中</li>
 </ol>
-<p><img src="/2020/02/29/MySQL索引及其实现原理/3.png" alt><br>如图所示，一颗3阶B+树。可以看到数据只存储在叶节点中。</p>
-<p>并且数据库实现时对B+树做了进一步的优化，得到了顺序B+树<br><img src="/2020/02/29/MySQL索引及其实现原理/4.png" alt><br>如图：<font color="red"><b>在B+Tree的每个叶节点增加一个指向相邻叶节点指针，形成带有顺序访问指针的B+Tree。</b></font>此优化的目的是提高区间访问的性能，例如图4中如果要查询key为从18到49的所有数据记录，当找到18后，只需顺着节点和指针顺序遍历就可以一次性访问到所有数据节点，极大提高了区间查询效率</p>
+<p><img src="/blog.github.io/2020/02/29/MySQL索引及其实现原理/3.png" alt><br>如图所示，一颗3阶B+树。可以看到数据只存储在叶节点中。</p>
+<p>并且数据库实现时对B+树做了进一步的优化，得到了顺序B+树<br><img src="/blog.github.io/2020/02/29/MySQL索引及其实现原理/4.png" alt><br>如图：<font color="red"><b>在B+Tree的每个叶节点增加一个指向相邻叶节点指针，形成带有顺序访问指针的B+Tree。</b></font>此优化的目的是提高区间访问的性能，例如图4中如果要查询key为从18到49的所有数据记录，当找到18后，只需顺着节点和指针顺序遍历就可以一次性访问到所有数据节点，极大提高了区间查询效率</p>
 <h3 id="计算机硬件知识"><a href="#计算机硬件知识" class="headerlink" title="计算机硬件知识"></a><font size="5">计算机硬件知识</font></h3><p>红黑树也可用来实现索引，但是文件系统及数据库系统普遍采用B/+Tree。这是为什么？</p>
 <p>一般来说，索引本身也很大，不可能全存内存，往往以索引文件的形式存在磁盘。索引查找过程中就要产生磁盘I/O消耗，相对于内存存取，I/O存取的消耗要高几个数量级，所以评价一个数据结构作为索引的优劣最重要的指标就是在查找过程中磁盘I/O操作次数的渐进复杂度。换句话说，索引的结构组织要尽量减少查找过程中磁盘I/O的存取次数。</p>
 <ol>
-<li><p><b>主存存取原理</b><br>我们知道，计算机使用的主存一般为随机读写存储器(RAM)。这里抛却具体差别，抽象出一个十分简单的存取模型来说明RAM的工作原理<br><img src="/2020/02/29/MySQL索引及其实现原理/5.png" alt><br>从抽象角度看，主存是一系列的存储单元组成的矩阵，每个存储单元存储固定大小的数据。<br>每个存储单元有唯一的地址，现代主存的编址规则比较复杂，这里将其简化成一个二维地址：通过一个行地址和一个列地址可以唯一定位到一个存储单元<br><b>存取过程</b><br>当系统需要读取主存时，将地址信号通过地址总线传给主存，主存读到地址信号后，解析信号并定位到指定存储单元，然后将此存储单元数据放到数据总线，供其它部件读取<br>写主存的过程类似，系统将要写入单元地址和数据分别放在地址总线和数据总线上，主存读取两个总线的内容，做相应的写操作<br>这里可以看出，<font color="red"><b>主存存取的时间仅与存取次数呈线性关系，因为不存在机械操作，两次存取的数据的“距离”不会对时间有任何影响。</b></font>例如，先取A0再取A1和先取A0再取D3的时间消耗是一样的。</p>
+<li><p><b>主存存取原理</b><br>我们知道，计算机使用的主存一般为随机读写存储器(RAM)。这里抛却具体差别，抽象出一个十分简单的存取模型来说明RAM的工作原理<br><img src="/blog.github.io/2020/02/29/MySQL索引及其实现原理/5.png" alt><br>从抽象角度看，主存是一系列的存储单元组成的矩阵，每个存储单元存储固定大小的数据。<br>每个存储单元有唯一的地址，现代主存的编址规则比较复杂，这里将其简化成一个二维地址：通过一个行地址和一个列地址可以唯一定位到一个存储单元<br><b>存取过程</b><br>当系统需要读取主存时，将地址信号通过地址总线传给主存，主存读到地址信号后，解析信号并定位到指定存储单元，然后将此存储单元数据放到数据总线，供其它部件读取<br>写主存的过程类似，系统将要写入单元地址和数据分别放在地址总线和数据总线上，主存读取两个总线的内容，做相应的写操作<br>这里可以看出，<font color="red"><b>主存存取的时间仅与存取次数呈线性关系，因为不存在机械操作，两次存取的数据的“距离”不会对时间有任何影响。</b></font>例如，先取A0再取A1和先取A0再取D3的时间消耗是一样的。</p>
 </li>
-<li><p><b>磁盘存储原理</b><br>上文说过，<font color="red"><b>索引一般以文件形式存储在磁盘上，索引检索需要磁盘I/O。</b></font>对于主存来说，”距离”不会对存储时间产生影响，但是对于磁盘来说并非如此。与主存不同，磁盘I/O存在机械消耗，因此磁盘I/O时间消耗巨大<br><img src="/2020/02/29/MySQL索引及其实现原理/6.png" alt><br>磁盘的整体结构示意图<br><b>磁盘由大小相同且同轴的圆形盘片组成，磁盘可以转动（各磁盘必须同步转动）。</b><br>在磁盘的一侧有磁头支架，磁头支架固定了一组磁头，每个磁头负责存取一个磁盘的内容。磁头不能转动，但是可以沿磁盘半径方向运动（实际是斜切向运动），每个磁头同一时刻也必须是同轴的，即从正上方向下看，所有磁头任何时候都是重叠的（不过目前已经有多磁头独立技术，可不受此限制）。<br><img src="/2020/02/29/MySQL索引及其实现原理/7.png" alt><br>磁盘结构的示意图<br>盘片被划分成一系列同心环，圆心是盘片中心，每个同心环叫做一个<b>磁道</b>，所有半径相同的磁道组成一个<b>柱面</b>。磁道被沿半径线划分成一个个小的段，每个段叫做一个<b>扇区</b>，每个扇区是磁盘的最小存储单元。为了简单起见，我们下面假设磁盘只有一个盘片和一个磁头。<br>当需要从磁盘读取数据时，系统会将数据逻辑地址传给磁盘，磁盘的控制电路按照寻址逻辑将逻辑地址翻译成物理地址，即确定要读的数据在哪个磁道，哪个扇区。<br>为了读取这个扇区的数据，需要将磁头放到这个扇区上方，为了实现这一点，磁头需要移动对准相应磁道，这个过程叫做<b>寻道</b>，所耗费时间叫做<b>寻道时间</b>，然后磁盘旋转将目标扇区旋转到磁头下，这个过程耗费的时间叫做<b>旋转时间</b>。</p>
+<li><p><b>磁盘存储原理</b><br>上文说过，<font color="red"><b>索引一般以文件形式存储在磁盘上，索引检索需要磁盘I/O。</b></font>对于主存来说，”距离”不会对存储时间产生影响，但是对于磁盘来说并非如此。与主存不同，磁盘I/O存在机械消耗，因此磁盘I/O时间消耗巨大<br><img src="/blog.github.io/2020/02/29/MySQL索引及其实现原理/6.png" alt><br>磁盘的整体结构示意图<br><b>磁盘由大小相同且同轴的圆形盘片组成，磁盘可以转动（各磁盘必须同步转动）。</b><br>在磁盘的一侧有磁头支架，磁头支架固定了一组磁头，每个磁头负责存取一个磁盘的内容。磁头不能转动，但是可以沿磁盘半径方向运动（实际是斜切向运动），每个磁头同一时刻也必须是同轴的，即从正上方向下看，所有磁头任何时候都是重叠的（不过目前已经有多磁头独立技术，可不受此限制）。<br><img src="/blog.github.io/2020/02/29/MySQL索引及其实现原理/7.png" alt><br>磁盘结构的示意图<br>盘片被划分成一系列同心环，圆心是盘片中心，每个同心环叫做一个<b>磁道</b>，所有半径相同的磁道组成一个<b>柱面</b>。磁道被沿半径线划分成一个个小的段，每个段叫做一个<b>扇区</b>，每个扇区是磁盘的最小存储单元。为了简单起见，我们下面假设磁盘只有一个盘片和一个磁头。<br>当需要从磁盘读取数据时，系统会将数据逻辑地址传给磁盘，磁盘的控制电路按照寻址逻辑将逻辑地址翻译成物理地址，即确定要读的数据在哪个磁道，哪个扇区。<br>为了读取这个扇区的数据，需要将磁头放到这个扇区上方，为了实现这一点，磁头需要移动对准相应磁道，这个过程叫做<b>寻道</b>，所耗费时间叫做<b>寻道时间</b>，然后磁盘旋转将目标扇区旋转到磁头下，这个过程耗费的时间叫做<b>旋转时间</b>。</p>
 </li>
 <li><p><b>局部性原理与磁盘预读</b><br>由于存储介质特性，磁盘本身存取就比主存慢，再加上机械运动耗费，磁盘的存取速度往往是主存的几百万分之一，因此为了提高效率，要尽量减少磁盘I/O。<br>为了达到这个目的，<b>磁盘往往不是严格按需读取，而是每次都会预读。</b>即使只需要一个字节，磁盘也会从这个位置开始，顺序向后读取一定长度的数据放入内存。这样做的理论依据是计算机科学中著名的<font color="red"><b>局部性原理</b></font>：<br><b>当一个数据被用到时，其附近的数据也通常会马上被使用</b>。程序运行期间所需要的数据通常比较集中<br>由于磁盘顺序读取的效率很高（不需要寻道时间，只需很少的旋转时间），因此<b>对于具有局部性的程序来说，预读可以提高I/O效率。</b><br>预读的长度一般为页（page）的整数倍。<b>页</b>是存储器的逻辑块，操作系统往往<b>将主存和磁盘存储区分割为连续的大小相等的块，每个存储块称为一页</b>（在许多操作系统中，页大小通常为4k），主存和磁盘以页为单位交换数据。当程序要读取的数据不在主存中时，会触发一个缺页异常，此时系统会向磁盘发出读盘信号，磁盘会找到数据的起始位置并向后连续读取一页或几页载入内存中，然后异常返回，程序继续运行</p>
 </li>
@@ -395,9 +395,9 @@
 <p>这一章从理论角度讨论了与索引相关的数据结构与算法问题，下一章将讨论B+Tree是如何具体实现为MySQL中索引，同时将结合MyISAM和InnDB存储引擎介绍非聚集索引和聚集索引两种不同的索引实现形式。</p>
 <h1 id="MyISAM引擎索引实现"><a href="#MyISAM引擎索引实现" class="headerlink" title="MyISAM引擎索引实现"></a>MyISAM引擎索引实现</h1><p>MyISAM引擎使用B+Tree作为索引结构，叶节点<font color="red"><b>data域存放数据记录的地址</b></font>。</p>
 <ol>
-<li><p><b>主索引(聚簇索引)</b><br><img src="/2020/02/29/MySQL索引及其实现原理/8.png" alt><br>MyISAM主索引的原理图<br>设Col1为主键，则图8是一个MyISAM表的主索引（Primary key）示例。可以看出<font color="red"><b>MyISAM的索引文件仅仅保存数据记录的地址。</b></font></p>
+<li><p><b>主索引(聚簇索引)</b><br><img src="/blog.github.io/2020/02/29/MySQL索引及其实现原理/8.png" alt><br>MyISAM主索引的原理图<br>设Col1为主键，则图8是一个MyISAM表的主索引（Primary key）示例。可以看出<font color="red"><b>MyISAM的索引文件仅仅保存数据记录的地址。</b></font></p>
 </li>
-<li><p><b>辅助索引</b><br>在MyISAM中，<b>主索引和辅索引(Secondary key)在结构上没有任何区别</b>，只是主索引要求key是唯一的，而辅索引的key可以重复。如果我们在Col2上建立一个辅索引，则此索引的结构如下图所示：<br><img src="/2020/02/29/MySQL索引及其实现原理/9.png" alt><br>如图：同样也是一颗B+Tree，data域保存数据记录的地址</p>
+<li><p><b>辅助索引</b><br>在MyISAM中，<b>主索引和辅索引(Secondary key)在结构上没有任何区别</b>，只是主索引要求key是唯一的，而辅索引的key可以重复。如果我们在Col2上建立一个辅索引，则此索引的结构如下图所示：<br><img src="/blog.github.io/2020/02/29/MySQL索引及其实现原理/9.png" alt><br>如图：同样也是一颗B+Tree，data域保存数据记录的地址</p>
 </li>
 <li><p><b>MyISAM中索引检索的算法</b><br>首先按照B+Tree搜索算法搜索索引，如果指定的Key存在，则取出其data域的值，然后以data域的值为地址，读取相应数据记录。 </p>
 </li>
@@ -408,9 +408,9 @@
 </li>
 <li><p><font color="red"><b>在InnoDB中，表数据文件本身就是按B+Tree组织的一个索引结构，这棵树的叶节点data域保存了完整的数据记录。</b></font>这个索引的key是数据表的主键，<font color="red"><b>InnoDB表数据文件本身就是主索引</b></font></p>
 </li>
-<li><p><b>主索引(辅助索引)</b><br><img src="/2020/02/29/MySQL索引及其实现原理/10.png" alt><br>InnoDB主索引(同时也是数据文件)的示意图<br>可以看到叶节点包含了完整的数据记录，这种索引叫做聚集索引。因为InnoDB的数据文件本身要按主键聚集，所以<b>InnoDB要求表必须有主键(MyISAM可以没有)</b>，如果没有显式指定，则MySQL系统会自动选择一个<font color="red"><b>唯一非空列</b></font>作为主键，如果不存在这种列，则MySQL自动为InnoDB表生成一个隐含字段作为主键，这个字段长度为6个字节，类型为长整形。</p>
+<li><p><b>主索引(辅助索引)</b><br><img src="/blog.github.io/2020/02/29/MySQL索引及其实现原理/10.png" alt><br>InnoDB主索引(同时也是数据文件)的示意图<br>可以看到叶节点包含了完整的数据记录，这种索引叫做聚集索引。因为InnoDB的数据文件本身要按主键聚集，所以<b>InnoDB要求表必须有主键(MyISAM可以没有)</b>，如果没有显式指定，则MySQL系统会自动选择一个<font color="red"><b>唯一非空列</b></font>作为主键，如果不存在这种列，则MySQL自动为InnoDB表生成一个隐含字段作为主键，这个字段长度为6个字节，类型为长整形。</p>
 </li>
-<li><p><b>辅助索引</b><br>InnoDB的辅助索引和MyISAM也不一样。<font color="red"><b>InnoDB的辅索引data域存储相应记录主键的值而不是地址。换句话说，InnoDB的所有辅助索引都引用主键作为data域。</b></font>并且当我们创建表时，InnoDB会自动为表中的唯一列(unique约束)创建唯一索引<br><img src="/2020/02/29/MySQL索引及其实现原理/11.png" alt><br>聚集索引这种实现方式使得按主键的搜索十分高效，但是辅助索引搜索需要检索两遍索引：<b>首先检索辅助索引获得主键，然后用主键到主索引中检索获得记录。</b></p>
+<li><p><b>辅助索引</b><br>InnoDB的辅助索引和MyISAM也不一样。<font color="red"><b>InnoDB的辅索引data域存储相应记录主键的值而不是地址。换句话说，InnoDB的所有辅助索引都引用主键作为data域。</b></font>并且当我们创建表时，InnoDB会自动为表中的唯一列(unique约束)创建唯一索引<br><img src="/blog.github.io/2020/02/29/MySQL索引及其实现原理/11.png" alt><br>聚集索引这种实现方式使得按主键的搜索十分高效，但是辅助索引搜索需要检索两遍索引：<b>首先检索辅助索引获得主键，然后用主键到主索引中检索获得记录。</b></p>
 </li>
 </ol>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>了解不同存储引擎的索引实现方式对于正确使用和优化索引都非常有帮助。例如</p>

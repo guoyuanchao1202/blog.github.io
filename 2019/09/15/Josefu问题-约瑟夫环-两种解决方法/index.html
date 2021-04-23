@@ -61,18 +61,18 @@
 <meta name="keywords" content="环形链表,数组">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Josefu问题(约瑟夫环)两种解决方法">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="约瑟夫问题设编号为1、2….n的n个人坐一圈，约定编号为k(1&amp;lt;=k&amp;lt;=n)的人从1开始报数，数到m的那个人出圈，他的下一位又从1开始报数，数到m的人又出圈，以此类推，直到所有人出圈为止，由此产生一个出圈编号的序列">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/2.png">
 <meta property="og:updated_time" content="2019-09-15T02:27:17.540Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Josefu问题(约瑟夫环)两种解决方法">
 <meta name="twitter:description" content="约瑟夫问题设编号为1、2….n的n个人坐一圈，约定编号为k(1&amp;lt;=k&amp;lt;=n)的人从1开始报数，数到m的那个人出圈，他的下一位又从1开始报数，数到m的人又出圈，以此类推，直到所有人出圈为止，由此产生一个出圈编号的序列">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/">
 
 
 <script id="page-configurations">
@@ -262,7 +262,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -336,7 +336,7 @@
 <li>将移动m-1此之后first指向的节点出圈</li>
 <li>继续执行5，直到helper==first为止</li>
 </ol>
-<p><img src="/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/1.png" alt><br>其中方法的参数：</p>
+<p><img src="/blog.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/1.png" alt><br>其中方法的参数：</p>
 <ul>
 <li>k：第一次开始报数的小孩</li>
 <li>count：每次数几下(m)</li>
@@ -352,7 +352,7 @@
 <li>每一次报数m次，所以k要移动m-1次(起初报数时，自己也算一次)，当k代表的数组元素a[k]==0时，说明当前孩子已经出圈，所以需要k再次移动，直到a[k]!=0==&gt;for (int j = 0; j &lt; m - 1||arr[k]==0;) {}</li>
 <li>第5步得到的k是该赋值为0的元素，即该出圈的孩子编号-1==&gt;k+1即为当前该出圈的孩子编号</li>
 <li>a[k]=0，并且将k取模移向下一位</li>
-<li>重复567nums次，直到所有孩子都出圈<br><img src="/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/2.png" alt></li>
+<li>重复567nums次，直到所有孩子都出圈<br><img src="/blog.github.io/2019/09/15/Josefu问题-约瑟夫环-两种解决方法/2.png" alt></li>
 </ol>
 
     </div>

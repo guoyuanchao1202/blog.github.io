@@ -61,21 +61,21 @@
 <meta name="keywords" content="网络工具,科来">
 <meta property="og:type" content="article">
 <meta property="og:title" content="网络工具之科来数据包生成器">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/19/网络工具之科来数据包生成器/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/02/19/网络工具之科来数据包生成器/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="学习完了ARP协议后，准备模拟一下ARP欺骗。上网查阅相关资料发现，要自行实现ARP欺骗，需要WireShark抓包工具和一个数据包生成器协助实现，并且需要两台主机(或者一台主机上安装一个虚拟机)，因此这里先学习一下科来数据包生成器的使用，开学后借助室友电脑来完成ARP欺骗。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/19/网络工具之科来数据包生成器/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/19/网络工具之科来数据包生成器/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/19/网络工具之科来数据包生成器/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/19/网络工具之科来数据包生成器/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/19/网络工具之科来数据包生成器/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/19/网络工具之科来数据包生成器/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/19/网络工具之科来数据包生成器/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/19/网络工具之科来数据包生成器/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/19/网络工具之科来数据包生成器/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/19/网络工具之科来数据包生成器/5.png">
 <meta property="og:updated_time" content="2020-02-19T03:32:47.808Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="网络工具之科来数据包生成器">
 <meta name="twitter:description" content="学习完了ARP协议后，准备模拟一下ARP欺骗。上网查阅相关资料发现，要自行实现ARP欺骗，需要WireShark抓包工具和一个数据包生成器协助实现，并且需要两台主机(或者一台主机上安装一个虚拟机)，因此这里先学习一下科来数据包生成器的使用，开学后借助室友电脑来完成ARP欺骗。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/19/网络工具之科来数据包生成器/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/19/网络工具之科来数据包生成器/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/02/19/网络工具之科来数据包生成器/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/02/19/网络工具之科来数据包生成器/">
 
 
 <script id="page-configurations">
@@ -265,7 +265,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/19/网络工具之科来数据包生成器/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/02/19/网络工具之科来数据包生成器/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -330,14 +330,14 @@
 <a id="more"></a>
 
 <h1 id="下载安装-Win10环境"><a href="#下载安装-Win10环境" class="headerlink" title="下载安装(Win10环境)"></a>下载安装(Win10环境)</h1><ol>
-<li>百度搜索<font color="red">科来</font>，点击第一条进入科来官网下载界面并点击下载中心<br><img src="/2020/02/19/网络工具之科来数据包生成器/1.png" alt></li>
-<li>如图，进入下载中心后不要直接下载科来数据包生成器(直接下载该应用会出现找不到网卡的错误)<br><img src="/2020/02/19/网络工具之科来数据包生成器/2.png" alt></li>
+<li>百度搜索<font color="red">科来</font>，点击第一条进入科来官网下载界面并点击下载中心<br><img src="/blog.github.io/2020/02/19/网络工具之科来数据包生成器/1.png" alt></li>
+<li>如图，进入下载中心后不要直接下载科来数据包生成器(直接下载该应用会出现找不到网卡的错误)<br><img src="/blog.github.io/2020/02/19/网络工具之科来数据包生成器/2.png" alt></li>
 <li>剩下的就是下载安装，傻瓜式一直下一步即可。</li>
 </ol>
 <h1 id="科来数据包生成器使用"><a href="#科来数据包生成器使用" class="headerlink" title="科来数据包生成器使用"></a>科来数据包生成器使用</h1><ol>
-<li>安装完成后打开界面，如图点击左上角按钮-&gt;点击工具-&gt;选择数据包生成器工具<br><img src="/2020/02/19/网络工具之科来数据包生成器/3.png" alt></li>
-<li>打开数据包生成器界面后，点击添加按钮，可以选择要生成的数据包。<br><img src="/2020/02/19/网络工具之科来数据包生成器/4.png" alt></li>
-<li>可以对数据包进行编辑，修改IP地址、MAC地址等。<br><img src="/2020/02/19/网络工具之科来数据包生成器/5.png" alt></li>
+<li>安装完成后打开界面，如图点击左上角按钮-&gt;点击工具-&gt;选择数据包生成器工具<br><img src="/blog.github.io/2020/02/19/网络工具之科来数据包生成器/3.png" alt></li>
+<li>打开数据包生成器界面后，点击添加按钮，可以选择要生成的数据包。<br><img src="/blog.github.io/2020/02/19/网络工具之科来数据包生成器/4.png" alt></li>
+<li>可以对数据包进行编辑，修改IP地址、MAC地址等。<br><img src="/blog.github.io/2020/02/19/网络工具之科来数据包生成器/5.png" alt></li>
 <li>点击发送即可将构造好的ARP分组发给指定主机/路由器。</li>
 </ol>
 <h1 id="总结备忘"><a href="#总结备忘" class="headerlink" title="总结备忘"></a>总结备忘</h1><p>有了以上的知识基础，再搭配WireShark抓包工具。就可以实现ARP欺骗，开学后完成该实验，特此备忘！</p>

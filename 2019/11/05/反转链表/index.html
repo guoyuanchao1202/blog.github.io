@@ -61,17 +61,17 @@
 <meta name="keywords" content="LeetCode,递归,二分查找,链表">
 <meta property="og:type" content="article">
 <meta property="og:title" content="反转链表">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/11/05/反转链表/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/11/05/反转链表/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="LeetCode第二百零六题难度：简单题目：反转一个单链表。(递归和迭代反转链表)">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/05/反转链表/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/05/反转链表/1.png">
 <meta property="og:updated_time" content="2019-11-05T04:03:09.158Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="反转链表">
 <meta name="twitter:description" content="LeetCode第二百零六题难度：简单题目：反转一个单链表。(递归和迭代反转链表)">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/11/05/反转链表/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/11/05/反转链表/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/11/05/反转链表/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/11/05/反转链表/">
 
 
 <script id="page-configurations">
@@ -261,7 +261,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/11/05/反转链表/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/11/05/反转链表/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -331,7 +331,7 @@
 <li>判断临界情况，如果链表为空或只有一个元素，直接返回链表</li>
 <li>需要创建两个临时指针next和pre。next初始化为head.next，pre初始化为null</li>
 <li>next指针指向需要反转的节点，pre指向反转后的第一个节点。</li>
-<li>反转过程如图所示<br><img src="/2019/11/05/反转链表/1.png" alt></li>
+<li>反转过程如图所示<br><img src="/blog.github.io/2019/11/05/反转链表/1.png" alt></li>
 </ol>
 <p>递归实现<br>代码比较简单，建议创建2个节点的链表，手动画一下递归过程中节点的变化。会更容易理解一些</p>
 <h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">//迭代法</span><br><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">	//判断临界情况</span><br><span class="line">	if(head==null||head.next==null)</span><br><span class="line">		return head;</span><br><span class="line">	//初始化临时指针</span><br><span class="line">	ListNode Next=head.next;</span><br><span class="line">	ListNode Pre=head;</span><br><span class="line">	//遍历链表</span><br><span class="line">	while(Next!=null)&#123;</span><br><span class="line">		head.next=Next.next;</span><br><span class="line">		Next.next=Pre;</span><br><span class="line">		Pre=Next;</span><br><span class="line">		Next=head.next;</span><br><span class="line">	&#125;</span><br><span class="line">	//返回新头指针</span><br><span class="line">	return Pre;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&quot;=================================&quot;</span><br><span class="line">//递归法</span><br><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">	//递归出口</span><br><span class="line">    if (head == null || head.next == null) return head;</span><br><span class="line">    ListNode p = reverseList(head.next);</span><br><span class="line">	//反转代码</span><br><span class="line">    head.next.next = head;</span><br><span class="line">	//这个不能少，否则可能会产生循环链表</span><br><span class="line">	//当链表长度为2时</span><br><span class="line">    head.next = null;</span><br><span class="line">    return p;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

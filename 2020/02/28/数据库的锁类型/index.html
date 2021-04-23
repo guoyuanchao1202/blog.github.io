@@ -61,17 +61,17 @@
 <meta name="keywords" content="数据库,并发控制,锁">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据库的锁类型">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/28/数据库的锁类型/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库的锁类型/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="本文主要介绍数据库并发控制中几种不同的锁类型，为后面MySQL在四种隔离级别下的加锁情况做铺垫。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/数据库的锁类型/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库的锁类型/1.png">
 <meta property="og:updated_time" content="2020-02-28T07:48:54.089Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据库的锁类型">
 <meta name="twitter:description" content="本文主要介绍数据库并发控制中几种不同的锁类型，为后面MySQL在四种隔离级别下的加锁情况做铺垫。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/28/数据库的锁类型/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/28/数据库的锁类型/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库的锁类型/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库的锁类型/">
 
 
 <script id="page-configurations">
@@ -261,7 +261,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/28/数据库的锁类型/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2020/02/28/数据库的锁类型/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -362,7 +362,7 @@
 <li>意向排他锁(IX)</li>
 </ol>
 <p>现在来考虑一个问题：<font color="red"><b>事务T1锁住了表的一行r1，而事务T2要锁住整张表。</b></font>这样明显会出现问题，两个事务在r1上会发生冲突。这时行级锁和表级锁就会发生冲突，这时候就需要用到意向锁。<br>有了意向锁之后，当事务A在申请行级锁(写锁)之前，数据库会自动给事务A申请表的意向锁(写锁)。当事务B去申请表的写锁时就会失败，因为表上有意向排他锁之后事务B申请表的写锁时会被阻塞。</p>
-<p>下面是S锁、X锁、IS锁和IX锁之间的兼容关系<br><img src="/2020/02/28/数据库的锁类型/1.png" alt></p>
+<p>下面是S锁、X锁、IS锁和IX锁之间的兼容关系<br><img src="/blog.github.io/2020/02/28/数据库的锁类型/1.png" alt></p>
 <h1 id="乐观锁和悲观锁"><a href="#乐观锁和悲观锁" class="headerlink" title="乐观锁和悲观锁"></a>乐观锁和悲观锁</h1><p>乐观锁和悲观锁实际上说的是并发控制的两种思想，其中悲观锁会假设事务在访问数据的时候一定会发生冲突，因此每次在访问的时候都会加锁，这里的锁是指前面讲到的行级锁、表级锁等。而乐观锁，顾名思义比较乐观，假定事务每次访问数据时不会发生冲突，因此不会对数据进行加锁，当出现冲突时再进行补救。</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>对锁的介绍就到这里，其实还有一些锁没有介绍，例如间隙锁(Gap Lock)、下一键锁(Next-Key Lock)等，这两种锁能够解决幻行问题，在介绍MySQL可重复读级别下加锁情况时再另外介绍。</p>
 <hr>

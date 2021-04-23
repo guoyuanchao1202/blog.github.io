@@ -61,17 +61,17 @@
 <meta name="keywords" content="多线程,线程池">
 <meta property="og:type" content="article">
 <meta property="og:title" content="浅谈Java线程池(含常见面试题)">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/11/13/浅谈Java线程池-含常见面试题/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/11/13/浅谈Java线程池-含常见面试题/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="线程池，从字面上看，是指管理一组同构工作线程的资源池。线程池是与工作队列密切相关的，其中在工作队列中保存了所有等待执行的任务。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/13/浅谈Java线程池-含常见面试题/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/13/浅谈Java线程池-含常见面试题/1.png">
 <meta property="og:updated_time" content="2021-02-16T16:19:28.940Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="浅谈Java线程池(含常见面试题)">
 <meta name="twitter:description" content="线程池，从字面上看，是指管理一组同构工作线程的资源池。线程池是与工作队列密切相关的，其中在工作队列中保存了所有等待执行的任务。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/11/13/浅谈Java线程池-含常见面试题/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/11/13/浅谈Java线程池-含常见面试题/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/11/13/浅谈Java线程池-含常见面试题/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/11/13/浅谈Java线程池-含常见面试题/">
 
 
 <script id="page-configurations">
@@ -261,7 +261,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/11/13/浅谈Java线程池-含常见面试题/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/11/13/浅谈Java线程池-含常见面试题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -333,7 +333,7 @@
 <hr>
 <a id="more"></a>
 
-<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>在这篇文章中，将包含对线程池常见方法、线程池的内部实现、线程池的拒绝策略逐个进行介绍；除此之外，还包含一些常见的线程池面试题目。<br><img src="/2019/11/13/浅谈Java线程池-含常见面试题/1.png" alt>以上为Executor框架的继承体系结构</p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>在这篇文章中，将包含对线程池常见方法、线程池的内部实现、线程池的拒绝策略逐个进行介绍；除此之外，还包含一些常见的线程池面试题目。<br><img src="/blog.github.io/2019/11/13/浅谈Java线程池-含常见面试题/1.png" alt>以上为Executor框架的继承体系结构</p>
 <h1 id="线程池常见方法"><a href="#线程池常见方法" class="headerlink" title="线程池常见方法"></a>线程池常见方法</h1><h2 id="获取方法"><a href="#获取方法" class="headerlink" title="获取方法"></a><font size="5">获取方法</font></h2><p>获取一个线程池，我们有两种方法：一是通过Executor框架中Executors的静态方法来获取线程池对象。还可以通过直接创建ThreadPoolExecutor对象来直接创建线程池。这两种方法的差异以及如何选择这两种方法在后面会介绍。这里先介绍使用Executors的静态方法获取线程池对象。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static ExecutorService newFixedThreadPool(int nThreads)</span><br><span class="line">public static ExecutorService newSingleThreadExecutor()</span><br><span class="line">public static ExecutorService newCachedThreadPool()</span><br><span class="line">public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize)</span><br></pre></td></tr></table></figure>
 

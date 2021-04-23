@@ -61,17 +61,17 @@
 <meta name="keywords" content="源码,LinkedBlockingQueue集合">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LinkedBlockingQueue源码详解">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/11/16/LinkedBlockingQueue源码详解/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/11/16/LinkedBlockingQueue源码详解/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="队列，在我们平时使用的线程池、读写锁、消息队列等技术和框架使用的非常广泛，它是很多高级API的基础，因此今天就来介绍一下一种同步队列–LinkedBlockingQueue。(本文基于JDK1.8版本)">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/16/LinkedBlockingQueue源码详解/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/16/LinkedBlockingQueue源码详解/1.png">
 <meta property="og:updated_time" content="2019-11-16T02:36:16.966Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LinkedBlockingQueue源码详解">
 <meta name="twitter:description" content="队列，在我们平时使用的线程池、读写锁、消息队列等技术和框架使用的非常广泛，它是很多高级API的基础，因此今天就来介绍一下一种同步队列–LinkedBlockingQueue。(本文基于JDK1.8版本)">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/11/16/LinkedBlockingQueue源码详解/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/11/16/LinkedBlockingQueue源码详解/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/11/16/LinkedBlockingQueue源码详解/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/11/16/LinkedBlockingQueue源码详解/">
 
 
 <script id="page-configurations">
@@ -261,7 +261,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/11/16/LinkedBlockingQueue源码详解/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/11/16/LinkedBlockingQueue源码详解/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -325,7 +325,7 @@
 <hr>
 <a id="more"></a>
 
-<h1 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h1><h2 id="继承体系"><a href="#继承体系" class="headerlink" title="继承体系"></a><font size="5">继承体系</font></h2><p>LinkedBlockingQueue中文名叫做链表阻塞队列，因此我们可以知道其底层数据结构是链表，并且队列是可阻塞的，首先我们看一看LinkedBlockingQueue的类图<br><img src="/2019/11/16/LinkedBlockingQueue源码详解/1.png" alt>从类图中我们可以看出，该类的继承体系有两条路径</p>
+<h1 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h1><h2 id="继承体系"><a href="#继承体系" class="headerlink" title="继承体系"></a><font size="5">继承体系</font></h2><p>LinkedBlockingQueue中文名叫做链表阻塞队列，因此我们可以知道其底层数据结构是链表，并且队列是可阻塞的，首先我们看一看LinkedBlockingQueue的类图<br><img src="/blog.github.io/2019/11/16/LinkedBlockingQueue源码详解/1.png" alt>从类图中我们可以看出，该类的继承体系有两条路径</p>
 <ol>
 <li>AbstractQueue-&gt;AbstractCollection-&gt;Collection-&gt;Iterable，这一条路径主要是想复用Collection和迭代器的一些操作</li>
 <li>BlockingQueue-&gt;Queue-&gt;Collection，这里主要说一下BlockingQueue和Queue两个接口</li>

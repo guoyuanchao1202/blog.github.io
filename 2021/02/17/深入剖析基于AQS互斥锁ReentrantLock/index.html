@@ -61,26 +61,26 @@
 <meta name="keywords" content="源码,ReentrantLock,AQS,Java并发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入剖析基于AQS互斥锁ReentrantLock">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在深入剖析Java抽象队列同步器AQS一文中对AQS的实现原理进行详细介绍，这里就来介绍Java类库中基于AQS实现的互斥锁(也叫可重入锁)ReentrantLock。有了前面AQS的基础，学习ReentrantLock就会变得非常容易。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/2.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/3.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/4.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/5.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/6.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/7.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/8.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/9.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/10.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/2.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/3.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/4.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/5.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/6.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/7.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/8.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/9.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/10.png">
 <meta property="og:updated_time" content="2021-02-17T08:49:12.968Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入剖析基于AQS互斥锁ReentrantLock">
 <meta name="twitter:description" content="在深入剖析Java抽象队列同步器AQS一文中对AQS的实现原理进行详细介绍，这里就来介绍Java类库中基于AQS实现的互斥锁(也叫可重入锁)ReentrantLock。有了前面AQS的基础，学习ReentrantLock就会变得非常容易。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/">
 
 
 <script id="page-configurations">
@@ -270,7 +270,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -335,13 +335,13 @@
 <a id="more"></a>
 
 <h2 id="ReentrantLock简介"><a href="#ReentrantLock简介" class="headerlink" title="ReentrantLock简介"></a>ReentrantLock简介</h2><p>ReentranLock是Java提供的锁机制，它能够实现比synchronized更加丰富的功能。我们直到synchronized是不支持中断的，如果线程无法获取到锁就只能一直阻塞，而ReentrantLock提供了可以响应中断的方法，在线程因获取不到锁而阻塞时，可以响应外部中断；并且synchronized是非公平锁，ReentrantLock支持公平锁和非公平锁两种机制。</p>
-<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/1.png" alt></p>
+<p><img src="/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/1.png" alt></p>
 <p>ReentrantLock的内部架构如上图所示，可以看到ReentrantLock内部有三个类：Sync、NonFairSync、FairSync。顾名思义，NonFairSync用来实现非公平锁，FairSync用来实现公平锁，这两者都是继承自Sync，而Sync又是继承自前面说过的AQS，从图中我们可以很清楚的看到ReentrantLock是基于AQS实现。</p>
-<h2 id="Sync类"><a href="#Sync类" class="headerlink" title="Sync类"></a>Sync类</h2><p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/2.png" alt></p>
+<h2 id="Sync类"><a href="#Sync类" class="headerlink" title="Sync类"></a>Sync类</h2><p><img src="/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/2.png" alt></p>
 <p>如图，Sync是一个抽象类，继承自AQS。并重写了父类的tryRelease和isHeldExclusively方法，如果你看过前一篇文章并且还有印象的话，那么你一定记得这两个方法正式AQS提供给子类实现的模板方法。此外，Sync还提供了一个抽象方法lock。对于Sync的成员方法将会在介绍lock/unlock时，再对相关的方法进行介绍</p>
-<h2 id="NonFairSync类"><a href="#NonFairSync类" class="headerlink" title="NonFairSync类"></a>NonFairSync类</h2><p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/3.png" alt></p>
+<h2 id="NonFairSync类"><a href="#NonFairSync类" class="headerlink" title="NonFairSync类"></a>NonFairSync类</h2><p><img src="/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/3.png" alt></p>
 <p>NonFairSync用于实现非公平锁，继承自Sync并且是实现了父类的lock方法，同时还实现了AQS的模板方法tryAcquire方法。该类的成员方法非常简单，我们留到介绍lock/unlock时展开</p>
-<h2 id="FairSync类"><a href="#FairSync类" class="headerlink" title="FairSync类"></a>FairSync类</h2><p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/4.png" alt></p>
+<h2 id="FairSync类"><a href="#FairSync类" class="headerlink" title="FairSync类"></a>FairSync类</h2><p><img src="/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/4.png" alt></p>
 <p>FairSync用于实现公平锁，继承体系和NonFairSync一样，并且同样实现了lock方法和AQS的模板方法tryAcquire方法。通过对比我们不难发现，公平锁和非公平锁的区别就在lock和tryAcquire中。具体细节后面介绍</p>
 <h2 id="ReentrantLock类"><a href="#ReentrantLock类" class="headerlink" title="ReentrantLock类"></a>ReentrantLock类</h2><p>介绍完ReentrantLock的三个内部类的大体架构，现在正式开始介绍ReentrantLock的成员属性、构造方法以及几个主要的成员方法。</p>
 <h3 id="ReentrantLock成员属性"><a href="#ReentrantLock成员属性" class="headerlink" title="ReentrantLock成员属性"></a>ReentrantLock成员属性</h3><p>ReentrantLock的成员属性非常简单(还有一个序列化ID，和本文无关)，就是一个Sync对象</p>
@@ -364,7 +364,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">nonfairTryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取当前线程</span></span><br><span class="line">    <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">    <span class="comment">// 获取当前锁状态</span></span><br><span class="line">    <span class="keyword">int</span> c = getState();</span><br><span class="line">    <span class="comment">// 如果是0，说明没有线程持有锁</span></span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 使用CAS修改锁状态</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">            <span class="comment">// 如果修改成功则当前线程获取锁，调用AQS的父类方法</span></span><br><span class="line">            setExclusiveOwnerThread(current);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果不是0，说明已经有线程获取到了锁，判断是否是当前线程</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">        <span class="comment">// 如果是当前线程，则表明当前线程重入了锁</span></span><br><span class="line">        <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">        <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>) <span class="comment">// overflow</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</span><br><span class="line">        <span class="comment">// 修改锁状态</span></span><br><span class="line">        setState(nextc);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h4 id="lock-方法总结"><a href="#lock-方法总结" class="headerlink" title="lock()方法总结"></a>lock()方法总结</h4><p>对于非公平锁的lock方法到这里就介绍完毕了，其中涉及到了ReentrantLock、Sync、NonFairSync、AQS、AQS父类之间的方法调用，你可能已经迷糊了，不过没有关系，我总结了lock非公平锁的调用关系图，通过这个图，再结合前面的介绍，相信你能够把lock方法的来龙去脉梳理清楚</p>
-<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/5.png" alt></p>
+<p><img src="/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/5.png" alt></p>
 <p>如图，就是ReentrantLock的lock实现，可以看到ReentrantLock主要是通过重写AQS的tryAcquire方法来实现，并且根据锁类型不同(公平锁或非公平锁)，进行不同的重写</p>
 <h4 id="lock-–公平锁"><a href="#lock-–公平锁" class="headerlink" title="lock()–公平锁"></a>lock()–公平锁</h4><p>介绍完lock()公平锁的实现，现在介绍lock()非公平锁。通过上面的图发现，公平锁和非公平锁的区别在于Sync.lock和tryAcquire两个方法，我们分别看一看</p>
 <h4 id="FairSync-lock"><a href="#FairSync-lock" class="headerlink" title="FairSync.lock()"></a>FairSync.lock()</h4><p>可以看到公平锁和非公平锁的lock方法在实现上有细微的不同：线程使用非公平锁时会首先尝试获取锁，获取失败后才会调用acquire方法，但是公平锁不会尝试获取锁，而是直接调用acquire。这恰恰是公平锁的语义，线程需要按照先来后到的顺序依次获取锁。我们考虑下面这种情况：当前线程A持有公平锁，同步队列中已经有B线程等待锁，线程C尝试调用lock获取锁，此时A释放了锁，那么按照我们对公平锁的定义，B应该获取锁，而C进入同步队列等待。如果C在lock方法中首先尝试获取锁，那么C就有可能在B之前获取锁，这就违背了我们对公平锁的定义</p>
@@ -388,27 +388,27 @@
 
 <p>unparkSuccessor方法我们在AQS那一篇中介绍过，这里就不多介绍了，不记得了可以回看一下</p>
 <h4 id="unlock-方法总结"><a href="#unlock-方法总结" class="headerlink" title="unlock()方法总结"></a>unlock()方法总结</h4><p>至此，ReentrantLock的unlock已经介绍完毕。同样的，我总结一张图来表示unlock的大致逻辑</p>
-<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/6.png" alt></p>
+<p><img src="/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/6.png" alt></p>
 <p>通过源码得知，如果当前线程在持有锁后又多次调用了lock(重入)，那么就需要相应次数的unlock才能够释放锁。如果是最后一次unlock，那么需要将同步队列中最靠前的没有被取消的线程唤醒(unpark)。</p>
 <h2 id="ReentrantLock总结"><a href="#ReentrantLock总结" class="headerlink" title="ReentrantLock总结"></a>ReentrantLock总结</h2><p>到目前为止，已经将AQS、ReentrantLock的主要内容介绍完毕，但是你可能还有不少疑问，如当一个线程释放锁后，应该唤醒哪一个线程，被唤醒的线程又是如何重新获取锁，获取到锁之后同步队列会发生什么变化；当一个线程尝试获取锁失败后，什么时候加入到同步队列，什么时候被阻塞…等等。下面我将通过几幅图搭配文字将前面讲的串联起来，希望能够为你解惑。由于公平锁和非公平锁的实现基本类似，所以下面的示例基于非公平锁演示。</p>
 <ul>
 <li><p><strong>ReentrantLock对象刚创建，没有线程申请过锁</strong></p>
-<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/7.png" alt></p>
+<p><img src="/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/7.png" alt></p>
 <p>此时还不存在同步队列，锁状态为0，没有线程持有锁</p>
 </li>
 <li><p><strong>线程A申请锁</strong></p>
-<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/8.png" alt></p>
+<p><img src="/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/8.png" alt></p>
 <p>此时没有只有线程A申请锁，通过lock源码可知，线程A直接获取到锁，锁状态为1，由于仍然没有线程等待锁，因此同步队列仍为空</p>
 </li>
 <li><p><strong>线程B、线程C申请锁</strong></p>
-<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/9.png" alt></p>
+<p><img src="/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/9.png" alt></p>
 <p>此时A并没有释放锁，因此线程B和线程C尝试获取锁失败，调用acquire方法，并且在acquire中调用tryAcquire失败(因为我们假设在这个过程中线程A一直持有锁)，因此线程B和线程C会并发的将自己插入到同步队列中，两者在同步队列中的顺序无法保证。我们假设是线程C先进入同步队列。紧接着线程B和线程C会并发调用acquireQueued方法。在该方法中，C线程会进入到一个死循环中，在死循环中首先尝试获取锁，因为此时A并没有释放锁，因此获取失败，此时C线程会将它的前驱节点(此时是头节点)waitStatus修改为Signal(-1)，最后调用park阻塞。同样的，B线程会做和C一样的操作，不过B线程会将它的前驱节点(此时是C节点)waitStatus修改为Signal(-1)，最后调用park阻塞。因此最终的结果就是：B和C加入到同步队列；B和C线程代表的节点以及头节点状态都是Signal(-1)。</p>
 </li>
 <li><p><strong>线程A释放锁</strong></p>
 <p>A释放锁，调用AQS的release方法，release方法首先会调用Sync实现的tryRelease方法，由于A并没有对锁进行重入，因此A线程此时已经完全的释放了锁，并且同步队列不为空(B和C线程正在等待锁)，所以release方法还会调用AQS的unparkSuccessor方法，唤醒同步队列中的一个等待线程。在unparkSuccessor方法中，会首先将头结点的状态修改为0，并且找到最靠近头节点的非Cancelled节点(在本例中即C节点)，调用unpark唤醒该节点上的线程。</p>
 </li>
 <li><p><strong>C被唤醒，再次尝试获取锁</strong></p>
-<p><img src="/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/10.png" alt></p>
+<p><img src="/blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/10.png" alt></p>
 <p>当C线程被唤醒以后，由于是一个死循环，因此会重新尝试获取锁。我们假设此时没有别的线程与C竞争(实际上可能会刚好线程D在此时也要获取锁，逻辑是一样的，不过说起来篇幅较长，这里就假设只有C再获取锁)，此时C是头节点的后继节点，因此C调用tryAcquire方法尝试获取锁并且获取成功，获取成功后C会重新设置头节点：将原来的head节点丢弃，将C节点设置为head节点，并且将C中的thread字段置null，因为C代表的线程已经获得了锁，这里就不需要了。</p>
 </li>
 </ul>

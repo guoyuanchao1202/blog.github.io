@@ -61,23 +61,23 @@
 <meta name="keywords" content="源码,HashMap集合">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HashMap源码解析">
-<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/11/04/HashMap源码解析/index.html">
+<meta property="og:url" content="https://guoyuanchao1202/blog.github.io/2019/11/04/HashMap源码解析/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="介绍完了List集合，接下来就介绍一下Map集合中最常用的的HashMap集合，本文还是基于JDK1.8来介绍HashMap集合，由于HashMap集合比较复杂，这里只介绍一部分内容，对于红黑树部分跳过，本文基于JDK1.8版本。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/04/HashMap源码解析/1.png">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/04/HashMap源码解析/1.jpg">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/04/HashMap源码解析/2.jpg">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/04/HashMap源码解析/3.jpg">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/04/HashMap源码解析/4.jpg">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/04/HashMap源码解析/5.jpg">
-<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/04/HashMap源码解析/6.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/04/HashMap源码解析/1.png">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/04/HashMap源码解析/1.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/04/HashMap源码解析/2.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/04/HashMap源码解析/3.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/04/HashMap源码解析/4.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/04/HashMap源码解析/5.jpg">
+<meta property="og:image" content="https://guoyuanchao1202/blog.github.io/2019/11/04/HashMap源码解析/6.jpg">
 <meta property="og:updated_time" content="2020-03-04T14:30:28.545Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HashMap源码解析">
 <meta name="twitter:description" content="介绍完了List集合，接下来就介绍一下Map集合中最常用的的HashMap集合，本文还是基于JDK1.8来介绍HashMap集合，由于HashMap集合比较复杂，这里只介绍一部分内容，对于红黑树部分跳过，本文基于JDK1.8版本。">
-<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/11/04/HashMap源码解析/1.png">
-  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/11/04/HashMap源码解析/">
+<meta name="twitter:image" content="https://guoyuanchao1202/blog.github.io/2019/11/04/HashMap源码解析/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202/blog.github.io/2019/11/04/HashMap源码解析/">
 
 
 <script id="page-configurations">
@@ -267,7 +267,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/11/04/HashMap源码解析/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202/blog.github.io/2019/11/04/HashMap源码解析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
@@ -339,7 +339,7 @@
 <hr>
 <a id="more"></a>
 
-<h1 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h1><p>在JDK1.8中，对HashMap进行了调整，1.8及其以后的数据结构主要是数组+链表+红黑树。其中当链表长度大于等于8并且数组长度大于等于64时，链表会转化为红黑树；当红黑树大小小于等于6时，红黑树会转化成链表，整体的数据结构如下图：<br><img src="/2019/11/04/HashMap源码解析/1.png" alt>左边竖着的就是HashMap的数组结构，数组的元素有三种情况</p>
+<h1 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h1><p>在JDK1.8中，对HashMap进行了调整，1.8及其以后的数据结构主要是数组+链表+红黑树。其中当链表长度大于等于8并且数组长度大于等于64时，链表会转化为红黑树；当红黑树大小小于等于6时，红黑树会转化成链表，整体的数据结构如下图：<br><img src="/blog.github.io/2019/11/04/HashMap源码解析/1.png" alt>左边竖着的就是HashMap的数组结构，数组的元素有三种情况</p>
 <ol>
 <li>单个Node节点(存放键值对数据)</li>
 <li>一个链表</li>
@@ -468,7 +468,7 @@
 <p>如果你认真看了resize()方法和split()方法的源码，会发现它们有相同之处</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//resize()中将链表分成两部分的判断依据</span><br><span class="line">(e.hash &amp; oldCap) == 0)</span><br><span class="line"></span><br><span class="line">//split()中将红黑树分成两部分的判断依据</span><br><span class="line">(e.hash &amp; bit) == 0</span><br><span class="line"></span><br><span class="line">=====================</span><br><span class="line">不仅如此:</span><br><span class="line">链表的一部分仍在原位置index，另一部分在[index+oldCap]</span><br><span class="line">红黑树的一部分同样的原位置index，另一部分在[index+bit]</span><br></pre></td></tr></table></figure>
 
-<p>通过上面的比较你是不是觉得很相似？那我你查看resize()方法中调用split()方法传递进去的参数，你会发现实际上<font color="red"><b>bit==oldCap</b></font>。这样一来你会发现它们分割的依据都是一样的，那么这是什么原因呢？我们先回顾一下映射的过程<br><img src="/2019/11/04/HashMap源码解析/1.jpg" alt> 上图中，桶数组大小 n = 16，hash1 与 hash2 不相等。但因为只有后4位参与求余，所以结果相等。当桶数组扩容后，n 由16变成了32，对上面的 hash 值重新进行映射：<br><img src="/2019/11/04/HashMap源码解析/2.jpg" alt> 扩容后，参与模运算的位数由4位变为了5位。由于两个 hash 第5位的值是不一样，所以两个 hash 算出的结果也不一样。上面的计算过程并不难理解，继续往下分析。<br><img src="/2019/11/04/HashMap源码解析/3.jpg" alt> 假设我们上图的桶数组进行扩容，扩容后容量 n = 16，重新映射过程如下:依次遍历链表，并计算节点 hash &amp; oldCap 的值。如下图所示<br><img src="/2019/11/04/HashMap源码解析/4.jpg" alt> 如果值为0，将 loHead 和 loTail 指向这个节点。如果后面还有节点 hash &amp; oldCap 为0的话，则将节点链入 loHead 指向的链表中，并将 loTail 指向该节点。如果值为非0的话，则让 hiHead 和 hiTail 指向该节点。完成遍历后，可能会得到两条链表，此时就完成了链表分组：<br><img src="/2019/11/04/HashMap源码解析/5.jpg" alt> 最后再将这两条链接存放到相应的桶中，完成扩容。如下图：<br><img src="/2019/11/04/HashMap源码解析/6.jpg" alt> 从上图可以发现，重新映射后，两条链表中的节点顺序并未发生变化，还是保持了扩容前的顺序。</p>
+<p>通过上面的比较你是不是觉得很相似？那我你查看resize()方法中调用split()方法传递进去的参数，你会发现实际上<font color="red"><b>bit==oldCap</b></font>。这样一来你会发现它们分割的依据都是一样的，那么这是什么原因呢？我们先回顾一下映射的过程<br><img src="/blog.github.io/2019/11/04/HashMap源码解析/1.jpg" alt> 上图中，桶数组大小 n = 16，hash1 与 hash2 不相等。但因为只有后4位参与求余，所以结果相等。当桶数组扩容后，n 由16变成了32，对上面的 hash 值重新进行映射：<br><img src="/blog.github.io/2019/11/04/HashMap源码解析/2.jpg" alt> 扩容后，参与模运算的位数由4位变为了5位。由于两个 hash 第5位的值是不一样，所以两个 hash 算出的结果也不一样。上面的计算过程并不难理解，继续往下分析。<br><img src="/blog.github.io/2019/11/04/HashMap源码解析/3.jpg" alt> 假设我们上图的桶数组进行扩容，扩容后容量 n = 16，重新映射过程如下:依次遍历链表，并计算节点 hash &amp; oldCap 的值。如下图所示<br><img src="/blog.github.io/2019/11/04/HashMap源码解析/4.jpg" alt> 如果值为0，将 loHead 和 loTail 指向这个节点。如果后面还有节点 hash &amp; oldCap 为0的话，则将节点链入 loHead 指向的链表中，并将 loTail 指向该节点。如果值为非0的话，则让 hiHead 和 hiTail 指向该节点。完成遍历后，可能会得到两条链表，此时就完成了链表分组：<br><img src="/blog.github.io/2019/11/04/HashMap源码解析/5.jpg" alt> 最后再将这两条链接存放到相应的桶中，完成扩容。如下图：<br><img src="/blog.github.io/2019/11/04/HashMap源码解析/6.jpg" alt> 从上图可以发现，重新映射后，两条链表中的节点顺序并未发生变化，还是保持了扩容前的顺序。</p>
 <h2 id="红黑树链化"><a href="#红黑树链化" class="headerlink" title="红黑树链化"></a><font size="5">红黑树链化</font></h2><p>前面说过，<font color="red"><b>即使链表转化成了红黑树，红黑树节点的prev和next指针仍然保留了原链表节点顺序。</b></font>那么红黑树的链化就非常简单了</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 红黑树链化</span><br><span class="line"> * @param map</span><br><span class="line"> * @return</span><br><span class="line"> */</span><br><span class="line">final Node&lt;K,V&gt; untreeify(HashMap&lt;K,V&gt; map) &#123;</span><br><span class="line">    Node&lt;K,V&gt; hd = null, tl = null;</span><br><span class="line">    //通过next指针遍历红黑树</span><br><span class="line">    for (Node&lt;K,V&gt; q = this; q != null; q = q.next) &#123;</span><br><span class="line"></span><br><span class="line">        //将每个树节点转化成红黑树节点，并重新进行连接</span><br><span class="line">        Node&lt;K,V&gt; p = map.replacementNode(q, null);</span><br><span class="line">        if (tl == null)</span><br><span class="line">            hd = p;</span><br><span class="line">        else</span><br><span class="line">            tl.next = p;</span><br><span class="line">        tl = p;</span><br><span class="line">    &#125;</span><br><span class="line">    return hd;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">==========================</span><br><span class="line">/**</span><br><span class="line"> * 通过红黑树节点生成链表节点</span><br><span class="line"> * @param p</span><br><span class="line"> * @param next</span><br><span class="line"> * @return</span><br><span class="line"> */</span><br><span class="line">Node&lt;K,V&gt; replacementNode(Node&lt;K,V&gt; p, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">    return new Node&lt;&gt;(p.hash, p.key, p.value, next);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
