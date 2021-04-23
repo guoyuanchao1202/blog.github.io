@@ -61,32 +61,32 @@
 <meta name="keywords" content="数据库,隔离级别">
 <meta property="og:type" content="article">
 <meta property="og:title" content="事务的四大隔离级别">
-<meta property="og:url" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/index.html">
+<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在上一篇博客中介绍了事务的四大特性，并且也说：为了提高性能和利用率，我们有时候会弱化一致性，设置不同的隔离级别。那么到底怎么做呢？设置不同的隔离级别之后又会带来哪些负面效果呢？下面就让我们来看一看事务的四大隔离级别。本文中相关实验基于Windows10环境下的MySQL实现。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/1.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/2.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/3.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/4.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/5.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/6.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/7.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/8.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/9.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/10.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/11.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/12.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/13.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/14.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/15.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/16.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/1.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/2.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/3.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/4.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/5.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/6.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/7.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/8.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/9.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/10.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/11.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/12.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/13.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/14.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/15.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/16.png">
 <meta property="og:updated_time" content="2020-02-27T07:40:37.629Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="事务的四大隔离级别">
 <meta name="twitter:description" content="在上一篇博客中介绍了事务的四大特性，并且也说：为了提高性能和利用率，我们有时候会弱化一致性，设置不同的隔离级别。那么到底怎么做呢？设置不同的隔离级别之后又会带来哪些负面效果呢？下面就让我们来看一看事务的四大隔离级别。本文中相关实验基于Windows10环境下的MySQL实现。">
-<meta name="twitter:image" content="https://blog.github.io/2020/02/26/事务的四大隔离级别/1.png">
-  <link rel="canonical" href="https://blog.github.io/2020/02/26/事务的四大隔离级别/">
+<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/">
 
 
 <script id="page-configurations">
@@ -276,7 +276,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://blog.github.io/2020/02/26/事务的四大隔离级别/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/26/事务的四大隔离级别/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">

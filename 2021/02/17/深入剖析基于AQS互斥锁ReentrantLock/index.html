@@ -61,26 +61,26 @@
 <meta name="keywords" content="源码,ReentrantLock,AQS,Java并发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入剖析基于AQS互斥锁ReentrantLock">
-<meta property="og:url" content="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/index.html">
+<meta property="og:url" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在深入剖析Java抽象队列同步器AQS一文中对AQS的实现原理进行详细介绍，这里就来介绍Java类库中基于AQS实现的互斥锁(也叫可重入锁)ReentrantLock。有了前面AQS的基础，学习ReentrantLock就会变得非常容易。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/1.png">
-<meta property="og:image" content="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/2.png">
-<meta property="og:image" content="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/3.png">
-<meta property="og:image" content="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/4.png">
-<meta property="og:image" content="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/5.png">
-<meta property="og:image" content="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/6.png">
-<meta property="og:image" content="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/7.png">
-<meta property="og:image" content="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/8.png">
-<meta property="og:image" content="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/9.png">
-<meta property="og:image" content="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/10.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/1.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/2.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/3.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/4.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/5.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/6.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/7.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/8.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/9.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/10.png">
 <meta property="og:updated_time" content="2021-02-17T08:49:12.968Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入剖析基于AQS互斥锁ReentrantLock">
 <meta name="twitter:description" content="在深入剖析Java抽象队列同步器AQS一文中对AQS的实现原理进行详细介绍，这里就来介绍Java类库中基于AQS实现的互斥锁(也叫可重入锁)ReentrantLock。有了前面AQS的基础，学习ReentrantLock就会变得非常容易。">
-<meta name="twitter:image" content="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/1.png">
-  <link rel="canonical" href="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/">
+<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/">
 
 
 <script id="page-configurations">
@@ -270,7 +270,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://blog.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2021/02/17/深入剖析基于AQS互斥锁ReentrantLock/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">

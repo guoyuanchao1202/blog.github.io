@@ -61,27 +61,27 @@
 <meta name="keywords" content="递归,数据结构,红黑树">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据结构-红黑树">
-<meta property="og:url" content="https://blog.github.io/2020/03/03/数据结构-红黑树/index.html">
+<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="大家都知道，从JDK1.8开始，HashMap从原来的数组+链表变成了数组+链表+红黑树。不管是面试还是日常应用，HashMap都逃不开，因此我也在很久之前就看过了HashMap的源码，但是看的时候对于其中的红黑树部分真的是一塌糊涂因此就跳过这部分没看。最近复习HashMap源码，决定先学习红黑树，再认真的看一下HashMap。下面就让我们来看看红黑树到底有什么神秘之处吧。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://blog.github.io/2020/03/03/数据结构-红黑树/1.jfif">
-<meta property="og:image" content="https://blog.github.io/2020/03/03/数据结构-红黑树/2.jfif">
-<meta property="og:image" content="https://blog.github.io/2020/03/03/数据结构-红黑树/1.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/03/数据结构-红黑树/2.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/03/数据结构-红黑树/4.jfif">
-<meta property="og:image" content="https://blog.github.io/2020/03/03/数据结构-红黑树/5.jfif">
-<meta property="og:image" content="https://blog.github.io/2020/03/03/数据结构-红黑树/6.jfif">
-<meta property="og:image" content="https://blog.github.io/2020/03/03/数据结构-红黑树/4.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/03/数据结构-红黑树/3.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/03/数据结构-红黑树/5.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/03/数据结构-红黑树/6.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/1.jfif">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/2.jfif">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/1.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/2.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/4.jfif">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/5.jfif">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/6.jfif">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/4.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/3.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/5.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/6.png">
 <meta property="og:updated_time" content="2020-03-04T08:28:33.783Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据结构-红黑树">
 <meta name="twitter:description" content="大家都知道，从JDK1.8开始，HashMap从原来的数组+链表变成了数组+链表+红黑树。不管是面试还是日常应用，HashMap都逃不开，因此我也在很久之前就看过了HashMap的源码，但是看的时候对于其中的红黑树部分真的是一塌糊涂因此就跳过这部分没看。最近复习HashMap源码，决定先学习红黑树，再认真的看一下HashMap。下面就让我们来看看红黑树到底有什么神秘之处吧。">
-<meta name="twitter:image" content="https://blog.github.io/2020/03/03/数据结构-红黑树/1.jfif">
-  <link rel="canonical" href="https://blog.github.io/2020/03/03/数据结构-红黑树/">
+<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/1.jfif">
+  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/">
 
 
 <script id="page-configurations">
@@ -271,7 +271,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://blog.github.io/2020/03/03/数据结构-红黑树/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/03/03/数据结构-红黑树/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">

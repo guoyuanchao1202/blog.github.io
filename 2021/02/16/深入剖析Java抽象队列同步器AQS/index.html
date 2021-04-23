@@ -61,19 +61,19 @@
 <meta name="keywords" content="AQS,Java并发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入剖析Java抽象队列同步器AQS">
-<meta property="og:url" content="https://blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/index.html">
+<meta property="og:url" content="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="AbstractQueuedSynchronizer又称为队列同步器(后面简称AQS)，它提供了一套完整的同步编程框架，开发人员只需要实现其中几个简单的方法就能自由的使用诸如独占，共享，条件队列等多种同步模式。我们常见的ReentrantLock、Semaphore、CountDownLatch等都是基于AQS实现的，足以说明这套框架的强大之处。本文将基于JDK1.8对AQS进行剖析。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/1.png">
-<meta property="og:image" content="https://blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/2.png">
-<meta property="og:image" content="https://blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/3.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/1.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/2.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/3.png">
 <meta property="og:updated_time" content="2021-02-16T16:17:01.853Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入剖析Java抽象队列同步器AQS">
 <meta name="twitter:description" content="AbstractQueuedSynchronizer又称为队列同步器(后面简称AQS)，它提供了一套完整的同步编程框架，开发人员只需要实现其中几个简单的方法就能自由的使用诸如独占，共享，条件队列等多种同步模式。我们常见的ReentrantLock、Semaphore、CountDownLatch等都是基于AQS实现的，足以说明这套框架的强大之处。本文将基于JDK1.8对AQS进行剖析。">
-<meta name="twitter:image" content="https://blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/1.png">
-  <link rel="canonical" href="https://blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/">
+<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/">
 
 
 <script id="page-configurations">
@@ -263,7 +263,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://blog.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2021/02/16/深入剖析Java抽象队列同步器AQS/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">

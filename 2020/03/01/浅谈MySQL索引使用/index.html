@@ -61,35 +61,35 @@
 <meta name="keywords" content="数据库,MySQL,索引">
 <meta property="og:type" content="article">
 <meta property="og:title" content="浅谈MySQL索引使用">
-<meta property="og:url" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/index.html">
+<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在前面一篇我们对MySQL InnoDB/MyISAM 存储引擎索引的实现原理进行了简单的介绍。今天我们就来实际的介绍一下MySQL中索引的种类、不同的索引如何创建使用以及如何让索引发挥更大的作用(优化策略)。本文所有实验演示全部基于Win10环境下MySQL5.5版本(InnoDB)。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/1.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/2.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/3.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/4.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/5.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/6.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/17.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/18.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/19.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/7.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/8.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/9.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/10.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/11.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/12.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/13.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/14.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/15.png">
-<meta property="og:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/16.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/1.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/2.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/3.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/4.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/5.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/6.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/17.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/18.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/19.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/7.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/8.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/9.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/10.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/11.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/12.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/13.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/14.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/15.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/16.png">
 <meta property="og:updated_time" content="2020-03-02T00:53:43.846Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="浅谈MySQL索引使用">
 <meta name="twitter:description" content="在前面一篇我们对MySQL InnoDB/MyISAM 存储引擎索引的实现原理进行了简单的介绍。今天我们就来实际的介绍一下MySQL中索引的种类、不同的索引如何创建使用以及如何让索引发挥更大的作用(优化策略)。本文所有实验演示全部基于Win10环境下MySQL5.5版本(InnoDB)。">
-<meta name="twitter:image" content="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/1.png">
-  <link rel="canonical" href="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/">
+<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/">
 
 
 <script id="page-configurations">
@@ -279,7 +279,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://blog.github.io/2020/03/01/浅谈MySQL索引使用/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/03/01/浅谈MySQL索引使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">

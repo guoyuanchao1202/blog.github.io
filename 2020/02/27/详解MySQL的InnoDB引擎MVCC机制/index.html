@@ -61,19 +61,19 @@
 <meta name="keywords" content="数据库,隔离级别,InnoDB,MVCC">
 <meta property="og:type" content="article">
 <meta property="og:title" content="详解MySQL的InnoDB引擎MVCC机制">
-<meta property="og:url" content="https://blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/index.html">
+<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在前面两篇博客中分别介绍了数据库的四大特性和数据库的四大隔离级别。那么不知道你有没有想过：数据库是怎么实现四大隔离级别的呢？由于不同的数据库实现方法可能不同，我就以我常用的MySQL为例，介绍一下MySQL的InnoDB如何实现数据库四大隔离级别，本文基于Win10环境下MySQL5.5版本。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/2.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.jpg">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/2.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.jpg">
 <meta property="og:updated_time" content="2020-02-29T15:07:16.568Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="详解MySQL的InnoDB引擎MVCC机制">
 <meta name="twitter:description" content="在前面两篇博客中分别介绍了数据库的四大特性和数据库的四大隔离级别。那么不知道你有没有想过：数据库是怎么实现四大隔离级别的呢？由于不同的数据库实现方法可能不同，我就以我常用的MySQL为例，介绍一下MySQL的InnoDB如何实现数据库四大隔离级别，本文基于Win10环境下MySQL5.5版本。">
-<meta name="twitter:image" content="https://blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.png">
-  <link rel="canonical" href="https://blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/">
+<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/">
 
 
 <script id="page-configurations">
@@ -263,7 +263,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://blog.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/27/详解MySQL的InnoDB引擎MVCC机制/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">

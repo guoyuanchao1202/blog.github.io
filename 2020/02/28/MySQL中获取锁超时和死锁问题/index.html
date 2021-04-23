@@ -61,23 +61,23 @@
 <meta name="keywords" content="数据库,MySQL,死锁,锁超时">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL中获取锁超时和死锁问题">
-<meta property="og:url" content="https://blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/index.html">
+<meta property="og:url" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="MySQL地InnoDB引擎地并发控制有两种形式：分别是MVCC和两阶段封锁协议。在前面说过，两阶段封锁协议可能会出现死锁问题，那么出现死锁之后该如何处理呢？通过本文你将了解MySQL处理死锁问题以及获取锁超时问题地方式。本文所有实验演示全部基于Win10环境下MySQL5.5版本">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.jpg">
-<meta property="og:image" content="https://blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/2.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/3.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/4.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/5.png">
-<meta property="og:image" content="https://blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/6.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.jpg">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/2.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/3.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/4.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/5.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/6.png">
 <meta property="og:updated_time" content="2020-02-28T14:24:48.896Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL中获取锁超时和死锁问题">
 <meta name="twitter:description" content="MySQL地InnoDB引擎地并发控制有两种形式：分别是MVCC和两阶段封锁协议。在前面说过，两阶段封锁协议可能会出现死锁问题，那么出现死锁之后该如何处理呢？通过本文你将了解MySQL处理死锁问题以及获取锁超时问题地方式。本文所有实验演示全部基于Win10环境下MySQL5.5版本">
-<meta name="twitter:image" content="https://blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.jpg">
-  <link rel="canonical" href="https://blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/">
+<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/1.jpg">
+  <link rel="canonical" href="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/">
 
 
 <script id="page-configurations">
@@ -267,7 +267,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://blog.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2020/02/28/MySQL中获取锁超时和死锁问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">

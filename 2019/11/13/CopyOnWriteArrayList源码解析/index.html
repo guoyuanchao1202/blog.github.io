@@ -61,17 +61,17 @@
 <meta name="keywords" content="源码,CopyOnWriteArrayList集合">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CopyOnWriteArrayList源码解析">
-<meta property="og:url" content="https://blog.github.io/2019/11/13/CopyOnWriteArrayList源码解析/index.html">
+<meta property="og:url" content="https://guoyuanchao1202.github.io/2019/11/13/CopyOnWriteArrayList源码解析/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在前面介绍ArrayList集合时，我们说过，ArrayList是一个非线程安全的集合，它的类注释推荐我们自己加锁或者使用Collections.synchronizedList方法来获取线程安全的集合。其实JDK还有另外一种线程安全的List，叫做CopyOnWriteArrayList。接下来将基于JDK1.8版本介绍该集合。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://blog.github.io/2019/11/13/CopyOnWriteArrayList源码解析/1.png">
+<meta property="og:image" content="https://guoyuanchao1202.github.io/2019/11/13/CopyOnWriteArrayList源码解析/1.png">
 <meta property="og:updated_time" content="2019-11-14T08:50:18.300Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CopyOnWriteArrayList源码解析">
 <meta name="twitter:description" content="在前面介绍ArrayList集合时，我们说过，ArrayList是一个非线程安全的集合，它的类注释推荐我们自己加锁或者使用Collections.synchronizedList方法来获取线程安全的集合。其实JDK还有另外一种线程安全的List，叫做CopyOnWriteArrayList。接下来将基于JDK1.8版本介绍该集合。">
-<meta name="twitter:image" content="https://blog.github.io/2019/11/13/CopyOnWriteArrayList源码解析/1.png">
-  <link rel="canonical" href="https://blog.github.io/2019/11/13/CopyOnWriteArrayList源码解析/">
+<meta name="twitter:image" content="https://guoyuanchao1202.github.io/2019/11/13/CopyOnWriteArrayList源码解析/1.png">
+  <link rel="canonical" href="https://guoyuanchao1202.github.io/2019/11/13/CopyOnWriteArrayList源码解析/">
 
 
 <script id="page-configurations">
@@ -261,7 +261,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://blog.github.io/2019/11/13/CopyOnWriteArrayList源码解析/">
+    <link itemprop="mainEntityOfPage" href="https://guoyuanchao1202.github.io/2019/11/13/CopyOnWriteArrayList源码解析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="郭源潮">
