@@ -61,22 +61,22 @@
 <meta name="keywords" content="局部内部类,final关键字">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入剖析局部类与final关键字">
-<meta property="og:url" content="https://HoA-W.github.io/2020/03/24/深入剖析局部类与final关键字/index.html">
+<meta property="og:url" content="https://blog.github.io/2020/03/24/深入剖析局部类与final关键字/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="Java中有一种神奇的类，那就是局部内部类。定义在方法或某个作用域内的类，就是局部内部类。而匿名内部类就是一种局部内部类。关于局部内部类，我一直很疑惑为什么它只能访问final修饰的局部变量？它访问成员变量时需要加final修饰么？我上网查阅，网上给出的答案五花八门让人无法分辨真假，于是我花了点儿时间，自己动手一个一个的实验，终于整理出了头绪，特此来记录一下。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://hoa-w.github.io/2020/03/24/深入剖析局部类与final关键字/1.png">
-<meta property="og:image" content="https://hoa-w.github.io/2020/03/24/深入剖析局部类与final关键字/2.png">
-<meta property="og:image" content="https://hoa-w.github.io/2020/03/24/深入剖析局部类与final关键字/3.png">
-<meta property="og:image" content="https://hoa-w.github.io/2020/03/24/深入剖析局部类与final关键字/4.png">
-<meta property="og:image" content="https://hoa-w.github.io/2020/03/24/深入剖析局部类与final关键字/5.png">
-<meta property="og:image" content="https://hoa-w.github.io/2020/03/24/深入剖析局部类与final关键字/6.png">
+<meta property="og:image" content="https://blog.github.io/2020/03/24/深入剖析局部类与final关键字/1.png">
+<meta property="og:image" content="https://blog.github.io/2020/03/24/深入剖析局部类与final关键字/2.png">
+<meta property="og:image" content="https://blog.github.io/2020/03/24/深入剖析局部类与final关键字/3.png">
+<meta property="og:image" content="https://blog.github.io/2020/03/24/深入剖析局部类与final关键字/4.png">
+<meta property="og:image" content="https://blog.github.io/2020/03/24/深入剖析局部类与final关键字/5.png">
+<meta property="og:image" content="https://blog.github.io/2020/03/24/深入剖析局部类与final关键字/6.png">
 <meta property="og:updated_time" content="2020-03-24T07:42:39.588Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入剖析局部类与final关键字">
 <meta name="twitter:description" content="Java中有一种神奇的类，那就是局部内部类。定义在方法或某个作用域内的类，就是局部内部类。而匿名内部类就是一种局部内部类。关于局部内部类，我一直很疑惑为什么它只能访问final修饰的局部变量？它访问成员变量时需要加final修饰么？我上网查阅，网上给出的答案五花八门让人无法分辨真假，于是我花了点儿时间，自己动手一个一个的实验，终于整理出了头绪，特此来记录一下。">
-<meta name="twitter:image" content="https://hoa-w.github.io/2020/03/24/深入剖析局部类与final关键字/1.png">
-  <link rel="canonical" href="https://HoA-W.github.io/2020/03/24/深入剖析局部类与final关键字/">
+<meta name="twitter:image" content="https://blog.github.io/2020/03/24/深入剖析局部类与final关键字/1.png">
+  <link rel="canonical" href="https://blog.github.io/2020/03/24/深入剖析局部类与final关键字/">
 
 
 <script id="page-configurations">
@@ -266,11 +266,11 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/03/24/深入剖析局部类与final关键字/">
+    <link itemprop="mainEntityOfPage" href="https://blog.github.io/2020/03/24/深入剖析局部类与final关键字/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="买太平湖底陈年水墨">
-      <meta itemprop="description" content="前路坎坷，人得自个儿成全自个儿">
+      <meta itemprop="name" content="郭源潮">
+      <meta itemprop="description" content="时间在无声的诉说着一切">
       <meta itemprop="image" content="/images/pic.jpg">
     </span>
 
@@ -402,7 +402,7 @@
         
       
       <div style="display: inline-block">
-        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <img src="/images/wechatpay.png" alt="郭源潮 微信支付">
         <p>微信支付</p>
       </div>
 
@@ -499,9 +499,9 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image"
       src="/images/pic.jpg"
-      alt="买太平湖底陈年水墨">
-  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
-  <div class="site-description" itemprop="description">前路坎坷，人得自个儿成全自个儿</div>
+      alt="郭源潮">
+  <p class="site-author-name" itemprop="name">郭源潮</p>
+  <div class="site-description" itemprop="description">时间在无声的诉说着一切</div>
 </div>
   <nav class="site-state motion-element">
       <div class="site-state-item site-state-posts">
@@ -607,7 +607,7 @@
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+  <span class="author" itemprop="copyrightHolder">郭源潮</span>
 </div>
 	<div class="powered-by">
 	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">

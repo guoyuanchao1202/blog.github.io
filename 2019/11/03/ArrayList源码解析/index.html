@@ -61,18 +61,18 @@
 <meta name="keywords" content="源码,ArrayList集合">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ArrayList源码解析">
-<meta property="og:url" content="https://HoA-W.github.io/2019/11/03/ArrayList源码解析/index.html">
+<meta property="og:url" content="https://blog.github.io/2019/11/03/ArrayList源码解析/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在Java中，ArrayList集合我们用的非常多，但是对于ArrayList的底层实现，我一直不太了解。最近学习多线程的时候看到了线程安全集合，所以准备先回头把普通集合弄弄清除，再去看线程安全集合的底层实现会比较好一些。(本文基于JDK1.8源码进行分析)">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://hoa-w.github.io/2019/11/03/ArrayList源码解析/1.png">
-<meta property="og:image" content="https://hoa-w.github.io/2019/11/03/ArrayList源码解析/2.gif">
+<meta property="og:image" content="https://blog.github.io/2019/11/03/ArrayList源码解析/1.png">
+<meta property="og:image" content="https://blog.github.io/2019/11/03/ArrayList源码解析/2.gif">
 <meta property="og:updated_time" content="2020-03-04T14:37:26.952Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ArrayList源码解析">
 <meta name="twitter:description" content="在Java中，ArrayList集合我们用的非常多，但是对于ArrayList的底层实现，我一直不太了解。最近学习多线程的时候看到了线程安全集合，所以准备先回头把普通集合弄弄清除，再去看线程安全集合的底层实现会比较好一些。(本文基于JDK1.8源码进行分析)">
-<meta name="twitter:image" content="https://hoa-w.github.io/2019/11/03/ArrayList源码解析/1.png">
-  <link rel="canonical" href="https://HoA-W.github.io/2019/11/03/ArrayList源码解析/">
+<meta name="twitter:image" content="https://blog.github.io/2019/11/03/ArrayList源码解析/1.png">
+  <link rel="canonical" href="https://blog.github.io/2019/11/03/ArrayList源码解析/">
 
 
 <script id="page-configurations">
@@ -262,11 +262,11 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2019/11/03/ArrayList源码解析/">
+    <link itemprop="mainEntityOfPage" href="https://blog.github.io/2019/11/03/ArrayList源码解析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="买太平湖底陈年水墨">
-      <meta itemprop="description" content="前路坎坷，人得自个儿成全自个儿">
+      <meta itemprop="name" content="郭源潮">
+      <meta itemprop="description" content="时间在无声的诉说着一切">
       <meta itemprop="image" content="/images/pic.jpg">
     </span>
 
@@ -481,7 +481,7 @@
         
       
       <div style="display: inline-block">
-        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <img src="/images/wechatpay.png" alt="郭源潮 微信支付">
         <p>微信支付</p>
       </div>
 
@@ -578,9 +578,9 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image"
       src="/images/pic.jpg"
-      alt="买太平湖底陈年水墨">
-  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
-  <div class="site-description" itemprop="description">前路坎坷，人得自个儿成全自个儿</div>
+      alt="郭源潮">
+  <p class="site-author-name" itemprop="name">郭源潮</p>
+  <div class="site-description" itemprop="description">时间在无声的诉说着一切</div>
 </div>
   <nav class="site-state motion-element">
       <div class="site-state-item site-state-posts">
@@ -686,7 +686,7 @@
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+  <span class="author" itemprop="copyrightHolder">郭源潮</span>
 </div>
 	<div class="powered-by">
 	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">

@@ -61,23 +61,23 @@
 <meta name="keywords" content="读书笔记,应用层,DHCP协议">
 <meta property="og:type" content="article">
 <meta property="og:title" content="通过WireShark抓包学习DHCP协议">
-<meta property="og:url" content="https://HoA-W.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/index.html">
+<meta property="og:url" content="https://blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="当我们的主机接入网络时，它还没有自己的IP地址、子网掩码等一些必要的信息，这些信息需要从别处获取。那么这些信息是如何获取的？是人为配置的么？当然不是的。如果每一台主机的接入和断开都需要网络管理员进行配置(IP的分配回收等)，那管理员是忙不过来的。幸好，有DHCP协议来自动完成这些配置。下面，我将通过WireShark抓包来具体的介绍DHCP是如何工作的。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/1.png">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/2.png">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/3">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/3.png">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/4.png">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/5.png">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/6.png">
+<meta property="og:image" content="https://blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/1.png">
+<meta property="og:image" content="https://blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/2.png">
+<meta property="og:image" content="https://blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/3">
+<meta property="og:image" content="https://blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/3.png">
+<meta property="og:image" content="https://blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/4.png">
+<meta property="og:image" content="https://blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/5.png">
+<meta property="og:image" content="https://blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/6.png">
 <meta property="og:updated_time" content="2020-02-17T12:15:15.145Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="通过WireShark抓包学习DHCP协议">
 <meta name="twitter:description" content="当我们的主机接入网络时，它还没有自己的IP地址、子网掩码等一些必要的信息，这些信息需要从别处获取。那么这些信息是如何获取的？是人为配置的么？当然不是的。如果每一台主机的接入和断开都需要网络管理员进行配置(IP的分配回收等)，那管理员是忙不过来的。幸好，有DHCP协议来自动完成这些配置。下面，我将通过WireShark抓包来具体的介绍DHCP是如何工作的。">
-<meta name="twitter:image" content="https://hoa-w.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/1.png">
-  <link rel="canonical" href="https://HoA-W.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/">
+<meta name="twitter:image" content="https://blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/1.png">
+  <link rel="canonical" href="https://blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/">
 
 
 <script id="page-configurations">
@@ -267,11 +267,11 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/">
+    <link itemprop="mainEntityOfPage" href="https://blog.github.io/2020/02/17/通过WireShark抓包学习DHCP协议/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="买太平湖底陈年水墨">
-      <meta itemprop="description" content="前路坎坷，人得自个儿成全自个儿">
+      <meta itemprop="name" content="郭源潮">
+      <meta itemprop="description" content="时间在无声的诉说着一切">
       <meta itemprop="image" content="/images/pic.jpg">
     </span>
 
@@ -407,7 +407,7 @@
         
       
       <div style="display: inline-block">
-        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <img src="/images/wechatpay.png" alt="郭源潮 微信支付">
         <p>微信支付</p>
       </div>
 
@@ -506,9 +506,9 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image"
       src="/images/pic.jpg"
-      alt="买太平湖底陈年水墨">
-  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
-  <div class="site-description" itemprop="description">前路坎坷，人得自个儿成全自个儿</div>
+      alt="郭源潮">
+  <p class="site-author-name" itemprop="name">郭源潮</p>
+  <div class="site-description" itemprop="description">时间在无声的诉说着一切</div>
 </div>
   <nav class="site-state motion-element">
       <div class="site-state-item site-state-posts">
@@ -614,7 +614,7 @@
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+  <span class="author" itemprop="copyrightHolder">郭源潮</span>
 </div>
 	<div class="powered-by">
 	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">

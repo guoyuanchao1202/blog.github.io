@@ -61,18 +61,18 @@
 <meta name="keywords" content="Java基础,Lambda表达式,底层实现">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Lambda表达式的底层实现">
-<meta property="og:url" content="https://HoA-W.github.io/2020/03/23/Lambda表达式的底层实现/index.html">
+<meta property="og:url" content="https://blog.github.io/2020/03/23/Lambda表达式的底层实现/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="今天写多线程代码时，用到了Lambda表达式实现Runnable接口，于是我突然想到一个问题：Lambda是Jdk8的新特性，那么Lambda表达式到底是怎么实现的呢？于是我进行了一番测试和上网查找，终于弄明白了Lambda的底层实现，所以特此来记录一下。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://hoa-w.github.io/2020/03/23/Lambda表达式的底层实现/1.png">
-<meta property="og:image" content="https://hoa-w.github.io/2020/03/23/Lambda表达式的底层实现/2.png">
+<meta property="og:image" content="https://blog.github.io/2020/03/23/Lambda表达式的底层实现/1.png">
+<meta property="og:image" content="https://blog.github.io/2020/03/23/Lambda表达式的底层实现/2.png">
 <meta property="og:updated_time" content="2020-03-24T02:31:08.756Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Lambda表达式的底层实现">
 <meta name="twitter:description" content="今天写多线程代码时，用到了Lambda表达式实现Runnable接口，于是我突然想到一个问题：Lambda是Jdk8的新特性，那么Lambda表达式到底是怎么实现的呢？于是我进行了一番测试和上网查找，终于弄明白了Lambda的底层实现，所以特此来记录一下。">
-<meta name="twitter:image" content="https://hoa-w.github.io/2020/03/23/Lambda表达式的底层实现/1.png">
-  <link rel="canonical" href="https://HoA-W.github.io/2020/03/23/Lambda表达式的底层实现/">
+<meta name="twitter:image" content="https://blog.github.io/2020/03/23/Lambda表达式的底层实现/1.png">
+  <link rel="canonical" href="https://blog.github.io/2020/03/23/Lambda表达式的底层实现/">
 
 
 <script id="page-configurations">
@@ -262,11 +262,11 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/03/23/Lambda表达式的底层实现/">
+    <link itemprop="mainEntityOfPage" href="https://blog.github.io/2020/03/23/Lambda表达式的底层实现/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="买太平湖底陈年水墨">
-      <meta itemprop="description" content="前路坎坷，人得自个儿成全自个儿">
+      <meta itemprop="name" content="郭源潮">
+      <meta itemprop="description" content="时间在无声的诉说着一切">
       <meta itemprop="image" content="/images/pic.jpg">
     </span>
 
@@ -386,7 +386,7 @@
         
       
       <div style="display: inline-block">
-        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <img src="/images/wechatpay.png" alt="郭源潮 微信支付">
         <p>微信支付</p>
       </div>
 
@@ -485,9 +485,9 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image"
       src="/images/pic.jpg"
-      alt="买太平湖底陈年水墨">
-  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
-  <div class="site-description" itemprop="description">前路坎坷，人得自个儿成全自个儿</div>
+      alt="郭源潮">
+  <p class="site-author-name" itemprop="name">郭源潮</p>
+  <div class="site-description" itemprop="description">时间在无声的诉说着一切</div>
 </div>
   <nav class="site-state motion-element">
       <div class="site-state-item site-state-posts">
@@ -593,7 +593,7 @@
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+  <span class="author" itemprop="copyrightHolder">郭源潮</span>
 </div>
 	<div class="powered-by">
 	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">

@@ -61,24 +61,24 @@
 <meta name="keywords" content="数据库,MySQL,并发控制">
 <meta property="og:type" content="article">
 <meta property="og:title" content="详解MySQL加锁处理">
-<meta property="og:url" content="https://HoA-W.github.io/2020/02/29/详解MySQL加锁处理/index.html">
+<meta property="og:url" content="https://blog.github.io/2020/02/29/详解MySQL加锁处理/index.html">
 <meta property="og:site_name" content="CommonGuy">
 <meta property="og:description" content="在前面的文章中，对MySQL的MVCC机制进行了介绍，我们知道MVCC的特点就是读不加锁写加锁，实现了读写分离，那么今天就来介绍一下MySQL在并发控制中的加锁处理，理解这一点对于我们编写高效的SQL语句和处理死锁情况尤为重要。本文基于Win10环境下MySQL5.5版本/InnoDB存储引擎。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/29/详解MySQL加锁处理/1.webp">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/29/详解MySQL加锁处理/2.webp">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/29/详解MySQL加锁处理/3.webp">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/29/详解MySQL加锁处理/4.webp">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/29/详解MySQL加锁处理/5.webp">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/29/详解MySQL加锁处理/6.webp">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/29/详解MySQL加锁处理/7.webp">
-<meta property="og:image" content="https://hoa-w.github.io/2020/02/29/详解MySQL加锁处理/1.png">
+<meta property="og:image" content="https://blog.github.io/2020/02/29/详解MySQL加锁处理/1.webp">
+<meta property="og:image" content="https://blog.github.io/2020/02/29/详解MySQL加锁处理/2.webp">
+<meta property="og:image" content="https://blog.github.io/2020/02/29/详解MySQL加锁处理/3.webp">
+<meta property="og:image" content="https://blog.github.io/2020/02/29/详解MySQL加锁处理/4.webp">
+<meta property="og:image" content="https://blog.github.io/2020/02/29/详解MySQL加锁处理/5.webp">
+<meta property="og:image" content="https://blog.github.io/2020/02/29/详解MySQL加锁处理/6.webp">
+<meta property="og:image" content="https://blog.github.io/2020/02/29/详解MySQL加锁处理/7.webp">
+<meta property="og:image" content="https://blog.github.io/2020/02/29/详解MySQL加锁处理/1.png">
 <meta property="og:updated_time" content="2020-02-29T10:06:13.064Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="详解MySQL加锁处理">
 <meta name="twitter:description" content="在前面的文章中，对MySQL的MVCC机制进行了介绍，我们知道MVCC的特点就是读不加锁写加锁，实现了读写分离，那么今天就来介绍一下MySQL在并发控制中的加锁处理，理解这一点对于我们编写高效的SQL语句和处理死锁情况尤为重要。本文基于Win10环境下MySQL5.5版本/InnoDB存储引擎。">
-<meta name="twitter:image" content="https://hoa-w.github.io/2020/02/29/详解MySQL加锁处理/1.webp">
-  <link rel="canonical" href="https://HoA-W.github.io/2020/02/29/详解MySQL加锁处理/">
+<meta name="twitter:image" content="https://blog.github.io/2020/02/29/详解MySQL加锁处理/1.webp">
+  <link rel="canonical" href="https://blog.github.io/2020/02/29/详解MySQL加锁处理/">
 
 
 <script id="page-configurations">
@@ -268,11 +268,11 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="https://HoA-W.github.io/2020/02/29/详解MySQL加锁处理/">
+    <link itemprop="mainEntityOfPage" href="https://blog.github.io/2020/02/29/详解MySQL加锁处理/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="买太平湖底陈年水墨">
-      <meta itemprop="description" content="前路坎坷，人得自个儿成全自个儿">
+      <meta itemprop="name" content="郭源潮">
+      <meta itemprop="description" content="时间在无声的诉说着一切">
       <meta itemprop="image" content="/images/pic.jpg">
     </span>
 
@@ -513,7 +513,7 @@
         
       
       <div style="display: inline-block">
-        <img src="/images/wechatpay.png" alt="买太平湖底陈年水墨 微信支付">
+        <img src="/images/wechatpay.png" alt="郭源潮 微信支付">
         <p>微信支付</p>
       </div>
 
@@ -612,9 +612,9 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image"
       src="/images/pic.jpg"
-      alt="买太平湖底陈年水墨">
-  <p class="site-author-name" itemprop="name">买太平湖底陈年水墨</p>
-  <div class="site-description" itemprop="description">前路坎坷，人得自个儿成全自个儿</div>
+      alt="郭源潮">
+  <p class="site-author-name" itemprop="name">郭源潮</p>
+  <div class="site-description" itemprop="description">时间在无声的诉说着一切</div>
 </div>
   <nav class="site-state motion-element">
       <div class="site-state-item site-state-posts">
@@ -720,7 +720,7 @@
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">买太平湖底陈年水墨</span>
+  <span class="author" itemprop="copyrightHolder">郭源潮</span>
 </div>
 	<div class="powered-by">
 	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
